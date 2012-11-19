@@ -11,4 +11,4 @@ function($, _, Backbone){
 
 
   return app;
-})
+});
