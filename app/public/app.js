@@ -3,7 +3,7 @@ define([
   "lodash",
   "backbone"
 ],
-function($, _, Backbone){
+function($, _, Backbone, Handlebars){
 
   var app = {
     root: "/"

@@ -13,9 +13,11 @@ function(app, Test){
     index: function(){
       var testList = new Test.Collection();
 
+      var testListView = new Test.Views.List({collection: testList});
+
       testList.fetch();
     }
-  })
+  });
 
   return Router;
-})
+});

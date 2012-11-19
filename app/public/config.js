@@ -4,8 +4,17 @@ require.config({
   paths: {
     jquery: "./components/jquery/jquery",
     lodash: "./components/lodash/lodash",
+    underscore: "./components/lodash/lodash",
     backbone: "./components/backbone/backbone",
-    handlebars: "./components/handlebars/handlebars-1.0.0-rc.1"
+    handlebars: "./components/handlebars/handlebars",
+    hbs: "./components/require-handlebars-plugin/hbs",
+    json2: "./components/require-handlebars-plugin/hbs/json2",
+    i18nprecompile: "./components/require-handlebars-plugin/hbs/i18nprecompile",
+    templates: "./templates"
+  },
+
+  hbs: {
+    disableI18n: true
   },
 
   shim: {
@@ -15,4 +24,4 @@ require.config({
     }
   }
 
-})
+});
