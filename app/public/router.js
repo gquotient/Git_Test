@@ -1,15 +1,19 @@
 define([
-  "app"
+  "app",
+
+  "modules/Test"
 ],
 
-function(app){
+function(app, Test){
   var Router = Backbone.Router.extend({
     routes: {
       "": "index"
     },
 
     index: function(){
-      console.log("index");
+      var testList = new Test.Collection();
+
+      testList.fetch();
     }
   })
 
