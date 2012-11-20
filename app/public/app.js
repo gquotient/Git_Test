@@ -1,7 +1,8 @@
 define([
   "jquery",
   "lodash",
-  "backbone"
+  "backbone",
+  "handlebars"
 ],
 function($, _, Backbone, Handlebars){
 

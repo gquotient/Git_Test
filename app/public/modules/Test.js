@@ -23,7 +23,7 @@ function(app, listTemplate){
     template: listTemplate,
 
     render: function(){
-      $("body").append(this.template());
+      $("body").append(this.template(this.collection.toJSON()));
       return this;
     },
 
