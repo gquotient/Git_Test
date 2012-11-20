@@ -7,7 +7,7 @@ require.config({
     //underscore: "./components/lodash/lodash",
     underscore: "./components/require-handlebars-plugin/hbs/underscore",
     backbone: "./components/backbone/backbone",
-    handlebars: "./components/handlebars/handlebars",
+    handlebars: "./components/handlebars/handlebars-1.0.0-rc.1",
     hbs: "./components/require-handlebars-plugin/hbs",
     json2: "./components/require-handlebars-plugin/hbs/json2",
     i18nprecompile: "./components/require-handlebars-plugin/hbs/i18nprecompile",
