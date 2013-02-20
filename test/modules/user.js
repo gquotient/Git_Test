@@ -5,4 +5,8 @@ require(['../public/app/modules/user', 'jquery'], function (user, $) {
   test( "property", function() {
     ok( user.get('name') && user.get('name').length, "User get method" );
   });
+
+  if (window.mocha) {
+    mocha.run();
+  }
 });

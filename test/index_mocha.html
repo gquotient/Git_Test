@@ -23,14 +23,8 @@
       if (!expr) throw new Error(msg);
     }
 
-    require(['../public/app/modules/user'], function (user) {
-      test( "property", function() {
-        ok( user.name && user.name.length, "User name property" );
-      });
-      test( "property", function() {
-        ok( user.get('name') && user.get('name').length, "User get method" );
-      });
-      mocha.run();
+    require(['../public/config'], function(){
+      require(['../test/modules/user']);
     });
   </script>
 </body>

@@ -24,8 +24,8 @@
       // Without this setTimeout, the specs don't always get execute in webKit browsers
       setTimeout(function () {
         require(['../public/config'], function(){
-          require(['modules/user.js']);
-          require(['modules/asyncExample.js']);
+          require(['../test/modules/user']);
+          require(['../test/modules/asyncExample']);
         });
       }, 10);
 
