@@ -10,7 +10,7 @@ require.config({
     text: 'components/requirejs-text/text',
     css: 'components/css/css'
     // Modules
-    
+
   },
   shim: {
     backbone: {
@@ -28,3 +28,17 @@ require.config({
     }
   }
 });
+
+// Init app
+require(
+    [
+        'jquery',
+        'underscore',
+        'backbone',
+        'handlebars'
+    ],
+    function ($, _, Backbone, Handlebars, somemodule) {
+        window.ia = window.ia || {};
+        console.log("Hooray! We have an app.", ia);
+    }
+);
