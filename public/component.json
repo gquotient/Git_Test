@@ -1,0 +1,16 @@
+{
+  "name": "draker-core-ui",
+  "description": "Awesome App of Awesomeness",
+  "version": "0.0.1",
+  "dependencies": {
+    "lodash": "latest",
+    "require": "latest",
+    "jquery": "latest",
+    "modernizr": "latest",
+    "backbone": "latest",
+    "requirejs-text": "latest",
+    "css": "latest",
+    "handlebars": "latest",
+    "require-handlebars-plugin": "latest"
+  }
+}

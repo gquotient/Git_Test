@@ -1,0 +1,17 @@
+{
+  "name": "draker-routing-server",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "dependencies": {
+    "express": "~3.1.0",
+    "passport": "~0.1.15",
+    "stylus": "~0.32.0",
+    "passport-oauth": "~0.1.14"
+  },
+  "devDependencies": {
+    "passport-local": "~0.1.6"
+  }
+}
