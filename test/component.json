@@ -1,0 +1,8 @@
+{
+  "name": "draker-core-ui-test",
+  "description": "Front End Tests",
+  "version": "0.0.1",
+  "dependencies": {
+    "qunit": "latest"
+  }
+}
