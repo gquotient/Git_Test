@@ -16,7 +16,8 @@ app.configure(function(){
   // app.set('view engine', 'hbs');
   app.use(stylus.middleware({
     debug: true,
-    src: path.join(__dirname, 'public/css'))
+    //Not sure why but this has to match the static assets path
+    src: path.join(__dirname, 'public')
   }));
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
