@@ -12,7 +12,7 @@ Bower (twitter.github.com/bower)
 To install
 ----------
 
-cd app && npm install
+npm install
  
 cd public && bower install
 
@@ -20,4 +20,4 @@ cd public && bower install
 To run
 ------
 
-$ app/ node app.js
+$ node app.js
