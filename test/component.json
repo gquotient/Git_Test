@@ -3,6 +3,7 @@
   "description": "Front End Tests",
   "version": "0.0.1",
   "dependencies": {
-    "qunit": "latest"
+    "qunit": "latest",
+    "mocha": "latest"
   }
 }
