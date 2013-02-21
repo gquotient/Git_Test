@@ -1,13 +1,20 @@
-require(['app/modules/user', 'jquery'], function (user, $) {
-  test( 'property', function() {
-    ok( user.name && user.name.length, "User name property" );
+require(['app/modules/user'], function (user) {
+  describe('User Model', function(){
+    describe('#properties', function(){
+      it('should have a name', function(done){
+        assert(user.name && user.name.length, 'name not populated');
+        done();
+      });
+      it('should have an organization', function(done){
+        assert(user.organization && user.organization.length, 'org not populated');
+        done();
+      });
+    });
+    describe('#getMethod', function(){
+      it('method should return property', function(done){
+        assert(user.get('name') && user.get('name').length, 'get method failed');
+        done();
+      });
+    });
   });
-
-  test( 'property', function() {
-    ok( user.get('name') && user.get('name').length, "User get method" );
-  });
-
-  if (window.mocha) {
-    runTest();
-  }
 });

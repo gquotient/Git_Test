@@ -27,7 +27,7 @@ Testing
 
 `cd test && bower install`
 
-Testing can happen manually in the browser or terminal with phantomjs (https://github.com/metaskills/mocha-phantomjs). PhantomJS can be installed in Ubuntu with `npm install -g mocha-phantomjs`.
+Testing can happen manually in the browser or in your terminal with phantomjs. PhantomJS can be installed in Ubuntu with `apt-get install phantomjs` or OSX with `brew install phantomjs` and the node/mocha to phantomjs bridge with `npm install -g mocha-phantomjs`.
 
 ### Browser
 Point browser to /test/index.html

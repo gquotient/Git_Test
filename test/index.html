@@ -10,30 +10,59 @@
 
   <script type="text/javascript" data-main="../public/config.js" src="../public/components/require/require.js"></script>
 
-  <script type="text/javascript" src="components/mocha/mocha.js"></script>
-
   <link rel="stylesheet" href="components/mocha/mocha.css" media="screen">
 </head>
 <body>
   <div id="mocha"></div>
-  <script type="text/javascript">
-    mocha.setup('qunit');
-
-    function ok(expr, msg) {
-      if (!expr) throw new Error(msg);
-    }
-
-    function runTest(){
-      console.log('run test');
-      if (window.mochaPhantomJS) {
-        mochaPhantomJS.run();
-      } else {
-        mocha.run();
+  <script>
+    //Additional Require configuration
+    require.config({
+      paths: {
+        mocha: '../test/components/mocha/mocha',
+        chai: '../test/components/chai/chai'
+      },
+      shim: {
+        mocha: {
+          exports: 'mocha'
+        }
       }
-    }
+    });
+  </script>
+  <script>
+    require([
+      'chai',
+      'mocha'
+    ], function(chai, mocha){
+      //Mocha setup
+      mocha
+        .setup('bdd')//Set the type of test format
+        .globals(['hasCert', true])//Allow globals (like $ and every other library ever)
+      ;
 
-    require(['../public/config'], function(){
-      require(['../test/modules/user']);
+      //Append assert globally
+      window.assert = chai.assert;
+
+      //Encapsulate dual environment (browser/PhantomJS) test run method
+      function runTest(){
+        console.log('run test');
+        if (window.mochaPhantomJS) {
+          mochaPhantomJS.run();
+        } else {
+          mocha.run();
+        }
+      }
+
+      //Require the app config for nice module names
+      require(['../public/config'], function(){
+        //Require ALL tests
+        require([
+          '../test/modules/user',
+          '../test/modules/asyncExample'
+        ], function(){
+          //Fire run ONCE
+          runTest();
+        });
+      });
     });
   </script>
 </body>

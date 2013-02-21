@@ -3,7 +3,7 @@ define([
   "backbone",
   "app/ia",
   "app/modules/login"
-], 
+],
 function($, Backbone, ia, Login){
   var Router = Backbone.Router.extend({
     routes: {
@@ -29,7 +29,7 @@ function($, Backbone, ia, Login){
     },
 
     initialize: function(){
-      
+
     }
   });
 
