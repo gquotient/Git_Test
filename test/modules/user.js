@@ -8,6 +8,6 @@ require(['app/modules/user', 'jquery'], function (user, $) {
   });
 
   if (window.mocha) {
-    mocha.run();
+    runTest();
   }
 });

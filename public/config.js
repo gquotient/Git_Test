@@ -1,7 +1,5 @@
 // Require config
 require.config({
-  deps: ["app/init"],
-
   paths: {
     // Libraries
     jquery: 'components/jquery/jquery',
