@@ -3,7 +3,10 @@ require(['app/modules/user'], function (user) {
     describe('#properties', function(){
       it('should have a name', function(done){
         assert(user.name && user.name.length);
-        assert(user.get('name') && user.get('name').length);
+        done();
+      });
+      it('should have an organization', function(done){
+        assert(user.organization && user.organization.length);
         done();
       });
     });
