@@ -10,27 +10,31 @@
 
   <script type="text/javascript" data-main="../public/config.js" src="../public/components/require/require.js"></script>
 
-  <script type="text/javascript" src="components/qunit/qunit.js"></script>
+  <script type="text/javascript" src="components/mocha/mocha.js"></script>
 
-  <link rel="stylesheet" href="components/qunit/qunit.css" media="screen">
+  <link rel="stylesheet" href="components/mocha/mocha.css" media="screen">
 </head>
 <body>
-  <div id="qunit"></div>
-  <div id="qunit-fixture"></div>
+  <div id="mocha"></div>
   <script type="text/javascript">
-    window.addEventListener("load", function onLoad() {
-      QUnit.config.autostart = false;
+    mocha.setup('qunit');
 
-      // Without this setTimeout, the specs don't always get execute in webKit browsers
-      setTimeout(function () {
-        require(['../public/config'], function(){
-          require(['../test/modules/user']);
-          require(['../test/modules/asyncExample']);
-        });
-      }, 10);
+    function ok(expr, msg) {
+      if (!expr) throw new Error(msg);
+    }
 
-      window.removeEventListener("load", onLoad, true);
-    }, true);
+    function runTest(){
+      console.log('run test');
+      if (window.mochaPhantomJS) {
+        mochaPhantomJS.run();
+      } else {
+        mocha.run();
+      }
+    }
+
+    require(['../public/config'], function(){
+      require(['../test/modules/user']);
+    });
   </script>
 </body>
 </html>
