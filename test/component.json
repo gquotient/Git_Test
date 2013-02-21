@@ -3,6 +3,7 @@
   "description": "Front End Tests",
   "version": "0.0.1",
   "dependencies": {
+    "chai": "latest",
     "mocha": "latest"
   }
 }
