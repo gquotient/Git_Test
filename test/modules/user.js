@@ -1,13 +1,11 @@
-require(['app/modules/user', 'jquery'], function (user, $) {
-  test( 'property', function() {
-    ok( user.name && user.name.length, "User name property" );
+describe('User Model', function(){
+  describe('#properties', function(){
+    it('should have a name', function(done){
+      require(['app/modules/user'], function (user) {
+        assert(true, user.name && user.name.length);
+        assert(true, user.get('name') && user.get('name').length);
+        done();
+      });
+    });
   });
-
-  test( 'property', function() {
-    ok( user.get('name') && user.get('name').length, "User get method" );
-  });
-
-  if (window.mocha) {
-    runTest();
-  }
 });
