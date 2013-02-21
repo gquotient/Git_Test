@@ -19,12 +19,17 @@ var User = {
     {username: "jwin", password: "1234", name: "Justin", id: 1},
     {username: "jkyle", password: "1234", name: "Kyle", id: 2}
   ],
-  findById: function(id){
-    _.find(this.users, function(user){
-      return user.id === id;
+  findBy: function(field, value, callback){
+    var currentuser = _.find(this.users, function(user){
+      return user[field] === value;
     });
+
+    if(currentuser){
+      callback(null, currentuser);
+    }
+
   }
-}
+};
 
 var users = [
   {username: "jwin", password: "1234", name: "Justin"},
@@ -41,23 +46,27 @@ passport.use(new LocalStrategy(
       return user.username === username && user.password === password;
     });
 
-    if (err) { return done(err); }
+    console.log(validUser, done);
+
+    // if (err) { return done(err); }
     
     if (!validUser) {
       return done(null, false, { message: 'Incorrect username or password.' });
     }
     
-    return done(null, user);
+    return done(null, validUser);
 
   }
 ));
 
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
+  console.log(user.username);
+  done(null, user.username);
 });
 
 passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
+  User.findBy('username', function(err, user) {
+    console.log(user);
     done(err, user);
   });
 });
@@ -96,13 +105,15 @@ app.configure('development', function(){
  * Basic routing (temporary).
  */
 
+ app.get('/gate',
+  passport.authenticate('local'), function(req, res){
+    res.redirect('/');
+  });
+
  app.post('/login',
-  passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: false
-  })
-);
+  passport.authenticate('local'), function(req, res) {
+    res.redirect('/');
+  });
 
 
 http.createServer(app).listen(app.get('port'), function(){

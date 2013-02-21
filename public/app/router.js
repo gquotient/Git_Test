@@ -23,6 +23,10 @@ function($, Backbone, ia, Login){
 
     },
 
+    gate: function(){
+      console.log("bully");
+    },
+
     initialize: function(){
       
     }
