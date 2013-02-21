@@ -1,29 +1,28 @@
 // Init app
-require(
+define(
   [
       'jquery',
       'underscore',
       'backbone',
-      'handlebars'
+      'handlebars',
+
+      'app/ia',
+      'app/router'
   ],
-  function ($, _, Backbone, Handlebars, somemodule) {
+  function ($, _, Backbone, Handlebars, ia, Router) {
     //Create app namespace
-    window.ia = window.ia || {};
+    //window.ia = window.ia || {};
 
-    console.log("Hooray! We have an app.", ia);
 
-    //Create global views namespace
-    ia.views = {};
-
-    //Compile primary templates
-    ia.views.index = Handlebars.compile($('#index').html());
-    ia.views.login = Handlebars.compile($('#login').html());
 
     //Replace body content with main view
-    if (true) {
-      $('body').html(ia.views.index);
-    } else {
-      $('body').html(ia.views.login);
-    }
+    // if (true) {
+    //   $('body').html(ia.views.index);
+    // } else {
+    //   $('body').html(ia.views.login);
+    // }
+
+    ia.router = new Router();
+    Backbone.history.start( {pushState: true, root: ia.root } );
   }
 );
