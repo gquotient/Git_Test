@@ -8,6 +8,7 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , passport = require('passport')
+  , RedisStore = require('connect-redis')(express)
   , LocalStrategy = require('passport-local').Strategy;
 
 /**
@@ -23,6 +24,7 @@ var User = {
     var currentuser = _.find(this.users, function(user){
       return user[field] === value;
     });
+
 
     if(currentuser){
       callback(null, currentuser);
@@ -45,10 +47,6 @@ passport.use(new LocalStrategy(
     var validUser = _.find(users, function(user){
       return user.username === username && user.password === password;
     });
-
-    console.log(validUser, done);
-
-    // if (err) { return done(err); }
     
     if (!validUser) {
       return done(null, false, { message: 'Incorrect username or password.' });
@@ -60,13 +58,11 @@ passport.use(new LocalStrategy(
 ));
 
 passport.serializeUser(function(user, done) {
-  console.log(user.username);
-  done(null, user.username);
+  done(null, user);
 });
 
-passport.deserializeUser(function(id, done) {
-  User.findBy('username', function(err, user) {
-    console.log(user);
+passport.deserializeUser(function(currentUser, done) {
+  User.findBy("username", currentUser.username, function (err, user) {
     done(err, user);
   });
 });
@@ -82,13 +78,13 @@ app.configure(function(){
     //Not sure why but this has to match the static assets path
     src: path.join(__dirname, 'public')
   }));
-  app.use(express.cookieParser());
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
-  app.use(express.session({ secret: 'adamantium' }));
+  app.use(express.methodOverride());
+  app.use(express.cookieParser());
+  app.use(express.session({ store: new RedisStore, secret: 'adamantium',cookie: { secure: false, maxAge:86400000 } }));
   app.use(passport.initialize());
   app.use(passport.session());
-  app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
   app.use( function(req, res){
@@ -105,16 +101,24 @@ app.configure('development', function(){
  * Basic routing (temporary).
  */
 
- app.get('/gate',
-  passport.authenticate('local'), function(req, res){
-    res.redirect('/');
+ app.all('/api/*', ensureAuthenticated);
+
+ app.get('/api/gate',
+  function(req, res){
+    res.json({user:req.user})
   });
 
  app.post('/login',
-  passport.authenticate('local'), function(req, res) {
-    res.redirect('/');
+  passport.authenticate('local'),
+  function(req, res) {
+    res.json({"user": req.user});
   });
 
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.redirect('/login');
+}
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

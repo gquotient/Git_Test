@@ -17,7 +17,7 @@ define(
             },
             403: function() {
                 // 403 -- Access denied
-                window.location.replace('/#denied');
+                window.location.replace('/login');
             }
         }
     });

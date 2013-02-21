@@ -8,7 +8,8 @@ function($, Backbone, ia, Login){
   var Router = Backbone.Router.extend({
     routes: {
       "": "index",
-      "login": "login"
+      "login": "login",
+      "gate": "gate"
     },
 
     index: function(){
