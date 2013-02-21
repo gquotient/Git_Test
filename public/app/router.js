@@ -14,6 +14,11 @@ function($, Backbone, ia, Login){
 
     index: function(){
       console.log("Index.");
+
+      var template = Handlebars.compile($("#index").html()),
+          html = template({routes: this.routes});
+
+      $("body").html(html);
     },
 
     login: function(){
