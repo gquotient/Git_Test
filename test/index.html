@@ -14,11 +14,26 @@
 </head>
 <body>
   <div id="mocha"></div>
-  <script type="text/javascript">
+  <script>
+    //Additional Require configuration
+    require.config({
+      paths: {
+        mocha: '../test/components/mocha/mocha',
+        chai: '../test/components/chai/chai'
+      },
+      shim: {
+        mocha: {
+          exports: 'mocha'
+        }
+      }
+    });
+  </script>
+  <script>
     require([
-      '../test/components/chai/chai',
-      '../test/components/mocha/mocha'
-    ], function(chai, mochaIsntAMD){
+      'chai',
+      'mocha'
+    ], function(chai, mocha){
+      //Mocha setup
       mocha
         .setup('bdd')//Set the type of test format
         .globals(['hasCert', true])//Allow globals (like $ and every other library ever)
