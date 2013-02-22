@@ -42,7 +42,7 @@ passport.use(new LocalStrategy(
   function(username, password, done) {
     User.findBy("username", username, function(err, user){
       if( User.verifyPassword(user, password) ){
-        return done(null, validUser);
+        return done(null, user);
       } else {
         return done(null, false, { message: 'Incorrect password.' });
       }
@@ -95,27 +95,29 @@ app.configure('development', function(){
  * Basic routing (temporary).
  */
 
-// app.all('/api/*', ensureAuthenticated);
-
-app.get('/api/gate',
-function(req, res){
-  res.json({user:req.user});
-});
+app.all('/api/*', ensureAuthenticated);
 
 app.get('/api/users',
   function(req, res){
-    res.json(User.users);
+    res.json({currentUser: req.user, data: User.users});
 });
 
 app.post('/login',
 passport.authenticate('local'),
 function(req, res) {
-  res.json({"user": req.user});
+  res.json(req.user);
 });
+
+app.get('/logout',
+  function(req, res){
+    // req.logout();
+    req.session.destroy();
+    res.redirect('/login')
+  })
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
-  res.redirect('/login');
+  res.send(401);
 }
 
 http.createServer(app).listen(app.get('port'), function(){

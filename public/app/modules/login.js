@@ -1,8 +1,10 @@
 define([
     "backbone",
-    "handlebars"
+    "handlebars",
+
+    "app/ia"
   ],
-  function(Backbone, Handlebars){
+  function(Backbone, Handlebars, ia){
 
     var Login = {
       views: {}
@@ -30,14 +32,7 @@ define([
               dataType:"json",
               data: formValues,
               success:function (data) {
-                  console.log(["Login request details: ", data]);
-                 
-                  if(data.error) {  // If there is an error, show the error messages
-                      $('body').text(data.error.text).show();
-                  }
-                  else { // If not, send them back to the home page
-                      console.log("all's good.")
-                  }
+                Backbone.history.navigate("/users", {trigger: true});
               }
           });
       },

@@ -12,7 +12,7 @@ define([
 ],
 function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTemplate){
   
-  var iaController = Backbone.Marionette.Controller.extend({
+  ia.Controller = Backbone.Marionette.Controller.extend({
     initialize: function(){
       ia.addRegions({
         main: "body"
@@ -48,6 +48,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTe
       });
       ia.main.show(ia.mainLayout);
       ia.mainLayout.contentNavigation.show(userView);
+      ia.users.fetch();
 
       userView.on("itemview:select:user", function(arg){
         var detailView = new User.views.detailView({model: arg.model});
@@ -57,14 +58,13 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTe
   });
 
   var Router = Backbone.Marionette.AppRouter.extend({
-    controller: new iaController(),
+    controller: new ia.Controller(),
     appRoutes: {
       "": "index",
       "users": "users"
     },
     routes: {
-      "login": "login",
-      "gate": "gate"
+      "login": "login"
     },
 
     login: function(){
@@ -73,10 +73,6 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTe
       $("body").append(view.$el);
       view.render();
 
-    },
-
-    gate: function(){
-      console.log("bully");
     },
 
     initialize: function(){
