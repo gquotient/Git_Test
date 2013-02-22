@@ -6,7 +6,6 @@ define(
   ],
   function (ia, Router) {
 
-    // File: web/js/main.js
     // Tell jQuery to watch for any 401 or 403 errors and handle them appropriately
     $.ajaxSetup({
         statusCode: {
@@ -22,7 +21,6 @@ define(
         }
     });
 
-    ia.router = new Router();
-    Backbone.history.start( {pushState: true, root: ia.root } );
+    ia.start();
   }
 );

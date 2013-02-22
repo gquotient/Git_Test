@@ -95,11 +95,16 @@ app.configure('development', function(){
  * Basic routing (temporary).
  */
 
-app.all('/api/*', ensureAuthenticated);
+// app.all('/api/*', ensureAuthenticated);
 
 app.get('/api/gate',
 function(req, res){
-  res.json({user:req.user})
+  res.json({user:req.user});
+});
+
+app.get('/api/users',
+  function(req, res){
+    res.json(User.users);
 });
 
 app.post('/login',

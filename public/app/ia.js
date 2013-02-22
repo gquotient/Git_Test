@@ -1,13 +1,14 @@
 define(
-  [],
-  function(){
+  
+  [
+    'backbone',
+    'backbone.marionette'
+  ],
+  
+  function(Backbone, Marionette){
 
-    var ia = {
-      root: '/',
-      views: {}
-    };
-
-    console.log("Hooray! We have an app.", ia);
-
+    var ia = new Backbone.Marionette.Application();
     return ia;
-});
+  }
+  
+);

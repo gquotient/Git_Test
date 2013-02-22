@@ -1,24 +1,70 @@
 define([
   "jquery",
   "backbone",
+  "backbone.marionette",
+  "backbone.marionette.handlebars",
+
   "app/ia",
-  "app/modules/login"
+  "app/modules/login",
+  "app/modules/user/user",
+
+  "hbs!app/layouts/index"
 ],
-function($, Backbone, ia, Login){
-  var Router = Backbone.Router.extend({
-    routes: {
-      "": "index",
-      "login": "login",
-      "gate": "gate"
+function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTemplate){
+  
+  var iaController = Backbone.Marionette.Controller.extend({
+    initialize: function(){
+      ia.addRegions({
+        main: "body"
+      });
+
+      ia.users = new User.Collection();
+      ia.users.fetch();
+
+      var AppLayout = Backbone.Marionette.Layout.extend({
+        template: {
+          type: 'handlebars',
+          template: indexTemplate
+        },
+        regions: {
+          header: "#header",
+          navigation: "#navigation",
+          contentNavigation: "#contentNavigation",
+          mainContent: "#content",
+          footer: "#footer"
+        }
+      });
+
+      ia.mainLayout = new AppLayout();
     },
 
     index: function(){
-      console.log("Index.");
+      ia.main.show(ia.mainLayout);
+    },
 
-      var template = Handlebars.compile($("#index").html()),
-          html = template({routes: this.routes});
+    users: function(){
+      var userView = new User.views.listView({
+        collection: ia.users
+      });
+      ia.main.show(ia.mainLayout);
+      ia.mainLayout.contentNavigation.show(userView);
 
-      $("body").html(html);
+      userView.on("itemview:select:user", function(arg){
+        var detailView = new User.views.detailView({model: arg.model});
+        ia.mainLayout.mainContent.show(detailView);
+      });
+    }
+  });
+
+  var Router = Backbone.Marionette.AppRouter.extend({
+    controller: new iaController(),
+    appRoutes: {
+      "": "index",
+      "users": "users"
+    },
+    routes: {
+      "login": "login",
+      "gate": "gate"
     },
 
     login: function(){
@@ -36,6 +82,11 @@ function($, Backbone, ia, Login){
     initialize: function(){
 
     }
+  });
+
+  ia.addInitializer(function(options){
+    new Router();
+    Backbone.history.start();
   });
 
   return Router;
