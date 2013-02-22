@@ -25,18 +25,14 @@ var User = {
       return user[field] === value;
     });
 
-
     if(currentuser){
       callback(null, currentuser);
     }
-
+  },
+  verifyPassword: function(user, password){
+    return user.password === password;
   }
 };
-
-var users = [
-  {username: "jwin", password: "1234", name: "Justin"},
-  {username: "jkyle", password: "1234", name: "Kyle"}
-];
 
 /**
  * Setup Passport
@@ -44,16 +40,13 @@ var users = [
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
-    var validUser = _.find(users, function(user){
-      return user.username === username && user.password === password;
+    User.findBy("username", username, function(err, user){
+      if( User.verifyPassword(user, password) ){
+        return done(null, validUser);
+      } else {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
     });
-    
-    if (!validUser) {
-      return done(null, false, { message: 'Incorrect username or password.' });
-    }
-    
-    return done(null, validUser);
-
   }
 ));
 
@@ -67,15 +60,16 @@ passport.deserializeUser(function(currentUser, done) {
   });
 });
 
+/*
+ * Configure Express App
+ */
+
 var app = express();
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3005);
-  // app.set('views', __dirname + '/views');
-  // app.set('view engine', 'hbs');
   app.use(stylus.middleware({
     debug: true,
-    //Not sure why but this has to match the static assets path
     src: path.join(__dirname, 'public')
   }));
   app.use(express.logger('dev'));
@@ -101,19 +95,18 @@ app.configure('development', function(){
  * Basic routing (temporary).
  */
 
- app.all('/api/*', ensureAuthenticated);
+app.all('/api/*', ensureAuthenticated);
 
- app.get('/api/gate',
-  function(req, res){
-    res.json({user:req.user})
-  });
+app.get('/api/gate',
+function(req, res){
+  res.json({user:req.user})
+});
 
- app.post('/login',
-  passport.authenticate('local'),
-  function(req, res) {
-    res.json({"user": req.user});
-  });
-
+app.post('/login',
+passport.authenticate('local'),
+function(req, res) {
+  res.json({"user": req.user});
+});
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
