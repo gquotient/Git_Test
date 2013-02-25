@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "dependencies": {
     "lodash": "latest",
+    "underscore": "latest",
     "require": "latest",
     "jquery": "latest",
     "modernizr": "latest",

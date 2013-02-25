@@ -5,12 +5,16 @@ require.config({
     text: 'components/requirejs-text/text',
     css: 'components/css/css',
     hbs: 'components/require-handlebars-plugin/hbs',
+
     // Libraries
+    json2: 'components/require-handlebars-plugin/hbs/json2',
+    i18nprecompile: 'components/require-handlebars-plugin/hbs/i18nprecompile',
     jquery: 'components/jquery/jquery',
-    underscore: 'components/lodash/lodash',
+    underscore: 'components/underscore/underscore',
     backbone: 'components/backbone/backbone',
     handlebars: 'components/handlebars/handlebars',
     modernizr: 'components/modernizr/modernizr'
+
     // Modules
 
   },

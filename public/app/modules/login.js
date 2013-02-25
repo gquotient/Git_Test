@@ -2,7 +2,7 @@ define([
     "backbone",
     "underscore",
     "handlebars",
-    "text!app/layouts/login.hbs"
+    "hbs!app/layouts/login"
   ],
   function(Backbone, _, Handlebars, template){
 
@@ -45,7 +45,7 @@ define([
       },
 
       render: function(){
-          this.$el.append(Handlebars.compile(this.template));
+          this.$el.append(this.template());
       }
 
     });
