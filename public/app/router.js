@@ -13,39 +13,19 @@ define([
 function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTemplate){
   
   ia.Controller = Backbone.Marionette.Controller.extend({
-    initialize: function(){
-      ia.addRegions({
-        main: "body"
-      });
-
-      ia.users = new User.Collection();
-      ia.users.fetch();
-
-      var AppLayout = Backbone.Marionette.Layout.extend({
-        template: {
-          type: 'handlebars',
-          template: indexTemplate
-        },
-        regions: {
-          header: "#header",
-          navigation: "#navigation",
-          contentNavigation: "#contentNavigation",
-          mainContent: "#content",
-          footer: "#footer"
-        }
-      });
-
-      ia.mainLayout = new AppLayout();
-    },
-
     index: function(){
       ia.main.show(ia.mainLayout);
     },
 
     users: function(){
+      ia.users = new User.Collection();
+
+      console.log('users');
+
       var userView = new User.views.listView({
         collection: ia.users
       });
+
       ia.main.show(ia.mainLayout);
       ia.mainLayout.contentNavigation.show(userView);
       ia.users.fetch();
@@ -55,6 +35,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTe
         ia.mainLayout.mainContent.show(detailView);
       });
     }
+
   });
 
   var Router = Backbone.Marionette.AppRouter.extend({
@@ -62,28 +43,9 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTe
     appRoutes: {
       "": "index",
       "users": "users"
-    },
-    routes: {
-      "login": "login"
-    },
-
-    login: function(){
-      var view = new Login.views.LoginView();
-
-      $("body").append(view.$el);
-      view.render();
-
-    },
-
-    initialize: function(){
-
     }
   });
 
-  ia.addInitializer(function(options){
-    new Router();
-    Backbone.history.start();
-  });
 
   return Router;
 });

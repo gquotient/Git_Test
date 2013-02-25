@@ -18,6 +18,7 @@ define([
       },
 
       login:function (event) {
+          
           event.preventDefault(); // Don't let this button submit the form
           var url = '/login';
           console.log('Loggin in... ');

@@ -11,7 +11,9 @@
     "stylus": "~0.32.0",
     "passport-oauth": "~0.1.14",
     "lodash": "~1.0.1",
-    "connect-redis": "~1.4.5"
+    "connect-redis": "~1.4.5",
+    "handlebars": "~1.0.9",
+    "hbs": "~2.0.2"
   },
   "devDependencies": {
     "passport-local": "~0.1.6"
