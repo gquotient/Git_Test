@@ -1,16 +1,18 @@
 define([
     "backbone",
-    "handlebars"
+    "underscore",
+    "handlebars",
+    "text!app/layouts/login.hbs"
   ],
-  function(Backbone, Handlebars){
+  function(Backbone, _, Handlebars, template){
 
     var Login = {
       views: {}
     };
 
     Login.views.LoginView = Backbone.View.extend({
-      template: "<input id='inputUsername' type='text'></input><input id='inputPassword' type='password'></input><button id='loginButton'>Log In</button>",
-      
+      template: template,
+
       events: {
         "click #loginButton": "login"
       },
@@ -31,7 +33,7 @@ define([
               data: formValues,
               success:function (data) {
                   console.log(["Login request details: ", data]);
-                 
+
                   if(data.error) {  // If there is an error, show the error messages
                       $('body').text(data.error.text).show();
                   }
