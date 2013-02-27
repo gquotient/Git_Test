@@ -20,20 +20,12 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTe
     users: function(){
       ia.users = new User.Collection();
 
-      console.log('users');
+      ia.setLayout(ia.mainLayout);
 
-      var userView = new User.views.listView({
-        collection: ia.users
-      });
+      ia.setState("users");
 
-      ia.main.show(ia.mainLayout);
-      ia.mainLayout.contentNavigation.show(userView);
       ia.users.fetch();
 
-      userView.on("itemview:select:user", function(arg){
-        var detailView = new User.views.detailView({model: arg.model});
-        ia.mainLayout.mainContent.show(detailView);
-      });
     }
 
   });

@@ -6,8 +6,6 @@ define(
       'app/router'
   ],
   function ($, ia, Router) {
-    // We should get the current user?
-
     
     // Tell jQuery to watch for any 401 or 403 errors and handle them appropriately
     $.ajaxSetup({
