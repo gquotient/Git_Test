@@ -41,3 +41,4 @@ TODO
 
 * Flash messages
 * Password reset/Forgot password
+* Logout
