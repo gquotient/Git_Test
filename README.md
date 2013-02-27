@@ -36,3 +36,8 @@ Point browser to /test/index.html
 `mocha-phantomjs index.html`
 
 
+TODO
+----
+
+* Flash messages
+* Password reset/Forgot password
