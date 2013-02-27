@@ -13,6 +13,10 @@
     "css": "latest",
     "handlebars": "latest",
     "require-handlebars-plugin": "latest",
-    "messageformat.js": "git://github.com/SlexAxton/messageformat.js.git#~0.1.5"
+    "messageformat.js": "git://github.com/SlexAxton/messageformat.js.git#~0.1.5",
+    "backbone.marionette": "latest",
+    "backbone.babysitter": "latest",
+    "backbone.wreqr": "latest",
+    "underscore": "latest"
   }
 }

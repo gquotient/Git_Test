@@ -1,42 +1,43 @@
 define([
   "jquery",
   "backbone",
+  "backbone.marionette",
+  "backbone.marionette.handlebars",
+
   "app/ia",
-  "app/modules/login"
+  "app/modules/login",
+  "app/modules/user/user",
+
+  "hbs!app/layouts/index"
 ],
-function($, Backbone, ia, Login){
-  var Router = Backbone.Router.extend({
-    routes: {
-      "": "index",
-      "login": "login",
-      "gate": "gate"
-    },
-
+function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTemplate){
+  
+  ia.Controller = Backbone.Marionette.Controller.extend({
     index: function(){
-      console.log("Index.");
-
-      var template = Handlebars.compile($("#index").html()),
-          html = template({routes: this.routes});
-
-      $("body").html(html);
+      ia.main.show(ia.mainLayout);
     },
 
-    login: function(){
-      var view = new Login.views.LoginView();
+    users: function(){
+      ia.users = new User.Collection();
 
-      $("body").append(view.$el);
-      view.render();
+      ia.setLayout(ia.mainLayout);
 
-    },
+      ia.setState("users");
 
-    gate: function(){
-      console.log("bully");
-    },
-
-    initialize: function(){
+      ia.users.fetch();
 
     }
+
   });
+
+  var Router = Backbone.Marionette.AppRouter.extend({
+    controller: new ia.Controller(),
+    appRoutes: {
+      "": "index",
+      "users": "users"
+    }
+  });
+
 
   return Router;
 });

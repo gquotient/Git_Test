@@ -35,6 +35,26 @@ var User = {
 };
 
 /**
+ * Stub out some random data.
+ */
+
+var Projects = {
+  projects: [
+    {name: "Foo", color: "blue", id: 1},
+    {name: "Bar", color: "red", id: 2}
+  ],
+  findBy: function(field, value, callback){
+    var currentproject = _.find(this.projects, function(project){
+      return project[field] === value;
+    });
+
+    if(currentproject){
+      callback(null, currentproject);
+    }
+  }
+};
+
+/**
  * Setup Passport
  */
 
@@ -42,7 +62,7 @@ passport.use(new LocalStrategy(
   function(username, password, done) {
     User.findBy("username", username, function(err, user){
       if( User.verifyPassword(user, password) ){
-        return done(null, validUser);
+        return done(null, user);
       } else {
         return done(null, false, { message: 'Incorrect password.' });
       }
@@ -68,6 +88,8 @@ var app = express();
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3005);
+  app.set('view engine', 'hbs');
+  app.set('views', __dirname + '/templates');
   app.use(stylus.middleware({
     debug: true,
     src: path.join(__dirname, 'public')
@@ -95,22 +117,41 @@ app.configure('development', function(){
  * Basic routing (temporary).
  */
 
-app.all('/api/*', ensureAuthenticated);
+/* Generic */
+app.get('/', function(req, res){
+  res.render('index', {user: JSON.stringify(req.user) });
+});
 
-app.get('/api/gate',
-function(req, res){
-  res.json({user:req.user})
+/* Login */
+app.get('/login', function(req, res){
+  res.render('login');
 });
 
 app.post('/login',
 passport.authenticate('local'),
 function(req, res) {
-  res.json({"user": req.user});
+  res.redirect('/users')
+});
+
+/* Logout */
+app.get('/logout',
+  function(req, res){
+    // req.logout();
+    req.session.destroy();
+    res.redirect('/login')
+  })
+
+/* API */
+app.all('/api/*', ensureAuthenticated);
+
+app.get('/api/users',
+  function(req, res){
+    res.json({currentUser: req.user, data: User.users});
 });
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
-  res.redirect('/login');
+  res.send(401);
 }
 
 http.createServer(app).listen(app.get('port'), function(){

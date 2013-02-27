@@ -10,16 +10,18 @@
 
   <script type="text/javascript" data-main="config.js" src="components/require/require.js"></script>
   <script type="text/javascript">
-    require.config({
-      locale: 'fr'
+    require(['config'], function(){
+      require(['app/init']);
     });
-    require(['app/init']);
-    // butt
+    console.log('from express');
   </script>
 
   <link rel="stylesheet" href="css/core.css" media="screen">
 </head>
 <body>
-
+  <div id="ia"></div>
+  <script type="text/x-bootstrap" id="currentUserData">
+    {{{ user }}}
+  </script>
 </body>
 </html>

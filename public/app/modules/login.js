@@ -1,10 +1,9 @@
 define([
     "backbone",
-    "underscore",
-    "handlebars",
-    "hbs!app/layouts/login"
+
+    "app/ia"
   ],
-  function(Backbone, _, Handlebars, template){
+  function(Backbone, ia){
 
     var Login = {
       views: {}
@@ -18,6 +17,7 @@ define([
       },
 
       login:function (event) {
+          
           event.preventDefault(); // Don't let this button submit the form
           var url = '/login';
           console.log('Loggin in... ');
@@ -32,14 +32,7 @@ define([
               dataType:"json",
               data: formValues,
               success:function (data) {
-                  console.log(["Login request details: ", data]);
-
-                  if(data.error) {  // If there is an error, show the error messages
-                      $('body').text(data.error.text).show();
-                  }
-                  else { // If not, send them back to the home page
-                      console.log("all's good.")
-                  }
+                Backbone.history.navigate("/users", {trigger: true});
               }
           });
       },

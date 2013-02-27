@@ -1,4 +1,4 @@
-FrontEndWayOfTheFutureAwesomeness
+Front End Application Structure
 =================================
 
 Requirements
@@ -34,3 +34,5 @@ Point browser to /test/index.html
 
 ### Terminal/PhantomJS
 `mocha-phantomjs index.html`
+
+
