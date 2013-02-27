@@ -10,8 +10,6 @@ define([
     };
 
     Login.views.LoginView = Backbone.View.extend({
-      template: template,
-
       events: {
         "click #loginButton": "login"
       },
