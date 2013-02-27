@@ -40,5 +40,8 @@ TODO
 ----
 
 * Flash messages
-* Password reset/Forgot password
-* Logout
+* Login
+  - Wrong password
+  - Password reset/Forgot password
+  - redirect from /login to /index if authenticated already
+  - Logout
