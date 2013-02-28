@@ -20,7 +20,7 @@ cd public && bower install
 To run
 ------
 
-$ node app.js
+$ node server.js
 
 Testing
 -------
