@@ -1,5 +1,5 @@
 define(
-  
+
   [
     'jquery',
 
@@ -12,7 +12,7 @@ define(
 
     "hbs!app/layouts/index"
   ],
-  
+
   function($, Backbone, Marionette, MarionetteHandlebars, User, Header, indexTemplate){
 
     var states = {
@@ -50,7 +50,7 @@ define(
       var headerView = new Header.views.LoggedIn({model: currentUser});
 
       headerView.on("logout", function(){
-        window.location = "logout";
+        window.location = "/logout";
       });
 
       ia.mainLayout.header.show(headerView);

@@ -41,7 +41,7 @@ TODO
 
 * Flash messages
 * Login
-  - Wrong password
-  - Password reset/Forgot password
-  - redirect from /login to /index if authenticated already
-  - Logout
+  X Wrong password
+  - Password reset/Forgot password // Once we actual store passwords.
+  X redirect from /login to /index if authenticated already
+  X Logout

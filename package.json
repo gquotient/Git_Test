@@ -13,7 +13,8 @@
     "lodash": "~1.0.1",
     "connect-redis": "~1.4.5",
     "handlebars": "~1.0.9",
-    "hbs": "~2.0.2"
+    "hbs": "~2.0.2",
+    "connect-flash": "~0.1.0"
   },
   "devDependencies": {
     "passport-local": "~0.1.6"

@@ -15,7 +15,7 @@ define([
       },
 
       login:function (event) {
-          
+
           event.preventDefault(); // Don't let this button submit the form
           var url = '/login';
           console.log('Loggin in... ');
@@ -30,7 +30,7 @@ define([
               dataType:"json",
               data: formValues,
               success:function (data) {
-                Backbone.history.navigate("/users", {trigger: true});
+                Backbone.history.navigate("ia/users", {trigger: true});
               }
           });
       },

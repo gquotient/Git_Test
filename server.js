@@ -9,6 +9,7 @@ var express = require('express')
   , path = require('path')
   , passport = require('passport')
   , RedisStore = require('connect-redis')(express)
+  , flash = require('connect-flash')
   , LocalStrategy = require('passport-local').Strategy;
 
 /**
@@ -25,8 +26,10 @@ var User = {
       return user[field] === value;
     });
 
-    if(currentuser){
+    if( currentuser ){
       callback(null, currentuser);
+    } else {
+      callback(null, false, { message: "User not found." });
     }
   },
   verifyPassword: function(user, password){
@@ -60,22 +63,29 @@ var Projects = {
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
+
     User.findBy("username", username, function(err, user){
-      if( User.verifyPassword(user, password) ){
-        return done(null, user);
-      } else {
-        return done(null, false, { message: 'Incorrect password.' });
+      if( err ){ return done(err); }
+
+      if( !user ) {
+        return done(null, false, { message: 'Bwahh ha ha ha ha. No user by that name.' });
       }
+
+      if( !User.verifyPassword(user, password) ){
+        return done(null, false, { message: 'Awwwwww. Did you forget your password?'});
+      }
+
+      return done(null, user);
     });
   }
 ));
 
 passport.serializeUser(function(user, done) {
-  done(null, user);
+  done(null, user.username);
 });
 
-passport.deserializeUser(function(currentUser, done) {
-  User.findBy("username", currentUser.username, function (err, user) {
+passport.deserializeUser(function(username, done) {
+  User.findBy("username", username, function (err, user) {
     done(err, user);
   });
 });
@@ -101,12 +111,13 @@ app.configure(function(){
   app.use(express.session({ store: new RedisStore, secret: 'adamantium',cookie: { secure: false, maxAge:86400000 } }));
   app.use(passport.initialize());
   app.use(passport.session());
+  app.use(flash());
   app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
-  app.use( function(req, res){
-    var newUrl = req.protocol + '://' + req.get('Host') + '/#' + req.url;
-    res.redirect(newUrl);
-  } );
+  app.use('/public', express.static(path.join(__dirname, 'public')));
+  // app.use( function(req, res){
+  //   var newUrl = req.protocol + '://' + req.get('Host') + '/ia/#' + req.url;
+  //   res.redirect(newUrl);
+  // } );
 });
 
 app.configure('development', function(){
@@ -116,30 +127,47 @@ app.configure('development', function(){
 /*
  * Basic routing (temporary).
  */
+// app.all('/', ensureAuthenticated, function(req, res){
+//   res.render('index', {user: JSON.stringify(req.user) });
+// });
 
-/* Generic */
-app.get('/', function(req, res){
-  res.render('index', {user: JSON.stringify(req.user) });
+app.all('/', ensureAuthenticated, function(req, res){
+  res.redirect('/ia');
+});
+
+app.all('/ia', ensureAuthenticated, function(req, res){
+  res.render('index', { user: '{ "username": "' + req.user.username + '"}' });
+});
+
+app.all('/ia/*', ensureAuthenticated, function(req, res){
+  var newUrl = req.url.split('/').slice(2).join('/');
+  console.log( req.protocol + '://' + req.get('Host') + '/ia/#/' + newUrl );
+  res.redirect( req.protocol + '://' + req.get('Host') + '/ia/#/' + newUrl );
 });
 
 /* Login */
 app.get('/login', function(req, res){
-  res.render('login');
+  // console.log(req.flash().error);
+  res.render('login', { flash: req.flash('error') });
 });
 
 app.post('/login',
-passport.authenticate('local'),
-function(req, res) {
-  res.redirect('/users')
-});
+passport.authenticate('local',
+  {
+    successRedirect: '/ia',
+    failureRedirect: '/login',
+    failureFlash: true
+  }
+));
+
 
 /* Logout */
 app.get('/logout',
   function(req, res){
     // req.logout();
     req.session.destroy();
-    res.redirect('/login')
-  })
+    res.redirect('/login');
+  });
 
 /* API */
 app.all('/api/*', ensureAuthenticated);
@@ -149,9 +177,18 @@ app.get('/api/users',
     res.json({currentUser: req.user, data: User.users});
 });
 
+/* Generic */
+// app.get(/^(?!public).*/, ensureAuthenticated, function(req, res){
+//   res.render('index', {user: JSON.stringify(req.user) });
+// });
+
+
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
-  res.send(401);
+  else {
+    console.log("Not authenticated?")
+    res.redirect('/login');
+  }
 }
 
 http.createServer(app).listen(app.get('port'), function(){

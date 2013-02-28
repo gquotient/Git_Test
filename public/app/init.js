@@ -6,7 +6,6 @@ define(
       'app/router'
   ],
   function ($, ia, Router) {
-    
     // Tell jQuery to watch for any 401 or 403 errors and handle them appropriately
     $.ajaxSetup({
         statusCode: {
@@ -14,7 +13,6 @@ define(
                 // console.log("401 here");
                 // Redirec the to the login page.
                 window.location.replace('/login');
-             
             },
             403: function() {
                 // 403 -- Access denied
@@ -25,7 +23,7 @@ define(
 
     ia.addInitializer(function(options){
       new Router();
-      Backbone.history.start();
+      Backbone.history.start({ pushState: true, root: "/ia" });
     });
 
     ia.start();

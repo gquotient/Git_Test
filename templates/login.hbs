@@ -7,10 +7,13 @@
   <meta name="viewport" content="width=device-width">
 
   <title>Log in to Intelligent Array</title>
-  <link rel="stylesheet" href="css/core.css" media="screen">
+  <link rel="stylesheet" href="/public/css/core.css" media="screen">
 </head>
 <body>
   <div id="ia">
+    {{#if flash }}
+    <h1>{{ flash }}</h1>
+    {{/if}}
     <form action="/login" method="post">
       Username: <input name='username' type='text'></input>
       Password: <input name='password' type='password'></input>

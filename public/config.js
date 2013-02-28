@@ -19,6 +19,7 @@
 
 require.config({
   // deps: ["app/init"],
+  baseUrl: '/public',
   paths: {
     //Require plugins
     text: 'components/requirejs-text/text',
@@ -36,7 +37,7 @@ require.config({
     'backbone.wreqr': 'components/backbone.wreqr/lib/amd/backbone.wreqr',
     'backbone.marionette': 'components/backbone.marionette/lib/core/amd/backbone.marionette',
     'backbone.marionette.handlebars': 'components/backbone.marionette.handlebars/backbone.marionette.handlebars',
-    
+
     handlebars: 'components/handlebars/handlebars',
     modernizr: 'components/modernizr/modernizr'
     // Modules
@@ -59,7 +60,7 @@ require.config({
   // hbs config
   hbs: {
     disableI18n: false,        // This disables the i18n helper and
-    i18nDirectory: "/app/i18n/",
+    i18nDirectory: "app/i18n/",
                               // doesn't require the json i18n files (e.g. en_us.json)
                               // (false by default)
 

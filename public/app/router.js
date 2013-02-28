@@ -11,10 +11,10 @@ define([
   "hbs!app/layouts/index"
 ],
 function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTemplate){
-  
+
   ia.Controller = Backbone.Marionette.Controller.extend({
     index: function(){
-      ia.main.show(ia.mainLayout);
+      ia.setLayout(ia.mainLayout);
     },
 
     users: function(){
