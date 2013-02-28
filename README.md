@@ -39,7 +39,7 @@ Point browser to /test/index.html
 TODO
 ----
 
-* Flash messages
+X Flash messages
 * Login
   X Wrong password
   - Password reset/Forgot password // Once we actual store passwords.
