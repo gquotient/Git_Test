@@ -4,26 +4,38 @@ Front End Application Structure
 Requirements
 ------------
 
-Node.js (> 0.8.0)
-NPM (comes with later versions of Node)
-Bower (twitter.github.com/bower)
+Node.js (> 0.8.0) && NPM (comes with later versions of Node)
+
+# OSX
+Download and install the package from http://nodejs.org/
+
+# Ubuntu
+
+    sudo add-apt-repository ppa:chris-lea/node.js
+
+    sudo apt-get update
+
+    sudo apt-get install <package name>
+
 
 
 To install
 ----------
 
-npm install
+For now, install Bower package manager globally: `npm install -g bower`. We may want to make this a local asset.
 
-cd public && bower install
+From your project folder, install the server dependencies: `npm install`.
+
+Then install browser dependencies: `cd public && bower install`.
 
 
-To run
-------
+To run the server
+-----------------
 
 $ node server.js
 
-Testing
--------
+Testing (Optional)
+------------------
 
 `cd test && bower install`
 
