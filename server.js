@@ -19,7 +19,8 @@ var express = require('express')
 var User = {
   users: [
     {username: "jwin", password: "1234", name: "Justin", id: 1},
-    {username: "jkyle", password: "1234", name: "Kyle", id: 2}
+    {username: "jkyle", password: "1234", name: "Kyle", id: 2},
+    {username: "rock", password: "1234", name: "Rock", id: 3}
   ],
   findBy: function(field, value, callback){
     var currentuser = _.find(this.users, function(user){
