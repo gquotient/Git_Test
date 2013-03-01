@@ -10,7 +10,7 @@ Requirements
 ### OSX
 Install Node.js: http://nodejs.org/
 
-Install Homebrew (package manager): (http://crosstown.coolestguyplanettech.com/os-x/40-setting-up-os-x-lion-to-plug-into-homebrew-package-manager)
+Install Homebrew (package manager): http://crosstown.coolestguyplanettech.com/os-x/40-setting-up-os-x-lion-to-plug-into-homebrew-package-manager
 
 Install Redis: `brew install redis`
 
