@@ -4,19 +4,23 @@ Front End Application Structure
 Requirements
 ------------
 
-Node.js (> 0.8.0) && NPM (comes with later versions of Node)
+* Node.js (> 0.8.0) && NPM (comes with later versions of Node)
+* Redis
 
-# OSX
+### OSX
 Download and install the package from http://nodejs.org/
+Install homebrew (http://crosstown.coolestguyplanettech.com/os-x/40-setting-up-os-x-lion-to-plug-into-homebrew-package-manager)
+Install Redis: `brew install redis`
 
-# Ubuntu
+### Ubuntu
+
+Install node:
 
     sudo add-apt-repository ppa:chris-lea/node.js
-
     sudo apt-get update
-
     sudo apt-get install <package name>
 
+Install Redis: `apt-get install redis`
 
 
 To install
@@ -24,15 +28,15 @@ To install
 
 For now, install Bower package manager globally: `npm install -g bower`. We may want to make this a local asset.
 
-From your project folder, install the server dependencies: `npm install`.
+From your project root folder, install the server dependencies: `npm install`.
 
-Then install browser dependencies: `cd public && bower install`.
+Then, install browser dependencies: `cd public && bower install`.
 
 
-To run the server
------------------
+To run
+------
 
-$ node server.js
+From your project root folder, run `$ node server.js` to start the server. Default port is set to 3005.
 
 Testing (Optional)
 ------------------
