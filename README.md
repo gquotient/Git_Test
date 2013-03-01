@@ -20,7 +20,7 @@ Install node:
 
     sudo add-apt-repository ppa:chris-lea/node.js
     sudo apt-get update
-    sudo apt-get install <package name>
+    sudo apt-get install nodejs
 
 Install Redis: `apt-get install redis`
 
