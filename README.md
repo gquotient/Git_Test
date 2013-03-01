@@ -9,7 +9,9 @@ Requirements
 
 ### OSX
 Download and install the package from http://nodejs.org/
+
 Install homebrew (http://crosstown.coolestguyplanettech.com/os-x/40-setting-up-os-x-lion-to-plug-into-homebrew-package-manager)
+
 Install Redis: `brew install redis`
 
 ### Ubuntu
