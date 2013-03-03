@@ -137,7 +137,13 @@ app.all('/', ensureAuthenticated, function(req, res){
 });
 
 app.all('/ia', ensureAuthenticated, function(req, res){
-  res.render('index', { user: '{ "username": "' + req.user.username + '"}' });
+  res.render(
+    'index',
+    {
+      user: '{ "username": "' + req.user.username + '"}',
+      locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
+    }
+  );
 });
 
 app.all('/ia/*', ensureAuthenticated, function(req, res){
