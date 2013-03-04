@@ -96,15 +96,13 @@ passport.deserializeUser(function(username, done) {
  */
 
 var app = express();
-
 app.configure(function(){
   app.set('port', process.env.PORT || 3005);
   app.set('view engine', 'hbs');
   app.set('views', __dirname + '/templates');
-  app.use(stylus.middleware({
-    debug: true,
-    src: path.join(__dirname, 'public')
-  }));
+  app.use( stylus.middleware({
+    src: __dirname
+  }) );
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
