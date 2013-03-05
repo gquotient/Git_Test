@@ -10,7 +10,8 @@ var express = require('express')
   , passport = require('passport')
   , RedisStore = require('connect-redis')(express)
   , flash = require('connect-flash')
-  , LocalStrategy = require('passport-local').Strategy;
+  , LocalStrategy = require('passport-local').Strategy
+  , fs = require('fs');
 
 /**
  * Stub out some users.
@@ -181,6 +182,16 @@ app.get('/api/users',
   function(req, res){
     res.json({currentUser: req.user, data: User.users});
 });
+
+app.get('/api/portfolios', 
+  function(req, res){
+    fs.readFile('./data/json/portfolios.json', 'utf8', function (err,data) {
+      if (err) {
+        return console.log(err);
+      }
+      res.end(data);
+    });
+  });
 
 /* Generic */
 // app.get(/^(?!public).*/, ensureAuthenticated, function(req, res){
