@@ -1,0 +1,668 @@
+[
+  {
+    "id": 841,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      273,
+      23
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1349,
+      "ac_capacity": 1826,
+      "power_now": 21
+    }
+  },
+  {
+    "id": 350,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1938,
+      "ac_capacity": 1755,
+      "power_now": 94
+    }
+  },
+  {
+    "id": 483,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      504,
+      720,
+      807
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2984,
+      "ac_capacity": 2445,
+      "power_now": 27
+    }
+  },
+  {
+    "id": 720,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2356,
+      "ac_capacity": 2301,
+      "power_now": 15
+    }
+  },
+  {
+    "id": 819,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      78,
+      881
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2406,
+      "ac_capacity": 1183,
+      "power_now": 69
+    }
+  },
+  {
+    "id": 832,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      120,
+      62,
+      870
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2748,
+      "ac_capacity": 2012,
+      "power_now": 65
+    }
+  },
+  {
+    "id": 383,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      23
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1912,
+      "ac_capacity": 2379,
+      "power_now": 61
+    }
+  },
+  {
+    "id": 23,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      454
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2592,
+      "ac_capacity": 1064,
+      "power_now": 11
+    }
+  },
+  {
+    "id": 366,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      854,
+      720
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2394,
+      "ac_capacity": 1271,
+      "power_now": 49
+    }
+  },
+  {
+    "id": 78,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      615,
+      996,
+      33
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1864,
+      "ac_capacity": 2423,
+      "power_now": 36
+    }
+  },
+  {
+    "id": 606,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1638,
+      "ac_capacity": 821,
+      "power_now": 5
+    }
+  },
+  {
+    "id": 212,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1312,
+      "ac_capacity": 1611,
+      "power_now": 82
+    }
+  },
+  {
+    "id": 345,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      901,
+      33
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1888,
+      "ac_capacity": 1805,
+      "power_now": 95
+    }
+  },
+  {
+    "id": 354,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      454
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1527,
+      "ac_capacity": 2044,
+      "power_now": 81
+    }
+  },
+  {
+    "id": 707,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      720,
+      947,
+      130
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2799,
+      "ac_capacity": 2013,
+      "power_now": 19
+    }
+  },
+  {
+    "id": 330,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      684,
+      759,
+      606
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2756,
+      "ac_capacity": 1418,
+      "power_now": 74
+    }
+  },
+  {
+    "id": 854,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      0
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2076,
+      "ac_capacity": 2527,
+      "power_now": 32
+    }
+  },
+  {
+    "id": 996,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      504
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2999,
+      "ac_capacity": 1088,
+      "power_now": 35
+    }
+  },
+  {
+    "id": 219,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      744,
+      483
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1335,
+      "ac_capacity": 2313,
+      "power_now": 18
+    }
+  },
+  {
+    "id": 947,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      263
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2267,
+      "ac_capacity": 1812,
+      "power_now": 38
+    }
+  },
+  {
+    "id": 273,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      819,
+      839,
+      759
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1727,
+      "ac_capacity": 2264,
+      "power_now": 38
+    }
+  },
+  {
+    "id": 170,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      23,
+      454
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2091,
+      "ac_capacity": 2122,
+      "power_now": 74
+    }
+  },
+  {
+    "id": 228,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      78,
+      684
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2279,
+      "ac_capacity": 2294,
+      "power_now": 1
+    }
+  },
+  {
+    "id": 130,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      759
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1495,
+      "ac_capacity": 1404,
+      "power_now": 25
+    }
+  },
+  {
+    "id": 839,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      383,
+      212,
+      832
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1027,
+      "ac_capacity": 1993,
+      "power_now": 85
+    }
+  },
+  {
+    "id": 854,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      862,
+      606
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1901,
+      "ac_capacity": 2531,
+      "power_now": 40
+    }
+  },
+  {
+    "id": 504,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      807,
+      228
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1645,
+      "ac_capacity": 2691,
+      "power_now": 22
+    }
+  },
+  {
+    "id": 504,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      383
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2385,
+      "ac_capacity": 2043,
+      "power_now": 45
+    }
+  },
+  {
+    "id": 62,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1888,
+      "ac_capacity": 1459,
+      "power_now": 25
+    }
+  },
+  {
+    "id": 439,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      228,
+      330
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2619,
+      "ac_capacity": 1367,
+      "power_now": 97
+    }
+  },
+  {
+    "id": 984,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1414,
+      "ac_capacity": 1700,
+      "power_now": 2
+    }
+  },
+  {
+    "id": 870,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      684,
+      263
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1328,
+      "ac_capacity": 1011,
+      "power_now": 72
+    }
+  },
+  {
+    "id": 684,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      901,
+      841
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1793,
+      "ac_capacity": 2466,
+      "power_now": 8
+    }
+  },
+  {
+    "id": 554,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      615,
+      483
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1225,
+      "ac_capacity": 2597,
+      "power_now": 55
+    }
+  },
+  {
+    "id": 454,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      807
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2223,
+      "ac_capacity": 2675,
+      "power_now": 83
+    }
+  },
+  {
+    "id": 807,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      870
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1174,
+      "ac_capacity": 1042,
+      "power_now": 70
+    }
+  },
+  {
+    "id": 0,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      707,
+      759
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2391,
+      "ac_capacity": 1340,
+      "power_now": 71
+    }
+  },
+  {
+    "id": 241,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      383,
+      23
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1297,
+      "ac_capacity": 1962,
+      "power_now": 76
+    }
+  },
+  {
+    "id": 263,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      504
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1644,
+      "ac_capacity": 856,
+      "power_now": 21
+    }
+  },
+  {
+    "id": 862,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2502,
+      "ac_capacity": 1023,
+      "power_now": 34
+    }
+  },
+  {
+    "id": 615,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1917,
+      "ac_capacity": 1119,
+      "power_now": 36
+    }
+  },
+  {
+    "id": 744,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      23,
+      345
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2323,
+      "ac_capacity": 848,
+      "power_now": 63
+    }
+  },
+  {
+    "id": 33,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      720
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2686,
+      "ac_capacity": 2202,
+      "power_now": 44
+    }
+  },
+  {
+    "id": 759,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      947,
+      219
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1416,
+      "ac_capacity": 1951,
+      "power_now": 47
+    }
+  },
+  {
+    "id": 881,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1375,
+      "ac_capacity": 1993,
+      "power_now": 94
+    }
+  },
+  {
+    "id": 120,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      862,
+      606,
+      819
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2752,
+      "ac_capacity": 2480,
+      "power_now": 40
+    }
+  },
+  {
+    "id": 491,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      91,
+      23,
+      720
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1682,
+      "ac_capacity": 2322,
+      "power_now": 1
+    }
+  },
+  {
+    "id": 91,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      854
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 2335,
+      "ac_capacity": 1496,
+      "power_now": 84
+    }
+  },
+  {
+    "id": 651,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [
+      454,
+      839
+    ],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1849,
+      "ac_capacity": 2144,
+      "power_now": 56
+    }
+  },
+  {
+    "id": 901,
+    "name": "Test Portfolio undefined",
+    "subPortfolios": [],
+    "superPortfolios": [],
+    "kpis": {
+      "dc_capacity": 1713,
+      "ac_capacity": 2053,
+      "power_now": 50
+    }
+  }
+]
