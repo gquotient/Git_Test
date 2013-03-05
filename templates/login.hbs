@@ -7,17 +7,26 @@
   <meta name="viewport" content="width=device-width">
 
   <title>Log in to Intelligent Array</title>
+
   <link rel="stylesheet" href="/public/css/core.css" media="screen">
+  <link rel="stylesheet" href="/public/css/pages/login.css" media="screen">
 </head>
 <body>
-  <div id="ia">
+  <div class="login">
+    <header>
+      <h1>Draker</h1>
+    </header>
     {{#if flash }}
-    <h1>{{ flash }}</h1>
+      <div class="flashMessage">
+        {{ flash }}
+      </div>
     {{/if}}
     <form action="/login" method="post">
-      Username: <input name='username' type='text'></input>
-      Password: <input name='password' type='password'></input>
-      <button type="submit" id='loginButton'>Log In</button>
+      <ul>
+        <li><label for="username">Username</label>: <input name='username' type='text'></input></li>
+        <li><label for="password">Password</label>: <input name='password' type='password'></input></li>
+        <li><button class="button primary" type="submit" id='loginButton'>Log In</button></li>
+      </ul>
     </form>
   </div>
 </body>

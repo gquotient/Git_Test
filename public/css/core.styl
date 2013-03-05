@@ -64,10 +64,67 @@ textarea {
    Core Styles
    ========================================================================== */
 
+colorDrakerOrange = #F26322;
+
+* {
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;        /* Opera/IE 8+ */
+}
+
 body {
   background: #efefef;
   color:#222;
   font-size: 85%; /* Resets 1em to 12px */
   line-height:1.25em;
   font-family: Arial, Verdana, Sans-Serif;
+}
+
+/* Buttons */
+
+button.button, a.button {
+  background:#ddd;
+  background-image: linear-gradient(#ddd, #bbb)
+  display:inline-block;
+  line-height:22px;
+  min-height:22px; /* FireFox doesn't like line-height in its buttons */
+  padding:0 .75em;
+  margin:0 6px 0 0;
+  font-size:1em;
+  font-weight:normal;
+  text-decoration:none;
+  cursor:pointer;
+  border-radius:3px;
+  text-align:center;
+  border:1px solid #aaa;
+  color:#555;
+  text-shadow:0 1px 0 #eee;
+  box-shadow: inset 0 1px 0 #eee;
+}
+
+button.button.primary, a.button.primary {
+  background-color:colorDrakerOrange;
+  background-image: linear-gradient(#f57a2a, #f0501c);
+  border:1px solid colorDrakerOrange;
+  color:#fff;
+  text-shadow:0 1px 0 #d84515;
+  box-shadow: inset 0 1px 0 #f8ad7c;
+}
+
+button.button.disabled, a.button.disabled, button.button.disabled:hover, a.button.disabled:hover {
+  border:1px solid #ccc;
+  background-color: #eee;
+  background-position:0 -600px;
+  color:#999;
+  text-shadow:0 1px 0 #fff;
+}
+
+button.button.sml, a.button.sml {
+  line-height:16px;
+  min-height:16px; /* FireFox doesn't like line-height in its buttons */
+  padding:0 .75em;
+  margin:0 3px 0 0;
+  font-size:.75em;
+  vertical-align:text-bottom;
+  border-radius:9px;
 }
