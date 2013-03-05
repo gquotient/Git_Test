@@ -15,14 +15,19 @@ define(
         template: loggedInTemplate
       },
 
+      initialize: function(){
+        console.log(this.el);
+      },
+
       serializeData: function(){
         return this.model;
       },
 
       triggers: {
-        "click #logout": "logout"
+        "click .logout": "logout"
       }
     });
 
     return Header;
-  });
+  }
+);

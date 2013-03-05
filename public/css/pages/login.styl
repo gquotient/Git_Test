@@ -1,0 +1,51 @@
+/* ==========================================================================
+   Login Styles
+   ========================================================================== */
+
+colorDrakerOrange = #F26322;
+
+body {
+  border-top:4px solid colorDrakerOrange;
+}
+
+section.login {
+  width:360px;
+  height:240px;
+  position:fixed;
+  top:50%;
+  left:50%
+  margin:-180px 0 0 -180px;
+  h1 {
+    background: url(/public/img/logo_draker_lrg.png) 0 0 no-repeat;
+    display:inline-block;
+    text-indent:-200%;
+    width:300px;
+    height:40px;
+    overflow:hidden;
+  }
+  ul {
+    width:360px;
+    background: #fff;
+    background-image: linear-gradient(#fff 85%, #efefef);
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    display: inline-block;
+    padding:18px;
+    margin: 0;
+    list-style-type: none;
+    box-shadow: 0 3px 3px #ddd;
+    li {
+      padding: 0;
+      margin: 0 0 12px;
+      label {
+        width:100%;
+      }
+      input {
+        width:100%;
+      }
+    }
+    li:last-child {
+      margin:0;
+    }
+  }
+}
