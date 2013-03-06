@@ -1,14 +1,36 @@
+html, body {
+  height: 100%;
+}
+
+.contentContainer {
+  min-height: 100%;
+  height: auto;
+}
+
 #contentNavigation {
   width: 25%;
-
+  float: left;
+  border: 1px solid #369;
+  overflow: auto;
   .portfolio {
-    border: 1px solid #666;
-    margin: 3px 0;
+    border-top: 1px solid #666;
+    padding: 3px;
+    margin: 0;
     cursor: pointer;
-
-
     h3 {
       margin: 0px;
+      white-space: nowrap;
+      overflow: ellipsis;
     }
   }
+}
+
+#content {
+  width: 75%;
+  float: right;
+  border: 1px solid #f00;
+  overflow: auto;
+  min-height: 100%;
+  height: auto;
+  position: relative;
 }
