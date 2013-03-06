@@ -183,7 +183,7 @@ app.get('/api/users',
     res.json({currentUser: req.user, data: User.users});
 });
 
-app.get('/api/portfolios', 
+app.get('/api/portfolios',
   function(req, res){
     fs.readFile('./data/json/portfolios.json', 'utf8', function (err,data) {
       if (err) {
@@ -202,7 +202,6 @@ app.get('/api/portfolios',
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   else {
-    console.log("Not authenticated?")
     res.redirect('/login');
   }
 }

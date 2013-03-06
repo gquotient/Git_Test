@@ -2,6 +2,7 @@ define(
 
   [
     'jquery',
+    'underscore',
 
     'backbone',
     'backbone.marionette',
@@ -14,7 +15,7 @@ define(
     "hbs!app/layouts/index"
   ],
 
-  function($, Backbone, Marionette, MarionetteHandlebars, User, Portfolio, Header, indexTemplate){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Portfolio, Header, indexTemplate){
 
     var states = {
       index: { },
@@ -31,12 +32,23 @@ define(
           ia.mainLayout.mainContent.show(detailView);
         });
       },
-      portfolios: function(){
+      portfolios: function(portfolioSet){
         var portfolioNavigationView = new Portfolio.views.NavigationListView({
-          collection: ia.portfolios
+          collection: portfolioSet
         });
 
         ia.mainLayout.contentNavigation.show(portfolioNavigationView);
+
+        portfolioNavigationView.on("itemview:select:portfolio", function(arg){
+          var subPortfoliosIds = arg.model.get('subPortfolios');
+          var subPortfolios = arg.model.collection.filter(function(model){
+            return _.contains(subPortfoliosIds, model.id);
+          });
+          var newList = new Portfolio.collections.NavigationList(subPortfolios);
+
+          Backbone.history.navigate("portfolios/"+arg.model.id);
+          ia.setState("portfolios", newList);
+        });
       }
     };
 
@@ -46,8 +58,8 @@ define(
       main: "#ia"
     });
 
-    ia.setState = function(state){
-      states[state]();
+    ia.setState = function(state, arg){
+      states[state](arg);
     };
 
     ia.setLayout = function(layout){

@@ -31,13 +31,30 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, Portfol
     },
 
     portfolios: function(){
-      ia.portfolios = new Portfolio.collections.NavigationList();
+      var portfolios = new Portfolio.collections.NavigationList();
 
       ia.setLayout(ia.mainLayout);
 
-      ia.setState("portfolios");
+      ia.setState("portfolios", portfolios);
 
-      ia.portfolios.fetch();
+      portfolios.fetch();
+    },
+
+    selectPortfolio: function(id){
+      var portfolios = new Portfolio.collections.NavigationList();
+      ia.setLayout(ia.mainLayout);
+      portfolios.fetch({
+        success: function(collection, response, options){
+          var selectedPortfolio = collection.get(id);
+
+          var subPortfoliosIds = selectedPortfolio.get('subPortfolios');
+          var subPortfolios = collection.filter(function(model){
+            return _.contains(subPortfoliosIds, model.id);
+          });
+          var newList = new Portfolio.collections.NavigationList(subPortfolios);
+          ia.setState("portfolios", newList);
+        }
+      })
     }
 
   });
@@ -47,7 +64,8 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, Portfol
     appRoutes: {
       "": "index",
       "users": "users",
-      "portfolios": "portfolios"
+      "portfolios": "portfolios",
+      "portfolios/:id": "selectPortfolio"
     }
   });
 

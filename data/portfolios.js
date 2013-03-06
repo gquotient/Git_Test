@@ -15,14 +15,16 @@ var _ = require("lodash")
 */
 
 function generatePortfolio(){
+  var id = _.random(1000);
+  var dc_capacity = _.random(1000,3000)
   var portfolio = {
-    id: _.random(1000),
-    name: "Test Portfolio " + this.id,
+    id: id,
+    name: "Test Portfolio " + id,
     subPortfolios: [],
     superPortfolios: [],
     kpis: {
-      dc_capacity: _.random(1000,3000),
-      ac_capacity: _.random(800, 2800),
+      dc_capacity: dc_capacity,
+      ac_capacity: dc_capacity - _.random(100, 300),
       power_now: _.random(100)
     }
   };

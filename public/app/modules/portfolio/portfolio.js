@@ -5,9 +5,9 @@ define(
     "backbone.marionette",
 
     "hbs!app/modules/portfolio/templates/navigationItemView"
-  ], 
+  ],
   function($, Backbone, Marionette, navigationItemView){
-    var Portfolio = { models: {}, views: {}, collections: {} }
+    var Portfolio = { models: {}, views: {}, collections: {} };
 
     Portfolio.models.Portfolio = Backbone.Model.extend({
 
@@ -23,14 +23,18 @@ define(
         type: 'handlebars',
         template: navigationItemView
       },
-      tagName: "li"
+      attributes: {
+        class: 'portfolio'
+      },
+      triggers: {
+        'click': 'select:portfolio'
+      }
     });
 
     Portfolio.views.NavigationListView = Backbone.Marionette.CollectionView.extend({
-      itemView: Portfolio.views.NavigationItemView,
-      tagName: "ul"
+      itemView: Portfolio.views.NavigationItemView
     });
 
     return Portfolio;
   }
-)
+);
