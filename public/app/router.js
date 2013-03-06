@@ -8,9 +8,11 @@ define([
   "app/modules/login",
   "app/modules/user/user",
 
+  "app/modules/portfolio/portfolio",
+
   "hbs!app/layouts/index"
 ],
-function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTemplate){
+function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, Portfolio, indexTemplate){
 
   ia.Controller = Backbone.Marionette.Controller.extend({
     index: function(){
@@ -26,6 +28,16 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTe
 
       ia.users.fetch();
 
+    },
+
+    portfolios: function(){
+      ia.portfolios = new Portfolio.collections.NavigationList();
+
+      ia.setLayout(ia.mainLayout);
+
+      ia.setState("portfolios");
+
+      ia.portfolios.fetch();
     }
 
   });
@@ -34,7 +46,8 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, indexTe
     controller: new ia.Controller(),
     appRoutes: {
       "": "index",
-      "users": "users"
+      "users": "users",
+      "portfolios": "portfolios"
     }
   });
 

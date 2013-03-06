@@ -15,10 +15,6 @@ define(
         template: loggedInTemplate
       },
 
-      initialize: function(){
-        console.log(this.el);
-      },
-
       serializeData: function(){
         return this.model;
       },
