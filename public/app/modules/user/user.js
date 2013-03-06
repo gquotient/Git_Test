@@ -37,7 +37,7 @@ define(
   });
 
   User.views.detailView = Backbone.Marionette.ItemView.extend({
-    model: User.Model,
+    model: User.models.User,
     template: {
       type: 'handlebars',
       template: detailViewTemplate

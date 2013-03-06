@@ -8,12 +8,13 @@ define(
     "backbone.marionette.handlebars",
 
     "app/modules/user/user",
+    "app/modules/portfolio/portfolio",
     "app/modules/header/header",
 
     "hbs!app/layouts/index"
   ],
 
-  function($, Backbone, Marionette, MarionetteHandlebars, User, Header, indexTemplate){
+  function($, Backbone, Marionette, MarionetteHandlebars, User, Portfolio, Header, indexTemplate){
 
     var states = {
       index: { },
@@ -29,6 +30,13 @@ define(
           var detailView = new User.views.detailView({model: arg.model});
           ia.mainLayout.mainContent.show(detailView);
         });
+      },
+      portfolios: function(){
+        var portfolioNavigationView = new Portfolio.views.NavigationListView({
+          collection: ia.portfolios
+        });
+
+        ia.mainLayout.contentNavigation.show(portfolioNavigationView);
       }
     };
 
