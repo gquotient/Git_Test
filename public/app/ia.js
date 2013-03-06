@@ -34,7 +34,8 @@ define(
       },
       portfolios: function(portfolioSet){
         var portfolioNavigationView = new Portfolio.views.NavigationListView({
-          collection: portfolioSet
+          collection: portfolioSet.collection,
+          model: portfolioSet.model
         });
 
         ia.mainLayout.contentNavigation.show(portfolioNavigationView);
@@ -47,7 +48,7 @@ define(
           var newList = new Portfolio.collections.NavigationList(subPortfolios);
 
           Backbone.history.navigate("portfolios/"+arg.model.id);
-          ia.setState("portfolios", newList);
+          ia.setState("portfolios", {collection: newList, model: arg.model});
         });
       }
     };

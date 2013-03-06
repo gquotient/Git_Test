@@ -4,9 +4,11 @@ define(
     "backbone",
     "backbone.marionette",
 
-    "hbs!app/modules/portfolio/templates/navigationItemView"
+    "hbs!app/modules/portfolio/templates/navigationItemView",
+    "hbs!app/modules/portfolio/templates/allPortfoliosList",
+    "hbs!app/modules/portfolio/templates/portfolioList"
   ],
-  function($, Backbone, Marionette, navigationItemView){
+  function($, Backbone, Marionette, navigationItemView, allPortfoliosList, portfolioList){
     var Portfolio = { models: {}, views: {}, collections: {} };
 
     Portfolio.models.Portfolio = Backbone.Model.extend({
@@ -31,7 +33,22 @@ define(
       }
     });
 
-    Portfolio.views.NavigationListView = Backbone.Marionette.CollectionView.extend({
+    var allListView = Backbone.Marionette.ItemView.extend({
+      template: {
+        type: 'handlebars',
+        template: allPortfoliosList
+      }
+    });
+
+    Portfolio.views.NavigationListView = Backbone.Marionette.CompositeView.extend({
+      template: {
+        type: 'handlebars',
+        template: portfolioList
+      },
+      // emptyView: allListView,
+      initialize: function(){
+        console.log(this.collection, this.model);
+      },
       itemView: Portfolio.views.NavigationItemView
     });
 
