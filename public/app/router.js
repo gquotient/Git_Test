@@ -35,7 +35,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, Portfol
 
       ia.setLayout(ia.mainLayout);
 
-      ia.setState("portfolios", portfolios);
+      ia.setState("portfolios", {collection: portfolios, model: false} );
 
       portfolios.fetch();
     },
@@ -52,9 +52,9 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, Portfol
             return _.contains(subPortfoliosIds, model.id);
           });
           var newList = new Portfolio.collections.NavigationList(subPortfolios);
-          ia.setState("portfolios", newList);
+          ia.setState("portfolios", {collection: newList, model: selectedPortfolio} );
         }
-      })
+      });
     }
 
   });
