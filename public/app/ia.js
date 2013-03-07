@@ -38,18 +38,21 @@ define(
           model: portfolioSet.model
         });
 
+        var detailLayout = new Portfolio.layouts.detailOverview();
+
         ia.mainLayout.contentNavigation.show(portfolioNavigationView);
+        ia.mainLayout.mainContent.show(detailLayout);
 
-        portfolioNavigationView.on("itemview:select:portfolio", function(arg){
-          var subPortfoliosIds = arg.model.get('subPortfolios');
-          var subPortfolios = arg.model.collection.filter(function(model){
-            return _.contains(subPortfoliosIds, model.id);
-          });
-          var newList = new Portfolio.collections.NavigationList(subPortfolios);
+        // portfolioNavigationView.on("itemview:select:portfolio", function(arg){
+        //   var subPortfoliosIds = arg.model.get('subPortfolios');
+        //   var subPortfolios = arg.model.collection.filter(function(model){
+        //     return _.contains(subPortfoliosIds, model.id);
+        //   });
+        //   var newList = new Portfolio.collections.NavigationList(subPortfolios);
 
-          Backbone.history.navigate("portfolios/"+arg.model.id);
-          ia.setState("portfolios", {collection: newList, model: arg.model});
-        });
+        //   Backbone.history.navigate("portfolios/"+arg.model.id);
+        //   ia.setState("portfolios", {collection: newList, model: arg.model});
+        // });
       }
     };
 

@@ -62,7 +62,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, Portfol
   var Router = Backbone.Marionette.AppRouter.extend({
     controller: new ia.Controller(),
     appRoutes: {
-      "": "index",
+      "": "portfolios",
       "users": "users",
       "portfolios": "portfolios",
       "portfolios/:id": "selectPortfolio"
