@@ -18,24 +18,11 @@ define(
   function($, _, Backbone, Marionette, MarionetteHandlebars, User, Portfolio, Header, indexTemplate){
 
     var states = {
-      index: { },
-      users: function(){
-        var userView = new User.views.listView({
-          collection: ia.users
-        });
-
-        // ia.main.show(ia.mainLayout);
-        ia.mainLayout.contentNavigation.show(userView);
-
-        userView.on("itemview:select:user", function(arg){
-          var detailView = new User.views.detailView({model: arg.model});
-          ia.mainLayout.mainContent.show(detailView);
-        });
-      },
       portfolios: function(portfolioSet){
         var portfolioNavigationView = new Portfolio.views.NavigationListView({
           collection: portfolioSet.collection,
-          model: portfolioSet.model
+          model: portfolioSet.model,
+          all: portfolioSet.all
         });
 
         var detailLayout = new Portfolio.layouts.detailOverview();
@@ -43,16 +30,6 @@ define(
         ia.mainLayout.contentNavigation.show(portfolioNavigationView);
         ia.mainLayout.mainContent.show(detailLayout);
 
-        // portfolioNavigationView.on("itemview:select:portfolio", function(arg){
-        //   var subPortfoliosIds = arg.model.get('subPortfolios');
-        //   var subPortfolios = arg.model.collection.filter(function(model){
-        //     return _.contains(subPortfoliosIds, model.id);
-        //   });
-        //   var newList = new Portfolio.collections.NavigationList(subPortfolios);
-
-        //   Backbone.history.navigate("portfolios/"+arg.model.id);
-        //   ia.setState("portfolios", {collection: newList, model: arg.model});
-        // });
       }
     };
 

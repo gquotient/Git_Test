@@ -1,5 +1,11 @@
 {{#if name}}
- {{ name }}
+  {{#if prevModel}}
+    <span class="back"> Back </span>
+  {{else }}
+    <span class="all"> All </span>
+  {{/if}}
+
+  {{ name }}
 {{else}} 
   All Portfolios
 {{/if}}

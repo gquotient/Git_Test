@@ -114,22 +114,13 @@ app.configure(function(){
   app.use(flash());
   app.use(app.router);
   app.use('/public', express.static(path.join(__dirname, 'public')));
-  // app.use( function(req, res){
-  //   var newUrl = req.protocol + '://' + req.get('Host') + '/ia/#' + req.url;
-  //   res.redirect(newUrl);
-  // } );
 });
 
 app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-/*
- * Basic routing (temporary).
- */
-// app.all('/', ensureAuthenticated, function(req, res){
-//   res.render('index', {user: JSON.stringify(req.user) });
-// });
+
 
 app.all('/', ensureAuthenticated, function(req, res){
   res.redirect('/ia');
@@ -152,8 +143,7 @@ app.all('/ia/*', ensureAuthenticated, function(req, res){
 });
 
 /* Login */
-app.get('/login', function(req, res){
-  // console.log(req.flash().error);
+app.get('/login', ensureAuthenticated, function(req, res){
   res.render('login', { flash: req.flash('error') });
 });
 
@@ -192,12 +182,6 @@ app.get('/api/portfolios',
       res.end(data);
     });
   });
-
-/* Generic */
-// app.get(/^(?!public).*/, ensureAuthenticated, function(req, res){
-//   res.render('index', {user: JSON.stringify(req.user) });
-// });
-
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }

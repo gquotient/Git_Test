@@ -49,23 +49,52 @@ define(
 
       itemView: Portfolio.views.NavigationItemView,
 
-      initialize: function(){
-        this.listenTo(this, 'itemview:select:portfolio', this.selectPortfolio);
+      triggers: {
+        'click .back': 'set:back',
+        'click .all': 'set:all'
       },
 
-      selectPortfolio: function(arg){
-        var subPortfoliosIds = arg.model.get('subPortfolios');
-        var subPortfolios = arg.model.collection.filter(function(model){
+      initialize: function(){
+        this.listenTo(this, 'itemview:select:portfolio', this.nextPortfolio);
+        this.listenTo(this, 'set:back', this.back);
+        this.listenTo(this, 'set:all', this.setAll);
+      },
+
+      setAll: function(){
+        this.collection = this.options.all;
+        this.model = false;
+        this.render();
+
+        Backbone.history.navigate("/");
+      },
+
+      back: function(){
+        this.collection = this.model.get('prevCollection');
+        this.model = this.model.get('prevModel');
+        this.setPortfolio(this.model);
+      },
+
+      nextPortfolio: function(arg){
+        if(this.model) {
+          arg.model.set('prevModel', this.model);
+          arg.model.set('prevCollection', this.collection);
+        }
+        this.model = arg.model;
+        this.setPortfolio();
+      },
+
+      setPortfolio: function(model){
+        var subPortfoliosIds = this.model.get('subPortfolios');
+        var subPortfolios = this.options.all.filter(function(model){
           return _.contains(subPortfoliosIds, model.id);
         });
 
         var newList = new Portfolio.collections.NavigationList(subPortfolios);
-        this.model = arg.model;
         this.collection = newList;
+
         this.render();
 
-        Backbone.history.navigate("portfolios/"+arg.model.id);
-        // ia.setState("portfolios", {collection: newList, model: arg.model});
+        Backbone.history.navigate("portfolios/"+ this.model.id);
       }
     });
 
