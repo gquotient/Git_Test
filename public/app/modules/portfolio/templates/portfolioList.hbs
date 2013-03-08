@@ -1,11 +1,11 @@
 {{#if name}}
   {{#if prevModel}}
-    <span class="back"> Back </span>
+    <div class="back"> &lt;&lt; {{ prevModel }} </div>
   {{else }}
-    <span class="all"> All </span>
+    <div class="all"> &lt;&lt; All Portfolios</div>
   {{/if}}
 
-  {{ name }}
+  <div class="navTitle">{{ name }}</div>
 {{else}} 
-  All Portfolios
+  <div class="navTitle">All Portfolios</div>
 {{/if}}

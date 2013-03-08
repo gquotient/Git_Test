@@ -22,7 +22,7 @@ define(
         var portfolioNavigationView = new Portfolio.views.NavigationListView({
           collection: portfolioSet.collection,
           model: portfolioSet.model,
-          all: portfolioSet.all
+          basePortfolios: portfolioSet.all
         });
 
         var detailLayout = new Portfolio.layouts.detailOverview();

@@ -144,7 +144,11 @@ app.all('/ia/*', ensureAuthenticated, function(req, res){
 
 /* Login */
 app.get('/login', function(req, res){
-  res.render('login', { flash: req.flash('error') });
+  if (req.isAuthenticated() ) {
+    res.redirect('/ia');  
+  } else {
+    res.render('login', { flash: req.flash('error') });
+  }
 });
 
 app.post('/login',
