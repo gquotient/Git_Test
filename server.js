@@ -143,7 +143,7 @@ app.all('/ia/*', ensureAuthenticated, function(req, res){
 });
 
 /* Login */
-app.get('/login', ensureAuthenticated, function(req, res){
+app.get('/login', function(req, res){
   res.render('login', { flash: req.flash('error') });
 });
 
