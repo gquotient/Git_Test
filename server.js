@@ -145,7 +145,7 @@ app.all('/ia/*', ensureAuthenticated, function(req, res){
 /* Login */
 app.get('/login', function(req, res){
   if (req.isAuthenticated() ) {
-    res.redirect('/ia');  
+    res.redirect('/ia');
   } else {
     res.render('login', { flash: req.flash('error') });
   }
@@ -160,6 +160,10 @@ passport.authenticate('local',
   }
 ));
 
+/* Reset Password */
+app.get('/resetpassword', function(req, res){
+  res.render('resetpassword', { flash: req.flash('error') });
+});
 
 /* Logout */
 app.get('/logout',
