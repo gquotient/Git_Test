@@ -17,6 +17,19 @@ define(
 
   function($, _, Backbone, Marionette, MarionetteHandlebars, User, Portfolio, Header, indexTemplate){
 
+    /* Instantiate the app */
+    var ia = new Backbone.Marionette.Application();
+
+    /* Create a new user instance that is the current session user */
+    var currentUser = User.Model.extend(JSON.parse($('#currentUserData').html()));
+    ia.currentUser = new currentUser();
+
+    /* Define the primary region (this is the body) */
+    ia.addRegions({
+      main: "#ia"
+    });
+
+    /* This is some bullshit hackery */
     var states = {
       portfolios: function(portfolioSet){
         var portfolioNavigationView = new Portfolio.views.NavigationListView({
@@ -32,16 +45,6 @@ define(
 
       }
     };
-
-    var ia = new Backbone.Marionette.Application();
-
-    /* Create a new user instance that is the current session user */
-    var currentUser = User.Model.extend(JSON.parse($('#currentUserData').html()));
-    ia.currentUser = new currentUser();
-
-    ia.addRegions({
-      main: "#ia"
-    });
 
     ia.setState = function(state, arg){
       states[state](arg);
@@ -61,6 +64,7 @@ define(
 
     };
 
+    /* Create a new layout for the primary app view */
     var AppLayout = Backbone.Marionette.Layout.extend({
       template: {
         type: 'handlebars',
@@ -79,5 +83,4 @@ define(
 
     return ia;
   }
-
 );
