@@ -59,30 +59,6 @@ var Projects = {
   }
 };
 
-/**
- * Setup Passport
- */
-
-passport.use(new DrakerIA6Strategy( {
-    clientID: 'IA6_0.1',
-    clientSecret: 'ed75d8d3a96ef67041b52e057a5c86c3',
-    callbackURL: 'http://127.0.0.1:' + port + '/token'
-  },
-  function(token, tokenSecret, profile, done) {
-    return done(null, profile);
-  }
-));
-
-passport.serializeUser(function(user, done) {
-  console.log('serialize user', user)
-  done(null, user);
-});
-
-passport.deserializeUser(function(user, done) {
-  console.log('deserialize user', user)
-  done(null, user);
-});
-
 /*
  * Configure Express App
  */
@@ -113,20 +89,45 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler());
+  app.set('clientID', 'IA6_0.1');
+  app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
+  app.set('callbackURL', 'http://127.0.0.1:' + port + '/token');
+});
+
+/**
+ * Setup Passport
+ */
+
+passport.use(new DrakerIA6Strategy( {
+    clientID: app.get('clientID'),
+    clientSecret: app.get('clientSecret'),
+    callbackURL: app.get('callbackURL')
+  },
+  function(token, tokenSecret, profile, done) {
+    return done(null, profile);
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  // console.log('serialize user', user)
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  // console.log('deserialize user', user)
+  done(null, user);
 });
 
 /*
  * Basic routing (temporary).
  */
-// app.all('/', ensureAuthenticated, function(req, res){
-//   res.render('index', {user: JSON.stringify(req.user) });
-// });
 
 app.all('/', ensureAuthenticated, function(req, res){
   res.redirect('/ia');
 });
 
 app.all('/ia', ensureAuthenticated, function(req, res){
+
   res.render(
     'index',
     {
@@ -144,25 +145,32 @@ app.all('/ia/*', ensureAuthenticated, function(req, res){
 
 
 app.get('/login', function(req, res){
-  // console.log(req.flash().error);
   res.render('login', { flash: req.flash('error') });
 });
 
 app.post('/login',
   passport.authenticate('draker-ia6',
   {
-    successRedirect: '/ia',
+    successRedirect: '/reset',
     failureRedirect: '/login',
     failureFlash: true
   }
 ));
+
+app.get('/reset', ensureAuthenticated, function(req, res){
+  if( req.user.firsttime ){
+    res.redirect('/ia/portfolios');
+  } else {
+    res.redirect('/ia');
+  }
+})
 
 app.get('/token',
   passport.authenticate('draker-ia6', { failureRedirect: '/login', failureFlash: true }),
   function(req, res){
     req.session["draker-ia6"] = req.session["passport"]["user"];
     /* res.render("index",checkSession(req)); */
-    res.redirect('/ia')
+    res.redirect('/reset')
   }
 );
  
@@ -192,12 +200,6 @@ app.get('/api/portfolios',
       res.end(data);
     });
   });
-
-/* Generic */
-// app.get(/^(?!public).*/, ensureAuthenticated, function(req, res){
-//   res.render('index', {user: JSON.stringify(req.user) });
-// });
-
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
