@@ -5,14 +5,13 @@ define([
   "backbone.marionette.handlebars",
 
   "app/ia",
-  "app/modules/login",
   "app/modules/user/user",
 
   "app/modules/portfolio/portfolio",
 
   "hbs!app/layouts/index"
 ],
-function($, Backbone, Marionette, MarionetteHandlebars, ia, Login, User, Portfolio, indexTemplate){
+function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, indexTemplate){
 
   ia.Controller = Backbone.Marionette.Controller.extend({
     portfolios: function(){

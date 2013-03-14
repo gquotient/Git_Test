@@ -35,6 +35,8 @@ define(
 
     var ia = new Backbone.Marionette.Application();
 
+    ia.currentUser = new User.Model();
+
     ia.addRegions({
       main: "#ia"
     });
@@ -44,11 +46,10 @@ define(
     };
 
     ia.setLayout = function(layout){
+      console.log('set layout', ia);
       ia.main.show(ia.mainLayout);
 
-      var currentUser = JSON.parse($('#currentUserData').html());
-
-      var headerView = new Header.views.LoggedIn({model: currentUser});
+      var headerView = new Header.views.LoggedIn({model: ia.currentUser});
 
       headerView.on("logout", function(){
         window.location = "/logout";
