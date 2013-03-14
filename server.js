@@ -10,7 +10,7 @@ var express = require('express')
   , passport = require('passport')
   , RedisStore = require('connect-redis')(express)
   , flash = require('connect-flash')
-  , DrakerIA6Strategy = require('lib/strategies/passport-draker-ia6').Strategy
+  , DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy
   , fs = require('fs');
 
 /**
