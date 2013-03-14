@@ -35,7 +35,9 @@ define(
 
     var ia = new Backbone.Marionette.Application();
 
-    ia.currentUser = new User.Model();
+    /* Create a new user instance that is the current session user */
+    var currentUser = User.Model.extend(JSON.parse($('#currentUserData').html()));
+    ia.currentUser = new currentUser();
 
     ia.addRegions({
       main: "#ia"
