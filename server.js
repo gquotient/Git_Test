@@ -179,12 +179,22 @@ app.get('/api/users',
 
 app.get('/api/portfolios',
   function(req, res){
-    fs.readFile('./data/json/portfolios.json', 'utf8', function (err,data) {
+    fs.readFile('./data/json/portfolios.json', 'utf8', function (err, data) {
       if (err) {
         return console.log(err);
       }
       res.end(data);
     });
+  });
+
+app.get('/api/projects',
+  function(req, res){
+    fs.readFile('./data/json/projects.json', 'utf8', function (err, data){
+      if (err) {
+        return console.log(err);
+      }
+      res.end(data)
+    })
   });
 
 function ensureAuthenticated(req, res, next) {
