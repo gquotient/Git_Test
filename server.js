@@ -97,6 +97,7 @@ passport.deserializeUser(function(username, done) {
  */
 
 var app = express();
+
 app.configure(function(){
   app.set('port', process.env.PORT || 3005);
   app.set('view engine', 'hbs');
