@@ -8,16 +8,16 @@ define(
   "hbs!app/modules/user/templates/detailView"
 ], function(Backbone, Marionette, MarionetteHandlebars, itemViewTemplate, detailViewTemplate){
 
-  var User = { models: {}, views: {} };
+  var User = { views: {} };
 
-  User.models.User = Backbone.Model.extend({});
+  User.Model = Backbone.Model.extend(JSON.parse($('#currentUserData').html()));
 
   User.Collection = Backbone.Collection.extend({
     url: '/api/users',
     parse: function(res){
       return res.data;
     },
-    model: User.models.User
+    model: User.Model
   });
 
   User.views.itemView = Backbone.Marionette.ItemView.extend({
@@ -37,7 +37,7 @@ define(
   });
 
   User.views.detailView = Backbone.Marionette.ItemView.extend({
-    model: User.models.User,
+    model: User.Model,
     template: {
       type: 'handlebars',
       template: detailViewTemplate
@@ -45,7 +45,7 @@ define(
   });
 
   User.controller = {
-    users: function(){}   
+    users: function(){}
   };
 
   User.Router = new Backbone.Marionette.AppRouter.extend({
@@ -56,7 +56,6 @@ define(
     }
 
   });
-
 
   return User;
 

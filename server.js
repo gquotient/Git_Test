@@ -64,6 +64,7 @@ var Projects = {
  */
 
 var app = express();
+
 app.configure(function(){
   app.set('port', process.env.PORT || 3005);
   app.set('view engine', 'hbs');
@@ -81,10 +82,6 @@ app.configure(function(){
   app.use(flash());
   app.use(app.router);
   app.use('/public', express.static(path.join(__dirname, 'public')));
-  // app.use( function(req, res){
-  //   var newUrl = req.protocol + '://' + req.get('Host') + '/ia/#' + req.url;
-  //   res.redirect(newUrl);
-  // } );
 });
 
 app.configure('development', function(){
@@ -145,7 +142,11 @@ app.all('/ia/*', ensureAuthenticated, function(req, res){
 
 
 app.get('/login', function(req, res){
-  res.render('login', { flash: req.flash('error') });
+  if (req.isAuthenticated() ) {
+    res.redirect('/ia');
+  } else {
+    res.render('login', { flash: req.flash('error') });
+  }
 });
 
 app.post('/login',
@@ -157,9 +158,10 @@ app.post('/login',
   }
 ));
 
+/* Reset Password */
 app.get('/reset', ensureAuthenticated, function(req, res){
   if( req.user.firsttime ){
-    res.redirect('/ia/portfolios');
+    res.render('resetpassword', { flash: req.flash('error') });
   } else {
     res.redirect('/ia');
   }
@@ -173,7 +175,6 @@ app.get('/token',
     res.redirect('/reset')
   }
 );
- 
 
 /* Logout */
 app.get('/logout',
@@ -193,12 +194,22 @@ app.get('/api/users',
 
 app.get('/api/portfolios',
   function(req, res){
-    fs.readFile('./data/json/portfolios.json', 'utf8', function (err,data) {
+    fs.readFile('./data/json/portfolios.json', 'utf8', function (err, data) {
       if (err) {
         return console.log(err);
       }
       res.end(data);
     });
+  });
+
+app.get('/api/projects',
+  function(req, res){
+    fs.readFile('./data/json/projects.json', 'utf8', function (err, data){
+      if (err) {
+        return console.log(err);
+      }
+      res.end(data)
+    })
   });
 
 function ensureAuthenticated(req, res, next) {
