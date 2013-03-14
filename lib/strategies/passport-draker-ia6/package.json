@@ -1,0 +1,38 @@
+{
+  "name": "passport-draker-ia6",
+  "version": "0.0.1",
+  "description": "Draker IntelligentArray authentication strategy for Passport.",
+  "author": {
+    "name": "Rock Howard",
+    "email": "rock.howard@drakerenergy.com",
+    "url": "http://www.rockhoward.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/drakerlabs/passport-draker-ia6.git"
+  },
+  "main": "./lib/passport-draker-ia6",
+  "dependencies": {
+    "passport-oauth": ">= 0.1.2"
+  },
+  "engines": {
+    "node": ">= 0.4.0"
+  },
+  "keywords": [
+    "passport",
+    "draker",
+    "intelligentarray.com",
+    "auth",
+    "authn",
+    "authentication",
+    "identity"
+  ],
+  "readme": "<h1>passport-draker-ia6</h1>\n\nThis is a Strategy for use with http://passportjs.org with Draker's IntellientArray platform.\n\nYou'll need to require it:\n\n```\nvar passport = require('passport')\n  , DrakerIA6Strategy = require('passport-draker-ia6').Strategy\n ```\n\n\n Define the strategy with your application credentials and information:\n\n ```\n passport.use(new DrakerIA6Strategy({\n    clientID: '{clientID}',\n    clientSecret: '{clientSecret}',\n    callbackURL: '{callbackUrl}'\n  },\n  function(token, tokenSecret, profile, done) {\n    console.log(profile);\n    return done(null, profile);\n  }\n));\n```\n\nAnd then setup some routes to hande the flow:\n```\napp.get('/login', passport.authenticate('draker-ia6'));\napp.get('/token', \n  passport.authenticate('draker-ia6', { failureRedirect: '/error' }),\n  function(req, res){\n    res.render(\"index\",checkSession(req));\n  });\n  ```\n\nAnd as usual with passport, you can update the user serialization/de-serialization.",
+  "readmeFilename": "README.md",
+  "_id": "passport-draker-ia6@0.0.1",
+  "dist": {
+    "shasum": "8498ca8b52f36b7004580d80fbd7f5372f9fd775"
+  },
+  "_from": "passport-draker-ia6@",
+  "_resolved": "https://registry.npmjs.org/passport-draker-ia6/-/passport-draker-ia6-0.0.1.tgz"
+}

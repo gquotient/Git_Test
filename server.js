@@ -10,8 +10,14 @@ var express = require('express')
   , passport = require('passport')
   , RedisStore = require('connect-redis')(express)
   , flash = require('connect-flash')
-  , LocalStrategy = require('passport-local').Strategy
+  , DrakerIA6Strategy = require('lib/strategies/passport-draker-ia6').Strategy
   , fs = require('fs');
+
+/**
+ * , LocalStrategy = require('passport-local').Strategy
+ */
+
+var port = process.env.PORT || 3005;
 
 /**
  * Stub out some users.
@@ -19,9 +25,6 @@ var express = require('express')
 
 var User = {
   users: [
-    {username: "jwin", password: "1234", name: "Justin", id: 1},
-    {username: "jkyle", password: "1234", name: "Kyle", id: 2},
-    {username: "rock", password: "1234", name: "Rock", id: 3}
   ],
   findBy: function(field, value, callback){
     var currentuser = _.find(this.users, function(user){
@@ -33,9 +36,6 @@ var User = {
     } else {
       callback(null, false, { message: "User not found." });
     }
-  },
-  verifyPassword: function(user, password){
-    return user.password === password;
   }
 };
 
@@ -63,33 +63,24 @@ var Projects = {
  * Setup Passport
  */
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-
-    User.findBy("username", username, function(err, user){
-      if( err ){ return done(err); }
-
-      if( !user ) {
-        return done(null, false, { message: 'Bwahh ha ha ha ha. No user by that name.' });
-      }
-
-      if( !User.verifyPassword(user, password) ){
-        return done(null, false, { message: 'Awwwwww. Did you forget your password?'});
-      }
-
-      return done(null, user);
-    });
+passport.use(new DrakerIA6Strategy( {
+    clientID: 'IA6_0.1',
+    clientSecret: 'ed75d8d3a96ef67041b52e057a5c86c3',
+    callbackURL: 'http://127.0.0.1:' + port + '/token'
+  },
+  function(token, tokenSecret, profile, done) {
+    return done(null, profile);
   }
 ));
 
 passport.serializeUser(function(user, done) {
-  done(null, user.username);
+  console.log('serialize user', user)
+  done(null, user);
 });
 
-passport.deserializeUser(function(username, done) {
-  User.findBy("username", username, function (err, user) {
-    done(err, user);
-  });
+passport.deserializeUser(function(user, done) {
+  console.log('deserialize user', user)
+  done(null, user);
 });
 
 /*
@@ -139,7 +130,7 @@ app.all('/ia', ensureAuthenticated, function(req, res){
   res.render(
     'index',
     {
-      user: '{ "username": "' + req.user.username + '"}',
+      user: '{ "username": "' + req.user.name + '" }',
       locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
     }
   );
@@ -151,14 +142,14 @@ app.all('/ia/*', ensureAuthenticated, function(req, res){
   res.redirect( req.protocol + '://' + req.get('Host') + '/ia/#/' + newUrl );
 });
 
-/* Login */
+
 app.get('/login', function(req, res){
   // console.log(req.flash().error);
   res.render('login', { flash: req.flash('error') });
 });
 
 app.post('/login',
-passport.authenticate('local',
+  passport.authenticate('draker-ia6',
   {
     successRedirect: '/ia',
     failureRedirect: '/login',
@@ -166,6 +157,15 @@ passport.authenticate('local',
   }
 ));
 
+app.get('/token',
+  passport.authenticate('draker-ia6', { failureRedirect: '/login', failureFlash: true }),
+  function(req, res){
+    req.session["draker-ia6"] = req.session["passport"]["user"];
+    /* res.render("index",checkSession(req)); */
+    res.redirect('/ia')
+  }
+);
+ 
 
 /* Logout */
 app.get('/logout',
