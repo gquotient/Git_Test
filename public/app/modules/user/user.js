@@ -10,7 +10,7 @@ define(
 
   var User = { views: {} };
 
-  User.Model = Backbone.Model.extend(JSON.parse($('#currentUserData').html()));
+  User.Model = Backbone.Model.extend({});
 
   User.Collection = Backbone.Collection.extend({
     url: '/api/users',
