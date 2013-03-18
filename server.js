@@ -172,12 +172,16 @@ app.post('/reset', function(req, res){
   if (req.body.password_new === req.body.password_check) {
     if (req.body.password_new.length > 5) {
       console.log( 'post the password reset request' );
-      DrakerIA6Strategy.reset(req, res, {}, function(req, res, post_res) {
-        console.log( "Back from reset:" + post_res.status + "," + post_res.message );
+      DrakerIA6Strategy.reset(req, res, app, function(req, res, post_res) {
+        console.log( "Back from reset:" + post_res.status );
         if ( post_res.status === 200 ) {
           res.redirect('/ia');
-        } else{
-          req.flash( 'error', post_res.message );
+        } else {
+          if ( post_res.message ) {
+            req.flash( 'error', post_res.message );
+          } else {
+            req.flash( 'error', 'Unauthorized' );
+          }
           res.redirect('/reset');
         }
         
