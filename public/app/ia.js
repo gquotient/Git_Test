@@ -1,4 +1,4 @@
-define(
+ define(
 
   [
     'jquery',
@@ -20,17 +20,8 @@ define(
     /* Instantiate the app */
     var ia = new Backbone.Marionette.Application();
 
-    /* Create a new user instance that is the current session user */
-    var currentUser = User.Model.extend(JSON.parse($('#currentUserData').html()));
-    ia.currentUser = new currentUser();
-
-    /* Define the primary region (this is the body) */
-    ia.addRegions({
-      main: "#ia"
-    });
-
     /* This is some bullshit hackery */
-    var states = {
+    ia.states = {
       portfolios: function(portfolioSet){
         var portfolioNavigationView = new Portfolio.views.NavigationListView({
           collection: portfolioSet.collection,
@@ -47,21 +38,7 @@ define(
     };
 
     ia.setState = function(state, arg){
-      states[state](arg);
-    };
-
-    ia.setLayout = function(layout){
-      console.log('set layout', ia);
-      ia.main.show(ia.mainLayout);
-
-      var headerView = new Header.views.LoggedIn({model: ia.currentUser});
-
-      headerView.on("logout", function(){
-        window.location = "/logout";
-      });
-
-      ia.mainLayout.header.show(headerView);
-
+      ia.states[state](arg);
     };
 
     /* Create a new layout for the primary app view */
@@ -79,7 +56,34 @@ define(
       }
     });
 
-    ia.mainLayout = new AppLayout();
+
+    /* Some app on initialization. Breaking it up for clarity. */
+
+    /* Bootstrap User */
+    ia.addInitializer(function(){
+      /* Create a new user instance that is the current session user */
+      var currentUser = User.Model.extend(JSON.parse($('#currentUserData').html()));
+      ia.currentUser = new currentUser();
+    });
+
+
+    /* Setup Layouts and Views */
+    ia.addInitializer(function(){
+      /* Define the primary region (this is the body) */
+      ia.addRegions({
+        main: "#ia"
+      });
+
+      ia.mainLayout = new AppLayout();
+      ia.headerView = new Header.views.LoggedIn({model: ia.currentUser});
+
+      ia.headerView.on("logout", function(){
+        window.location = "/logout";
+      });
+
+      ia.mainLayout.header.show(ia.headerView);
+      ia.main.show(ia.mainLayout);
+    });
 
     return ia;
   }

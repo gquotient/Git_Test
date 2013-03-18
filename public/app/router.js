@@ -14,11 +14,8 @@ define([
 function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, indexTemplate){
 
   ia.Controller = Backbone.Marionette.Controller.extend({
-    portfolios: function(){
+    index: function(){
       var portfolios = new Portfolio.collections.NavigationList();
-
-      ia.setLayout(ia.mainLayout);
-
       ia.setState("portfolios", {collection: portfolios, model: false, all: portfolios } );
 
       portfolios.fetch();
@@ -26,7 +23,6 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, ind
 
     selectPortfolio: function(id){
       var portfolios = new Portfolio.collections.NavigationList();
-      ia.setLayout(ia.mainLayout);
       portfolios.fetch({
         success: function(collection, response, options){
           var selectedPortfolio = collection.get(id);
@@ -46,8 +42,8 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, ind
   var Router = Backbone.Marionette.AppRouter.extend({
     controller: new ia.Controller(),
     appRoutes: {
-      "": "portfolios",
-      "portfolios": "portfolios",
+      "": "index",
+      "portfolios": "index",
       "portfolios/:id": "selectPortfolio"
     }
   });
