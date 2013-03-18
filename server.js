@@ -167,6 +167,31 @@ app.get('/reset', ensureAuthenticated, function(req, res){
   }
 })
 
+app.post('/reset', function(req, res){
+  console.log( 'passwords:' + req.body.password + ':' + req.body.password_new + ':' + req.body.password_check );
+  if (req.body.password_new === req.body.password_check) {
+    if (req.body.password_new.length > 5) {
+      console.log( 'post the password reset request' );
+      DrakerIA6Strategy.reset(req, res, {}, function(req, res, post_res) {
+        console.log( "Back from reset:" + post_res.status + "," + post_res.message );
+        if ( post_res.status === 200 ) {
+          res.redirect('/ia');
+        } else{
+          req.flash( 'error', post_res.message );
+          res.redirect('/reset');
+        }
+        
+      });
+    } else {
+      req.flash( 'error', 'New password is too short');
+      res.redirect('/reset');
+    }
+  } else {
+    req.flash( 'error', 'New passwords did not match');
+    res.redirect('/reset');
+  }
+})
+
 app.get('/token',
   passport.authenticate('draker-ia6', { failureRedirect: '/login', failureFlash: true }),
   function(req, res){
