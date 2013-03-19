@@ -20,26 +20,8 @@
     /* Instantiate the app */
     var ia = new Backbone.Marionette.Application();
 
-    /* This is some bullshit hackery */
-    ia.states = {
-      portfolios: function(portfolioSet){
-        var portfolioNavigationView = new Portfolio.views.NavigationListView({
-          collection: portfolioSet.collection,
-          model: portfolioSet.model,
-          basePortfolios: portfolioSet.all
-        });
-
-        var detailLayout = new Portfolio.layouts.detailOverview();
-
-        ia.mainLayout.contentNavigation.show(portfolioNavigationView);
-        ia.mainLayout.mainContent.show(detailLayout);
-
-      }
-    };
-
-    ia.setState = function(state, arg){
-      ia.states[state](arg);
-    };
+    /* Empty object to hold different layouts. */
+    ia.layouts = {};
 
     /* Create a new layout for the primary app view */
     var AppLayout = Backbone.Marionette.Layout.extend({
@@ -57,7 +39,7 @@
     });
 
 
-    /* Some app on initialization. Breaking it up for clarity. */
+    /* Some app initialization. Breaking it up for clarity. */
 
     /* Bootstrap User */
     ia.addInitializer(function(){
@@ -74,15 +56,14 @@
         main: "#ia"
       });
 
-      ia.mainLayout = new AppLayout();
+      ia.layouts.app = new AppLayout();
       ia.headerView = new Header.views.LoggedIn({model: ia.currentUser});
-
       ia.headerView.on("logout", function(){
         window.location = "/logout";
       });
 
-      ia.mainLayout.header.show(ia.headerView);
-      ia.main.show(ia.mainLayout);
+      ia.main.show(ia.layouts.app);
+      ia.layouts.app.header.show(ia.headerView);
     });
 
     return ia;

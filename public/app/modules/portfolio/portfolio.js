@@ -20,7 +20,15 @@ define(
     /* Setup the url for the list of portfolios. This will be our list for navigation. */
     Portfolio.collections.NavigationList = Backbone.Collection.extend({
       model: Portfolio.models.Portfolio,
-      url: '/api/portfolios'
+      url: '/api/portfolios',
+
+      subPortfolios: function(model){
+        var subPortfoliosIds = model.get('subPortfolios');
+        var subPortfolios = this.filter(function(portfolio){
+          return _.contains(subPortfoliosIds, portfolio.id);
+        });
+        return subPortfolios;
+      }
     });
 
     /* The item view is the view for the individual portfolios in the navigation. */
@@ -82,17 +90,7 @@ define(
          * triggers the "itemView:select:portfolio" event. */
         this.listenTo(this, 'itemview:select:portfolio', this.nextPortfolio);
         this.listenTo(this, 'set:back', this.back);
-        this.listenTo(this, 'set:all', this.setAll);
-      },
-
-      /* setAll bascially resets the state of the nav bar and forces a render. */
-      setAll: function(){
-        this.breadcrumbs = [];
-        this.collection = this.options.basePortfolios;
-        this.model = false;
-        this.render();
-
-        Backbone.history.navigate("/");
+        // this.listenTo(this, 'set:all', this.setAll);
       },
 
       /* Adds this _current_ model to the breadcrumb before setting the new model to be
@@ -111,7 +109,16 @@ define(
       /* Get the previous model and collection off the stack and set to be current. */
       back: function(){
         this.model = this.breadcrumbs.pop();
-        this.setPortfolio();
+        if(this.model){
+          this.setPortfolio();
+        } else {
+          this.breadcrumbs = [];
+          this.collection = this.options.basePortfolios;
+          this.model = false;
+          this.render();
+
+          Backbone.history.navigate("/");
+        }
       },
 
       /* Setup the views for the current model. */
