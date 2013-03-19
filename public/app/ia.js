@@ -57,7 +57,7 @@
 
       ia.layouts.app = new AppLayout();
       ia.headerView = new Header.views.LoggedIn({model: ia.currentUser});
-      ia.headerView.on("logout", function(){
+      ia.listenTo(ia.headerView, "logout", function(){
         window.location = "/logout";
       });
 

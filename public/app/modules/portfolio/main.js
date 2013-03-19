@@ -109,6 +109,9 @@ define(
       /* Get the previous model and collection off the stack and set to be current. */
       back: function(){
         this.model = this.breadcrumbs.pop();
+
+        /* There's a chance that this.model is false in the case where we are returning
+         * to "all portfolios" */
         if(this.model){
           this.setPortfolio();
         } else {
