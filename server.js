@@ -168,12 +168,12 @@ app.get('/reset', ensureAuthenticated, function(req, res){
 })
 
 app.post('/reset', function(req, res){
-  console.log( 'passwords:' + req.body.password + ':' + req.body.password_new + ':' + req.body.password_check );
+  // console.log( 'passwords:' + req.body.password + ':' + req.body.password_new + ':' + req.body.password_check );
   if (req.body.password_new === req.body.password_check) {
     if (req.body.password_new.length > 5) {
-      console.log( 'post the password reset request' );
+      // console.log( 'post the password reset request' );
       DrakerIA6Strategy.reset(req, res, app, function(req, res, post_res) {
-        console.log( "Back from reset:" + post_res.status );
+        // console.log( "Back from reset:" + post_res.status );
         if ( post_res.status === 200 ) {
           res.redirect('/ia');
         } else {
@@ -208,6 +208,9 @@ app.get('/token',
 /* Logout */
 app.get('/logout',
   function(req, res){
+    DrakerIA6Strategy.logout(req, res, app, function(req, res, post_res) {
+      // console.log( "Back from logout:" + post_res.status );
+    });
     // req.logout();
     req.session.destroy();
     res.redirect('/login');
