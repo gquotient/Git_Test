@@ -17,13 +17,14 @@
 
   function($, _, Backbone, Marionette, MarionetteHandlebars, User, Portfolio, Header, indexTemplate){
 
-    /* Instantiate the app */
+    // Instantiate the app
     var ia = new Backbone.Marionette.Application();
 
     /* Empty object to hold different layouts. */
     ia.layouts = {};
 
-    /* Create a new layout for the primary app view */
+
+    // Create a new layout for the primary app view
     var AppLayout = Backbone.Marionette.Layout.extend({
       template: {
         type: 'handlebars',
@@ -41,17 +42,17 @@
 
     /* Some app initialization. Breaking it up for clarity. */
 
-    /* Bootstrap User */
+    // Bootstrap User
     ia.addInitializer(function(){
-      /* Create a new user instance that is the current session user */
+      // Create a new user instance that is the current session user
       var currentUser = User.Model.extend(JSON.parse($('#currentUserData').html()));
       ia.currentUser = new currentUser();
     });
 
 
-    /* Setup Layouts and Views */
+    // Setup Layouts and Views
     ia.addInitializer(function(){
-      /* Define the primary region (this is the body) */
+      // Define the primary region (this is the body)
       ia.addRegions({
         main: "#ia"
       });
