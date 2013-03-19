@@ -14,7 +14,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
   ia.Controller = Backbone.Marionette.Controller.extend({
 
     states: {
-      portfolioFocus: function(options){
+      portfolio: function(options){
         var portfolioNavigationListView = new Portfolio.views.NavigationListView({
           collection: options.collection,
           model: options.model,
@@ -25,16 +25,15 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
 
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
         ia.layouts.app.mainContent.show(detailLayout);
-      }
-    },
+      },
+      project: function(options){
 
-    setState: function(state, options){
-      this.states[state](options);
+      }
     },
 
     index: function(){
       var portfolios = new Portfolio.collections.NavigationList();
-      this.setState("portfolioFocus", {collection: portfolios, model: false, all: portfolios } );
+      this.trigger("state:portfolio", {collection: portfolios, model: false, all: portfolios } );
 
       portfolios.fetch();
     },
@@ -46,13 +45,14 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
           var subPortfolios = collection.subPortfolios(collection.get(id));
           var newList = new Portfolio.collections.NavigationList(subPortfolios);
 
-          this.setState("portfolioFocus", {collection: newList, model: collection.get(id), all: portfolios} );
+          this.trigger("state:portfolio", {collection: newList, model: collection.get(id), all: portfolios} );
         }
       });
     },
 
     initialize: function(){
-      //
+      var self = this;
+      this.listenTo(this, "state:portfolio", function(options){ self.states.portfolio(options) })
     }
 
   });
