@@ -4,8 +4,8 @@ define(
   "backbone.marionette",
   "backbone.marionette.handlebars",
 
-  "hbs!app/modules/user/templates/itemView",
-  "hbs!app/modules/user/templates/detailView"
+  "hbs!user/templates/itemView",
+  "hbs!user/templates/detailView"
 ], function(Backbone, Marionette, MarionetteHandlebars, itemViewTemplate, detailViewTemplate){
 
   var User = { views: {} };

@@ -4,7 +4,7 @@ define(
     'backbone.marionette',
     'backbone.marionette.handlebars',
 
-    'hbs!app/modules/header/templates/logged_in'
+    'hbs!header/templates/logged_in'
   ],
   function(Backbone, Marionette, MarionetteHandlebars, loggedInTemplate){
     var Header = { views: {} };

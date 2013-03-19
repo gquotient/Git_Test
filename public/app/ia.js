@@ -8,8 +8,8 @@
     'backbone.marionette',
     "backbone.marionette.handlebars",
 
-    "app/modules/user/user",
-    "app/modules/header/header",
+    "user",
+    "header",
 
     "hbs!app/layouts/index"
   ],

@@ -5,9 +5,9 @@ define([
   "backbone.marionette.handlebars",
 
   "app/ia",
-  "app/modules/user/user",
 
-  "app/modules/portfolio/portfolio"
+  "user",
+  "portfolio"
 ],
 function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
 

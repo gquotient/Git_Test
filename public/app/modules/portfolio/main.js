@@ -4,10 +4,10 @@ define(
     "backbone",
     "backbone.marionette",
 
-    "hbs!app/modules/portfolio/templates/navigationItemView",
-    "hbs!app/modules/portfolio/templates/allPortfoliosList",
-    "hbs!app/modules/portfolio/templates/portfolioList",
-    "hbs!app/modules/portfolio/templates/detailOverview"
+    "hbs!portfolio/templates/navigationItemView",
+    "hbs!portfolio/templates/allPortfoliosList",
+    "hbs!portfolio/templates/portfolioList",
+    "hbs!portfolio/templates/detailOverview"
   ],
   function($, Backbone, Marionette, navigationItemView, allPortfoliosList, portfolioList, detailOverview){
 
@@ -86,7 +86,7 @@ define(
       /* Setup an array for tracking breadcrumbs. Attach event listeners. */
       initialize: function(){
         this.breadcrumbs = [];
-        /* When one of the itemView (individual portfolios) is clicked, it 
+        /* When one of the itemView (individual portfolios) is clicked, it
          * triggers the "itemView:select:portfolio" event. */
         this.listenTo(this, 'itemview:select:portfolio', this.nextPortfolio);
         this.listenTo(this, 'set:back', this.back);

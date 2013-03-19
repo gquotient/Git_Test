@@ -20,6 +20,20 @@
 require.config({
   // deps: ["app/init"],
   baseUrl: '/public',
+  packages: [
+    {
+      name: 'header',
+      location: 'app/modules/header'
+    },
+    {
+      name: 'user',
+      location: 'app/modules/user'
+    },
+    {
+      name: 'portfolio',
+      location: 'app/modules/portfolio'
+    }
+  ],
   paths: {
     //Require plugins
     text: 'components/requirejs-text/text',
