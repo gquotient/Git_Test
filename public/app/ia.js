@@ -9,13 +9,12 @@
     "backbone.marionette.handlebars",
 
     "app/modules/user/user",
-    "app/modules/portfolio/portfolio",
     "app/modules/header/header",
 
     "hbs!app/layouts/index"
   ],
 
-  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Portfolio, Header, indexTemplate){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, indexTemplate){
 
     // Instantiate the app
     var ia = new Backbone.Marionette.Application();
@@ -45,8 +44,7 @@
     // Bootstrap User
     ia.addInitializer(function(){
       // Create a new user instance that is the current session user
-      var currentUser = User.Model.extend(JSON.parse($('#currentUserData').html()));
-      ia.currentUser = new currentUser();
+      ia.currentUser = new User.Model( JSON.parse($('#currentUserData').html()) );
     });
 
 
