@@ -56,13 +56,14 @@
       });
 
       ia.layouts.app = new AppLayout();
-      ia.headerView = new Header.views.LoggedIn({model: ia.currentUser});
-      ia.listenTo(ia.headerView, "logout", function(){
+
+      var headerView = new Header.views.LoggedIn({model: ia.currentUser});
+      ia.listenTo(headerView, "logout", function(){
         window.location = "/logout";
       });
 
       ia.main.show(ia.layouts.app);
-      ia.layouts.app.header.show(ia.headerView);
+      ia.layouts.app.header.show(headerView);
     });
 
     return ia;
