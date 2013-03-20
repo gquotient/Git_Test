@@ -214,7 +214,8 @@ app.get('/logout',
     // req.logout();
     req.session.destroy();
     res.redirect('/login');
-  });
+  }
+);
 
 /* API */
 app.all('/api/*', ensureAuthenticated);

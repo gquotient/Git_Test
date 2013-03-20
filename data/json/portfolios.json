@@ -1,263 +1,181 @@
 [
   {
-    "id": 427,
-    "name": "Test Portfolio 427",
+    "id": 954,
+    "name": "Portfolio 954",
     "subPortfolios": [
-      698,
-      296
+      805,
+      433,
+      15
     ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2623,
-      "ac_capacity": 2493,
-      "power_now": 29
-    }
-  },
-  {
-    "id": 698,
-    "name": "Test Portfolio 698",
-    "subPortfolios": [
-      353,
-      177
-    ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2868,
-      "ac_capacity": 2731,
-      "power_now": 1
-    }
-  },
-  {
-    "id": 910,
-    "name": "Test Portfolio 910",
-    "subPortfolios": [
-      350,
-      698,
-      717
-    ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 1525,
-      "ac_capacity": 1242,
-      "power_now": 48
-    }
-  },
-  {
-    "id": 763,
-    "name": "Test Portfolio 763",
-    "subPortfolios": [
-      910,
-      828,
-      193
-    ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2675,
-      "ac_capacity": 2446,
-      "power_now": 59
-    }
-  },
-  {
-    "id": 828,
-    "name": "Test Portfolio 828",
-    "subPortfolios": [],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 1857,
-      "ac_capacity": 1714,
-      "power_now": 24
-    }
-  },
-  {
-    "id": 469,
-    "name": "Test Portfolio 469",
-    "subPortfolios": [
-      296,
-      231
-    ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2354,
-      "ac_capacity": 2151,
-      "power_now": 78
-    }
-  },
-  {
-    "id": 296,
-    "name": "Test Portfolio 296",
-    "subPortfolios": [
-      193
-    ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2547,
-      "ac_capacity": 2338,
-      "power_now": 45
-    }
-  },
-  {
-    "id": 17,
-    "name": "Test Portfolio 17",
-    "subPortfolios": [],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 1433,
-      "ac_capacity": 1310,
-      "power_now": 87
-    }
-  },
-  {
-    "id": 193,
-    "name": "Test Portfolio 193",
-    "subPortfolios": [],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 1448,
-      "ac_capacity": 1274,
-      "power_now": 17
-    }
-  },
-  {
-    "id": 353,
-    "name": "Test Portfolio 353",
-    "subPortfolios": [
-      99,
+    "superPortfolios": [
       821
     ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 1229,
-      "ac_capacity": 953,
-      "power_now": 67
-    }
+    "projects": [
+      381,
+      135,
+      163,
+      151
+    ]
   },
   {
-    "id": 697,
-    "name": "Test Portfolio 697",
+    "id": 805,
+    "name": "Portfolio 805",
     "subPortfolios": [],
+    "superPortfolios": [
+      954,
+      494,
+      626
+    ],
+    "projects": [
+      931
+    ]
+  },
+  {
+    "id": 494,
+    "name": "Portfolio 494",
+    "subPortfolios": [
+      626,
+      805,
+      259
+    ],
+    "superPortfolios": [
+      433
+    ],
+    "projects": [
+      135,
+      435,
+      548,
+      931,
+      624,
+      830,
+      163,
+      181,
+      453
+    ]
+  },
+  {
+    "id": 613,
+    "name": "Portfolio 613",
+    "subPortfolios": [
+      15,
+      433
+    ],
+    "superPortfolios": [
+      587,
+      259
+    ],
+    "projects": [
+      830,
+      453,
+      163,
+      732,
+      135
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Portfolio 15",
+    "subPortfolios": [],
+    "superPortfolios": [
+      954,
+      613,
+      433
+    ],
+    "projects": [
+      151,
+      135,
+      931,
+      453,
+      732,
+      381
+    ]
+  },
+  {
+    "id": 587,
+    "name": "Portfolio 587",
+    "subPortfolios": [
+      613
+    ],
     "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2675,
-      "ac_capacity": 2539,
-      "power_now": 39
-    }
+    "projects": [
+      163,
+      453,
+      135,
+      548,
+      366,
+      181,
+      830,
+      624
+    ]
+  },
+  {
+    "id": 433,
+    "name": "Portfolio 433",
+    "subPortfolios": [
+      626,
+      15,
+      494
+    ],
+    "superPortfolios": [
+      954,
+      613
+    ],
+    "projects": [
+      151,
+      548,
+      453,
+      257,
+      624,
+      830,
+      181,
+      163
+    ]
   },
   {
     "id": 821,
-    "name": "Test Portfolio 821",
-    "subPortfolios": [],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 1113,
-      "ac_capacity": 838,
-      "power_now": 89
-    }
-  },
-  {
-    "id": 948,
-    "name": "Test Portfolio 948",
-    "subPortfolios": [],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 1129,
-      "ac_capacity": 980,
-      "power_now": 22
-    }
-  },
-  {
-    "id": 717,
-    "name": "Test Portfolio 717",
+    "name": "Portfolio 821",
     "subPortfolios": [
-      427,
-      350
+      954
     ],
     "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2366,
-      "ac_capacity": 2113,
-      "power_now": 28
-    }
+    "projects": [
+      453,
+      381
+    ]
   },
   {
-    "id": 350,
-    "name": "Test Portfolio 350",
+    "id": 259,
+    "name": "Portfolio 259",
     "subPortfolios": [
-      763,
-      469,
-      17
+      613
     ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2084,
-      "ac_capacity": 1941,
-      "power_now": 61
-    }
+    "superPortfolios": [
+      494
+    ],
+    "projects": [
+      732,
+      931,
+      830,
+      453,
+      381,
+      548,
+      181,
+      163,
+      135
+    ]
   },
   {
-    "id": 698,
-    "name": "Test Portfolio 698",
+    "id": 626,
+    "name": "Portfolio 626",
     "subPortfolios": [
-      828
+      805
     ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2784,
-      "ac_capacity": 2647,
-      "power_now": 5
-    }
-  },
-  {
-    "id": 231,
-    "name": "Test Portfolio 231",
-    "subPortfolios": [
-      258
+    "superPortfolios": [
+      494,
+      433
     ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 1683,
-      "ac_capacity": 1460,
-      "power_now": 48
-    }
-  },
-  {
-    "id": 177,
-    "name": "Test Portfolio 177",
-    "subPortfolios": [
-      698
-    ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2994,
-      "ac_capacity": 2758,
-      "power_now": 57
-    }
-  },
-  {
-    "id": 99,
-    "name": "Test Portfolio 99",
-    "subPortfolios": [
-      698,
-      177
-    ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2132,
-      "ac_capacity": 1927,
-      "power_now": 59
-    }
-  },
-  {
-    "id": 258,
-    "name": "Test Portfolio 258",
-    "subPortfolios": [
-      99,
-      698
-    ],
-    "superPortfolios": [],
-    "kpis": {
-      "dc_capacity": 2512,
-      "ac_capacity": 2390,
-      "power_now": 80
-    }
+    "projects": [
+      453
+    ]
   }
 ]

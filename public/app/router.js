@@ -7,38 +7,53 @@ define([
   "app/ia",
   "app/modules/user/user",
 
-  "app/modules/portfolio/portfolio",
-
-  "hbs!app/layouts/index"
+  "app/modules/portfolio/portfolio"
 ],
-function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, indexTemplate){
+function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
 
   ia.Controller = Backbone.Marionette.Controller.extend({
-    portfolios: function(){
+
+    states: {
+      portfolio: function(options){
+        var portfolioNavigationListView = new Portfolio.views.NavigationListView({
+          collection: options.collection,
+          model: options.model,
+          basePortfolios: options.all
+        });
+
+        var detailLayout = new Portfolio.layouts.detailOverview({sourceView: portfolioNavigationListView});
+
+        ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
+        ia.layouts.app.mainContent.show(detailLayout);
+      },
+      project: function(options){
+
+      }
+    },
+
+    index: function(){
       var portfolios = new Portfolio.collections.NavigationList();
-
-      ia.setLayout(ia.mainLayout);
-
-      ia.setState("portfolios", {collection: portfolios, model: false, all: portfolios } );
+      this.trigger("state:portfolio", {collection: portfolios, model: false, all: portfolios } );
 
       portfolios.fetch();
     },
 
     selectPortfolio: function(id){
+      var self = this;
       var portfolios = new Portfolio.collections.NavigationList();
-      ia.setLayout(ia.mainLayout);
       portfolios.fetch({
         success: function(collection, response, options){
-          var selectedPortfolio = collection.get(id);
-
-          var subPortfoliosIds = selectedPortfolio.get('subPortfolios');
-          var subPortfolios = collection.filter(function(model){
-            return _.contains(subPortfoliosIds, model.id);
-          });
+          var subPortfolios = collection.subPortfolios(collection.get(id));
           var newList = new Portfolio.collections.NavigationList(subPortfolios);
-          ia.setState("portfolios", {collection: newList, model: selectedPortfolio, all: portfolios} );
+
+          self.trigger("state:portfolio", {collection: newList, model: collection.get(id), all: portfolios} );
         }
       });
+    },
+
+    initialize: function(){
+      var self = this;
+      this.listenTo(this, "state:portfolio", function(options){ self.states.portfolio(options); });
     }
 
   });
@@ -46,8 +61,8 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, ind
   var Router = Backbone.Marionette.AppRouter.extend({
     controller: new ia.Controller(),
     appRoutes: {
-      "": "portfolios",
-      "portfolios": "portfolios",
+      "": "index",
+      "portfolios": "index",
       "portfolios/:id": "selectPortfolio"
     }
   });

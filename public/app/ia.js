@@ -1,4 +1,4 @@
-define(
+ define(
 
   [
     'jquery',
@@ -9,56 +9,21 @@ define(
     "backbone.marionette.handlebars",
 
     "app/modules/user/user",
-    "app/modules/portfolio/portfolio",
     "app/modules/header/header",
 
     "hbs!app/layouts/index"
   ],
 
-  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Portfolio, Header, indexTemplate){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, indexTemplate){
 
-    var states = {
-      portfolios: function(portfolioSet){
-        var portfolioNavigationView = new Portfolio.views.NavigationListView({
-          collection: portfolioSet.collection,
-          model: portfolioSet.model,
-          basePortfolios: portfolioSet.all
-        });
-
-        var detailLayout = new Portfolio.layouts.detailOverview();
-
-        ia.mainLayout.contentNavigation.show(portfolioNavigationView);
-        ia.mainLayout.mainContent.show(detailLayout);
-
-      }
-    };
-
+    // Instantiate the app
     var ia = new Backbone.Marionette.Application();
 
-    ia.currentUser = new User.Model();
+    /* Empty object to hold different layouts. */
+    ia.layouts = {};
 
-    ia.addRegions({
-      main: "#ia"
-    });
 
-    ia.setState = function(state, arg){
-      states[state](arg);
-    };
-
-    ia.setLayout = function(layout){
-      console.log('set layout', ia);
-      ia.main.show(ia.mainLayout);
-
-      var headerView = new Header.views.LoggedIn({model: ia.currentUser});
-
-      headerView.on("logout", function(){
-        window.location = "/logout";
-      });
-
-      ia.mainLayout.header.show(headerView);
-
-    };
-
+    // Create a new layout for the primary app view
     var AppLayout = Backbone.Marionette.Layout.extend({
       template: {
         type: 'handlebars',
@@ -73,9 +38,34 @@ define(
       }
     });
 
-    ia.mainLayout = new AppLayout();
+
+    /* Some app initialization. Breaking it up for clarity. */
+
+    // Bootstrap User
+    ia.addInitializer(function(){
+      // Create a new user instance that is the current session user
+      ia.currentUser = new User.Model( JSON.parse($('#currentUserData').html()) );
+    });
+
+
+    // Setup Layouts and Views
+    ia.addInitializer(function(){
+      // Define the primary region (this is the body)
+      ia.addRegions({
+        main: "#ia"
+      });
+
+      ia.layouts.app = new AppLayout();
+
+      var headerView = new Header.views.LoggedIn({model: ia.currentUser});
+      ia.listenTo(headerView, "logout", function(){
+        window.location = "/logout";
+      });
+
+      ia.main.show(ia.layouts.app);
+      ia.layouts.app.header.show(headerView);
+    });
 
     return ia;
   }
-
 );

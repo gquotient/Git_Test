@@ -15,10 +15,6 @@ define(
         template: loggedInTemplate
       },
 
-      serializeData: function(){
-        return this.model;
-      },
-
       triggers: {
         "click .logout": "logout"
       }
