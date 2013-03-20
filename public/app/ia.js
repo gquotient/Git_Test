@@ -10,11 +10,12 @@
 
     "app/modules/user/user",
     "app/modules/header/header",
+    "app/modules/portfolio/portfolio",
 
     "hbs!app/layouts/index"
   ],
 
-  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, indexTemplate){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, Portfolio, indexTemplate){
 
     // Instantiate the app
     var ia = new Backbone.Marionette.Application();
@@ -64,6 +65,12 @@
 
       ia.main.show(ia.layouts.app);
       ia.layouts.app.header.show(headerView);
+    });
+
+    // Since the portfolio list is so important to the app, let's go ahead
+    // and create it.
+    ia.addInitializer(function(){
+      ia.portfolios = new Portfolio.collections.NavigationList();
     });
 
     return ia;
