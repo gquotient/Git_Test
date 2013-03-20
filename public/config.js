@@ -23,14 +23,17 @@ require.config({
   packages: [
     {
       name: 'header',
+      main: 'header',
       location: 'app/modules/header'
     },
     {
       name: 'user',
+      main: 'user',
       location: 'app/modules/user'
     },
     {
       name: 'portfolio',
+      main: 'portfolio',
       location: 'app/modules/portfolio'
     }
   ],
