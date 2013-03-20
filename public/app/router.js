@@ -21,7 +21,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
           basePortfolios: options.all
         });
 
-        var detailLayout = new Portfolio.layouts.detailOverview();
+        var detailLayout = new Portfolio.layouts.detailOverview({sourceView: portfolioNavigationListView});
 
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
         ia.layouts.app.mainContent.show(detailLayout);
@@ -39,20 +39,21 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
     },
 
     selectPortfolio: function(id){
+      var self = this;
       var portfolios = new Portfolio.collections.NavigationList();
       portfolios.fetch({
         success: function(collection, response, options){
           var subPortfolios = collection.subPortfolios(collection.get(id));
           var newList = new Portfolio.collections.NavigationList(subPortfolios);
 
-          this.trigger("state:portfolio", {collection: newList, model: collection.get(id), all: portfolios} );
+          self.trigger("state:portfolio", {collection: newList, model: collection.get(id), all: portfolios} );
         }
       });
     },
 
     initialize: function(){
       var self = this;
-      this.listenTo(this, "state:portfolio", function(options){ self.states.portfolio(options) })
+      this.listenTo(this, "state:portfolio", function(options){ self.states.portfolio(options); });
     }
 
   });

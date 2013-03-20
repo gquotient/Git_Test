@@ -5,11 +5,12 @@ define(
     "backbone.marionette",
 
     "hbs!app/modules/portfolio/templates/navigationItemView",
-    "hbs!app/modules/portfolio/templates/allPortfoliosList",
     "hbs!app/modules/portfolio/templates/portfolioList",
-    "hbs!app/modules/portfolio/templates/detailOverview"
+    "hbs!app/modules/portfolio/templates/detailOverview",
+
+    "hbs!app/modules/portfolio/templates/detailHeader"
   ],
-  function($, Backbone, Marionette, navigationItemView, allPortfoliosList, portfolioList, detailOverview){
+  function($, Backbone, Marionette, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
@@ -142,6 +143,8 @@ define(
 
         /* Update the address bar to reflect the new model. */
         Backbone.history.navigate("portfolios/"+ this.model.id);
+
+        this.trigger('set:portfolio', this.model);
       }
     });
 
@@ -151,12 +154,30 @@ define(
         template: detailOverview
       },
       regions: {
-        detailName: "#detail_name",
-        mapView: "#map_view",
+        header: "#detail_header",
+        map: "#map_view",
         alarms: "#alarms",
         projects: "#projects"
+      },
+      initialize: function(options){
+        var self = this;
+        this.listenTo(options.sourceView, "set:portfolio", function(portfolio){
+
+          var header = new Portfolio.views.detailHeader({model: portfolio});
+          self.header.show(header);
+
+          
+
+        });
       }
     });
+
+    Portfolio.views.detailHeader = Backbone.Marionette.ItemView.extend({
+      template: {
+        type: "handlebars",
+        template: detailHeaderTemplate
+      }
+    })
 
     return Portfolio;
   }
