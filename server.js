@@ -10,8 +10,14 @@ var express = require('express')
   , passport = require('passport')
   , RedisStore = require('connect-redis')(express)
   , flash = require('connect-flash')
-  , LocalStrategy = require('passport-local').Strategy
+  , DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy
   , fs = require('fs');
+
+/**
+ * , LocalStrategy = require('passport-local').Strategy
+ */
+
+var port = process.env.PORT || 3005;
 
 /**
  * Stub out some users.
@@ -19,9 +25,6 @@ var express = require('express')
 
 var User = {
   users: [
-    {username: "jwin", password: "1234", name: "Justin", id: 1},
-    {username: "jkyle", password: "1234", name: "Kyle", id: 2},
-    {username: "rock", password: "1234", name: "Rock", id: 3}
   ],
   findBy: function(field, value, callback){
     var currentuser = _.find(this.users, function(user){
@@ -33,9 +36,6 @@ var User = {
     } else {
       callback(null, false, { message: "User not found." });
     }
-  },
-  verifyPassword: function(user, password){
-    return user.password === password;
   }
 };
 
@@ -58,39 +58,6 @@ var Projects = {
     }
   }
 };
-
-/**
- * Setup Passport
- */
-
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-
-    User.findBy("username", username, function(err, user){
-      if( err ){ return done(err); }
-
-      if( !user ) {
-        return done(null, false, { message: 'Bwahh ha ha ha ha. No user by that name.' });
-      }
-
-      if( !User.verifyPassword(user, password) ){
-        return done(null, false, { message: 'Awwwwww. Did you forget your password?'});
-      }
-
-      return done(null, user);
-    });
-  }
-));
-
-passport.serializeUser(function(user, done) {
-  done(null, user.username);
-});
-
-passport.deserializeUser(function(username, done) {
-  User.findBy("username", username, function (err, user) {
-    done(err, user);
-  });
-});
 
 /*
  * Configure Express App
@@ -119,19 +86,49 @@ app.configure(function(){
 
 app.configure('development', function(){
   app.use(express.errorHandler());
+  app.set('clientID', 'IA6_0.1');
+  app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
+  app.set('callbackURL', 'http://127.0.0.1:' + port + '/token');
 });
 
+/**
+ * Setup Passport
+ */
 
+passport.use(new DrakerIA6Strategy( {
+    clientID: app.get('clientID'),
+    clientSecret: app.get('clientSecret'),
+    callbackURL: app.get('callbackURL')
+  },
+  function(token, tokenSecret, profile, done) {
+    return done(null, profile);
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  // console.log('serialize user', user)
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  // console.log('deserialize user', user)
+  done(null, user);
+});
+
+/*
+ * Basic routing (temporary).
+ */
 
 app.all('/', ensureAuthenticated, function(req, res){
   res.redirect('/ia');
 });
 
 app.all('/ia', ensureAuthenticated, function(req, res){
+
   res.render(
     'index',
     {
-      user: '{ "username": "' + req.user.username + '"}',
+      user: '{ "username": "' + req.user.name + '" }',
       locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
     }
   );
@@ -143,7 +140,7 @@ app.all('/ia/*', ensureAuthenticated, function(req, res){
   res.redirect( req.protocol + '://' + req.get('Host') + '/ia/#/' + newUrl );
 });
 
-/* Login */
+
 app.get('/login', function(req, res){
   if (req.isAuthenticated() ) {
     res.redirect('/ia');
@@ -153,22 +150,67 @@ app.get('/login', function(req, res){
 });
 
 app.post('/login',
-passport.authenticate('local',
+  passport.authenticate('draker-ia6',
   {
-    successRedirect: '/ia',
+    successRedirect: '/reset',
     failureRedirect: '/login',
     failureFlash: true
   }
 ));
 
 /* Reset Password */
-app.get('/resetpassword', function(req, res){
-  res.render('resetpassword', { flash: req.flash('error') });
-});
+app.get('/reset', ensureAuthenticated, function(req, res){
+  if( req.user.firsttime ){
+    res.render('resetpassword', { flash: req.flash('error') });
+  } else {
+    res.redirect('/ia');
+  }
+})
+
+app.post('/reset', function(req, res){
+  // console.log( 'passwords:' + req.body.password + ':' + req.body.password_new + ':' + req.body.password_check );
+  if (req.body.password_new === req.body.password_check) {
+    if (req.body.password_new.length > 5) {
+      // console.log( 'post the password reset request' );
+      DrakerIA6Strategy.reset(req, res, app, function(req, res, post_res) {
+        // console.log( "Back from reset:" + post_res.status );
+        if ( post_res.status === 200 ) {
+          res.redirect('/ia');
+        } else {
+          if ( post_res.message ) {
+            req.flash( 'error', post_res.message );
+          } else {
+            req.flash( 'error', 'Unauthorized' );
+          }
+          res.redirect('/reset');
+        }
+        
+      });
+    } else {
+      req.flash( 'error', 'New password is too short');
+      res.redirect('/reset');
+    }
+  } else {
+    req.flash( 'error', 'New passwords did not match');
+    res.redirect('/reset');
+  }
+})
+
+app.get('/token',
+  passport.authenticate('draker-ia6', { failureRedirect: '/login', failureFlash: true }),
+  function(req, res){
+    req.session["draker-ia6"] = req.session["passport"]["user"];
+    /* res.render("index",checkSession(req)); */
+    res.redirect('/reset')
+  }
+);
 
 /* Logout */
 app.get('/logout',
   function(req, res){
+    DrakerIA6Strategy.logout(req, res, app, function(req, res, post_res) {
+      // console.log( "Back from logout:" + post_res.status );
+    });
     // req.logout();
     req.session.destroy();
     res.redirect('/login');

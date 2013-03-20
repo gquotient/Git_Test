@@ -110,39 +110,38 @@ define(
       /* Get the previous model and collection off the stack and set to be current. */
       back: function(){
         this.model = this.breadcrumbs.pop();
-
-        /* There's a chance that this.model is false in the case where we are returning
-         * to "all portfolios" */
-        if(this.model){
-          this.setPortfolio();
-        } else {
-          this.breadcrumbs = [];
-          this.collection = this.options.basePortfolios;
-          this.model = false;
-          this.render();
-
-          Backbone.history.navigate("/");
-        }
+        this.setPortfolio();
       },
 
       /* Setup the views for the current model. */
       setPortfolio: function(){
-        /* Currently we are storing the subPortfolio IDs on the model. */
-        var subPortfoliosIds = this.model.get('subPortfolios');
 
-        /* Use the IDs of the subportfolios to filter the full list of portfolios. */
-        var subPortfolios = this.options.basePortfolios.filter(function(model){
-          return _.contains(subPortfoliosIds, model.id);
-        });
+        /* There's a chance that this.model is false in the case where we are returning
+         * to "all portfolios" */
+        if(this.model){
+          /* Currently we are storing the subPortfolio IDs on the model. */
+          var subPortfoliosIds = this.model.get('subPortfolios');
 
-        /* Set the current collection to be a new navigation list with the subPortfolios. */
-        this.collection = new Portfolio.collections.NavigationList(subPortfolios);
+          /* Use the IDs of the subportfolios to filter the full list of portfolios. */
+          var subPortfolios = this.options.basePortfolios.filter(function(model){
+            return _.contains(subPortfoliosIds, model.id);
+          });
 
-        /* Trigger a render. This forces the nav header to update, too. */
-        this.render();
+          /* Set the current collection to be a new navigation list with the subPortfolios. */
+          this.collection = new Portfolio.collections.NavigationList(subPortfolios);
 
-        /* Update the address bar to reflect the new model. */
-        Backbone.history.navigate("portfolios/"+ this.model.id);
+          /* Trigger a render. This forces the nav header to update, too. */
+          this.render();
+
+          /* Update the address bar to reflect the new model. */
+          Backbone.history.navigate("portfolios/"+ this.model.id);
+        } else {
+          this.breadcrumbs = [];
+          this.collection = this.options.basePortfolios;
+          this.render();
+
+          Backbone.history.navigate("/");
+        }
 
         this.trigger('set:portfolio', this.model);
       }
@@ -161,13 +160,10 @@ define(
       },
       initialize: function(options){
         var self = this;
-        this.listenTo(options.sourceView, "set:portfolio", function(portfolio){
 
+        this.listenTo(options.sourceView, "set:portfolio", function(portfolio){
           var header = new Portfolio.views.detailHeader({model: portfolio});
           self.header.show(header);
-
-
-
         });
       }
     });
@@ -177,7 +173,7 @@ define(
         type: "handlebars",
         template: detailHeaderTemplate
       }
-    })
+    });
 
     return Portfolio;
   }

@@ -14,17 +14,23 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
   ia.Controller = Backbone.Marionette.Controller.extend({
 
     states: {
+      // Primary State for navigating and viewing portfolios.
       portfolio: function(options){
+
+        // Create the navigation view.
         var portfolioNavigationListView = new Portfolio.views.NavigationListView({
           collection: options.collection,
           model: options.model,
-          basePortfolios: options.all
+          basePortfolios: ia.portfolios
         });
 
+        // Create the layout for 
         var detailLayout = new Portfolio.layouts.detailOverview({sourceView: portfolioNavigationListView});
 
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
         ia.layouts.app.mainContent.show(detailLayout);
+        portfolioNavigationListView.setPortfolio();
+
       },
       project: function(options){
 
@@ -32,21 +38,20 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
     },
 
     index: function(){
-      var portfolios = new Portfolio.collections.NavigationList();
-      this.trigger("state:portfolio", {collection: portfolios, model: false, all: portfolios } );
+      this.trigger("state:portfolio", {collection: ia.portfolios, model: false } );
 
-      portfolios.fetch();
+      ia.portfolios.fetch();
     },
 
     selectPortfolio: function(id){
       var self = this;
-      var portfolios = new Portfolio.collections.NavigationList();
-      portfolios.fetch({
+      ia.portfolios.fetch({
         success: function(collection, response, options){
+
           var subPortfolios = collection.subPortfolios(collection.get(id));
           var newList = new Portfolio.collections.NavigationList(subPortfolios);
 
-          self.trigger("state:portfolio", {collection: newList, model: collection.get(id), all: portfolios} );
+          self.trigger("state:portfolio", {collection: newList, model: collection.get(id)} );
         }
       });
     },
