@@ -35,6 +35,11 @@ require.config({
       name: 'portfolio',
       main: 'portfolio',
       location: 'app/modules/portfolio'
+    },
+    {
+      name: 'project',
+      main: 'project',
+      location: 'app/modules/project'
     }
   ],
   paths: {

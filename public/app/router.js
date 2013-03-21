@@ -25,10 +25,11 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
         });
 
         // Create the layout for 
-        var detailLayout = new Portfolio.layouts.detailOverview({sourceView: portfolioNavigationListView});
+        var detailLayout = new Portfolio.layouts.detailOverview({sourceView: portfolioNavigationListView, projectList: ia.projects});
 
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
         ia.layouts.app.mainContent.show(detailLayout);
+
         portfolioNavigationListView.setPortfolio();
 
       },
@@ -43,6 +44,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
 
     selectPortfolio: function(id){
       var self = this;
+
       var subPortfolios = ia.portfolios.subPortfolios(ia.portfolios.get(id));
       var newList = new Portfolio.collections.NavigationList(subPortfolios);
 

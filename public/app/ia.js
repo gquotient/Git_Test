@@ -11,11 +11,24 @@
     "user",
     "header",
     "portfolio",
+    "project",
 
     "hbs!app/layouts/index"
   ],
 
-  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, Portfolio, indexTemplate){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, Portfolio, Project, indexTemplate){
+
+    /* I'm not sure where else to put this right now, so I'm going to put it here.
+     * I'm going to extend Backbone's "Collection" with a method to return a subset of
+     * models by ID. It's a shortcut to collection.filter(...).
+     */
+
+    Backbone.Collection.prototype.filterByIDs = function(ids){
+      return this.filter( function(model){ 
+        return _.contains(ids, model.id);
+      });
+    };
+
 
     // Instantiate the app
     var ia = new Backbone.Marionette.Application();
@@ -71,7 +84,7 @@
     // and create it.
     ia.addInitializer(function(){
       ia.portfolios = new Portfolio.collections.NavigationList(JSON.parse($('#bootstrapPortfolios').html()));
-      // ia.portfolios = new Portfolio.collections.NavigationList(JSON.parse($('#bootstrapPortfolios').html()));
+      ia.projects = new Project.collections.DataList(JSON.parse($('#bootstrapProjects').html()));
     });
 
     return ia;

@@ -4,13 +4,16 @@ define(
     "backbone",
     "backbone.marionette",
 
+    "../../../app/ia",
+
+    "project",
 
     "hbs!portfolio/templates/navigationItemView",
     "hbs!portfolio/templates/portfolioList",
     "hbs!portfolio/templates/detailOverview",
     "hbs!portfolio/templates/detailHeader"
   ],
-  function($, Backbone, Marionette, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate){
+  function($, Backbone, Marionette, ia, Project, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
@@ -43,11 +46,7 @@ define(
       url: '/api/portfolios',
 
       subPortfolios: function(model){
-        var subPortfoliosIds = model.get('subPortfolios');
-        var subPortfolios = this.filter(function(portfolio){
-          return _.contains(subPortfoliosIds, portfolio.id);
-        });
-        return subPortfolios;
+        return this.filterByIDs( model.get('subPortfolios') );
       }
     });
 
@@ -142,9 +141,11 @@ define(
           var subPortfoliosIds = this.model.get('subPortfolios');
 
           /* Use the IDs of the subportfolios to filter the full list of portfolios. */
-          var subPortfolios = this.options.basePortfolios.filter(function(model){
-            return _.contains(subPortfoliosIds, model.id);
-          });
+          // var subPortfolios = this.options.basePortfolios.filter(function(model){
+          //   return _.contains(subPortfoliosIds, model.id);
+          // });
+
+          var subPortfolios = this.options.basePortfolios.filterByIDs(subPortfoliosIds);
 
           /* Set the current collection to be a new navigation list with the subPortfolios. */
           this.collection = new Portfolio.collections.NavigationList(subPortfolios);
@@ -179,10 +180,21 @@ define(
       },
       initialize: function(options){
         var self = this;
-
         this.listenTo(options.sourceView, "set:portfolio", function(portfolio){
           var header = new Portfolio.views.detailHeader({model: portfolio});
           self.header.show(header);
+
+          var projects;
+
+          if (portfolio) {
+            projects = new Project.collections.DataList(options.projectList.filterByIDs(portfolio.getAllProjects()));
+          } else {
+            projects = options.projectList;
+          }
+
+          var projectList = new Project.views.DataList({ collection: projects });
+          self.projects.show(projectList);
+
         });
       }
     });
