@@ -124,14 +124,34 @@ app.all('/', ensureAuthenticated, function(req, res){
 });
 
 app.all('/ia', ensureAuthenticated, function(req, res){
+  var portfolios, projects;
+  // Load portfolios.
+  fs.readFile('./data/json/portfolios.json', 'utf8', function (err, data) {
+      if (err) {
+        return console.log(err);
+      }
+      portfolios = data;
 
-  res.render(
-    'index',
-    {
-      user: '{ "username": "' + req.user.name + '" }',
-      locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
-    }
-  );
+      // Load projects.
+      fs.readFile('./data/json/projects.json', 'utf8', function (err, data) {
+      if (err) {
+        return console.log(err);
+      }
+      projects = data;
+
+      // Render the response.
+      res.render(
+        'index',
+        {
+          user: '{ "username": "' + req.user.name + '" }',
+          portfolios: portfolios,
+          projects: projects,
+          locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
+        }
+      );
+
+    });
+  });
 });
 
 app.all('/ia/*', ensureAuthenticated, function(req, res){
@@ -184,7 +204,7 @@ app.post('/reset', function(req, res){
           }
           res.redirect('/reset');
         }
-        
+
       });
     } else {
       req.flash( 'error', 'New password is too short');
@@ -194,14 +214,14 @@ app.post('/reset', function(req, res){
     req.flash( 'error', 'New passwords did not match');
     res.redirect('/reset');
   }
-})
+});
 
 app.get('/token',
   passport.authenticate('draker-ia6', { failureRedirect: '/login', failureFlash: true }),
   function(req, res){
     req.session["draker-ia6"] = req.session["passport"]["user"];
     /* res.render("index",checkSession(req)); */
-    res.redirect('/reset')
+    res.redirect('/reset');
   }
 );
 
@@ -220,11 +240,6 @@ app.get('/logout',
 /* API */
 app.all('/api/*', ensureAuthenticated);
 
-app.get('/api/users',
-  function(req, res){
-    res.json({currentUser: req.user, data: User.users});
-});
-
 app.get('/api/portfolios',
   function(req, res){
     fs.readFile('./data/json/portfolios.json', 'utf8', function (err, data) {
@@ -241,8 +256,8 @@ app.get('/api/projects',
       if (err) {
         return console.log(err);
       }
-      res.end(data)
-    })
+      res.end(data);
+    });
   });
 
 function ensureAuthenticated(req, res, next) {

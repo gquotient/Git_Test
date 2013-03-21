@@ -39,21 +39,14 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
 
     index: function(){
       this.trigger("state:portfolio", {collection: ia.portfolios, model: false } );
-
-      ia.portfolios.fetch();
     },
 
     selectPortfolio: function(id){
       var self = this;
-      ia.portfolios.fetch({
-        success: function(collection, response, options){
+      var subPortfolios = ia.portfolios.subPortfolios(ia.portfolios.get(id));
+      var newList = new Portfolio.collections.NavigationList(subPortfolios);
 
-          var subPortfolios = collection.subPortfolios(collection.get(id));
-          var newList = new Portfolio.collections.NavigationList(subPortfolios);
-
-          self.trigger("state:portfolio", {collection: newList, model: collection.get(id)} );
-        }
-      });
+      self.trigger("state:portfolio", {collection: newList, model: ia.portfolios.get(id)} );
     },
 
     initialize: function(){

@@ -70,7 +70,8 @@
     // Since the portfolio list is so important to the app, let's go ahead
     // and create it.
     ia.addInitializer(function(){
-      ia.portfolios = new Portfolio.collections.NavigationList();
+      ia.portfolios = new Portfolio.collections.NavigationList(JSON.parse($('#bootstrapPortfolios').html()));
+      // ia.portfolios = new Portfolio.collections.NavigationList(JSON.parse($('#bootstrapPortfolios').html()));
     });
 
     return ia;
