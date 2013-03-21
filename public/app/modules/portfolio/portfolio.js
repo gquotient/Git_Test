@@ -16,7 +16,26 @@ define(
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
 
     /* Setup a model. */
-    Portfolio.models.Portfolio = Backbone.Model.extend({});
+    Portfolio.models.Portfolio = Backbone.Model.extend({
+      getAllProjects: function(){
+        var self = this;
+        var allProjects = [];
+        allProjects = allProjects.concat( this.get('projects') );
+        _.each(this.get('subPortfolios'), function(portfolioId){
+          var portfolio = self.collection.get(portfolioId);
+          allProjects = allProjects.concat(portfolio.getAllProjects() );
+        });
+        return allProjects;
+      },
+
+      toJSON: function(){
+        return {
+          name: this.get('name'),
+          projects: this.getAllProjects(),
+          subPortfolios: this.get('subPortfolios')
+        };
+      }
+    });
 
     /* Setup the url for the list of portfolios. This will be our list for navigation. */
     Portfolio.collections.NavigationList = Backbone.Collection.extend({

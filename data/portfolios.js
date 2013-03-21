@@ -2,6 +2,14 @@ var _ = require("lodash")
   , fs = require('fs');
 
 /*
+  Generator:
+  Step 1 - Generate Projects
+  Step 2 - Generate (Sub)Portfolios (assigning projects to portfolios)
+  Step 3 - Generate Portfolios containing Subportfolios
+*/
+
+
+/*
 Portfolio:
 
 {
@@ -39,6 +47,7 @@ function generateProject(){
     kpis: {
       dc_capacity: dc_capacity,
       ac_capacity: dc_capacity - _.random(100, 300),
+      irradiance_now: _.random(1000),
       power_now: _.random(100)
     },
     belongsTo: []
@@ -58,7 +67,7 @@ function generatePortfolio(projects){
   };
 
   // Random number of SubPortfolios per Portfolio.
-  var numberOfProjects = _.random(projects.length - 10);
+  var numberOfProjects = _.random(projects.length);
   _.times(numberOfProjects, function(){
     var project = projects[ _.random(numberOfProjects - 1) ];
     if ( !_.contains(portfolio.projects, project.id) ){
@@ -86,28 +95,37 @@ function isntSuper(portfolio, subPortfolio){
 
 function generatePortfolios(num){
   var projects = generateProjects(num*3);
+  var subportfolios = [];
   var portfolios = [];
 
-  // Generate *num* number of portfolios into the porftolios array.
-  _.times(num, function(){
-    portfolios.push( generatePortfolio(projects) );
+  // Generate *num/2* number of portfolios into the subportfolios array.
+  _.times(num/2, function(){
+    subportfolios.push( generatePortfolio(projects) );
   });
 
+  // Generate *num/2* number of portfolios into the main portfolios array.
+  _.times(num/2, function(){
+    portfolios.push( generatePortfolio([]) );
+  });
+
+
   // Loop through the portfolios array and add subportfolios.
-  var numberOfPortfolios = portfolios.length;
+  var numberOfSubPortfolios = subportfolios.length;
 
   _.each(portfolios, function(portfolio){
     // Random number of SubPortfolios per Portfolio.
     var numberOfSubPortfolios = _.random(3);
     _.times(numberOfSubPortfolios, function(){
-      var subPortfolio = portfolios[ _.random(numberOfPortfolios - 1) ];
-      if ( !_.contains(subPortfolio.subPortfolios, portfolio.id) && subPortfolio.id !== portfolio.id && !_.contains(portfolio.subPortfolios, subPortfolio.id)){
+      var subPortfolio = subportfolios[ _.random(numberOfSubPortfolios - 1) ];
+      if ( !_.contains(portfolio.subPortfolios, subPortfolio.id) ){
         portfolio.subPortfolios.push(subPortfolio.id);
         subPortfolio.superPortfolios.push(portfolio.id);
       }
     });
 
   });
+
+  portfolios = portfolios.concat(subportfolios);
 
   return {portfolios: portfolios, projects: projects};
 }
@@ -134,6 +152,3 @@ if(require.main === module) {
 } else { 
   module.exports = generatePortfolios;
 }
-
-
-
