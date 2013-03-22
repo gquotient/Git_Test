@@ -11,9 +11,10 @@ define(
     "hbs!portfolio/templates/navigationItemView",
     "hbs!portfolio/templates/portfolioList",
     "hbs!portfolio/templates/detailOverview",
-    "hbs!portfolio/templates/detailHeader"
+    "hbs!portfolio/templates/detailHeader",
+    "hbs!portfolio/templates/detailKpis"
   ],
-  function($, Backbone, Marionette, ia, Project, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate){
+  function($, Backbone, Marionette, ia, Project, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate, detailKpisTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
@@ -32,15 +33,17 @@ define(
       },
 
       aggregate: function(){
-        var projects = this.getAllProjects();
+        this.set('allProjects', this.getAllProjects() );
+        var projects = this.collection.projects.filterByIDs(this.get('allProjects'));
+        this.set('dc_capacity', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').dc_capacity; }, 0) );
+        this.set('ac_capacity', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').ac_capacity; }, 0) );
+        this.set('irradiance_now', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').irradiance_now; }, 0) );
+        this.set('power_now', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').power_now; }, 0) );
       },
 
       toJSON: function(){
-        return {
-          name: this.get('name'),
-          projects: this.getAllProjects(),
-          subPortfolios: this.get('subPortfolios')
-        };
+        this.aggregate();
+        return this.attributes;
       }
     });
 
@@ -178,6 +181,7 @@ define(
       },
       regions: {
         header: "#detail_header",
+        kpis: "#kpis",
         map: "#map_view",
         alarms: "#alarms",
         projects: "#projects"
@@ -187,6 +191,9 @@ define(
         this.listenTo(options.sourceView, "set:portfolio", function(portfolio){
           var header = new Portfolio.views.detailHeader({model: portfolio});
           self.header.show(header);
+
+          var kpisView = new Portfolio.views.detailKpis({ model: portfolio});
+          self.kpis.show(kpisView);
 
           var projects;
 
@@ -207,6 +214,13 @@ define(
       template: {
         type: "handlebars",
         template: detailHeaderTemplate
+      }
+    });
+
+    Portfolio.views.detailKpis = Backbone.Marionette.ItemView.extend({
+      template: {
+        type: "handlebars",
+        template: detailKpisTemplate
       }
     });
 

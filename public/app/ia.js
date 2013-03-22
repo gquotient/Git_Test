@@ -24,7 +24,7 @@
      */
 
     Backbone.Collection.prototype.filterByIDs = function(ids){
-      return this.filter( function(model){ 
+      return this.filter( function(model){
         return _.contains(ids, model.id);
       });
     };
@@ -83,8 +83,9 @@
     // Since the portfolio list is so important to the app, let's go ahead
     // and create it.
     ia.addInitializer(function(){
-      ia.portfolios = new Portfolio.collections.NavigationList(JSON.parse($('#bootstrapPortfolios').html()));
       ia.projects = new Project.collections.DataList(JSON.parse($('#bootstrapProjects').html()));
+      ia.portfolios = new Portfolio.collections.NavigationList(JSON.parse($('#bootstrapPortfolios').html()));
+      ia.portfolios.projects = ia.projects;
     });
 
     return ia;
