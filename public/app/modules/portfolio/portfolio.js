@@ -31,6 +31,10 @@ define(
         return allProjects;
       },
 
+      aggregate: function(){
+        var projects = this.getAllProjects();
+      },
+
       toJSON: function(){
         return {
           name: this.get('name'),
