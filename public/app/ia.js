@@ -24,7 +24,7 @@
      */
 
     Backbone.Collection.prototype.filterByIDs = function(ids){
-      return this.filter( function(model){ 
+      return this.filter( function(model){
         return _.contains(ids, model.id);
       });
     };
@@ -33,9 +33,8 @@
     // Instantiate the app
     var ia = new Backbone.Marionette.Application();
 
-    /* Empty object to hold different layouts. */
+    // Empty object to hold different layouts. Should we abstract layouts to a module?
     ia.layouts = {};
-
 
     // Create a new layout for the primary app view
     var AppLayout = Backbone.Marionette.Layout.extend({
@@ -47,11 +46,30 @@
         header: "#header",
         navigation: "#navigation",
         contentNavigation: "#contentNavigation",
-        mainContent: "#content",
-        footer: "#footer"
+        mainContent: "#content"//,
+        //footer: "#footer"
+      },
+      onRender: function(){
+        // This is almost useless sense render will have fire before the elements are added to the DOM
+        this.resize();
+      },
+      resize: function(){
+        // Set wrapper container to fill the window
+        var $content = this.$el.find('.contentContainer'),
+        myOffset = $content.offset();
+
+        // Window height minus offset is the easy way to _fill the rest_ of the window
+        $content.height($(window).height() - myOffset.top);
+      },
+      initialize: function(){
+        var that = this;
+
+        // Listen for global window resize trigger and fire resize method
+        this.listenTo(ia, 'windowResize', function(event){
+          that.resize();
+        });
       }
     });
-
 
     /* Some app initialization. Breaking it up for clarity. */
 
@@ -59,6 +77,13 @@
     ia.addInitializer(function(){
       // Create a new user instance that is the current session user
       ia.currentUser = new User.Model( JSON.parse($('#currentUserData').html()) );
+    });
+
+    ia.addInitializer(function(){
+      // Fire a global resize event
+      $(window).on('resize', function(event){
+        ia.trigger('windowResize');
+      });
     });
 
 
@@ -71,12 +96,21 @@
 
       ia.layouts.app = new AppLayout();
 
+      /*
+      ia.layouts.app.listenTo($(window), "resize", function(event){
+        console.log(this, 'resize');
+      });
+      */
+
       var headerView = new Header.views.LoggedIn({model: ia.currentUser});
       ia.listenTo(headerView, "logout", function(){
         window.location = "/logout";
       });
 
       ia.main.show(ia.layouts.app);
+      // HACK ALERT fire resize method after elements are attached to the DOM
+      ia.layouts.app.resize();
+
       ia.layouts.app.header.show(headerView);
     });
 
