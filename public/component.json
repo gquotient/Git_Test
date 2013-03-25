@@ -5,7 +5,7 @@
   "dependencies": {
     "lodash": "latest",
     "underscore": "latest",
-    "require": "latest",
+    "requirejs": "latest",
     "jquery": "latest",
     "modernizr": "latest",
     "backbone": "latest",
