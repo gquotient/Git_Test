@@ -119,6 +119,8 @@
     ia.addInitializer(function(){
       ia.projects = new Project.collections.DataList(JSON.parse($('#bootstrapProjects').html()));
       ia.portfolios = new Portfolio.collections.NavigationList(JSON.parse($('#bootstrapPortfolios').html()));
+      ia.allPortfolios = new Portfolio.models.Portfolio({name: "All Portfolios", subportfolios: ia.portfolios.pluck("id"), projects: []})
+      console.log(ia.allPortfolios);
       ia.portfolios.projects = ia.projects;
     });
 

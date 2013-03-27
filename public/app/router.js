@@ -39,7 +39,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
     },
 
     index: function(){
-      this.trigger("state:portfolio", {collection: ia.portfolios, model: false } );
+      this.trigger("state:portfolio", {collection: ia.portfolios, model: ia.allPortfolios } );
     },
 
     selectPortfolio: function(id){
