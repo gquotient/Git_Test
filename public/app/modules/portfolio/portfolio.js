@@ -12,9 +12,10 @@ define(
     "hbs!portfolio/templates/portfolioList",
     "hbs!portfolio/templates/detailOverview",
     "hbs!portfolio/templates/detailHeader",
-    "hbs!portfolio/templates/detailKpis"
+    "hbs!portfolio/templates/detailKpis",
+    "hbs!portfolio/templates/breadcrumbs",
   ],
-  function($, Backbone, Marionette, ia, Project, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate, detailKpisTemplate){
+  function($, Backbone, Marionette, ia, Project, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
@@ -214,6 +215,13 @@ define(
       template: {
         type: "handlebars",
         template: detailHeaderTemplate
+      }
+    });
+
+    Portfolio.views.breadcrumbs = Backbone.Marionette.ItemView.extend({
+      template: {
+        type: "handlebars",
+        template: breadcrumbsTemplate
       }
     });
 
