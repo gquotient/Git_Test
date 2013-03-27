@@ -4,7 +4,7 @@ define([
   "backbone.marionette",
   "backbone.marionette.handlebars",
 
-  "app/ia",
+  "ia",
 
   "user",
   "portfolio"

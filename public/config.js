@@ -43,7 +43,10 @@ require.config({
     }
   ],
   paths: {
-    //Require plugins
+    // Main app
+    ia: 'app/ia',
+
+    // Require plugins
     text: 'components/requirejs-text/text',
     css: 'components/css/css',
     hbs: 'components/require-handlebars-plugin/hbs',

@@ -2,7 +2,7 @@
 define(
   [
       'jquery',
-      'app/ia',
+      'ia',
       'app/router'
   ],
   function ($, ia, Router) {
