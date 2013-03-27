@@ -8,11 +8,49 @@ html, body {
   height: 100%;
 }
 
+pageNavHeight = 30px;
+
+#nav_page {
+  background: #aaa;
+  height: pageNavHeight;
+  width: 100%;
+  overflow: hidden;
+  line-height: pageNavHeight;
+  padding: 0 6px;
+  margin:0;
+
+  ul.breadcrumbs {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    float: left;
+
+    li {
+      float: left;
+      margin: 0 6px;
+
+      a {
+        display: inline-block;
+        width: 100%;
+        color: #000;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+    li.active {
+      font-weight: bold;
+    }
+  }
+}
+
 .contentContainer {
   height: 500px;
   overflow: hidden;
 
-  #contentNavigation {
+  #nav_content {
     width: 25%;
     float: left;
     border-right: 1px solid #aaa;
