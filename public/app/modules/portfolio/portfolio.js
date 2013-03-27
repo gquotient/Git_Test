@@ -4,7 +4,7 @@ define(
     "backbone",
     "backbone.marionette",
 
-    "../../../app/ia",
+    "ia",
 
     "project",
 
@@ -188,6 +188,7 @@ define(
       },
       initialize: function(options){
         var self = this;
+
         this.listenTo(options.sourceView, "set:portfolio", function(portfolio){
           var header = new Portfolio.views.detailHeader({model: portfolio});
           self.header.show(header);
@@ -205,7 +206,6 @@ define(
 
           var projectList = new Project.views.DataList({ collection: projects });
           self.projects.show(projectList);
-
         });
       }
     });

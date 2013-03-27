@@ -4,7 +4,7 @@ define([
   "backbone.marionette",
   "backbone.marionette.handlebars",
 
-  "app/ia",
+  "ia",
 
   "user",
   "portfolio"
@@ -24,7 +24,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
           basePortfolios: ia.portfolios
         });
 
-        // Create the layout for 
+        // Create the layout for
         var detailLayout = new Portfolio.layouts.detailOverview({sourceView: portfolioNavigationListView, projectList: ia.projects});
 
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);

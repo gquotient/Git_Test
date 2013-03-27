@@ -11,47 +11,57 @@ html, body {
 .contentContainer {
   height: 500px;
   overflow: hidden;
-}
 
-#contentNavigation {
-  width: 25%;
-  float: left;
-  border: 1px solid #369;
-  overflow: auto;
-  height: 100%;
-  min-height: 100%;
-  max-height: 100%;
-  .back {
-    cursor: pointer;
-  }
-  .all {
-    cursor: pointer;
-  }
-  .portfolio {
-    border-top: 1px solid #666;
-    padding: 3px;
-    margin: 0;
-    cursor: pointer;
-    h3 {
-      margin: 0px;
-      white-space: nowrap;
-      overflow: ellipsis;
+  #contentNavigation {
+    width: 25%;
+    float: left;
+    border-right: 1px solid #aaa;
+    overflow: auto;
+    height: 100%;
+    min-height: 100%;
+    max-height: 100%;
+    .back {
+      cursor: pointer;
+    }
+    .all {
+      cursor: pointer;
+    }
+    .portfolio {
+      border-top: 1px solid #aaa;
+      padding: 3px;
+      margin: 0;
+      cursor: pointer;
+      h3 {
+        margin: 0px;
+        white-space: nowrap;
+        overflow: ellipsis;
+      }
+    }
+    .portfolio:hover {
+      background: #ccc;
+    }
+    .portfolio:last-child {
+      border-bottom: 1px solid #aaa;
     }
   }
-  .portfolio:hover {
-    background: colorDrakerOrange;
-  }
-  .portfolio:last-child {
-    border-bottom: 1px solid #666;
-  }
-}
 
-#content {
-  width: 75%;
-  float: right;
-  border: 1px solid #f00;
-  overflow: auto;
-  min-height: 100%;
-  max-height: 100%;
-  position: relative;
+  #content {
+    width: 75%;
+    float: right;
+    //border: 1px solid #f00;
+    overflow: auto;
+    height: 100%;
+    position: relative;
+    > div { // This is an artifact of how Backbone/Marionette views work
+      height: 100%;
+      max-height: 100%;
+      overflow: hidden;
+    }
+    .verticalPane {
+      height: 50%;
+      min-height: 50%;
+      overflow: auto;
+      border-bottom: 1px solid #ccc;
+    }
+  }
 }
