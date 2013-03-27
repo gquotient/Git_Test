@@ -11,7 +11,8 @@ var express = require('express')
   , RedisStore = require('connect-redis')(express)
   , flash = require('connect-flash')
   , DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy
-  , fs = require('fs');
+  , fs = require('fs')
+  , hbs = require('hbs');
 
 /**
  * , LocalStrategy = require('passport-local').Strategy
@@ -114,6 +115,13 @@ passport.deserializeUser(function(user, done) {
   // console.log('deserialize user', user)
   done(null, user);
 });
+
+/*
+  Register partials
+*/
+
+var headerTemplate = fs.readFileSync(__dirname + '/templates/partials/header.hbs', 'utf8');
+hbs.registerPartial('sharedHeader', headerTemplate);
 
 /*
  * Basic routing (temporary).
