@@ -186,18 +186,6 @@ define(
         alarms: "#alarms",
         projects: "#projects"
       },
-      resize: function(){
-        console.log('resize', this.$el);
-        // Set wrapper container to fill the window
-        var $content = this.$el,
-        myOffset = $content.offset();
-        console.log(myOffset);
-        // Window height minus offset is the easy way to _fill the rest_ of the window
-        $content.height($(window).height() - myOffset.top);
-      },
-      onRender: function(){
-        this.resize();
-      },
       initialize: function(options){
         var self = this;
         this.listenTo(options.sourceView, "set:portfolio", function(portfolio){
@@ -217,11 +205,6 @@ define(
 
           var projectList = new Project.views.DataList({ collection: projects });
           self.projects.show(projectList);
-        });
-
-        // Listen for global window resize trigger and fire resize method
-        this.listenTo(ia, 'windowResize', function(event){
-          self.resize();
         });
       }
     });

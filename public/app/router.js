@@ -30,9 +30,6 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
         ia.layouts.app.mainContent.show(detailLayout);
 
-        // HACK ALERT fire resize method after elements are attached to the DOM
-        detailLayout.resize();
-
         portfolioNavigationListView.setPortfolio();
 
       },
