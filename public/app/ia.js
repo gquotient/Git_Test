@@ -45,7 +45,8 @@
       regions: {
         header: "#header",
         navigation: "#navigation",
-        contentNavigation: "#contentNavigation",
+        pageNavigation: "nav_page",
+        contentNavigation: "#nav_content",
         mainContent: "#content"//,
         //footer: "#footer"
       },
