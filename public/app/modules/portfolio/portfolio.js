@@ -238,9 +238,7 @@ define(
         this.setElement($('<div id="leafletContainer" />'));
       },
       build: function(){
-        //I don't think leaflet uses coordinates the way Google does
-        // 30.2 x 97.7 is not bringing up Austin in the map...
-        var map = L.map('leafletContainer').setView([30.2, 97.7], 1);
+        var map = L.map('leafletContainer').setView([30.2, -97.7], 1);
 
         // add an OpenStreetMap tile layer
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
