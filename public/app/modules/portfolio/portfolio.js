@@ -3,6 +3,8 @@ define(
     "jquery",
     "backbone",
     "backbone.marionette",
+    "leaflet",
+    "css!components/leaflet/dist/leaflet.css",
 
     "ia",
 
@@ -15,7 +17,7 @@ define(
     "hbs!portfolio/templates/detailKpis",
     "hbs!portfolio/templates/breadcrumbs",
   ],
-  function($, Backbone, Marionette, ia, Project, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate){
+  function($, Backbone, Marionette, L, leafletCSS, ia, Project, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
@@ -181,19 +183,20 @@ define(
         template: detailOverview
       },
       regions: {
-        header: "#detail_header",
+        //header: "#detail_header",
         kpis: "#kpis",
         map: "#map_view",
-        alarms: "#alarms",
+        //alarms: "#alarms",
         projects: "#projects"
       },
       initialize: function(options){
         var self = this;
 
         this.listenTo(options.sourceView, "set:portfolio", function(portfolio){
+          /*
           var header = new Portfolio.views.detailHeader({model: portfolio});
           self.header.show(header);
-
+          */
           var kpisView = new Portfolio.views.detailKpis({ model: portfolio});
           self.kpis.show(kpisView);
 
@@ -207,14 +210,42 @@ define(
 
           var projectList = new Project.views.DataList({ collection: projects });
           self.projects.show(projectList);
+
+          // Check if map already exists - maybe there's a better way to do this
+          if(!$('#leafletContainer').length){
+            var map = new Portfolio.views.map();
+            this.map.show(map);
+            map.build();
+          }else{
+            // Pan and scan the map
+          }
         });
       }
     });
 
+    /*
     Portfolio.views.detailHeader = Backbone.Marionette.ItemView.extend({
       template: {
         type: "handlebars",
         template: detailHeaderTemplate
+      }
+    });
+    */
+
+    Portfolio.views.map = Backbone.Marionette.ItemView.extend({
+      render: function(){
+        //Create a container for the leaflet map
+        this.setElement($('<div id="leafletContainer" />'));
+      },
+      build: function(){
+        //I don't think leaflet uses coordinates the way Google does
+        // 30.2 x 97.7 is not bringing up Austin in the map...
+        var map = L.map('leafletContainer').setView([30.2, 97.7], 1);
+
+        // add an OpenStreetMap tile layer
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
       }
     });
 

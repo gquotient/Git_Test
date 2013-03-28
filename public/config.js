@@ -62,9 +62,9 @@ require.config({
     'backbone.wreqr': 'components/backbone.wreqr/lib/amd/backbone.wreqr',
     'backbone.marionette': 'components/backbone.marionette/lib/core/amd/backbone.marionette',
     'backbone.marionette.handlebars': 'components/backbone.marionette.handlebars/backbone.marionette.handlebars',
-
     handlebars: 'components/handlebars/handlebars',
-    modernizr: 'components/modernizr/modernizr'
+    modernizr: 'components/modernizr/modernizr',
+    leaflet: 'components/leaflet/dist/leaflet'
     // Modules
   },
   shim: {
@@ -80,6 +80,9 @@ require.config({
     },
     modernizr: {
       exports: 'Modernizr'
+    },
+    leaflet: {
+      exports: 'L'
     }
   },
   // hbs config
