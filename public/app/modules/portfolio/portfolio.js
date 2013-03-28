@@ -234,7 +234,7 @@ define(
 
     Portfolio.views.map = Backbone.Marionette.ItemView.extend({
       render: function(){
-        //Create a container for the leaflet map
+        // Create a container for the leaflet map
         this.setElement($('<div id="leafletContainer" />'));
       },
       build: function(){
