@@ -22,7 +22,13 @@ define(
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
 
-    Portfolio.controller = Backbone.Marionette.Controller.extend();
+    Portfolio.controller = Backbone.Marionette.Controller.extend({
+      initialize: function(){
+        this.listenTo(this, 'setPortfolio', function(model){
+          console.log('setPortfolio triggered on controller', model);
+        });
+      }
+    });
 
     /* Setup a model. */
     Portfolio.models.Portfolio = Backbone.Model.extend({
