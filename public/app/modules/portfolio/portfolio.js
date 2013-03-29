@@ -1,18 +1,18 @@
 define(
   [
-    "jquery",
-    "backbone",
-    "backbone.marionette",
+    'jquery',
+    'backbone',
+    'backbone.marionette',
 
-    "../../../app/ia",
+    '../../../app/ia',
 
-    "project",
+    'project',
 
-    "hbs!portfolio/templates/navigationItemView",
-    "hbs!portfolio/templates/portfolioList",
-    "hbs!portfolio/templates/detailOverview",
-    "hbs!portfolio/templates/detailHeader",
-    "hbs!portfolio/templates/detailKpis"
+    'hbs!portfolio/templates/navigationItemView',
+    'hbs!portfolio/templates/portfolioList',
+    'hbs!portfolio/templates/detailOverview',
+    'hbs!portfolio/templates/detailHeader',
+    'hbs!portfolio/templates/detailKpis'
   ],
   function($, Backbone, Marionette, ia, Project, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate, detailKpisTemplate){
 
@@ -24,8 +24,8 @@ define(
       getAllProjects: function(){
         var self = this;
         var allProjects = [];
-        allProjects = allProjects.concat( this.get('projects') );
-        _.each(this.get('subPortfolios'), function(portfolioId){
+        allProjects = allProjects.concat( this.get('projectIDs') );
+        _.each(this.get('subPortfolioIDs'), function(portfolioId){
           var portfolio = self.collection.get(portfolioId);
           allProjects = allProjects.concat(portfolio.getAllProjects() );
         });
@@ -44,16 +44,36 @@ define(
       toJSON: function(){
         this.aggregate();
         return this.attributes;
+      },
+
+      updateSubportfolios: function(){
+        this.set('subPortfolios', new Portfolio.collections.NavigationList( this.collection.filterByIDs( this.get('subPortfolioIDs')) ));
+      },
+
+      initialize: function(){
+        if(this.collection){
+          this.listenTo(this.collection, 'change', this.updateSubportfolios);        
+        }
+      }
+    });
+
+    /* Create a canonical 'All Portfolios' */
+    Portfolio.collections.All = Backbone.Collection.extend({
+      model: Portfolio.models.Portfolio,
+      url: '/api/portfolios',
+
+      subPortfolios: function(model){
+        return this.filterByIDs( model.get('subPortfolioIDs') );
       }
     });
 
     /* Setup the url for the list of portfolios. This will be our list for navigation. */
     Portfolio.collections.NavigationList = Backbone.Collection.extend({
       model: Portfolio.models.Portfolio,
-      url: '/api/portfolios',
+      // url: '/api/portfolios',
 
       subPortfolios: function(model){
-        return this.filterByIDs( model.get('subPortfolios') );
+        return this.filterByIDs( model.get('subPortfolioIDs') );
       }
     });
 
@@ -66,7 +86,7 @@ define(
       attributes: {
         class: 'portfolio'
       },
-      /* When the portfolio tile is clicked, trigger a "select:portfolio" event. */
+      /* When the portfolio tile is clicked, trigger a 'select:portfolio' event. */
       triggers: {
         'click': 'select:portfolio'
       }
@@ -83,7 +103,7 @@ define(
       /* Tell the composite view which view to use as for each portfolio. */
       itemView: Portfolio.views.NavigationItemView,
 
-      /* Trigger events when we click "back" or "all". */
+      /* Trigger events when we click 'back' or 'all'. */
       triggers: {
         'click .back': 'set:back',
         'click .all': 'set:all'
@@ -93,27 +113,27 @@ define(
        * AFAICT, the compositeView only passes the model to the template and not
        * an arbitrary object. So, we check the state of the breadcrumbs to determine
        * whether we can set the attributes to false (i.e. there is no model) to
-       * trigger the state for "All Portfolios".
+       * trigger the state for 'All Portfolios'.
        */
       serializeData: function() {
         var name, prevModel;
         if (this.model) {
-          name = this.model.get("name");
+          name = this.model.get('name');
           if (this.breadcrumbs.length > 1){
-            prevModel = this.breadcrumbs[this.breadcrumbs.length - 1].get("name");
+            prevModel = this.breadcrumbs[this.breadcrumbs.length - 1].get('name');
           }
         } else {
           name = false;
           prevModel = false;
         }
-        return { "name": name, "prevModel": prevModel };
+        return { 'name': name, 'prevModel': prevModel };
       },
 
       /* Setup an array for tracking breadcrumbs. Attach event listeners. */
       initialize: function(){
         this.breadcrumbs = [];
         /* When one of the itemView (individual portfolios) is clicked, it
-         * triggers the "itemView:select:portfolio" event. */
+         * triggers the 'itemView:select:portfolio' event. */
         this.listenTo(this, 'itemview:select:portfolio', this.nextPortfolio);
         this.listenTo(this, 'set:back', this.back);
         // this.listenTo(this, 'set:all', this.setAll);
@@ -142,32 +162,33 @@ define(
       setPortfolio: function(){
 
         /* There's a chance that this.model is false in the case where we are returning
-         * to "all portfolios" */
+         * to 'all portfolios' */
         if(this.model){
           /* Currently we are storing the subPortfolio IDs on the model. */
-          var subPortfoliosIds = this.model.get('subPortfolios');
+          // var subPortfoliosIds = this.model.get('subPortfolioIDs');
 
           /* Use the IDs of the subportfolios to filter the full list of portfolios. */
           // var subPortfolios = this.options.basePortfolios.filter(function(model){
           //   return _.contains(subPortfoliosIds, model.id);
           // });
 
-          var subPortfolios = this.options.basePortfolios.filterByIDs(subPortfoliosIds);
+          // var subPortfolios = this.options.basePortfolios.filterByIDs(subPortfoliosIds);
 
           /* Set the current collection to be a new navigation list with the subPortfolios. */
-          this.collection = new Portfolio.collections.NavigationList(subPortfolios);
+          this.collection = this.model.get('subPortfolios');
 
           /* Trigger a render. This forces the nav header to update, too. */
           this.render();
 
-          /* Update the address bar to reflect the new model. */
-          Backbone.history.navigate("portfolios/"+ this.model.id);
-        } else {
-          this.breadcrumbs = [];
-          this.collection = this.options.basePortfolios;
-          this.render();
-
-          Backbone.history.navigate("/");
+          if(this.model.id){
+            /* Update the address bar to reflect the new model. */
+            Backbone.history.navigate('portfolios/'+ this.model.id);
+          } else {
+            // this.breadcrumbs = [];
+            // this.collection = this.options.basePortfolios;
+            // this.render();
+            Backbone.history.navigate('/');
+          }
         }
 
         this.trigger('set:portfolio', this.model);
@@ -180,15 +201,15 @@ define(
         template: detailOverview
       },
       regions: {
-        header: "#detail_header",
-        kpis: "#kpis",
-        map: "#map_view",
-        alarms: "#alarms",
-        projects: "#projects"
+        header: '#detail_header',
+        kpis: '#kpis',
+        map: '#map_view',
+        alarms: '#alarms',
+        projects: '#projects'
       },
       initialize: function(options){
         var self = this;
-        this.listenTo(options.sourceView, "set:portfolio", function(portfolio){
+        this.listenTo(options.sourceView, 'set:portfolio', function(portfolio){
           var header = new Portfolio.views.detailHeader({model: portfolio});
           self.header.show(header);
 
@@ -212,14 +233,14 @@ define(
 
     Portfolio.views.detailHeader = Backbone.Marionette.ItemView.extend({
       template: {
-        type: "handlebars",
+        type: 'handlebars',
         template: detailHeaderTemplate
       }
     });
 
     Portfolio.views.detailKpis = Backbone.Marionette.ItemView.extend({
       template: {
-        type: "handlebars",
+        type: 'handlebars',
         template: detailKpisTemplate
       }
     });

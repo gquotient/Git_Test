@@ -43,10 +43,10 @@
         template: indexTemplate
       },
       regions: {
-        header: "#header",
-        navigation: "#navigation",
-        contentNavigation: "#contentNavigation",
-        mainContent: "#content"//,
+        header: '#header',
+        navigation: '#navigation',
+        contentNavigation: '#contentNavigation',
+        mainContent: '#content'//,
         //footer: "#footer"
       },
       onRender: function(){
@@ -91,7 +91,7 @@
     ia.addInitializer(function(){
       // Define the primary region (this is the body)
       ia.addRegions({
-        main: "#ia"
+        main: '#ia'
       });
 
       ia.layouts.app = new AppLayout();
@@ -103,8 +103,8 @@
       */
 
       var headerView = new Header.views.LoggedIn({model: ia.currentUser});
-      ia.listenTo(headerView, "logout", function(){
-        window.location = "/logout";
+      ia.listenTo(headerView, 'logout', function(){
+        window.location = '/logout';
       });
 
       ia.main.show(ia.layouts.app);
@@ -117,11 +117,10 @@
     // Since the portfolio list is so important to the app, let's go ahead
     // and create it.
     ia.addInitializer(function(){
-      ia.projects = new Project.collections.DataList(JSON.parse($('#bootstrapProjects').html()));
-      ia.portfolios = new Portfolio.collections.NavigationList(JSON.parse($('#bootstrapPortfolios').html()));
-      ia.allPortfolios = new Portfolio.models.Portfolio({name: "All Portfolios", subportfolios: ia.portfolios.pluck("id"), projects: []})
-      console.log(ia.allPortfolios);
-      ia.portfolios.projects = ia.projects;
+      ia.allProjects = new Project.collections.DataList(JSON.parse($('#bootstrapProjects').html()));
+      ia.allPortfolios = new Portfolio.collections.All(JSON.parse($('#bootstrapPortfolios').html()));
+      ia.allPortfoliosPortfolio = new Portfolio.models.Portfolio({name: 'Stupid Portfolios', projects: [], subPortfolios: ia.allPortfolios });
+      ia.allPortfolios.projects = ia.allProjects;
     });
 
     return ia;

@@ -1,11 +1,7 @@
-{{#if name}}
-  {{#if prevModel}}
-    <div class="back"> &lt;&lt; {{ prevModel }} </div>
-  {{else }}
-    <div class="back"> &lt;&lt; All Portfolios</div>
-  {{/if}}
-
-  <div class="navTitle">{{ name }}</div>
-{{else}} 
-  <div class="navTitle">All Portfolios</div>
+{{#if prevModel}}
+  <div class="back"> &lt;&lt; {{ prevModel }} </div>
+{{else }}
+  <div class="back"> &lt;&lt; All Portfolios</div>
 {{/if}}
+
+<div class="navTitle">{{ name }}</div>

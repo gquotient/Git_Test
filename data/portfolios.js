@@ -61,17 +61,17 @@ function generatePortfolio(projects){
   var portfolio = {
     id: id,
     name: "Portfolio " + id,
-    subPortfolios: [],
-    superPortfolios: [],
-    projects: []
+    subPortfolioIDs: [],
+    superPortfolioIDs: [],
+    projectIDs: []
   };
 
   // Random number of SubPortfolios per Portfolio.
   var numberOfProjects = _.random(projects.length);
   _.times(numberOfProjects, function(){
     var project = projects[ _.random(numberOfProjects - 1) ];
-    if ( !_.contains(portfolio.projects, project.id) ){
-      portfolio.projects.push(project.id);
+    if ( !_.contains(portfolio.projectIDs, project.id) ){
+      portfolio.projectIDs.push(project.id);
       project.belongsTo.push(portfolio.id);
     }
   });
@@ -117,9 +117,9 @@ function generatePortfolios(num){
     var numberOfSubPortfolios = _.random(3);
     _.times(numberOfSubPortfolios, function(){
       var subPortfolio = subportfolios[ _.random(numberOfSubPortfolios - 1) ];
-      if ( !_.contains(portfolio.subPortfolios, subPortfolio.id) ){
-        portfolio.subPortfolios.push(subPortfolio.id);
-        subPortfolio.superPortfolios.push(portfolio.id);
+      if ( !_.contains(portfolio.subPortfolioIDs, subPortfolio.id) ){
+        portfolio.subPortfolioIDs.push(subPortfolio.id);
+        subPortfolio.superPortfolioIDs.push(portfolio.id);
       }
     });
 
