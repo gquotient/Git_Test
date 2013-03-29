@@ -40,6 +40,11 @@ require.config({
       name: 'project',
       main: 'project',
       location: 'app/modules/project'
+    },
+    {
+      name: 'layouts',
+      main: 'layouts',
+      location: 'app/modules/layouts'
     }
   ],
   paths: {

@@ -6,20 +6,20 @@
 
     'backbone',
     'backbone.marionette',
-    "backbone.marionette.handlebars",
+    'backbone.marionette.handlebars',
 
-    "user",
-    "header",
-    "portfolio",
-    "project",
+    'user',
+    'header',
+    'portfolio',
+    'project',
 
-    "hbs!app/layouts/index"
+    'hbs!app/layouts/index'
   ],
 
   function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, Portfolio, Project, indexTemplate){
 
     /* I'm not sure where else to put this right now, so I'm going to put it here.
-     * I'm going to extend Backbone's "Collection" with a method to return a subset of
+     * I'm going to extend Backbone's 'Collection' with a method to return a subset of
      * models by ID. It's a shortcut to collection.filter(...).
      */
 
@@ -43,12 +43,12 @@
         template: indexTemplate
       },
       regions: {
-        header: "#header",
-        navigation: "#navigation",
-        pageNavigation: "#nav_page",
-        contentNavigation: "#nav_content",
-        mainContent: "#content"//,
-        //footer: "#footer"
+        header: '#header',
+        navigation: '#navigation',
+        pageNavigation: '#nav_page',
+        contentNavigation: '#nav_content',
+        mainContent: '#content'//,
+        //footer: '#footer'
       },
       onRender: function(){
         // This is almost useless sense render will have fire before the elements are added to the DOM
@@ -92,20 +92,20 @@
     ia.addInitializer(function(){
       // Define the primary region (this is the body)
       ia.addRegions({
-        main: "#ia"
+        main: '#ia'
       });
 
       ia.layouts.app = new AppLayout();
 
       /*
-      ia.layouts.app.listenTo($(window), "resize", function(event){
+      ia.layouts.app.listenTo($(window), 'resize', function(event){
         console.log(this, 'resize');
       });
       */
 
       var headerView = new Header.views.LoggedIn({model: ia.currentUser});
-      ia.listenTo(headerView, "logout", function(){
-        window.location = "/logout";
+      ia.listenTo(headerView, 'logout', function(){
+        window.location = '/logout';
       });
 
       ia.main.show(ia.layouts.app);
