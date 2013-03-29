@@ -1,5 +1,4 @@
- define(
-
+define(
   [
     'jquery',
     'underscore',
@@ -15,7 +14,6 @@
 
     'hbs!app/layouts/index'
   ],
-
   function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, Portfolio, Project, indexTemplate){
 
     /* I'm not sure where else to put this right now, so I'm going to put it here.
