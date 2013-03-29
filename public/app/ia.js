@@ -6,20 +6,20 @@
 
     'backbone',
     'backbone.marionette',
-    "backbone.marionette.handlebars",
+    'backbone.marionette.handlebars',
 
-    "user",
-    "header",
-    "portfolio",
-    "project",
+    'user',
+    'header',
+    'portfolio',
+    'project',
 
-    "hbs!app/layouts/index"
+    'hbs!app/layouts/index'
   ],
 
   function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, Portfolio, Project, indexTemplate){
 
     /* I'm not sure where else to put this right now, so I'm going to put it here.
-     * I'm going to extend Backbone's "Collection" with a method to return a subset of
+     * I'm going to extend Backbone's 'Collection' with a method to return a subset of
      * models by ID. It's a shortcut to collection.filter(...).
      */
 
@@ -45,9 +45,9 @@
       regions: {
         header: '#header',
         navigation: '#navigation',
-        contentNavigation: '#contentNavigation',
-        mainContent: '#content'//,
-        //footer: "#footer"
+        pageNavigation: '#nav_page',
+        contentNavigation: '#nav_content',
+        mainContent: '#content'
       },
       onRender: function(){
         // This is almost useless sense render will have fire before the elements are added to the DOM
@@ -97,7 +97,7 @@
       ia.layouts.app = new AppLayout();
 
       /*
-      ia.layouts.app.listenTo($(window), "resize", function(event){
+      ia.layouts.app.listenTo($(window), 'resize', function(event){
         console.log(this, 'resize');
       });
       */

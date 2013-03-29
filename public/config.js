@@ -40,10 +40,18 @@ require.config({
       name: 'project',
       main: 'project',
       location: 'app/modules/project'
+    },
+    {
+      name: 'layouts',
+      main: 'layouts',
+      location: 'app/modules/layouts'
     }
   ],
   paths: {
-    //Require plugins
+    // Main app
+    ia: 'app/ia',
+
+    // Require plugins
     text: 'components/requirejs-text/text',
     css: 'components/css/css',
     hbs: 'components/require-handlebars-plugin/hbs',
@@ -59,9 +67,9 @@ require.config({
     'backbone.wreqr': 'components/backbone.wreqr/lib/amd/backbone.wreqr',
     'backbone.marionette': 'components/backbone.marionette/lib/core/amd/backbone.marionette',
     'backbone.marionette.handlebars': 'components/backbone.marionette.handlebars/backbone.marionette.handlebars',
-
     handlebars: 'components/handlebars/handlebars',
-    modernizr: 'components/modernizr/modernizr'
+    modernizr: 'components/modernizr/modernizr',
+    leaflet: 'components/leaflet/dist/leaflet'
     // Modules
   },
   shim: {
@@ -77,6 +85,9 @@ require.config({
     },
     modernizr: {
       exports: 'Modernizr'
+    },
+    leaflet: {
+      exports: 'L'
     }
   },
   // hbs config

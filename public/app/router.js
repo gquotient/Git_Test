@@ -1,15 +1,16 @@
 define([
-  "jquery",
-  "backbone",
-  "backbone.marionette",
-  "backbone.marionette.handlebars",
+  'jquery',
+  'backbone',
+  'backbone.marionette',
+  'backbone.marionette.handlebars',
 
-  "app/ia",
+  'ia',
 
-  "user",
-  "portfolio"
+  'user',
+  'portfolio',
+  'layouts'
 ],
-function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
+function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Layouts){
 
   ia.Controller = Backbone.Marionette.Controller.extend({
 
@@ -18,16 +19,20 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
       portfolio: function(options){
 
         // Create the navigation view.
-        var portfolioNavigationListView = new Portfolio.views.NavigationListView({
+        var 
+          portfolioController = new Portfolio.controller(),
+          portfolioNavigationListView = new Portfolio.views.NavigationListView({
+          controller: portfolioController,
           collection: options.collection,
           model: options.model
         });
 
-        // Create the layout for 
-        // var detailLayout = new Portfolio.layouts.detailOverview({sourceView: portfolioNavigationListView, projectList: ia.projects});
+        // detailOverview = new Layouts.detailOverview({controller: portfolioController, projectList: ia.projects}),
+        breadcrumbs = new Portfolio.views.breadcrumbs({controller: portfolioController})
 
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
-        // ia.layouts.app.mainContent.show(detailLayout);
+        ia.layouts.app.pageNavigation.show(breadcrumbs);
+        // ia.layouts.app.mainContent.show(detailOverview);
 
         portfolioNavigationListView.setPortfolio();
 
@@ -52,7 +57,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
 
     initialize: function(){
       var self = this;
-      this.listenTo(this, "state:portfolio", function(options){ self.states.portfolio(options); });
+      this.listenTo(this, 'state:portfolio', function(options){ self.states.portfolio(options); });
     }
 
   });
@@ -60,9 +65,9 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
   var Router = Backbone.Marionette.AppRouter.extend({
     controller: new ia.Controller(),
     appRoutes: {
-      "": "index",
-      "portfolios": "index",
-      "portfolios/:id": "selectPortfolio"
+      '': 'index',
+      'portfolios': 'index',
+      'portfolios/:id': 'selectPortfolio'
     }
   });
 

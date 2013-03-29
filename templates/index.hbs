@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width">
-
-  <link href="/public/img/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon">
-
   <title>Intelligent Array</title>
 
-  <script type="text/javascript" data-main="/public/config.js" src="/public/components/require/require.js"></script>
+  {{> sharedHeader }}
+
+  <link rel="stylesheet" href="/public/css/pages/main.css" media="screen">
+
+  <script type="text/javascript" data-main="/public/config.js" src="/public/components/requirejs/require.js"></script>
 
   <script type="text/javascript">
     require.config({
@@ -33,9 +30,6 @@
   <script type="text/x-bootstrap" id="bootstrapProjects">
     {{{ projects }}}
   </script>
-
-  <link rel="stylesheet" href="/public/css/core.css" media="screen">
-  <link rel="stylesheet" href="/public/css/pages/main.css" media="screen">
 </head>
 <body id="ia"></body>
 </html>

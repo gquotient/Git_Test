@@ -3,21 +3,32 @@ define(
     'jquery',
     'backbone',
     'backbone.marionette',
+    'leaflet',
+    'css!components/leaflet/dist/leaflet.css',
 
-    '../../../app/ia',
+    'ia',
 
     'project',
 
     'hbs!portfolio/templates/navigationItemView',
     'hbs!portfolio/templates/portfolioList',
-    'hbs!portfolio/templates/detailOverview',
     'hbs!portfolio/templates/detailHeader',
-    'hbs!portfolio/templates/detailKpis'
+    'hbs!portfolio/templates/detailKpis',
+    'hbs!portfolio/templates/breadcrumbs'
   ],
-  function($, Backbone, Marionette, ia, Project, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate, detailKpisTemplate){
+  function($, Backbone, Marionette, L, leafletCSS, ia, Project, navigationItemView, portfolioList, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
+
+    // Controller handles event propgation, all views must have the controller
+    Portfolio.controller = Backbone.Marionette.Controller.extend({
+      initialize: function(){
+        this.listenTo(this, 'set:portfolio', function(model){
+          console.log('set:portfolio triggered on controller', model);
+        });
+      }
+    });
 
     /* Setup a model. */
     Portfolio.models.Portfolio = Backbone.Model.extend({
@@ -130,13 +141,19 @@ define(
       },
 
       /* Setup an array for tracking breadcrumbs. Attach event listeners. */
-      initialize: function(){
+      initialize: function(options){
+        this.controller = options.controller;
+
         this.breadcrumbs = [];
         /* When one of the itemView (individual portfolios) is clicked, it
          * triggers the 'itemView:select:portfolio' event. */
         this.listenTo(this, 'itemview:select:portfolio', this.nextPortfolio);
         this.listenTo(this, 'set:back', this.back);
         // this.listenTo(this, 'set:all', this.setAll);
+
+        this.listenTo(this.controller, 'set:portfolio', function(model){
+          console.log('Nav list view heard controller set:portfolio', model);
+        });
       },
 
       /* Adds this _current_ model to the breadcrumb before setting the new model to be
@@ -160,7 +177,9 @@ define(
 
       /* Setup the views for the current model. */
       setPortfolio: function(){
+        this.controller.trigger('set:portfolio', this.model);
 
+        //this.controller.triggerMethod('wtf', 'Ima model');
         /* There's a chance that this.model is false in the case where we are returning
          * to 'all portfolios' */
         if(this.model){
@@ -195,46 +214,44 @@ define(
       }
     });
 
-    Portfolio.layouts.detailOverview = Backbone.Marionette.Layout.extend({
-      template: {
-        type: 'handlebars',
-        template: detailOverview
-      },
-      regions: {
-        header: '#detail_header',
-        kpis: '#kpis',
-        map: '#map_view',
-        alarms: '#alarms',
-        projects: '#projects'
-      },
-      initialize: function(options){
-        var self = this;
-        this.listenTo(options.sourceView, 'set:portfolio', function(portfolio){
-          var header = new Portfolio.views.detailHeader({model: portfolio});
-          self.header.show(header);
 
-          var kpisView = new Portfolio.views.detailKpis({ model: portfolio});
-          self.kpis.show(kpisView);
-
-          var projects;
-
-          if (portfolio) {
-            projects = new Project.collections.DataList(options.projectList.filterByIDs(portfolio.getAllProjects()));
-          } else {
-            projects = options.projectList;
-          }
-
-          var projectList = new Project.views.DataList({ collection: projects });
-          self.projects.show(projectList);
-
-        });
-      }
-    });
-
+    /*
     Portfolio.views.detailHeader = Backbone.Marionette.ItemView.extend({
       template: {
         type: 'handlebars',
         template: detailHeaderTemplate
+      }
+    });
+    */
+
+    Portfolio.views.map = Backbone.Marionette.ItemView.extend({
+      render: function(){
+        // Create a container for the leaflet map
+        this.setElement($('<div id="leafletContainer" />'));
+      },
+      build: function(){
+        var map = L.map('leafletContainer').setView([30.2, -97.7], 1);
+
+        // add an OpenStreetMap tile layer
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+      }
+    });
+
+    Portfolio.views.breadcrumbs = Backbone.Marionette.ItemView.extend({
+      template: {
+        type: 'handlebars',
+        template: breadcrumbsTemplate
+      },
+      initialize: function(options){
+        var that = this;
+
+        this.controller = options.controller;
+
+        this.listenTo(this.controller, 'set:portfolio', function(model){
+          console.log('breadcrumbs heard controller set:portfolio', model);
+        });
       }
     });
 

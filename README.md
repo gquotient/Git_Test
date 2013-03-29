@@ -22,7 +22,11 @@ Install node:
     sudo apt-get update
     sudo apt-get install nodejs
 
-Install Redis: `apt-get install redis`
+Install Redis:
+
+    sudo add-apt-repository ppa:chris-lea/redis-server
+    sudo apt-get update
+    sudo apt-get install redis-server
 
 
 To install
