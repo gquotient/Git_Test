@@ -1,27 +1,27 @@
 define(
   [
-    "jquery",
-    "backbone",
-    "backbone.marionette",
-    "leaflet",
-    "css!components/leaflet/dist/leaflet.css",
+    'jquery',
+    'backbone',
+    'backbone.marionette',
+    'leaflet',
+    'css!components/leaflet/dist/leaflet.css',
 
-    "ia",
+    'ia',
 
-    "project",
+    'project',
 
-    "hbs!portfolio/templates/navigationItemView",
-    "hbs!portfolio/templates/portfolioList",
-    //"hbs!portfolio/templates/detailOverview",
-    "hbs!portfolio/templates/detailHeader",
-    "hbs!portfolio/templates/detailKpis",
-    "hbs!portfolio/templates/breadcrumbs",
+    'hbs!portfolio/templates/navigationItemView',
+    'hbs!portfolio/templates/portfolioList',
+    'hbs!portfolio/templates/detailHeader',
+    'hbs!portfolio/templates/detailKpis',
+    'hbs!portfolio/templates/breadcrumbs',
   ],
   function($, Backbone, Marionette, L, leafletCSS, ia, Project, navigationItemView, portfolioList, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
 
+    // Controller handles event propgation, all views must have the controller
     Portfolio.controller = Backbone.Marionette.Controller.extend({
       initialize: function(){
         this.listenTo(this, 'set:portfolio', function(model){
@@ -77,7 +77,7 @@ define(
       attributes: {
         class: 'portfolio'
       },
-      /* When the portfolio tile is clicked, trigger a "select:portfolio" event. */
+      /* When the portfolio tile is clicked, trigger a 'select:portfolio' event. */
       triggers: {
         'click': 'select:portfolio'
       }
@@ -94,7 +94,7 @@ define(
       /* Tell the composite view which view to use as for each portfolio. */
       itemView: Portfolio.views.NavigationItemView,
 
-      /* Trigger events when we click "back" or "all". */
+      /* Trigger events when we click 'back' or 'all'. */
       triggers: {
         'click .back': 'set:back',
         'click .all': 'set:all'
@@ -104,20 +104,20 @@ define(
        * AFAICT, the compositeView only passes the model to the template and not
        * an arbitrary object. So, we check the state of the breadcrumbs to determine
        * whether we can set the attributes to false (i.e. there is no model) to
-       * trigger the state for "All Portfolios".
+       * trigger the state for 'All Portfolios'.
        */
       serializeData: function() {
         var name, prevModel;
         if (this.model) {
-          name = this.model.get("name");
+          name = this.model.get('name');
           if (this.breadcrumbs.length > 1){
-            prevModel = this.breadcrumbs[this.breadcrumbs.length - 1].get("name");
+            prevModel = this.breadcrumbs[this.breadcrumbs.length - 1].get('name');
           }
         } else {
           name = false;
           prevModel = false;
         }
-        return { "name": name, "prevModel": prevModel };
+        return { 'name': name, 'prevModel': prevModel };
       },
 
       /* Setup an array for tracking breadcrumbs. Attach event listeners. */
@@ -126,7 +126,7 @@ define(
 
         this.breadcrumbs = [];
         /* When one of the itemView (individual portfolios) is clicked, it
-         * triggers the "itemView:select:portfolio" event. */
+         * triggers the 'itemView:select:portfolio' event. */
         this.listenTo(this, 'itemview:select:portfolio', this.nextPortfolio);
         this.listenTo(this, 'set:back', this.back);
         // this.listenTo(this, 'set:all', this.setAll);
@@ -161,7 +161,7 @@ define(
 
         //this.controller.triggerMethod('wtf', 'Ima model');
         /* There's a chance that this.model is false in the case where we are returning
-         * to "all portfolios" */
+         * to 'all portfolios' */
         if(this.model){
           /* Currently we are storing the subPortfolio IDs on the model. */
           var subPortfoliosIds = this.model.get('subPortfolios');
@@ -180,13 +180,13 @@ define(
           this.render();
 
           /* Update the address bar to reflect the new model. */
-          Backbone.history.navigate("portfolios/"+ this.model.id);
+          Backbone.history.navigate('portfolios/'+ this.model.id);
         } else {
           this.breadcrumbs = [];
           this.collection = this.options.basePortfolios;
           this.render();
 
-          Backbone.history.navigate("/");
+          Backbone.history.navigate('/');
         }
 
         this.trigger('set:portfolio', this.model);
@@ -198,7 +198,7 @@ define(
     /*
     Portfolio.views.detailHeader = Backbone.Marionette.ItemView.extend({
       template: {
-        type: "handlebars",
+        type: 'handlebars',
         template: detailHeaderTemplate
       }
     });
@@ -221,7 +221,7 @@ define(
 
     Portfolio.views.breadcrumbs = Backbone.Marionette.ItemView.extend({
       template: {
-        type: "handlebars",
+        type: 'handlebars',
         template: breadcrumbsTemplate
       },
       initialize: function(options){
@@ -237,7 +237,7 @@ define(
 
     Portfolio.views.detailKpis = Backbone.Marionette.ItemView.extend({
       template: {
-        type: "handlebars",
+        type: 'handlebars',
         template: detailKpisTemplate
       }
     });
