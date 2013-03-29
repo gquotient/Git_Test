@@ -73,55 +73,55 @@ textarea {
 
 body {
   background: #efefef;
-  color:#222;
+  color: #222;
   font-size: 85%; /* Resets 1em to 12px */
-  line-height:1.25em;
+  line-height: 1.25em;
   font-family: Arial, Verdana, Sans-Serif;
 }
 
 /* Basic layout */
 
 header {
-  background:#333;
-  height:36px;
-  width:100%;
-  overflow:hidden;
-  padding:0 6px;
+  background: #333;
+  height: 36px;
+  width: 100%;
+  overflow: hidden;
+  padding: 0 6px;
   h1 {
-    padding:0;
-    margin:0;
-    float:left;
+    padding: 0;
+    margin: 0;
+    float: left;
     background: url(/public/img/logo_draker_sml.png) center center no-repeat;
-    display:inline-block;
-    width:183px;
-    height:36px;
-    line-height:36px;
-    overflow:hidden;
+    display: inline-block;
+    width: 183px;
+    height: 36px;
+    line-height: 36px;
+    overflow: hidden;
     a {
       display: inline-block;
-      width:100%
-      height:100%;
-      text-indent:-200%;
+      width: 100%
+      height: 100%;
+      text-indent: -200%;
     }
   }
   nav.global {
-    float:right;
-    color:#fff;
-    padding:0;
-    margin:0;
+    float: right;
+    color: #fff;
+    padding: 0;
+    margin: 0;
     ul {
-      list-style-type:none;
-      padding:0;
-      margin:0;
-      height:36px
-      line-height:36px;
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      height: 36px
+      line-height: 36px;
       li {
-        margin:0 0 0 6px;
-        padding:0;
-        float:left;
+        margin: 0 0 0 6px;
+        padding: 0;
+        float: left;
         a {
-          padding:0;
-          margin:0;
+          padding: 0;
+          margin: 0;
         }
       }
     }
@@ -136,56 +136,56 @@ header {
   box-shadow: inset 0 1px 0 #ddd;
   color: #111;
   padding: 3px;
-  border-radius:1px;
+  border-radius: 1px;
 }
 
 /* Buttons and Links */
 
 button.button, a.button {
-  background:#ddd;
+  background: #ddd;
   background-image: linear-gradient(#ddd, #bbb)
-  display:inline-block;
-  line-height:22px;
-  min-height:22px; /* FireFox doesn't like line-height in its buttons */
-  padding:0 .75em;
-  margin:0 6px 0 0;
-  font-size:1em;
-  font-weight:normal;
-  text-decoration:none;
-  cursor:pointer;
-  border-radius:3px;
-  text-align:center;
-  border:1px solid #aaa;
-  color:#555;
-  text-shadow:0 1px 0 #eee;
+  display: inline-block;
+  line-height: 22px;
+  min-height: 22px; /* FireFox doesn't like line-height in its buttons */
+  padding: 0 .75em;
+  margin: 0 6px 0 0;
+  font-size: 1em;
+  font-weight: normal;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 3px;
+  text-align: center;
+  border: 1px solid #aaa;
+  color: #555;
+  text-shadow: 0 1px 0 #eee;
   box-shadow: inset 0 1px 0 #eee;
 }
 
 button.button.primary, a.button.primary {
   background-color: colorDrakerOrange;
   background-image: linear-gradient(#f57a2a, #f0501c);
-  border:1px solid colorDrakerOrange;
-  color:#fff;
-  text-shadow:0 1px 0 #d84515;
+  border: 1px solid colorDrakerOrange;
+  color: #fff;
+  text-shadow: 0 1px 0 #d84515;
   box-shadow: inset 0 1px 0 #f8ad7c;
 }
 
 button.button.disabled, a.button.disabled, button.button.disabled:hover, a.button.disabled:hover {
-  border:1px solid #ccc;
+  border: 1px solid #ccc;
   background-color: #eee;
-  background-position:0 -600px;
-  color:#999;
-  text-shadow:0 1px 0 #fff;
+  background-position: 0 -600px;
+  color: #999;
+  text-shadow: 0 1px 0 #fff;
 }
 
 button.button.sml, a.button.sml {
-  line-height:16px;
-  min-height:16px; /* FireFox doesn't like line-height in its buttons */
-  padding:0 .75em;
-  margin:0 3px 0 0;
-  font-size:.75em;
-  vertical-align:text-bottom;
-  border-radius:9px;
+  line-height: 16px;
+  min-height: 16px; /* FireFox doesn't like line-height in its buttons */
+  padding: 0 .75em;
+  margin: 0 3px 0 0;
+  font-size: .75em;
+  vertical-align: text-bottom;
+  border-radius: 9px;
 }
 
 a, a:active, a:hover, a:visited {
@@ -195,70 +195,72 @@ a, a:active, a:hover, a:visited {
 /* Tables */
 
 table.basic {
-  border:1px solid #ccc;
-  background:#fff;
-  margin:0 0 12px;
+  border: 1px solid #ccc;
+  background: #fff;
+  margin: 0 0 12px;
 }
 
 table.dataTable {
-  border:1px solid #ccc;
+  border: 1px solid #ccc;
   background:#fff;
 }
 
 table.basic thead, table.dataTable thead {
-  height:24px;
-  background:#ddd;
-  border-bottom:1px solid #ccc;
+  height: 24px;
+  background: #ddd;
+  border-bottom: 1px solid #ccc;
 }
 
 table.basic thead tr th, table.dataTable thead tr th {
-  line-height:24px;
-  padding:0 6px;
-  font-weight:bold;
-  border-right:1px solid #ccc;
-  border-left:1px solid #fff;
-    text-align: left;
+  line-height: 24px;
+  padding: 0 6px;
+  font-weight: bold;
+  border-right: 1px solid #ccc;
+  border-left: 1px solid #fff;
+  text-align: left;
 }
 
 table.basic thead tr th:first-child, table.dataTable thead tr th:first-child {
-  border-left:none;
+  border-left: none;
 }
 
 table.basic thead tr th:last-child, table.dataTable thead tr th:last-child {
-  border-right:none;
+  border-right: none;
 }
 
 table.basic tr, table.dataTable thead tr {
-  border-bottom:1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 }
 
 table.basic tbody tr:nth-child(odd), table.dataTable tbody tr:nth-child(odd) {
-  background-color:#f5f5f5;
+  background-color: #f5f5f5;
 }
 
 table.basic tbody tr td {
-  padding:3px 6px;
+  padding: 3px 6px;
 }
 
 table.basic tr:last-child {
-  border-bottom:none;
+  border-bottom: none;
 }
 
 table tbody tr td.label {
-  font-weight:bold;
+  font-weight: bold;
 }
 
 table tbody tr td input[type="checkbox"], table tbody tr td input[type="radio"] {
-  padding:0;
-  margin:0;
+  padding: 0;
+  margin: 0;
   vertical-align: middle;
 }
 
 
 /* Misc Layout */
 
+leftColumnWidth = 240px;
+
 .column_left {
-  width: 240px;
+  width: leftColumnWidth;
   float: left;
   margin-left: -100%;
   height: 100%;
@@ -266,13 +268,13 @@ table tbody tr td input[type="checkbox"], table tbody tr td input[type="radio"] 
 }
 
 .column_right {
-  margin-left:240px;
-  height:100%;
-  overflow:auto;
+  margin-left: leftColumnWidth;
+  height: 100%;
+  overflow: auto;
 }
 
 .column_right_wrapper {
-  height:100%;
-  width:100%;
-  float:left;
+  height: 100%;
+  width: 100%;
+  float: left;
 }
