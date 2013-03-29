@@ -34,7 +34,9 @@ define([
     initialize: function(options){
       var self = this;
 
-      this.listenTo(options.sourceView, 'set:portfolio', function(portfolio){
+      this.controller = options.controller;
+
+      this.listenTo(this.controller, 'set:portfolio', function(portfolio){
         /*
         var header = new Portfolio.views.detailHeader({model: portfolio});
         self.header.show(header);
