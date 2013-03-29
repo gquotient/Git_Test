@@ -16,8 +16,9 @@ define(
     "hbs!portfolio/templates/detailHeader",
     "hbs!portfolio/templates/detailKpis",
     "hbs!portfolio/templates/breadcrumbs",
+    "hbs!portfolio/templates/breadcrumbItem"
   ],
-  function($, Backbone, Marionette, L, leafletCSS, ia, Project, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate){
+  function($, Backbone, Marionette, L, leafletCSS, ia, Project, navigationItemView, portfolioList, detailOverview, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate, breadcrumbItemTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
@@ -57,6 +58,27 @@ define(
 
       subPortfolios: function(model){
         return this.filterByIDs( model.get('subPortfolios') );
+      }
+    });
+
+    /* Create a collection just for Breadcrumbs. */
+    Portfolio.collections.BreadcrumbList = Backbone.Collection.extend({
+      model: Portfolio.models.Portfolio
+    });
+
+    Portfolio.views.BreadcrumbItemView = Backbone.Marionette.ItemView.extend({
+      tagName: "li",
+      template: {
+        type: 'handlebars',
+        template: breadcrumbItemTemplate
+      }
+    });
+
+    Portfolio.views.Breadcrumbs = Backbone.Marionette.CollectionView.extend({
+      tag: "ui",
+      itemView: Portfolio.views.BreadcrumbItemView,
+      attributes: {
+        class: "breadcrumbs"
       }
     });
 
@@ -249,12 +271,12 @@ define(
       }
     });
 
-    Portfolio.views.breadcrumbs = Backbone.Marionette.ItemView.extend({
-      template: {
-        type: "handlebars",
-        template: breadcrumbsTemplate
-      }
-    });
+    // Portfolio.views.breadcrumbs = Backbone.Marionette.ItemView.extend({
+    //   template: {
+    //     type: "handlebars",
+    //     template: breadcrumbsTemplate
+    //   }
+    // });
 
     Portfolio.views.detailKpis = Backbone.Marionette.ItemView.extend({
       template: {

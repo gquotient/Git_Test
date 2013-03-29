@@ -24,7 +24,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio){
               basePortfolios: ia.portfolios
             })
             detailLayout = new Portfolio.layouts.detailOverview({sourceView: portfolioNavigationListView, projectList: ia.projects}),
-            breadcrumbs = new Portfolio.views.breadcrumbs();
+            breadcrumbs = new Portfolio.views.Breadcrumbs({ collection: new Portfolio.collections.BreadcrumbList([options.model]) });
 
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
         ia.layouts.app.pageNavigation.show(breadcrumbs);
