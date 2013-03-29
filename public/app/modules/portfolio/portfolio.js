@@ -24,8 +24,8 @@ define(
 
     Portfolio.controller = Backbone.Marionette.Controller.extend({
       initialize: function(){
-        this.listenTo(this, 'setPortfolio', function(model){
-          console.log('setPortfolio triggered on controller', model);
+        this.listenTo(this, 'set:portfolio', function(model){
+          console.log('set:portfolio triggered on controller', model);
         });
       }
     });
@@ -131,8 +131,8 @@ define(
         this.listenTo(this, 'set:back', this.back);
         // this.listenTo(this, 'set:all', this.setAll);
 
-        this.listenTo(this.controller, 'setPortfolio', function(model){
-          console.log('Nav list view heard controller setProfile', model);
+        this.listenTo(this.controller, 'set:portfolio', function(model){
+          console.log('Nav list view heard controller set:portfolio', model);
         });
       },
 
@@ -157,7 +157,7 @@ define(
 
       /* Setup the views for the current model. */
       setPortfolio: function(){
-        this.controller.trigger('setPortfolio', this.model);
+        this.controller.trigger('set:portfolio', this.model);
 
         //this.controller.triggerMethod('wtf', 'Ima model');
         /* There's a chance that this.model is false in the case where we are returning
@@ -229,8 +229,8 @@ define(
 
         this.controller = options.controller;
 
-        this.listenTo(this.controller, 'setPortfolio', function(model){
-          console.log('breadcrumbs heard controller setProfile', model);
+        this.listenTo(this.controller, 'set:portfolio', function(model){
+          console.log('breadcrumbs heard controller set:portfolio', model);
         });
       }
     });
