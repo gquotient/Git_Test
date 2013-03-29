@@ -28,7 +28,8 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Lay
         });
 
         // detailOverview = new Layouts.detailOverview({controller: portfolioController, projectList: ia.projects}),
-        breadcrumbs = new Portfolio.views.breadcrumbs({controller: portfolioController})
+        breadcrumbs = new Portfolio.views.Breadcrumbs({ collection: new Portfolio.collections.BreadcrumbList([options.model]) });
+        // breadcrumbs = new Portfolio.views.breadcrumbs({controller: portfolioController})
 
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
         ia.layouts.app.pageNavigation.show(breadcrumbs);
