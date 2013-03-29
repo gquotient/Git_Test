@@ -32,17 +32,17 @@ define([
       projects: '#projects'
     },
     initialize: function(options){
-      var self = this;
+      var that = this;
 
       this.controller = options.controller;
 
       this.listenTo(this.controller, 'set:portfolio', function(portfolio){
         /*
         var header = new Portfolio.views.detailHeader({model: portfolio});
-        self.header.show(header);
+        that.header.show(header);
         */
         var kpisView = new Portfolio.views.detailKpis({ model: portfolio});
-        self.kpis.show(kpisView);
+        that.kpis.show(kpisView);
 
         var projects;
 
@@ -53,7 +53,7 @@ define([
         }
 
         var projectList = new Project.views.DataList({ collection: projects });
-        self.projects.show(projectList);
+        that.projects.show(projectList);
 
         // Check if map already exists - maybe there's a better way to do this
         if(!$('#leafletContainer').length){
