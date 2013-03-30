@@ -55,7 +55,7 @@ define(
       },
 
       toJSON: function(){
-        this.aggregate();
+        // this.aggregate();
         return this.attributes;
       },
 
@@ -92,23 +92,16 @@ define(
 
     /* Create a collection just for Breadcrumbs. */
     Portfolio.collections.BreadcrumbList = Backbone.Collection.extend({
-      model: Portfolio.models.Portfolio
-    });
+      model: Portfolio.models.Portfolio,
 
-    Portfolio.views.BreadcrumbItemView = Backbone.Marionette.ItemView.extend({
-      tagName: "li",
-      template: {
-        type: 'handlebars',
-        template: breadcrumbItemTemplate
+      initialize: function(models, options){
+        var that = this;
+        this.controller = options.controller;
+        this.listenTo(this.controller, 'set:portfolio', function(model){
+          that.add(model);
+        });
       }
-    });
 
-    Portfolio.views.Breadcrumbs = Backbone.Marionette.CollectionView.extend({
-      tag: "ui",
-      itemView: Portfolio.views.BreadcrumbItemView,
-      attributes: {
-        class: "breadcrumbs"
-      }
     });
 
     /* The item view is the view for the individual portfolios in the navigation. */
@@ -143,36 +136,11 @@ define(
         'click .all': 'set:all'
       },
 
-      /* This is a little hacky, but works for now:
-       * AFAICT, the compositeView only passes the model to the template and not
-       * an arbitrary object. So, we check the state of the breadcrumbs to determine
-       * whether we can set the attributes to false (i.e. there is no model) to
-       * trigger the state for 'All Portfolios'.
-       */
-      serializeData: function() {
-        var name, prevModel;
-        if (this.model) {
-          name = this.model.get('name');
-          if (this.breadcrumbs.length > 1){
-            prevModel = this.breadcrumbs[this.breadcrumbs.length - 1].get('name');
-          }
-        } else {
-          name = false;
-          prevModel = false;
-        }
-        return { 'name': name, 'prevModel': prevModel };
-      },
-
       /* Setup an array for tracking breadcrumbs. Attach event listeners. */
       initialize: function(options){
         this.controller = options.controller;
 
-        this.breadcrumbs = [];
-        /* When one of the itemView (individual portfolios) is clicked, it
-         * triggers the 'itemView:select:portfolio' event. */
         this.listenTo(this, 'itemview:select:portfolio', this.nextPortfolio);
-        this.listenTo(this, 'set:back', this.back);
-        // this.listenTo(this, 'set:all', this.setAll);
 
         this.listenTo(this.controller, 'set:portfolio', function(model){
           console.log('Nav list view heard controller set:portfolio', model);
@@ -183,18 +151,7 @@ define(
        * the current model.
        */
       nextPortfolio: function(arg){
-        if(this.model) {
-          this.breadcrumbs.push(this.model);
-        } else {
-          this.breadcrumbs.push(false);
-        }
         this.model = arg.model;
-        this.setPortfolio();
-      },
-
-      /* Get the previous model and collection off the stack and set to be current. */
-      back: function(){
-        this.model = this.breadcrumbs.pop();
         this.setPortfolio();
       },
 
@@ -202,40 +159,42 @@ define(
       setPortfolio: function(){
         this.controller.trigger('set:portfolio', this.model);
 
-        //this.controller.triggerMethod('wtf', 'Ima model');
-        /* There's a chance that this.model is false in the case where we are returning
-         * to 'all portfolios' */
-        if(this.model){
-          /* Currently we are storing the subPortfolio IDs on the model. */
-          // var subPortfoliosIds = this.model.get('subPortfolioIDs');
+        /* Set the current collection to be a new navigation list with the subPortfolios. */
+        this.collection = this.model.get('subPortfolios');
 
-          /* Use the IDs of the subportfolios to filter the full list of portfolios. */
-          // var subPortfolios = this.options.basePortfolios.filter(function(model){
-          //   return _.contains(subPortfoliosIds, model.id);
-          // });
+        /* Trigger a render. This forces the nav header to update, too. */
+        this.render();
 
-          // var subPortfolios = this.options.basePortfolios.filterByIDs(subPortfoliosIds);
-
-          /* Set the current collection to be a new navigation list with the subPortfolios. */
-          this.collection = this.model.get('subPortfolios');
-
-          /* Trigger a render. This forces the nav header to update, too. */
-          this.render();
-
-          if(this.model.id){
-            /* Update the address bar to reflect the new model. */
-            Backbone.history.navigate('portfolios/'+ this.model.id);
-          } else {
-            // this.breadcrumbs = [];
-            // this.collection = this.options.basePortfolios;
-            // this.render();
-            Backbone.history.navigate('/');
-          }
+        if(this.model.id){
+          /* Update the address bar to reflect the new model. */
+          Backbone.history.navigate('portfolios/'+ this.model.id);
+        } else {
+          // this.breadcrumbs = [];
+          // this.collection = this.options.basePortfolios;
+          // this.render();
+          Backbone.history.navigate('/');
         }
 
         this.trigger('set:portfolio', this.model);
       }
     });
+
+    Portfolio.views.BreadcrumbItemView = Backbone.Marionette.ItemView.extend({
+      tagName: 'li',
+      template: {
+        type: 'handlebars',
+        template: breadcrumbItemTemplate
+      }
+    });
+
+    Portfolio.views.Breadcrumbs = Backbone.Marionette.CollectionView.extend({
+      tagName: 'ul',
+      itemView: Portfolio.views.BreadcrumbItemView,
+      attributes: {
+        class: 'breadcrumbs'
+      }
+    });
+
 
 
     /*
@@ -261,22 +220,6 @@ define(
         }).addTo(map);
       }
     });
-
-    // Portfolio.views.breadcrumbs = Backbone.Marionette.ItemView.extend({
-    //   template: {
-    //     type: 'handlebars',
-    //     template: breadcrumbsTemplate
-    //   },
-    //   initialize: function(options){
-    //     var that = this;
-
-    //     this.controller = options.controller;
-
-    //     this.listenTo(this.controller, 'set:portfolio', function(model){
-    //       console.log('breadcrumbs heard controller set:portfolio', model);
-    //     });
-    //   }
-    // });
 
     Portfolio.views.detailKpis = Backbone.Marionette.ItemView.extend({
       template: {

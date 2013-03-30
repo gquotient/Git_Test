@@ -19,7 +19,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Lay
       portfolio: function(options){
 
         // Create the navigation view.
-        var 
+        var
           portfolioController = new Portfolio.controller(),
           portfolioNavigationListView = new Portfolio.views.NavigationListView({
           controller: portfolioController,
@@ -28,11 +28,12 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Lay
         });
 
         // detailOverview = new Layouts.detailOverview({controller: portfolioController, projectList: ia.projects}),
-        breadcrumbs = new Portfolio.views.Breadcrumbs({ collection: new Portfolio.collections.BreadcrumbList([options.model]) });
+        breadcrumbs = new Portfolio.collections.BreadcrumbList([options.model], {controller: portfolioController});
+        breadcrumbsView = new Portfolio.views.Breadcrumbs({ collection: breadcrumbs });
         // breadcrumbs = new Portfolio.views.breadcrumbs({controller: portfolioController})
 
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
-        ia.layouts.app.pageNavigation.show(breadcrumbs);
+        ia.layouts.app.pageNavigation.show(breadcrumbsView);
         // ia.layouts.app.mainContent.show(detailOverview);
 
         portfolioNavigationListView.setPortfolio();
