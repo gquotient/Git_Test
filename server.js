@@ -142,22 +142,21 @@ app.all('/ia', ensureAuthenticated, function(req, res){
 
       // Load projects.
       fs.readFile('./data/json/projects.json', 'utf8', function (err, data) {
-      if (err) {
-        return console.log(err);
-      }
-      projects = data;
-
-      // Render the response.
-      res.render(
-        'index',
-        {
-          user: '{ "username": "' + req.user.name + '" }',
-          portfolios: portfolios,
-          projects: projects,
-          locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
+        if (err) {
+          return console.log(err);
         }
-      );
+        projects = data;
 
+        // Render the response.
+        res.render(
+          'index',
+          {
+            user: '{ "username": "' + req.user.name + '" }',
+            portfolios: portfolios,
+            projects: projects,
+            locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
+          }
+        );
     });
   });
 });

@@ -61,7 +61,8 @@ define(
 
       initialize: function(){
         if(this.collection){
-          this.listenTo(this.collection, 'change', this.updateSubportfolios);        
+          // This might over-fire and could be a deferred instead?
+          this.listenTo(this.collection, 'change', this.updateSubportfolios);
         }
       }
     });
