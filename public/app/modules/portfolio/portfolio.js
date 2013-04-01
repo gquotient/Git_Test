@@ -6,10 +6,6 @@ define(
     'leaflet',
     'css!components/leaflet/dist/leaflet.css',
 
-    'ia',
-
-    'project',
-
     'hbs!portfolio/templates/navigationItemView',
     'hbs!portfolio/templates/portfolioList',
     'hbs!portfolio/templates/detailHeader',
@@ -18,7 +14,7 @@ define(
     "hbs!portfolio/templates/breadcrumbItem"
 
   ],
-  function($, Backbone, Marionette, L, leafletCSS, ia, Project, navigationItemView, portfolioList, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate, breadcrumbItemTemplate){
+  function($, Backbone, Marionette, L, leafletCSS, navigationItemView, portfolioList, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate, breadcrumbItemTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
