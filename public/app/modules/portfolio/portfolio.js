@@ -139,8 +139,9 @@ define(
 
         this.listenTo(this, 'itemview:select:portfolio', this.nextPortfolio);
 
-        this.listenTo(this.controller, 'set:portfolio', function(model){
-          console.log('Nav list view heard controller set:portfolio', model);
+        this.listenTo(this.controller, 'select:portfolio', function(model){
+          console.log('Nav list view heard controller select:portfolio', model);
+          this.nextPortfolio(model);
         });
       },
 
@@ -166,9 +167,6 @@ define(
           /* Update the address bar to reflect the new model. */
           Backbone.history.navigate('portfolios/'+ this.model.id);
         } else {
-          // this.breadcrumbs = [];
-          // this.collection = this.options.basePortfolios;
-          // this.render();
           Backbone.history.navigate('/');
         }
 
@@ -181,6 +179,9 @@ define(
       template: {
         type: 'handlebars',
         template: breadcrumbItemTemplate
+      },
+      triggers: {
+        'click': 'select:portfolio'
       }
     });
 
@@ -189,6 +190,12 @@ define(
       itemView: Portfolio.views.BreadcrumbItemView,
       attributes: {
         class: 'breadcrumbs'
+      },
+      initialize: function(options){
+        this.controller = options.controller;
+        this.controller.listenTo(this, 'itemview:select:portfolio', function(arg){
+          options.controller.trigger('select:portfolio', arg);
+        });
       }
     });
 

@@ -19,18 +19,19 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Lay
       portfolio: function(options){
 
         // Create the navigation view.
-        var
-          portfolioController = new Portfolio.controller(),
-          portfolioNavigationListView = new Portfolio.views.NavigationListView({
-          controller: portfolioController,
-          collection: options.collection,
-          model: options.model
-        });
-
-        // detailOverview = new Layouts.detailOverview({controller: portfolioController, projectList: ia.projects}),
-        breadcrumbs = new Portfolio.collections.BreadcrumbList([options.model], {controller: portfolioController});
-        breadcrumbsView = new Portfolio.views.Breadcrumbs({ collection: breadcrumbs });
-        // breadcrumbs = new Portfolio.views.breadcrumbs({controller: portfolioController})
+        var portfolioController = new Portfolio.controller({
+          allPortfolios: ia.allPortfolios,
+          allProjects: ia.allProjects
+        }),
+            portfolioNavigationListView = new Portfolio.views.NavigationListView({
+              controller: portfolioController,
+              collection: options.collection,
+              model: options.model
+            }),
+            // detailOverview = new Layouts.detailOverview({controller: portfolioController, projectList: ia.projects}),
+            breadcrumbs = new Portfolio.collections.BreadcrumbList([options.model], {controller: portfolioController});
+            breadcrumbsView = new Portfolio.views.Breadcrumbs({ collection: breadcrumbs, controller: portfolioController });
+            // breadcrumbs = new Portfolio.views.breadcrumbs({controller: portfolioController})
 
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
         ia.layouts.app.pageNavigation.show(breadcrumbsView);
@@ -64,15 +65,15 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Lay
 
   });
 
-  var Router = Backbone.Marionette.AppRouter.extend({
-    controller: new ia.Controller(),
-    appRoutes: {
-      '': 'index',
-      'portfolios': 'index',
-      'portfolios/:id': 'selectPortfolio'
-    }
-  });
+    var Router = Backbone.Marionette.AppRouter.extend({
+      controller: new ia.Controller(),
+      appRoutes: {
+        '': 'index',
+        'portfolios': 'index',
+        'portfolios/:id': 'selectPortfolio'
+      }
+    });
 
-
-  return Router;
-});
+    return Router;
+  }
+);
