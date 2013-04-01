@@ -28,10 +28,17 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Lay
               collection: options.collection,
               model: options.model
             }),
-            // detailOverview = new Layouts.detailOverview({controller: portfolioController, projectList: ia.projects}),
-            breadcrumbs = new Portfolio.collections.BreadcrumbList([options.model], {controller: portfolioController});
-            breadcrumbsView = new Portfolio.views.Breadcrumbs({ collection: breadcrumbs, controller: portfolioController });
-            // breadcrumbs = new Portfolio.views.breadcrumbs({controller: portfolioController})
+            detailOverview = new Layouts.detailOverview( {controller: portfolioController, projectList: ia.projects} ),
+            breadcrumbModels = [ia.allPortfoliosPortfolio],
+            breadcrumbs,
+            breadcrumbsView;
+
+        if (options.model !== ia.allPortfoliosPortfolio) {
+          breadcrumbModels.push(options.model);
+        }
+        breadcrumbs = new Portfolio.collections.BreadcrumbList(breadcrumbModels, {controller: portfolioController});
+        breadcrumbsView = new Portfolio.views.Breadcrumbs({ collection: breadcrumbs, controller: portfolioController });
+        // breadcrumbs = new Portfolio.views.breadcrumbs({controller: portfolioController})
 
         ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
         ia.layouts.app.pageNavigation.show(breadcrumbsView);

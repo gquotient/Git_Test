@@ -116,8 +116,9 @@ define(
     // and create it.
     ia.addInitializer(function(){
       ia.allProjects = new Project.collections.DataList(JSON.parse($('#bootstrapProjects').html()));
-      ia.allPortfolios = new Portfolio.collections.All(JSON.parse($('#bootstrapPortfolios').html()));
-      ia.allPortfoliosPortfolio = new Portfolio.models.Portfolio({name: 'Stupid Portfolios', projects: [], subPortfolios: ia.allPortfolios });
+      ia.allPortfolios = new Portfolio.collections.All();
+      ia.allPortfolios.reset( JSON.parse($('#bootstrapPortfolios').html()) );
+      ia.allPortfoliosPortfolio = new Portfolio.models.Portfolio({name: 'All Portfolios', projects: [], subPortfolios: ia.allPortfolios });
       ia.allPortfolios.projects = ia.allProjects;
     });
 

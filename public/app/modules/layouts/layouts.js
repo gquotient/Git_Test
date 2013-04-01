@@ -47,7 +47,7 @@ define([
         var projects;
 
         if (portfolio) {
-          projects = new Project.collections.DataList(options.projectList.filterByIDs(portfolio.getAllProjects()));
+          projects = new Project.collections.DataList(options.projectList.filterByIDs( portfolio.get('allProjectIDs') ));
         } else {
           projects = options.projectList;
         }

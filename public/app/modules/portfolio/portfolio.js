@@ -21,29 +21,24 @@ define(
 
     // Controller handles event propgation, all views must have the controller
     Portfolio.controller = Backbone.Marionette.Controller.extend({
-      initialize: function(){
-        this.listenTo(this, 'set:portfolio', function(model){
-          console.log('set:portfolio triggered on controller', model);
-        });
-      }
     });
 
     /* Setup a model. */
     Portfolio.models.Portfolio = Backbone.Model.extend({
-      getAllProjects: function(){
-        var self = this;
-        var allProjects = [];
-        allProjects = allProjects.concat( this.get('projectIDs') );
-        _.each(this.get('subPortfolioIDs'), function(portfolioId){
-          var portfolio = self.collection.get(portfolioId);
-          allProjects = allProjects.concat(portfolio.getAllProjects() );
+      getAllProjectIDs: function(){
+        var that = this;
+        var allProjectIDs = [];
+        allProjectIDs = allProjectIDs.concat( this.get('projectIDs') );
+        console.log( this );
+        console.log( this.get('subPortfolios') );
+        this.get('subPortfolios').each( function(portfolio){
+          allProjectIDs = allProjectIDs.concat(portfolio.getAllProjectIDs() );
         });
-        return allProjects;
+        return allProjectIDs;
       },
 
       aggregate: function(){
-        this.set('allProjects', this.getAllProjects() );
-        var projects = this.collection.projects.filterByIDs(this.get('allProjects'));
+        var projects = this.collection.projects.filterByIDs(this.get('allProjectsIDs'));
         this.set('dc_capacity', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').dc_capacity; }, 0) );
         this.set('ac_capacity', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').ac_capacity; }, 0) );
         this.set('irradiance_now', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').irradiance_now; }, 0) );
@@ -51,18 +46,18 @@ define(
       },
 
       toJSON: function(){
-        // this.aggregate();
         return this.attributes;
       },
 
       updateSubportfolios: function(){
         this.set('subPortfolios', new Portfolio.collections.NavigationList( this.collection.filterByIDs( this.get('subPortfolioIDs')) ));
+        this.set( 'allProjectIDs', this.getAllProjectIDs() );
       },
 
       initialize: function(){
         if(this.collection){
           // This might over-fire and could be a deferred instead?
-          this.listenTo(this.collection, 'change', this.updateSubportfolios);
+          this.listenTo(this.collection, 'reset', this.updateSubportfolios);
         }
       }
     });
@@ -80,7 +75,6 @@ define(
     /* Setup the url for the list of portfolios. This will be our list for navigation. */
     Portfolio.collections.NavigationList = Backbone.Collection.extend({
       model: Portfolio.models.Portfolio,
-      // url: '/api/portfolios',
 
       subPortfolios: function(model){
         return this.filterByIDs( model.get('subPortfolioIDs') );
@@ -94,8 +88,17 @@ define(
       initialize: function(models, options){
         var that = this;
         this.controller = options.controller;
-        this.listenTo(this.controller, 'set:portfolio', function(model){
-          that.add(model);
+        this.listenTo(this.controller, 'select:portfolio', function(arg){
+          var index = that.indexOf(arg.model);
+          if(index !== -1){
+            that.each(function(model){
+              if ( that.indexOf(model) > index ) {
+                that.remove(model);
+              }
+            });
+          } else {
+            that.add(arg.model);
+          }
         });
       }
 
@@ -137,10 +140,13 @@ define(
       initialize: function(options){
         this.controller = options.controller;
 
-        this.listenTo(this, 'itemview:select:portfolio', this.nextPortfolio);
+        this.listenTo(this, 'itemview:select:portfolio', function(arg){
+          options.controller.trigger('select:portfolio', arg);
+        });
+
+        this.listenTo(this.controller, 'select:portfolio', this.nextPortfolio);
 
         this.listenTo(this.controller, 'select:portfolio', function(model){
-          console.log('Nav list view heard controller select:portfolio', model);
           this.nextPortfolio(model);
         });
       },
@@ -155,10 +161,12 @@ define(
 
       /* Setup the views for the current model. */
       setPortfolio: function(){
-        this.controller.trigger('set:portfolio', this.model);
+        console.log("Model", this.model);
 
         /* Set the current collection to be a new navigation list with the subPortfolios. */
         this.collection = this.model.get('subPortfolios');
+
+        console.log("Collection", this.collection)
 
         /* Trigger a render. This forces the nav header to update, too. */
         this.render();
@@ -170,7 +178,7 @@ define(
           Backbone.history.navigate('/');
         }
 
-        this.trigger('set:portfolio', this.model);
+        this.controller.trigger('set:portfolio', this.model);
       }
     });
 
@@ -198,17 +206,6 @@ define(
         });
       }
     });
-
-
-
-    /*
-    Portfolio.views.detailHeader = Backbone.Marionette.ItemView.extend({
-      template: {
-        type: 'handlebars',
-        template: detailHeaderTemplate
-      }
-    });
-    */
 
     Portfolio.views.map = Backbone.Marionette.ItemView.extend({
       render: function(){
