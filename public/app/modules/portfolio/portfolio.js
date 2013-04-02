@@ -113,6 +113,7 @@ define(
 
     /* The item view is the view for the individual portfolios in the navigation. */
     Portfolio.views.NavigationItemView = Backbone.Marionette.ItemView.extend({
+      tagName: 'li',
       template: {
         type: 'handlebars',
         template: navigationItemView
@@ -129,6 +130,10 @@ define(
     /* This composite view is the wrapper view for the list of portfolios.
        It handles nesting the list while allowing for the navigation header. */
     Portfolio.views.NavigationListView = Backbone.Marionette.CompositeView.extend({
+      tagName: 'ul',
+      attributes: {
+        class: 'portfolios'
+      },
       template: {
         type: 'handlebars',
         template: portfolioList
