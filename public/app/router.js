@@ -20,7 +20,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
 
     selectPortfolio: function(id){
       var model = ia.allPortfolios.get(id),
-          collection = ia.allPortfolios.filterByIDs( model.get('subPortfolioIDs') );
+          collection = new Portfolio.collections.NavigationList(model.get('subPortfolios'));
 
       this.portfolios( {collection: collection, model: model });
     },
