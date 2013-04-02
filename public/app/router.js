@@ -26,6 +26,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     },
 
     portfolios: function(options){
+      console.log('all projects', ia.allProjects);
       // Create the navigation view.
       var portfolioController = new Portfolio.controller({
             allPortfolios: ia.allPortfolios,
@@ -56,7 +57,18 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       // Build detail view
       var kpisView = new Portfolio.views.detailKpis({ model: options.model, controller: portfolioController }),
           map = new Portfolio.views.map({ controller: portfolioController }),
-          projectList = new Project.views.DataList({ collection: ia.allProjects });
+          // Extend project collection to be used for portfolios. May be a better way to do this.
+          portfolioProjectList = Project.views.DataList.extend({
+            controller: portfolioController,
+            initialize: function(){
+              var that = this;
+              console.log('project list', this);
+              this.listenTo(this.controller, 'select:portfolio', function(options){
+                console.log('project list heard select:portfolio', options.model.get('projectIDs'));
+              });
+            }
+          }),
+          projectList = new portfolioProjectList({collection: ia.allProjects});
 
       detailOverview.kpis.show(kpisView);
       detailOverview.map.show(map);
