@@ -77,7 +77,7 @@ define(
       ia.allProjects.reset( JSON.parse($('#bootstrapProjects').html()) );
       ia.allPortfolios = new Portfolio.collections.All([],{ projects: ia.allProjects });
       ia.allPortfolios.reset( JSON.parse($('#bootstrapPortfolios').html()) );
-      ia.allPortfoliosPortfolio = new Portfolio.models.Portfolio({name: 'All Portfolios', projects: [], subPortfolios: ia.allPortfolios });
+      ia.allPortfoliosPortfolio = new Portfolio.models.Portfolio({name: 'All Portfolios', projects: ia.allProjects.models, subPortfolios: ia.allPortfolios });
     });
 
     return ia;
