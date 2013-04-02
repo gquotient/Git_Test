@@ -26,58 +26,65 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     },
 
     portfolios: function(options){
-      // Create the navigation view.
-      var portfolioController = new Portfolio.controller({
-            allPortfolios: ia.allPortfolios,
-            allProjects: ia.allProjects
-          }),
-          portfolioNavigationListView = new Portfolio.views.NavigationListView({
-            controller: portfolioController,
-            collection: options.collection,
-            model: options.model
-          }),
+      var
+        // Build portfolio controller
+        portfolioController = new Portfolio.controller({
+          allPortfolios: ia.allPortfolios,
+          allProjects: ia.allProjects
+        }),
+        // Build primary portfolio nav
+        portfolioNavigationListView = new Portfolio.views.NavigationListView({
+          controller: portfolioController,
+          collection: options.collection,
+          model: options.model
+        }),
 
-          breadcrumbModels = [ia.allPortfoliosPortfolio],
-          breadcrumbs,
-          breadcrumbsView,
-          detailOverview = new Layouts.detailOverview();
+        // Build breadcrums
+        breadcrumbModels = [ia.allPortfoliosPortfolio],
+        breadcrumbs,
+        breadcrumbsView,
+        detailOverview = new Layouts.detailOverview();
 
       if (options.model !== ia.allPortfoliosPortfolio) {
         breadcrumbModels.push(options.model);
       }
+
       breadcrumbs = new Portfolio.collections.BreadcrumbList(breadcrumbModels, {controller: portfolioController});
       breadcrumbsView = new Portfolio.views.Breadcrumbs({ collection: breadcrumbs, controller: portfolioController });
-      // breadcrumbs = new Portfolio.views.breadcrumbs({controller: portfolioController})
 
+      // Populate main layout
       ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
       ia.layouts.app.pageNavigation.show(breadcrumbsView);
       ia.layouts.app.mainContent.show(detailOverview);
 
       // Build detail view
-      var kpisView = new Portfolio.views.detailKpis({ model: options.model, controller: portfolioController }),
-          map = new Portfolio.views.map({ controller: portfolioController }),
-          // Extend project collection and view to be used for portfolios. May be a better way to do this.
-          portfolioProjectList = Project.views.DataList.extend({
-            controller: portfolioController,
-            initialize: function(){
-              var that = this;
+      var
+        // Build KPIs
+        kpisView = new Portfolio.views.detailKpis({ model: options.model, controller: portfolioController }),
+        // Prepare map
+        map = new Portfolio.views.map({ controller: portfolioController }),
+        // Extend project collection and view to be used for portfolios. May be a better way to do this.
+        portfolioProjectList = Project.views.DataList.extend({
+          controller: portfolioController,
+          initialize: function(){
+            var that = this;
 
-              this.listenTo(this.controller, 'select:portfolio', function(options){
-                // Reset collection and re render
-                that.collection = new Project.collections.DataList(options.model.get('projects'));
-                that.render();
-              });
-            }
-          }),
-          projectList = new portfolioProjectList({collection: new Project.collections.DataList(options.model.get('projects'))});
+            this.listenTo(this.controller, 'select:portfolio', function(options){
+              // Reset collection and re render
+              that.collection = new Project.collections.DataList(options.model.get('projects'));
+              that.render();
+            });
+          }
+        }),
+        projectList = new portfolioProjectList({collection: new Project.collections.DataList(options.model.get('projects'))});
 
-      // Append views to layout
+      // Poulate detail layout
       detailOverview.kpis.show(kpisView);
+      detailOverview.projects.show(projectList);
       detailOverview.map.show(map);
+
       // Fire build function since leaflet doens't fit nicely into the Backbone module pattern
       map.build();
-      detailOverview.projects.show(projectList);
-
     }
   });
 
