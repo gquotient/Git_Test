@@ -1,6 +1,7 @@
 define(
   [
     'jquery',
+    'underscore',
     'backbone',
     'backbone.marionette',
     'leaflet',
@@ -12,40 +13,47 @@ define(
     'hbs!portfolio/templates/detailKpis',
     'hbs!portfolio/templates/breadcrumbs',
     "hbs!portfolio/templates/breadcrumbItem"
-
   ],
-  function($, Backbone, Marionette, L, leafletCSS, navigationItemView, portfolioList, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate, breadcrumbItemTemplate){
+  function($, _, Backbone, Marionette, L, leafletCSS, navigationItemView, portfolioList, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate, breadcrumbItemTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
 
     // Controller handles event propgation, all views must have the controller
     Portfolio.controller = Backbone.Marionette.Controller.extend({
+
     });
 
     /* Setup a model. */
     Portfolio.models.Portfolio = Backbone.Model.extend({
-      getAllProjectIDs: function(){
-        var that = this;
-        var allProjectIDs = [];
-        allProjectIDs = allProjectIDs.concat( this.get('projectIDs') );
-        console.log( this );
-        console.log( this.get('subPortfolios') );
-        this.get('subPortfolios').each( function(portfolio){
-          allProjectIDs = allProjectIDs.concat(portfolio.getAllProjectIDs() );
-        });
-        return allProjectIDs;
-      },
+      build: function(){
+        var subPortfolioIDs = this.get('subPortfolioIDs'),
+            allProjectIDs = [];
 
-      aggregate: function(){
-        var projects = this.collection.projects.filterByIDs(this.get('allProjectsIDs'));
+        allProjectIDs = allProjectIDs.concat(this.get('projectIDs'));
+
+        this.set('subPortfolios', new Portfolio.collections.NavigationList( this.collection.filterByIDs( subPortfolioIDs ) ));
+        this.get('subPortfolios').each( function(portfolio){
+          if(!portfolio.get('built')) {
+            portfolio.build();
+          }
+          allProjectIDs = allProjectIDs.concat(portfolio.get('allProjectIDs'));
+        });
+
+        this.set('allProjectIDs', _.uniq(allProjectIDs) );
+
+        var projects = this.collection.projects.filterByIDs(this.get('allProjectIDs'));
+        this.set('projects', projects);
         this.set('dc_capacity', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').dc_capacity; }, 0) );
         this.set('ac_capacity', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').ac_capacity; }, 0) );
         this.set('irradiance_now', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').irradiance_now; }, 0) );
         this.set('power_now', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').power_now; }, 0) );
+
+        this.set('built', true);
       },
 
       toJSON: function(){
+        // this.aggregate();
         return this.attributes;
       },
 
@@ -55,9 +63,9 @@ define(
       },
 
       initialize: function(){
+        this.set('built', false);
         if(this.collection){
-          // This might over-fire and could be a deferred instead?
-          this.listenTo(this.collection, 'reset', this.updateSubportfolios);
+          this.listenTo(this.collection, 'reset', this.build);
         }
       }
     });
@@ -69,6 +77,10 @@ define(
 
       subPortfolios: function(model){
         return this.filterByIDs( model.get('subPortfolioIDs') );
+      },
+
+      initialize: function(models, options){
+        this.projects = options.projects;
       }
     });
 
@@ -89,13 +101,8 @@ define(
         var that = this;
         this.controller = options.controller;
         this.listenTo(this.controller, 'select:portfolio', function(arg){
-          var index = that.indexOf(arg.model);
-          if(index !== -1){
-            that.each(function(model){
-              if ( that.indexOf(model) > index ) {
-                that.remove(model);
-              }
-            });
+          if ( that.contains(arg.model) ) {
+            that.reset( that.slice(0,that.indexOf(arg.model)+1) );
           } else {
             that.add(arg.model);
           }
@@ -161,12 +168,8 @@ define(
 
       /* Setup the views for the current model. */
       setPortfolio: function(){
-        console.log("Model", this.model);
-
         /* Set the current collection to be a new navigation list with the subPortfolios. */
         this.collection = this.model.get('subPortfolios');
-
-        console.log("Collection", this.collection)
 
         /* Trigger a render. This forces the nav header to update, too. */
         this.render();

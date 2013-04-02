@@ -1,13 +1,14 @@
 define(
   [
     "jquery",
+    "underscore",
     "backbone",
     "backbone.marionette",
 
     "hbs!app/modules/project/templates/dataListItem"
 
   ],
-  function($, Backbone, Marionette, DataListItemTemplate){
+  function($, _, Backbone, Marionette, DataListItemTemplate){
 
     var Project = { models: {}, views: {}, layouts: {}, collections: {} };
 
@@ -16,7 +17,13 @@ define(
 
     Project.collections.DataList = Backbone.Collection.extend({
       model: Project.models.Project,
-      url: '/api/projects'
+      url: '/api/projects',
+
+      filterByIDs: function(ids){
+        return this.filter(function(project){
+          return _.contains(ids, project.id);
+        });
+      }
     });
 
     Project.views.DataListItem = Marionette.ItemView.extend({

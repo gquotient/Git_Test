@@ -94,12 +94,6 @@ define(
 
       ia.layouts.app = new AppLayout();
 
-      /*
-      ia.layouts.app.listenTo($(window), 'resize', function(event){
-        console.log(this, 'resize');
-      });
-      */
-
       var headerView = new Header.views.LoggedIn({model: ia.currentUser});
       ia.listenTo(headerView, 'logout', function(){
         window.location = '/logout';
@@ -115,11 +109,11 @@ define(
     // Since the portfolio list is so important to the app, let's go ahead
     // and create it.
     ia.addInitializer(function(){
-      ia.allProjects = new Project.collections.DataList(JSON.parse($('#bootstrapProjects').html()));
-      ia.allPortfolios = new Portfolio.collections.All();
+      ia.allProjects = new Project.collections.DataList();
+      ia.allProjects.reset( JSON.parse($('#bootstrapProjects').html()) );
+      ia.allPortfolios = new Portfolio.collections.All([],{ projects: ia.allProjects });
       ia.allPortfolios.reset( JSON.parse($('#bootstrapPortfolios').html()) );
       ia.allPortfoliosPortfolio = new Portfolio.models.Portfolio({name: 'All Portfolios', projects: [], subPortfolios: ia.allPortfolios });
-      ia.allPortfolios.projects = ia.allProjects;
     });
 
     return ia;
