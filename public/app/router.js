@@ -8,9 +8,10 @@ define([
 
   'user',
   'portfolio',
+  'project',
   'layouts'
 ],
-function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Layouts){
+function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Project, Layouts){
 
   ia.Controller = Backbone.Marionette.Controller.extend({
     index: function(){
@@ -29,7 +30,7 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Lay
             collection: options.collection,
             model: options.model
           }),
-          detailOverview = new Layouts.detailOverview( {controller: portfolioController, projectList: ia.allProjects} ),
+          detailOverview = new Layouts.detailOverview(),
           breadcrumbModels = [ia.allPortfoliosPortfolio],
           breadcrumbs,
           breadcrumbsView;
@@ -44,6 +45,17 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Lay
       ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
       ia.layouts.app.pageNavigation.show(breadcrumbsView);
       ia.layouts.app.mainContent.show(detailOverview);
+
+      var kpisView = new Portfolio.views.detailKpis({ model: options.model, controller: portfolioController }),
+          map = new Portfolio.views.map({ controller: portfolioController }),
+          projectList = new Project.views.DataList({ collection: ia.allProjects });
+
+
+      detailOverview.kpis.show(kpisView);
+      detailOverview.map.show(map);
+      // Fire build function since leaflet doens't fit nicely into the Backbone module pattern
+      map.build();
+      detailOverview.projects.show(projectList);
 
       portfolioNavigationListView.setPortfolio();
 

@@ -222,6 +222,15 @@ define(
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+      },
+      initialize: function(options){
+        var that = this;
+
+        this.controller = options.controller;
+
+        this.listenTo(this.controller, 'select:portfolio', function(options){
+          console.log('map heard select:portfolio', options);
+        });
       }
     });
 
@@ -229,6 +238,17 @@ define(
       template: {
         type: 'handlebars',
         template: detailKpisTemplate
+      },
+      initialize: function(options){
+        var that = this;
+
+        this.controller = options.controller;
+
+        this.listenTo(this.controller, 'select:portfolio', function(options){
+          that.model = options.model;
+
+          that.render();
+        });
       }
     });
 
