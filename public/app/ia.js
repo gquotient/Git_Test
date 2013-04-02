@@ -11,10 +11,9 @@ define(
     'header',
     'portfolio',
     'project',
-
-    'hbs!app/layouts/index'
+    'layouts'
   ],
-  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, Portfolio, Project, indexTemplate){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, Portfolio, Project, Layouts, indexTemplate){
 
     /* I'm not sure where else to put this right now, so I'm going to put it here.
      * I'm going to extend Backbone's 'Collection' with a method to return a subset of
@@ -34,41 +33,6 @@ define(
     // Empty object to hold different layouts. Should we abstract layouts to a module?
     ia.layouts = {};
 
-    // Create a new layout for the primary app view
-    var AppLayout = Backbone.Marionette.Layout.extend({
-      template: {
-        type: 'handlebars',
-        template: indexTemplate
-      },
-      regions: {
-        header: '#header',
-        navigation: '#navigation',
-        pageNavigation: '#nav_page',
-        contentNavigation: '#nav_content',
-        mainContent: '#content'
-      },
-      onRender: function(){
-        // This is almost useless sense render will have fire before the elements are added to the DOM
-        this.resize();
-      },
-      resize: function(){
-        // Set wrapper container to fill the window
-        var $content = this.$el.find('.contentContainer'),
-        myOffset = $content.offset();
-
-        // Window height minus offset is the easy way to _fill the rest_ of the window
-        $content.height($(window).height() - myOffset.top);
-      },
-      initialize: function(){
-        var that = this;
-
-        // Listen for global window resize trigger and fire resize method
-        this.listenTo(ia, 'windowResize', function(event){
-          that.resize();
-        });
-      }
-    });
-
     /* Some app initialization. Breaking it up for clarity. */
 
     // Bootstrap User
@@ -80,7 +44,7 @@ define(
     ia.addInitializer(function(){
       // Fire a global resize event
       $(window).on('resize', function(event){
-        ia.trigger('windowResize');
+        Backbone.trigger('windowResize');
       });
     });
 
@@ -92,7 +56,7 @@ define(
         main: '#ia'
       });
 
-      ia.layouts.app = new AppLayout();
+      ia.layouts.app = new Layouts.Main();
 
       var headerView = new Header.views.LoggedIn({model: ia.currentUser});
       ia.listenTo(headerView, 'logout', function(){
