@@ -28,20 +28,15 @@ pageNavHeight = 30px;
     li {
       float: left;
       margin: 0 6px;
-
-      a {
-        display: inline-block;
-        width: 100%;
-        color: #000;
-        text-decoration: none;
-      }
+      color: #555;
+      cursor: pointer;
 
       a:hover {
         text-decoration: underline;
       }
     }
-    li.active {
-      font-weight: bold;
+    li.active, li:last-child {
+      color: #111;
     }
   }
 }
