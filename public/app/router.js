@@ -18,22 +18,29 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       this.portfolios( {collection: ia.allPortfolios, model: ia.allPortfoliosPortfolio } );
     },
 
-    portfolios: function(options){
+    selectPortfolio: function(id){
+      var model = ia.allPortfolios.get(id),
+          collection = ia.allPortfolios.filterByIDs( model.get('subPortfolioIDs') );
 
+      this.portfolios( {collection: collection, model: model });
+    },
+
+    portfolios: function(options){
       // Create the navigation view.
       var portfolioController = new Portfolio.controller({
-        allPortfolios: ia.allPortfolios,
-        allProjects: ia.allProjects
-      }),
+            allPortfolios: ia.allPortfolios,
+            allProjects: ia.allProjects
+          }),
           portfolioNavigationListView = new Portfolio.views.NavigationListView({
             controller: portfolioController,
             collection: options.collection,
             model: options.model
           }),
-          detailOverview = new Layouts.detailOverview(),
+
           breadcrumbModels = [ia.allPortfoliosPortfolio],
           breadcrumbs,
-          breadcrumbsView;
+          breadcrumbsView,
+          detailOverview = new Layouts.detailOverview();
 
       if (options.model !== ia.allPortfoliosPortfolio) {
         breadcrumbModels.push(options.model);
@@ -46,10 +53,10 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       ia.layouts.app.pageNavigation.show(breadcrumbsView);
       ia.layouts.app.mainContent.show(detailOverview);
 
+      // Build detail view
       var kpisView = new Portfolio.views.detailKpis({ model: options.model, controller: portfolioController }),
           map = new Portfolio.views.map({ controller: portfolioController }),
           projectList = new Project.views.DataList({ collection: ia.allProjects });
-
 
       detailOverview.kpis.show(kpisView);
       detailOverview.map.show(map);
@@ -58,7 +65,6 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       detailOverview.projects.show(projectList);
 
       portfolioNavigationListView.setPortfolio();
-
     }
   });
 
@@ -66,7 +72,8 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       controller: new ia.Controller(),
       appRoutes: {
         '': 'index',
-        'portfolios': 'index'
+        'portfolios': 'index',
+        'portfolios/:id': 'selectPortfolio'
       }
     });
 
