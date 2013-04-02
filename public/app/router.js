@@ -15,10 +15,12 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
 
   ia.Controller = Backbone.Marionette.Controller.extend({
     index: function(){
+      // Build primary portfolios view
       this.portfolios( {collection: ia.allPortfolios, model: ia.allPortfoliosPortfolio } );
     },
 
     selectPortfolio: function(id){
+      // Build custom portfolios view
       var model = ia.allPortfolios.get(id),
           collection = new Portfolio.collections.NavigationList(model.get('subPortfolios'));
 
