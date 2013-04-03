@@ -22,12 +22,13 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     selectPortfolio: function(id){
       // Build custom portfolios view
       var model = ia.allPortfolios.get(id),
-          collection = new Portfolio.collections.NavigationList(model.get('subPortfolios'));
+          collection = new Portfolio.collections.NavigationList(model.attributes.subPortfolios.models);
 
       this.portfolios( {collection: collection, model: model });
     },
 
     portfolios: function(options){
+      console.log(options.collection);
       var
         // Build portfolio controller
         portfolioController = new Portfolio.controller({

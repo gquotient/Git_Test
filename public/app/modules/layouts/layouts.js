@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'handlebars',
 
   'portfolio',
   'project',
@@ -14,6 +15,7 @@ define([
   _,
   Backbone,
   Marionette,
+  Handlebars,
   Portfolio,
   Project,
   indexTemplate,
@@ -21,6 +23,21 @@ define([
 ){
   var Layouts = {};
 
+  // Unit conversion
+  var roundNumber = function(num, dec) {
+    var result = (num !== null)?Math.round(num*Math.pow(10,dec))/Math.pow(10,dec):null;
+    return result;
+  }
+
+  Handlebars.registerHelper('tokW', function(value) {
+    return roundNumber((+value / 1000), 1);
+  });
+
+  Handlebars.registerHelper('toMW', function(value) {
+    return roundNumber((+value / 1000000), 2);
+  });
+
+  // Layouts
   Layouts.Main = Backbone.Marionette.Layout.extend({
     template: {
       type: 'handlebars',

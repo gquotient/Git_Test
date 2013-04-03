@@ -70,12 +70,15 @@ pageNavHeight = 30px;
           overflow: ellipsis;
         }
       }
-    }
-    .portfolio:hover {
-      background: #ccc;
-    }
-    .portfolio:last-child {
-      border-bottom: 1px solid #aaa;
+      .portfolio:hover {
+        background: #ccc;
+      }
+      .portfolio:last-child {
+        border-bottom: 1px solid #aaa;
+      }
+      .portfolio:first-child {
+        border-top: none;
+      }
     }
   }
 
@@ -129,6 +132,7 @@ pageNavHeight = 30px;
           border-top: 24px solid #fff;
         }
         border: none;
+        border-bottom: 1px solid #ccc;
         width: 100%;
         margin: 0;
         height: 100%;
