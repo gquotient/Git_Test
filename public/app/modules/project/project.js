@@ -1,14 +1,14 @@
 define(
   [
-    "jquery",
-    "underscore",
-    "backbone",
-    "backbone.marionette",
+    'jquery',
+    'underscore',
+    'backbone',
+    'backbone.marionette',
 
-    "hbs!app/modules/project/templates/dataListItem"
-
+    'hbs!app/modules/project/templates/dataList',
+    'hbs!app/modules/project/templates/dataListItem'
   ],
-  function($, _, Backbone, Marionette, DataListItemTemplate){
+  function($, _, Backbone, Marionette, DataListTemplate, DataListItemTemplate){
 
     var Project = { models: {}, views: {}, layouts: {}, collections: {} };
 
@@ -42,7 +42,10 @@ define(
     });
 
     Project.views.DataList = Marionette.CompositeView.extend({
-      template: _.template('<table class="basic"><thead><tr><th>Project Name</th></tr></thead><tbody></tbody></table>'),
+      template: {
+        type: 'handlebars',
+        template: DataListTemplate
+      },
       itemViewContainer: 'tbody',
       itemView: Project.views.DataListItem
     });

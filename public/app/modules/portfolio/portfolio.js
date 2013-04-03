@@ -238,6 +238,7 @@ define(
     });
 
     Portfolio.views.detailKpis = Backbone.Marionette.ItemView.extend({
+      tagName: 'ul',
       template: {
         type: 'handlebars',
         template: detailKpisTemplate

@@ -8,16 +8,20 @@ html, body {
   height: 100%;
 }
 
+/* Main components */
+
 pageNavHeight = 30px;
 
 #nav_page {
-  background: #aaa;
+  background: #bbb;
   height: pageNavHeight;
   width: 100%;
   overflow: hidden;
   line-height: pageNavHeight;
   padding: 0 6px;
   margin:0;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #aaa;
 
   ul.breadcrumbs {
     padding: 0;
@@ -42,103 +46,141 @@ pageNavHeight = 30px;
 }
 
 .contentContainer {
-  height: 500px;
+  // Force overflow hidden to prevent any chance of doubled scroll bars
   overflow: hidden;
+}
 
-  #nav_content {
-    border-right: 1px solid #aaa;
-    overflow: auto;
+#nav_content {
+  border-right: 1px solid #aaa;
+  overflow: auto;
+  height: 100%;
+  .back {
+    cursor: pointer;
+  }
+  .all {
+    cursor: pointer;
+  }
+  ul.portfolios {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    li.portfolio {
+      border-top: 1px solid #fff;
+      border-bottom: 1px solid #ccc;
+      padding: 6px;
+      margin: 0;
+      cursor: pointer;
+      h3 {
+        margin: 0px;
+        white-space: nowrap;
+        overflow: ellipsis;
+      }
+    }
+    .portfolio:hover {
+      background: #ddd;
+    }
+    .portfolio:last-child {
+
+    }
+    .portfolio:first-child {
+      border-top: none;
+    }
+  }
+}
+
+/* Detail View */
+
+projectTableHeaderHeight = 24px;
+kpiHeight = 30px;
+
+#content {
+  //border: 1px solid #f00;
+  overflow: auto;
+  height: 100%;
+  position: relative;
+  > div { // This is an artifact of how Backbone/Marionette views work
     height: 100%;
-    .back {
-      cursor: pointer;
+    max-height: 100%;
+    overflow: hidden;
+  }
+  .verticalPane {
+    height: 50%;
+    min-height: 50%;
+    overflow: auto;
+    border-bottom: 1px solid #aaa;
+    position: relative;
+  }
+
+  #map_view {
+    width: 100%;
+    height: 100%;
+    padding: kpiHeight 0 0 0;
+    #leafletContainer {
+      width: 100%;
+      height: 100%;
     }
-    .all {
-      cursor: pointer;
-    }
-    ul.portfolios {
+  }
+
+  #kpis {
+    background: #ddd;
+    position: fixed;
+    z-index: 100;
+    width: 100%;
+    padding: 0 6px;
+    height: kpiHeight;
+    line-height: kpiHeight;
+    border-bottom: 1px solid #aaa;
+    box-shadow: 0 0 5px #ccc;
+    overflow: hidden;
+    ul {
       padding: 0;
       margin: 0;
       list-style-type: none;
-      li.portfolio {
-        border-top: 1px solid #aaa;
-        padding: 3px;
-        margin: 0;
-        cursor: pointer;
-        h3 {
-          margin: 0px;
-          white-space: nowrap;
-          overflow: ellipsis;
+      li {
+        margin: 0 6px;
+        padding: 0;
+        float: left;
+        .unit {
+          color: #777;
+          font-size: .85em;
         }
       }
-      .portfolio:hover {
-        background: #ccc;
-      }
-      .portfolio:last-child {
-        border-bottom: 1px solid #aaa;
-      }
-      .portfolio:first-child {
-        border-top: none;
+      li:last-child {
+        margin-right: 0;
       }
     }
   }
 
-  #content {
-    //border: 1px solid #f00;
-    overflow: auto;
-    height: 100%;
+  #projects {
     position: relative;
-    > div { // This is an artifact of how Backbone/Marionette views work
-      height: 100%;
-      max-height: 100%;
-      overflow: hidden;
-    }
-    .verticalPane {
-      height: 50%;
-      min-height: 50%;
-      overflow: auto;
-      border-bottom: 1px solid #ccc;
-      position: relative;
-    }
-
-    #map_view {
+    .bg_tableHeader {
       width: 100%;
-      height: 100%;
-      padding: 24px 0 0 0;
-      #leafletContainer {
-        width: 100%;
-        height: 100%;
-      }
-    }
-
-    #kpis {
-      background: #ddd;
+      height: projectTableHeaderHeight;
       position: fixed;
-      z-index: 100;
-      width: 100%;
-      padding: 0 3px;
-      height: 24px;
-      line-height: 24px;
+      background: #ddd;
       border-bottom: 1px solid #ccc;
+      box-shadow: 0 0 5px #ccc;
     }
-
-    #projects {
-      table {
-        thead {
-          position: fixed;
-          width: 100%;
+    table {
+      thead {
+        tr {
+          th {
+            div {
+              position: fixed;
+              height: projectTableHeaderHeight;
+              display: block;
+            }
+          }
         }
-        tbody {
-          //OMG this is so hacky...
-          border-top: 24px solid #fff;
-        }
-        border: none;
-        border-bottom: 1px solid #ccc;
-        width: 100%;
-        margin: 0;
-        height: 100%;
-        overflow: auto;
-        position: relative;
       }
+      tbody {
+        border-top: projectTableHeaderHeight solid #fff;
+      }
+      border: none;
+      border-bottom: 1px solid #ccc;
+      width: 100%;
+      margin: 0;
+      height: 100%;
     }
   }
 }
