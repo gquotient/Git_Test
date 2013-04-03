@@ -4,14 +4,14 @@ define(
     'underscore',
     'backbone',
     'backbone.marionette',
+    'backbone.marionette.handlebars',
 
     'hbs!app/modules/project/templates/dataList',
     'hbs!app/modules/project/templates/dataListItem'
   ],
-  function($, _, Backbone, Marionette, DataListTemplate, DataListItemTemplate){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, DataListTemplate, DataListItemTemplate){
 
     var Project = { models: {}, views: {}, layouts: {}, collections: {} };
-
 
     Project.models.Project = Backbone.Model.extend({});
 

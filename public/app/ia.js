@@ -48,7 +48,6 @@ define(
       });
     });
 
-
     // Setup Layouts and Views
     ia.addInitializer(function(){
       // Define the primary region (this is the body)

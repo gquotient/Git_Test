@@ -18,7 +18,6 @@
  */
 
 require.config({
-  // deps: ["app/init"],
   baseUrl: '/public',
   packages: [
     {
@@ -70,7 +69,6 @@ require.config({
     handlebars: 'components/handlebars/handlebars',
     modernizr: 'components/modernizr/modernizr',
     leaflet: 'components/leaflet/dist/leaflet'
-    // Modules
   },
   shim: {
     backbone: {
