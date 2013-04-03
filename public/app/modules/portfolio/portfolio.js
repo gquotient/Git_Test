@@ -10,8 +10,7 @@ define(
     'hbs!portfolio/templates/navigationItemView',
     'hbs!portfolio/templates/portfolioList',
     'hbs!portfolio/templates/detailKpis',
-    'hbs!portfolio/templates/breadcrumbs',
-    "hbs!portfolio/templates/breadcrumbItem"
+    'hbs!portfolio/templates/breadcrumbItem'
   ],
   function($, _, Backbone, Marionette, L, leafletCSS, navigationItemView, portfolioList, detailKpisTemplate, breadcrumbsTemplate, breadcrumbItemTemplate){
 
