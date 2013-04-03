@@ -9,12 +9,11 @@ define(
 
     'hbs!portfolio/templates/navigationItemView',
     'hbs!portfolio/templates/portfolioList',
-    'hbs!portfolio/templates/detailHeader',
     'hbs!portfolio/templates/detailKpis',
     'hbs!portfolio/templates/breadcrumbs',
     "hbs!portfolio/templates/breadcrumbItem"
   ],
-  function($, _, Backbone, Marionette, L, leafletCSS, navigationItemView, portfolioList, detailHeaderTemplate, detailKpisTemplate, breadcrumbsTemplate, breadcrumbItemTemplate){
+  function($, _, Backbone, Marionette, L, leafletCSS, navigationItemView, portfolioList, detailKpisTemplate, breadcrumbsTemplate, breadcrumbItemTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
