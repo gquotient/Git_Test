@@ -73,8 +73,6 @@ function($, _, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, 
             var that = this;
 
             this.listenTo(this.controller, 'select:portfolio', function(portfolio){
-              console.log('map heard select:portfolio', portfolio);
-
               that.hideMarkers(portfolio.model.attributes.projects);
             });
           }
