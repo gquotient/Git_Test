@@ -55,8 +55,32 @@ define(
         // Create a container for the leaflet map
         this.setElement($('<div id="leafletContainer" />'));
       },
+      hideMarkers: function(projects){
+        // projects should be an array of project models
+        var ids = [];
+
+        _.each(projects, function(project){
+          ids.push(project.id);
+        });
+
+        _.each(this.markers, function(marker){
+          if (ids.indexOf(marker.id) >= 0) {
+            // show marker
+            // This is a little hackey but there doesn't me to be a hide/show method in leaflet
+            marker.marker._icon.style.display='';
+            marker.marker._shadow.style.display='';
+          } else {
+            // hide marker
+            marker.marker._icon.style.display='none';
+            marker.marker._shadow.style.display='none';
+          }
+        });
+
+        return this;
+      },
       build: function(){
-        var map = L.map('leafletContainer').setView([30.2, -97.7], 1),
+        var that = this,
+            map = L.map('leafletContainer').setView([30.2, -97.7], 1),
             projects = this.collection.models;
 
         // add an OpenStreetMap tile layer
@@ -64,26 +88,26 @@ define(
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        // Create array to store markers
+        this.markers = [];
+
+        // Build marker objects and markers
         _.each(projects, function(project){
           var latLong = project.attributes.latLong;
 
           if (latLong && latLong.length) {
-            L.marker([latLong[0], latLong[1]]).addTo(map);
+            var newMarker = {
+              marker: L.marker([latLong[0], latLong[1]]).addTo(map),
+              id: project.id
+            };
+
+            that.markers.push(newMarker);
           }
         });
 
-      },
-      initialize: function(options){
-        var that = this;
-
-        this.controller = options.controller;
-
-        this.listenTo(this.controller, 'select:portfolio', function(options){
-          console.log('map heard select:portfolio', options);
-        });
+        return this;
       }
     });
 
     return Project;
-
 });

@@ -1,5 +1,6 @@
 define([
   'jquery',
+  'underscore',
   'backbone',
   'backbone.marionette',
   'backbone.marionette.handlebars',
@@ -11,7 +12,7 @@ define([
   'project',
   'layouts'
 ],
-function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Project, Layouts){
+function($, _, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Project, Layouts){
 
   ia.Controller = Backbone.Marionette.Controller.extend({
     index: function(){
@@ -28,7 +29,6 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     },
 
     portfolios: function(options){
-      console.log(options.collection);
       var
         // Build portfolio controller
         portfolioController = new Portfolio.controller({
@@ -46,7 +46,8 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
         breadcrumbModels = [ia.allPortfoliosPortfolio],
         breadcrumbs,
         breadcrumbsView,
-        detailOverview = new Layouts.detailOverview();
+        detailOverview = new Layouts.detailOverview()
+      ;
 
       if (options.model !== ia.allPortfoliosPortfolio) {
         breadcrumbModels.push(options.model);
@@ -64,11 +65,24 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       var
         // Build KPIs
         kpisView = new Portfolio.views.detailKpis({ model: options.model, controller: portfolioController }),
-        // Prepare map
-        map = new Project.views.map({
+
+        // Extend map view for marker filtering
+        portfolioMapView = Project.views.map.extend({
           controller: portfolioController,
+          initialize: function(options){
+            var that = this;
+
+            this.listenTo(this.controller, 'select:portfolio', function(portfolio){
+              console.log('map heard select:portfolio', portfolio);
+
+              that.hideMarkers(portfolio.model.attributes.projects);
+            });
+          }
+        }),
+        map = new portfolioMapView({
           collection: ia.allProjects
         }),
+
         // Extend project collection and view to be used for portfolios. May be a better way to do this.
         portfolioProjectList = Project.views.DataList.extend({
           controller: portfolioController,
@@ -82,7 +96,8 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
             });
           }
         }),
-        projectList = new portfolioProjectList({collection: new Project.collections.DataList(options.model.get('projects'))});
+        projectList = new portfolioProjectList({collection: new Project.collections.DataList(options.model.get('projects'))})
+      ;
 
       // Poulate detail layout
       detailOverview.kpis.show(kpisView);
@@ -90,7 +105,10 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       detailOverview.map.show(map);
 
       // Fire build function since leaflet doens't fit nicely into the Backbone module pattern
-      map.build();
+      map
+        .build()
+        // Then we can hide the appropriate markers in case page start isn't index
+        .hideMarkers(options.model.attributes.projects);
     }
   });
 
