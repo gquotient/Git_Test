@@ -66,13 +66,13 @@ define(
         _.each(this.markers, function(marker){
           if (ids.indexOf(marker.id) >= 0) {
             // show marker
-            // This is a little hackey but there doesn't me to be a hide/show method in leaflet
-            marker.marker._icon.style.display='';
-            marker.marker._shadow.style.display='';
+            // This is a little hackey but there doesn't seem to be a hide/show method in leaflet
+            $(marker.marker._icon).fadeIn();
+            $(marker.marker._shadow).fadeIn();
           } else {
             // hide marker
-            marker.marker._icon.style.display='none';
-            marker.marker._shadow.style.display='none';
+            $(marker.marker._icon).fadeOut();
+            $(marker.marker._shadow).fadeOut();
           }
         });
 
