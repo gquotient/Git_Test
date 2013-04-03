@@ -213,30 +213,6 @@ define(
       }
     });
 
-    Portfolio.views.map = Backbone.Marionette.ItemView.extend({
-      render: function(){
-        // Create a container for the leaflet map
-        this.setElement($('<div id="leafletContainer" />'));
-      },
-      build: function(){
-        var map = L.map('leafletContainer').setView([30.2, -97.7], 1);
-
-        // add an OpenStreetMap tile layer
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-      },
-      initialize: function(options){
-        var that = this;
-
-        this.controller = options.controller;
-
-        this.listenTo(this.controller, 'select:portfolio', function(options){
-          console.log('map heard select:portfolio', options);
-        });
-      }
-    });
-
     Portfolio.views.detailKpis = Backbone.Marionette.ItemView.extend({
       tagName: 'ul',
       template: {

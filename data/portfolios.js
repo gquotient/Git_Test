@@ -50,6 +50,7 @@ function generateProject(){
       irradiance_now: _.random(1000),
       power_now: _.random(100)
     },
+    latLong: [_.random(-180, 180), _.random(-180,180)],
     belongsTo: []
   };
 
@@ -148,7 +149,7 @@ if(require.main === module) {
       } else {
           console.log("The file was saved!");
       }
-    }); 
-} else { 
+    });
+} else {
   module.exports = generatePortfolios;
 }

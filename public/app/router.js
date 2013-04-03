@@ -65,7 +65,10 @@ function($, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
         // Build KPIs
         kpisView = new Portfolio.views.detailKpis({ model: options.model, controller: portfolioController }),
         // Prepare map
-        map = new Portfolio.views.map({ controller: portfolioController }),
+        map = new Project.views.map({
+          controller: portfolioController,
+          collection: ia.allProjects
+        }),
         // Extend project collection and view to be used for portfolios. May be a better way to do this.
         portfolioProjectList = Project.views.DataList.extend({
           controller: portfolioController,
