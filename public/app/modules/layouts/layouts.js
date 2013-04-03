@@ -8,7 +8,7 @@ define([
   'portfolio',
   'project',
 
-  'hbs!app/layouts/index',
+  'hbs!layouts/templates/index',
   'hbs!layouts/templates/detailOverview'
 ], function(
   $,
