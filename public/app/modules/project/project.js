@@ -90,6 +90,7 @@ define(
           var lat = marker.marker._latlng.lat,
               lng = marker.marker._latlng.lng;
 
+          // This stuff is ugly but I couldn't think of a better way since it's 2 dimensional
           if (south === undefined) {
             south = lng;
           } else {
@@ -123,6 +124,7 @@ define(
           }
         });
 
+        // Leaflet method to snap to bounds
         this.map.fitBounds([
           [west, south], // southwest
           [east, north]  // northeast
@@ -155,6 +157,7 @@ define(
           }
         });
 
+        // Pan and center on outtermost markers
         this.fitToBounds();
 
         return this;
