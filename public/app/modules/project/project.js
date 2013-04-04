@@ -78,10 +78,60 @@ define(
 
         return this;
       },
+      fitToBounds: function(){
+        var
+          south,
+          west,
+          north,
+          east
+        ;
+
+        _.each(this.markers, function(marker){
+          var lat = marker.marker._latlng.lat,
+              lng = marker.marker._latlng.lng;
+
+          if (south === undefined) {
+            south = lng;
+          } else {
+            if (lng < south) {
+              south = lng;
+            }
+          }
+
+          if (west === undefined) {
+            west = lat;
+          } else {
+            if (lat < west) {
+              west = lat;
+            }
+          }
+
+          if (north === undefined) {
+            north = lng;
+          } else {
+            if (lng > north) {
+              north = lng;
+            }
+          }
+
+          if (east === undefined) {
+            east = lat;
+          } else {
+            if (lat > east) {
+              east = lat;
+            }
+          }
+        });
+
+        this.map.fitBounds([
+          [west, south], // southwest
+          [east, north]  // northeast
+        ]);
+      },
       build: function(){
         var that = this,
-            map = L.map('leafletContainer').setView([30.2, -97.7], 1),
-            projects = this.collection.models;
+            projects = this.collection.models,
+            map = this.map = L.map('leafletContainer').setView([30.2, -97.7], 1);
 
         // add an OpenStreetMap tile layer
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -104,6 +154,8 @@ define(
             that.markers.push(newMarker);
           }
         });
+
+        this.fitToBounds();
 
         return this;
       }

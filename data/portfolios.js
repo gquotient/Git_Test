@@ -50,7 +50,7 @@ function generateProject(){
       irradiance_now: _.random(1000),
       power_now: _.random(100)
     },
-    latLong: [_.random(-180, 180), _.random(-180,180)],
+    latLong: [_.random(-60, 60), _.random(-180,180)],
     belongsTo: []
   };
 

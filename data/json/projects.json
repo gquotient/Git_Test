@@ -1,1172 +1,1194 @@
 [
   {
-    "id": 712,
-    "name": "Project 712",
+    "id": 795,
+    "name": "Project 795",
     "kpis": {
-      "dc_capacity": 1379,
-      "ac_capacity": 1181,
-      "irradiance_now": 142,
-      "power_now": 40
+      "dc_capacity": 2192,
+      "ac_capacity": 1934,
+      "irradiance_now": 747,
+      "power_now": 50
     },
     "latLong": [
-      1,
-      149
+      -27,
+      -139
     ],
     "belongsTo": [
-      365,
-      345,
-      40
+      963,
+      717,
+      478,
+      394,
+      694,
+      534,
+      665
     ]
   },
   {
-    "id": 451,
-    "name": "Project 451",
+    "id": 186,
+    "name": "Project 186",
     "kpis": {
-      "dc_capacity": 1450,
-      "ac_capacity": 1246,
-      "irradiance_now": 365,
-      "power_now": 95
+      "dc_capacity": 1481,
+      "ac_capacity": 1239,
+      "irradiance_now": 404,
+      "power_now": 45
     },
     "latLong": [
-      -51,
-      36
+      -40,
+      144
     ],
     "belongsTo": [
-      365,
-      125,
-      992,
-      224,
-      345,
-      12,
-      18
+      717,
+      394,
+      534,
+      665,
+      607
     ]
   },
   {
-    "id": 744,
-    "name": "Project 744",
-    "kpis": {
-      "dc_capacity": 1836,
-      "ac_capacity": 1702,
-      "irradiance_now": 225,
-      "power_now": 63
-    },
-    "latLong": [
-      -91,
-      -145
-    ],
-    "belongsTo": [
-      365,
-      992,
-      224,
-      473,
-      12,
-      18,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 61,
-    "name": "Project 61",
+    "id": 925,
+    "name": "Project 925",
     "kpis": {
       "dc_capacity": 1720,
-      "ac_capacity": 1450,
-      "irradiance_now": 498,
-      "power_now": 29
-    },
-    "latLong": [
-      33,
-      21
-    ],
-    "belongsTo": [
-      125,
-      224,
-      12,
-      18,
-      975
-    ]
-  },
-  {
-    "id": 942,
-    "name": "Project 942",
-    "kpis": {
-      "dc_capacity": 1366,
-      "ac_capacity": 1133,
-      "irradiance_now": 439,
-      "power_now": 13
-    },
-    "latLong": [
-      88,
-      -40
-    ],
-    "belongsTo": [
-      365,
-      125,
-      224,
-      473,
-      345,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 647,
-    "name": "Project 647",
-    "kpis": {
-      "dc_capacity": 1451,
-      "ac_capacity": 1316,
-      "irradiance_now": 164,
-      "power_now": 11
-    },
-    "latLong": [
-      -132,
-      98
-    ],
-    "belongsTo": [
-      125,
-      992,
-      224,
-      473,
-      345,
-      12,
-      18,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 971,
-    "name": "Project 971",
-    "kpis": {
-      "dc_capacity": 2292,
-      "ac_capacity": 2003,
-      "irradiance_now": 648,
-      "power_now": 49
-    },
-    "latLong": [
-      -146,
-      -86
-    ],
-    "belongsTo": [
-      365,
-      125,
-      224,
-      345,
-      12,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 152,
-    "name": "Project 152",
-    "kpis": {
-      "dc_capacity": 1714,
-      "ac_capacity": 1429,
-      "irradiance_now": 584,
-      "power_now": 95
-    },
-    "latLong": [
-      123,
-      46
-    ],
-    "belongsTo": [
-      125,
-      992,
-      345,
-      12,
-      18
-    ]
-  },
-  {
-    "id": 792,
-    "name": "Project 792",
-    "kpis": {
-      "dc_capacity": 2903,
-      "ac_capacity": 2798,
-      "irradiance_now": 631,
-      "power_now": 25
-    },
-    "latLong": [
-      -23,
-      137
-    ],
-    "belongsTo": [
-      365,
-      992,
-      473,
-      12,
-      18,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 977,
-    "name": "Project 977",
-    "kpis": {
-      "dc_capacity": 2553,
-      "ac_capacity": 2284,
-      "irradiance_now": 235,
-      "power_now": 42
-    },
-    "latLong": [
-      2,
-      159
-    ],
-    "belongsTo": [
-      365,
-      224,
-      473,
-      345,
-      12,
-      975
-    ]
-  },
-  {
-    "id": 842,
-    "name": "Project 842",
-    "kpis": {
-      "dc_capacity": 2940,
-      "ac_capacity": 2687,
-      "irradiance_now": 426,
-      "power_now": 26
-    },
-    "latLong": [
-      95,
-      -165
-    ],
-    "belongsTo": [
-      992,
-      473,
-      345,
-      12,
-      975
-    ]
-  },
-  {
-    "id": 563,
-    "name": "Project 563",
-    "kpis": {
-      "dc_capacity": 1047,
-      "ac_capacity": 838,
-      "irradiance_now": 802,
-      "power_now": 78
-    },
-    "latLong": [
-      12,
-      -69
-    ],
-    "belongsTo": [
-      365,
-      224,
-      473,
-      345,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 537,
-    "name": "Project 537",
-    "kpis": {
-      "dc_capacity": 1923,
-      "ac_capacity": 1713,
-      "irradiance_now": 105,
-      "power_now": 78
-    },
-    "latLong": [
-      -127,
-      95
-    ],
-    "belongsTo": [
-      992,
-      224,
-      345,
-      40
-    ]
-  },
-  {
-    "id": 148,
-    "name": "Project 148",
-    "kpis": {
-      "dc_capacity": 2683,
-      "ac_capacity": 2512,
-      "irradiance_now": 624,
-      "power_now": 83
-    },
-    "latLong": [
-      -90,
-      101
-    ],
-    "belongsTo": [
-      365,
-      224,
-      345,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 323,
-    "name": "Project 323",
-    "kpis": {
-      "dc_capacity": 2976,
-      "ac_capacity": 2810,
-      "irradiance_now": 672,
+      "ac_capacity": 1538,
+      "irradiance_now": 215,
       "power_now": 51
     },
     "latLong": [
-      165,
-      101
+      -27,
+      68
     ],
     "belongsTo": [
-      992,
-      224,
-      473,
-      345,
-      12,
-      975,
-      40
+      478,
+      394,
+      676,
+      694,
+      534,
+      665
     ]
   },
   {
-    "id": 32,
-    "name": "Project 32",
+    "id": 834,
+    "name": "Project 834",
     "kpis": {
-      "dc_capacity": 2340,
-      "ac_capacity": 2154,
-      "irradiance_now": 150,
-      "power_now": 72
+      "dc_capacity": 2694,
+      "ac_capacity": 2496,
+      "irradiance_now": 196,
+      "power_now": 8
     },
     "latLong": [
-      -61,
-      94
+      55,
+      -72
     ],
     "belongsTo": [
-      365,
-      224,
-      975
+      963,
+      717,
+      394,
+      665,
+      607
     ]
   },
   {
-    "id": 384,
-    "name": "Project 384",
+    "id": 916,
+    "name": "Project 916",
     "kpis": {
-      "dc_capacity": 1517,
-      "ac_capacity": 1331,
-      "irradiance_now": 483,
-      "power_now": 76
+      "dc_capacity": 1677,
+      "ac_capacity": 1481,
+      "irradiance_now": 984,
+      "power_now": 4
     },
     "latLong": [
-      49,
-      -123
+      -26,
+      179
     ],
     "belongsTo": [
-      992,
-      224,
-      473,
-      345,
-      975
+      963,
+      717,
+      394,
+      597,
+      534,
+      665,
+      607
     ]
   },
   {
-    "id": 723,
-    "name": "Project 723",
+    "id": 316,
+    "name": "Project 316",
     "kpis": {
-      "dc_capacity": 2713,
-      "ac_capacity": 2515,
-      "irradiance_now": 913,
-      "power_now": 28
+      "dc_capacity": 2154,
+      "ac_capacity": 1883,
+      "irradiance_now": 881,
+      "power_now": 92
     },
     "latLong": [
-      -28,
+      40,
+      -106
+    ],
+    "belongsTo": [
+      963,
+      717,
+      478,
+      394,
+      597,
+      676,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 515,
+    "name": "Project 515",
+    "kpis": {
+      "dc_capacity": 1798,
+      "ac_capacity": 1517,
+      "irradiance_now": 465,
+      "power_now": 27
+    },
+    "latLong": [
+      -54,
+      48
+    ],
+    "belongsTo": [
+      963,
+      717,
+      676,
+      694,
+      534,
+      665
+    ]
+  },
+  {
+    "id": 445,
+    "name": "Project 445",
+    "kpis": {
+      "dc_capacity": 1430,
+      "ac_capacity": 1227,
+      "irradiance_now": 583,
+      "power_now": 83
+    },
+    "latLong": [
+      25,
+      180
+    ],
+    "belongsTo": [
+      717,
+      478,
+      394,
+      597,
+      676,
+      534,
+      607
+    ]
+  },
+  {
+    "id": 683,
+    "name": "Project 683",
+    "kpis": {
+      "dc_capacity": 2826,
+      "ac_capacity": 2710,
+      "irradiance_now": 643,
+      "power_now": 55
+    },
+    "latLong": [
+      -35,
+      -46
+    ],
+    "belongsTo": [
+      597,
+      694,
+      534
+    ]
+  },
+  {
+    "id": 617,
+    "name": "Project 617",
+    "kpis": {
+      "dc_capacity": 2382,
+      "ac_capacity": 2277,
+      "irradiance_now": 397,
+      "power_now": 78
+    },
+    "latLong": [
+      51,
+      133
+    ],
+    "belongsTo": [
+      717,
+      597,
+      676,
+      694
+    ]
+  },
+  {
+    "id": 690,
+    "name": "Project 690",
+    "kpis": {
+      "dc_capacity": 2966,
+      "ac_capacity": 2679,
+      "irradiance_now": 399,
+      "power_now": 91
+    },
+    "latLong": [
+      38,
+      106
+    ],
+    "belongsTo": [
+      394,
+      694,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Project 40",
+    "kpis": {
+      "dc_capacity": 1059,
+      "ac_capacity": 848,
+      "irradiance_now": 179,
+      "power_now": 53
+    },
+    "latLong": [
+      -16,
       -19
     ],
     "belongsTo": [
-      365,
-      345,
-      12,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 693,
-    "name": "Project 693",
-    "kpis": {
-      "dc_capacity": 2415,
-      "ac_capacity": 2196,
-      "irradiance_now": 47,
-      "power_now": 36
-    },
-    "latLong": [
-      -95,
-      84
-    ],
-    "belongsTo": [
-      992,
-      12,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 427,
-    "name": "Project 427",
-    "kpis": {
-      "dc_capacity": 2718,
-      "ac_capacity": 2498,
-      "irradiance_now": 447,
-      "power_now": 15
-    },
-    "latLong": [
-      -36,
-      23
-    ],
-    "belongsTo": [
-      992,
-      224,
-      345,
-      12,
-      40
-    ]
-  },
-  {
-    "id": 972,
-    "name": "Project 972",
-    "kpis": {
-      "dc_capacity": 2794,
-      "ac_capacity": 2536,
-      "irradiance_now": 704,
-      "power_now": 76
-    },
-    "latLong": [
-      -14,
-      -47
-    ],
-    "belongsTo": [
-      365,
-      224,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 778,
-    "name": "Project 778",
-    "kpis": {
-      "dc_capacity": 1003,
-      "ac_capacity": 712,
-      "irradiance_now": 401,
-      "power_now": 72
-    },
-    "latLong": [
-      -96,
-      129
-    ],
-    "belongsTo": [
-      365,
-      224,
-      345,
-      12
-    ]
-  },
-  {
-    "id": 518,
-    "name": "Project 518",
-    "kpis": {
-      "dc_capacity": 2891,
-      "ac_capacity": 2596,
-      "irradiance_now": 459,
-      "power_now": 3
-    },
-    "latLong": [
-      -4,
-      -88
-    ],
-    "belongsTo": [
-      992,
-      345,
-      975
-    ]
-  },
-  {
-    "id": 224,
-    "name": "Project 224",
-    "kpis": {
-      "dc_capacity": 2710,
-      "ac_capacity": 2419,
-      "irradiance_now": 167,
-      "power_now": 25
-    },
-    "latLong": [
-      64,
-      -26
-    ],
-    "belongsTo": [
-      992,
-      224,
-      345,
-      12,
-      975
-    ]
-  },
-  {
-    "id": 661,
-    "name": "Project 661",
-    "kpis": {
-      "dc_capacity": 1956,
-      "ac_capacity": 1828,
-      "irradiance_now": 184,
-      "power_now": 52
-    },
-    "latLong": [
-      -106,
-      -22
-    ],
-    "belongsTo": [
-      365,
-      992,
-      224,
-      345,
-      12,
-      975,
-      40
+      963,
+      694,
+      534,
+      665,
+      607
     ]
   },
   {
     "id": 728,
     "name": "Project 728",
     "kpis": {
-      "dc_capacity": 1122,
-      "ac_capacity": 947,
-      "irradiance_now": 658,
-      "power_now": 0
-    },
-    "latLong": [
-      -87,
-      152
-    ],
-    "belongsTo": [
-      365,
-      224
-    ]
-  },
-  {
-    "id": 588,
-    "name": "Project 588",
-    "kpis": {
-      "dc_capacity": 2160,
-      "ac_capacity": 2034,
-      "irradiance_now": 954,
-      "power_now": 72
-    },
-    "latLong": [
-      -103,
-      93
-    ],
-    "belongsTo": [
-      365,
-      224,
-      12,
-      40
-    ]
-  },
-  {
-    "id": 18,
-    "name": "Project 18",
-    "kpis": {
-      "dc_capacity": 2965,
-      "ac_capacity": 2668,
-      "irradiance_now": 887,
+      "dc_capacity": 2667,
+      "ac_capacity": 2498,
+      "irradiance_now": 699,
       "power_now": 68
     },
     "latLong": [
-      -40,
-      95
+      -54,
+      -137
     ],
     "belongsTo": [
-      365,
-      224,
-      12,
-      40
+      963,
+      717,
+      597,
+      676,
+      534,
+      665,
+      607
     ]
   },
   {
-    "id": 814,
-    "name": "Project 814",
+    "id": 800,
+    "name": "Project 800",
     "kpis": {
-      "dc_capacity": 2619,
-      "ac_capacity": 2376,
-      "irradiance_now": 129,
-      "power_now": 39
+      "dc_capacity": 1497,
+      "ac_capacity": 1265,
+      "irradiance_now": 38,
+      "power_now": 12
     },
     "latLong": [
-      84,
-      -40
+      46,
+      85
     ],
     "belongsTo": [
-      365,
-      992,
-      12,
-      975
+      963,
+      394,
+      676,
+      694,
+      534,
+      607
     ]
   },
   {
-    "id": 346,
-    "name": "Project 346",
+    "id": 491,
+    "name": "Project 491",
     "kpis": {
-      "dc_capacity": 1748,
-      "ac_capacity": 1498,
-      "irradiance_now": 174,
-      "power_now": 80
+      "dc_capacity": 2608,
+      "ac_capacity": 2413,
+      "irradiance_now": 506,
+      "power_now": 43
     },
     "latLong": [
-      -136,
-      117
+      54,
+      78
     ],
     "belongsTo": [
-      992,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 33,
-    "name": "Project 33",
-    "kpis": {
-      "dc_capacity": 1234,
-      "ac_capacity": 951,
-      "irradiance_now": 859,
-      "power_now": 86
-    },
-    "latLong": [
-      -16,
-      -45
-    ],
-    "belongsTo": [
-      992,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 496,
-    "name": "Project 496",
-    "kpis": {
-      "dc_capacity": 1787,
-      "ac_capacity": 1536,
-      "irradiance_now": 972,
-      "power_now": 49
-    },
-    "latLong": [
-      109,
-      -163
-    ],
-    "belongsTo": [
-      365,
-      12,
-      975
-    ]
-  },
-  {
-    "id": 731,
-    "name": "Project 731",
-    "kpis": {
-      "dc_capacity": 1367,
-      "ac_capacity": 1242,
-      "irradiance_now": 294,
-      "power_now": 58
-    },
-    "latLong": [
-      90,
-      -75
-    ],
-    "belongsTo": [
-      365,
-      992,
-      12,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 935,
-    "name": "Project 935",
-    "kpis": {
-      "dc_capacity": 2942,
-      "ac_capacity": 2753,
-      "irradiance_now": 548,
-      "power_now": 79
-    },
-    "latLong": [
-      107,
-      89
-    ],
-    "belongsTo": [
-      992,
-      975
-    ]
-  },
-  {
-    "id": 887,
-    "name": "Project 887",
-    "kpis": {
-      "dc_capacity": 1930,
-      "ac_capacity": 1780,
-      "irradiance_now": 886,
-      "power_now": 32
-    },
-    "latLong": [
-      44,
-      27
-    ],
-    "belongsTo": [
-      992,
-      12,
-      40
-    ]
-  },
-  {
-    "id": 145,
-    "name": "Project 145",
-    "kpis": {
-      "dc_capacity": 2834,
-      "ac_capacity": 2701,
-      "irradiance_now": 306,
-      "power_now": 25
-    },
-    "latLong": [
-      -168,
-      112
-    ],
-    "belongsTo": [
-      365,
-      12
-    ]
-  },
-  {
-    "id": 42,
-    "name": "Project 42",
-    "kpis": {
-      "dc_capacity": 2511,
-      "ac_capacity": 2240,
-      "irradiance_now": 6,
-      "power_now": 94
-    },
-    "latLong": [
-      -5,
-      -87
-    ],
-    "belongsTo": [
-      365,
-      992,
-      975
-    ]
-  },
-  {
-    "id": 145,
-    "name": "Project 145",
-    "kpis": {
-      "dc_capacity": 2176,
-      "ac_capacity": 1994,
-      "irradiance_now": 370,
-      "power_now": 18
-    },
-    "latLong": [
-      98,
-      177
-    ],
-    "belongsTo": [
-      992
-    ]
-  },
-  {
-    "id": 259,
-    "name": "Project 259",
-    "kpis": {
-      "dc_capacity": 1577,
-      "ac_capacity": 1280,
-      "irradiance_now": 412,
-      "power_now": 90
-    },
-    "latLong": [
-      -87,
-      137
-    ],
-    "belongsTo": [
-      365,
-      992,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 700,
-    "name": "Project 700",
-    "kpis": {
-      "dc_capacity": 2637,
-      "ac_capacity": 2505,
-      "irradiance_now": 305,
-      "power_now": 42
-    },
-    "latLong": [
-      75,
-      124
-    ],
-    "belongsTo": [
-      992,
-      40
-    ]
-  },
-  {
-    "id": 911,
-    "name": "Project 911",
-    "kpis": {
-      "dc_capacity": 2906,
-      "ac_capacity": 2609,
-      "irradiance_now": 872,
-      "power_now": 32
-    },
-    "latLong": [
-      -9,
-      -171
-    ],
-    "belongsTo": [
-      992,
-      12,
-      975
-    ]
-  },
-  {
-    "id": 114,
-    "name": "Project 114",
-    "kpis": {
-      "dc_capacity": 1184,
-      "ac_capacity": 1022,
-      "irradiance_now": 80,
-      "power_now": 4
-    },
-    "latLong": [
-      -106,
-      -1
-    ],
-    "belongsTo": [
-      12,
-      40
-    ]
-  },
-  {
-    "id": 441,
-    "name": "Project 441",
-    "kpis": {
-      "dc_capacity": 1922,
-      "ac_capacity": 1752,
-      "irradiance_now": 857,
-      "power_now": 92
-    },
-    "latLong": [
-      143,
-      -64
-    ],
-    "belongsTo": [
-      992,
-      12,
-      975,
-      40
-    ]
-  },
-  {
-    "id": 835,
-    "name": "Project 835",
-    "kpis": {
-      "dc_capacity": 2678,
-      "ac_capacity": 2515,
-      "irradiance_now": 541,
-      "power_now": 81
-    },
-    "latLong": [
-      16,
-      -25
-    ],
-    "belongsTo": [
-      992,
-      12,
-      975,
-      40
+      394,
+      676,
+      694,
+      534,
+      665,
+      607
     ]
   },
   {
     "id": 289,
     "name": "Project 289",
     "kpis": {
-      "dc_capacity": 1597,
-      "ac_capacity": 1488,
-      "irradiance_now": 246,
-      "power_now": 48
+      "dc_capacity": 1846,
+      "ac_capacity": 1702,
+      "irradiance_now": 47,
+      "power_now": 32
     },
     "latLong": [
-      73,
-      112
+      30,
+      97
     ],
     "belongsTo": [
-      992,
-      975,
-      40
+      963,
+      717,
+      394,
+      597,
+      676,
+      534
     ]
   },
   {
-    "id": 776,
-    "name": "Project 776",
+    "id": 196,
+    "name": "Project 196",
     "kpis": {
-      "dc_capacity": 1743,
-      "ac_capacity": 1540,
-      "irradiance_now": 265,
-      "power_now": 14
+      "dc_capacity": 1046,
+      "ac_capacity": 800,
+      "irradiance_now": 225,
+      "power_now": 62
     },
     "latLong": [
-      -141,
-      -170
+      -32,
+      -70
     ],
     "belongsTo": [
-      12,
-      975
+      676,
+      665
     ]
   },
   {
-    "id": 147,
-    "name": "Project 147",
+    "id": 566,
+    "name": "Project 566",
     "kpis": {
-      "dc_capacity": 1710,
-      "ac_capacity": 1452,
-      "irradiance_now": 166,
-      "power_now": 77
+      "dc_capacity": 1609,
+      "ac_capacity": 1355,
+      "irradiance_now": 752,
+      "power_now": 21
     },
     "latLong": [
-      -14,
-      -32
+      42,
+      -128
     ],
     "belongsTo": [
-      992,
-      12,
-      975,
-      40
+      963,
+      717,
+      394,
+      597,
+      694,
+      534,
+      665
+    ]
+  },
+  {
+    "id": 401,
+    "name": "Project 401",
+    "kpis": {
+      "dc_capacity": 1080,
+      "ac_capacity": 939,
+      "irradiance_now": 211,
+      "power_now": 33
+    },
+    "latLong": [
+      13,
+      59
+    ],
+    "belongsTo": [
+      963,
+      394,
+      597,
+      676,
+      534,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 301,
+    "name": "Project 301",
+    "kpis": {
+      "dc_capacity": 2509,
+      "ac_capacity": 2327,
+      "irradiance_now": 456,
+      "power_now": 92
+    },
+    "latLong": [
+      40,
+      -115
+    ],
+    "belongsTo": [
+      963,
+      717,
+      676,
+      534,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 588,
+    "name": "Project 588",
+    "kpis": {
+      "dc_capacity": 1468,
+      "ac_capacity": 1342,
+      "irradiance_now": 157,
+      "power_now": 90
+    },
+    "latLong": [
+      -60,
+      -39
+    ],
+    "belongsTo": [
+      963,
+      717,
+      394,
+      597,
+      676,
+      607
     ]
   },
   {
     "id": 560,
     "name": "Project 560",
     "kpis": {
-      "dc_capacity": 1546,
-      "ac_capacity": 1438,
-      "irradiance_now": 53,
-      "power_now": 45
-    },
-    "latLong": [
-      -101,
-      -52
-    ],
-    "belongsTo": [
-      12
-    ]
-  },
-  {
-    "id": 69,
-    "name": "Project 69",
-    "kpis": {
-      "dc_capacity": 1798,
-      "ac_capacity": 1574,
-      "irradiance_now": 100,
-      "power_now": 15
-    },
-    "latLong": [
-      33,
-      78
-    ],
-    "belongsTo": [
-      12,
-      40
-    ]
-  },
-  {
-    "id": 820,
-    "name": "Project 820",
-    "kpis": {
-      "dc_capacity": 2085,
-      "ac_capacity": 1796,
-      "irradiance_now": 316,
+      "dc_capacity": 2635,
+      "ac_capacity": 2377,
+      "irradiance_now": 148,
       "power_now": 67
     },
     "latLong": [
-      -179,
-      -120
+      -11,
+      -34
     ],
     "belongsTo": [
-      12,
-      975,
-      40
+      963,
+      394,
+      694,
+      534,
+      665
     ]
   },
   {
-    "id": 684,
-    "name": "Project 684",
+    "id": 450,
+    "name": "Project 450",
     "kpis": {
-      "dc_capacity": 2395,
-      "ac_capacity": 2247,
-      "irradiance_now": 945,
-      "power_now": 19
+      "dc_capacity": 2599,
+      "ac_capacity": 2410,
+      "irradiance_now": 619,
+      "power_now": 34
     },
     "latLong": [
-      -22,
-      -83
+      17,
+      -6
     ],
     "belongsTo": [
-      12,
-      975,
-      40
+      963,
+      717,
+      394,
+      676,
+      694,
+      534,
+      607
     ]
   },
   {
-    "id": 459,
-    "name": "Project 459",
+    "id": 224,
+    "name": "Project 224",
     "kpis": {
-      "dc_capacity": 2818,
-      "ac_capacity": 2562,
-      "irradiance_now": 77,
-      "power_now": 57
+      "dc_capacity": 2471,
+      "ac_capacity": 2237,
+      "irradiance_now": 283,
+      "power_now": 84
     },
     "latLong": [
-      -174,
-      99
+      -31,
+      55
     ],
-    "belongsTo": []
+    "belongsTo": [
+      963,
+      717,
+      394,
+      597,
+      676,
+      694,
+      665,
+      607
+    ]
   },
   {
-    "id": 863,
-    "name": "Project 863",
+    "id": 285,
+    "name": "Project 285",
     "kpis": {
-      "dc_capacity": 2122,
-      "ac_capacity": 1844,
-      "irradiance_now": 601,
-      "power_now": 90
+      "dc_capacity": 1525,
+      "ac_capacity": 1370,
+      "irradiance_now": 733,
+      "power_now": 60
     },
     "latLong": [
-      -161,
+      13,
+      68
+    ],
+    "belongsTo": [
+      394,
+      597,
+      694,
+      534,
+      607
+    ]
+  },
+  {
+    "id": 193,
+    "name": "Project 193",
+    "kpis": {
+      "dc_capacity": 1289,
+      "ac_capacity": 1039,
+      "irradiance_now": 488,
+      "power_now": 7
+    },
+    "latLong": [
+      -35,
+      -86
+    ],
+    "belongsTo": [
+      963,
+      394,
+      597,
+      534,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 887,
+    "name": "Project 887",
+    "kpis": {
+      "dc_capacity": 2704,
+      "ac_capacity": 2571,
+      "irradiance_now": 31,
+      "power_now": 78
+    },
+    "latLong": [
+      -34,
+      90
+    ],
+    "belongsTo": [
+      963,
+      694,
+      534,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 758,
+    "name": "Project 758",
+    "kpis": {
+      "dc_capacity": 1667,
+      "ac_capacity": 1535,
+      "irradiance_now": 715,
+      "power_now": 42
+    },
+    "latLong": [
+      0,
+      41
+    ],
+    "belongsTo": [
+      963,
+      394,
+      597,
+      694,
+      534,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 343,
+    "name": "Project 343",
+    "kpis": {
+      "dc_capacity": 1492,
+      "ac_capacity": 1325,
+      "irradiance_now": 343,
+      "power_now": 97
+    },
+    "latLong": [
+      -60,
+      -115
+    ],
+    "belongsTo": [
+      963,
+      676,
+      694,
+      534,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 755,
+    "name": "Project 755",
+    "kpis": {
+      "dc_capacity": 1028,
+      "ac_capacity": 792,
+      "irradiance_now": 960,
+      "power_now": 35
+    },
+    "latLong": [
+      -9,
+      98
+    ],
+    "belongsTo": [
+      597,
+      676,
+      694,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 773,
+    "name": "Project 773",
+    "kpis": {
+      "dc_capacity": 2181,
+      "ac_capacity": 2064,
+      "irradiance_now": 501,
+      "power_now": 64
+    },
+    "latLong": [
+      -47,
+      -13
+    ],
+    "belongsTo": [
+      963,
+      676,
+      694,
+      534,
+      665
+    ]
+  },
+  {
+    "id": 953,
+    "name": "Project 953",
+    "kpis": {
+      "dc_capacity": 2349,
+      "ac_capacity": 2176,
+      "irradiance_now": 834,
+      "power_now": 31
+    },
+    "latLong": [
+      2,
+      -30
+    ],
+    "belongsTo": [
+      963,
+      597,
+      676,
+      534,
+      665
+    ]
+  },
+  {
+    "id": 615,
+    "name": "Project 615",
+    "kpis": {
+      "dc_capacity": 1198,
+      "ac_capacity": 1049,
+      "irradiance_now": 315,
+      "power_now": 59
+    },
+    "latLong": [
+      35,
       -93
     ],
     "belongsTo": [
-      975
+      597,
+      676,
+      694,
+      665,
+      607
     ]
   },
   {
-    "id": 451,
-    "name": "Project 451",
+    "id": 433,
+    "name": "Project 433",
     "kpis": {
-      "dc_capacity": 1548,
-      "ac_capacity": 1295,
-      "irradiance_now": 761,
-      "power_now": 63
+      "dc_capacity": 1294,
+      "ac_capacity": 1053,
+      "irradiance_now": 245,
+      "power_now": 21
     },
     "latLong": [
-      -121,
-      69
+      -1,
+      7
     ],
     "belongsTo": [
-      40
+      963,
+      597,
+      694,
+      534,
+      607
     ]
   },
   {
-    "id": 183,
-    "name": "Project 183",
+    "id": 327,
+    "name": "Project 327",
     "kpis": {
-      "dc_capacity": 2859,
-      "ac_capacity": 2647,
-      "irradiance_now": 106,
-      "power_now": 70
+      "dc_capacity": 2392,
+      "ac_capacity": 2292,
+      "irradiance_now": 468,
+      "power_now": 23
     },
     "latLong": [
-      -7,
+      37,
+      115
+    ],
+    "belongsTo": [
+      963,
+      597,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 290,
+    "name": "Project 290",
+    "kpis": {
+      "dc_capacity": 2382,
+      "ac_capacity": 2127,
+      "irradiance_now": 748,
+      "power_now": 95
+    },
+    "latLong": [
+      -46,
+      176
+    ],
+    "belongsTo": [
+      597,
+      676,
+      534
+    ]
+  },
+  {
+    "id": 548,
+    "name": "Project 548",
+    "kpis": {
+      "dc_capacity": 2753,
+      "ac_capacity": 2587,
+      "irradiance_now": 879,
+      "power_now": 53
+    },
+    "latLong": [
+      23,
+      47
+    ],
+    "belongsTo": [
+      963,
+      597,
+      676,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 948,
+    "name": "Project 948",
+    "kpis": {
+      "dc_capacity": 1441,
+      "ac_capacity": 1329,
+      "irradiance_now": 51,
+      "power_now": 57
+    },
+    "latLong": [
+      -12,
+      80
+    ],
+    "belongsTo": [
+      534,
+      665
+    ]
+  },
+  {
+    "id": 386,
+    "name": "Project 386",
+    "kpis": {
+      "dc_capacity": 2538,
+      "ac_capacity": 2379,
+      "irradiance_now": 337,
+      "power_now": 56
+    },
+    "latLong": [
+      33,
+      -90
+    ],
+    "belongsTo": [
+      534,
+      607
+    ]
+  },
+  {
+    "id": 823,
+    "name": "Project 823",
+    "kpis": {
+      "dc_capacity": 2197,
+      "ac_capacity": 2063,
+      "irradiance_now": 990,
+      "power_now": 21
+    },
+    "latLong": [
+      2,
+      117
+    ],
+    "belongsTo": [
+      597,
+      676,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 172,
+    "name": "Project 172",
+    "kpis": {
+      "dc_capacity": 2241,
+      "ac_capacity": 2031,
+      "irradiance_now": 345,
+      "power_now": 74
+    },
+    "latLong": [
+      4,
+      96
+    ],
+    "belongsTo": [
+      597,
+      676,
+      534,
+      665,
+      607
+    ]
+  },
+  {
+    "id": 225,
+    "name": "Project 225",
+    "kpis": {
+      "dc_capacity": 2629,
+      "ac_capacity": 2417,
+      "irradiance_now": 818,
+      "power_now": 33
+    },
+    "latLong": [
+      -19,
+      -40
+    ],
+    "belongsTo": [
+      597,
+      676
+    ]
+  },
+  {
+    "id": 188,
+    "name": "Project 188",
+    "kpis": {
+      "dc_capacity": 2879,
+      "ac_capacity": 2714,
+      "irradiance_now": 105,
+      "power_now": 68
+    },
+    "latLong": [
+      -52,
+      36
+    ],
+    "belongsTo": [
+      597,
+      665
+    ]
+  },
+  {
+    "id": 238,
+    "name": "Project 238",
+    "kpis": {
+      "dc_capacity": 1346,
+      "ac_capacity": 1237,
+      "irradiance_now": 598,
+      "power_now": 95
+    },
+    "latLong": [
+      10,
+      -110
+    ],
+    "belongsTo": [
+      607
+    ]
+  },
+  {
+    "id": 681,
+    "name": "Project 681",
+    "kpis": {
+      "dc_capacity": 1061,
+      "ac_capacity": 832,
+      "irradiance_now": 52,
+      "power_now": 29
+    },
+    "latLong": [
+      11,
+      -1
+    ],
+    "belongsTo": [
+      607
+    ]
+  },
+  {
+    "id": 698,
+    "name": "Project 698",
+    "kpis": {
+      "dc_capacity": 1309,
+      "ac_capacity": 1017,
+      "irradiance_now": 184,
+      "power_now": 6
+    },
+    "latLong": [
+      -31,
       -88
     ],
     "belongsTo": [
-      12
+      676,
+      665
     ]
   },
   {
-    "id": 229,
-    "name": "Project 229",
+    "id": 877,
+    "name": "Project 877",
     "kpis": {
-      "dc_capacity": 2647,
-      "ac_capacity": 2473,
-      "irradiance_now": 880,
-      "power_now": 93
+      "dc_capacity": 2355,
+      "ac_capacity": 2060,
+      "irradiance_now": 89,
+      "power_now": 70
     },
     "latLong": [
-      -65,
-      -65
+      59,
+      -93
     ],
     "belongsTo": [
-      40
+      597,
+      534,
+      607
     ]
   },
   {
-    "id": 486,
-    "name": "Project 486",
+    "id": 748,
+    "name": "Project 748",
     "kpis": {
-      "dc_capacity": 2374,
-      "ac_capacity": 2114,
-      "irradiance_now": 406,
+      "dc_capacity": 1060,
+      "ac_capacity": 932,
+      "irradiance_now": 542,
+      "power_now": 73
+    },
+    "latLong": [
+      -58,
+      -90
+    ],
+    "belongsTo": [
+      597,
+      676,
+      534,
+      607
+    ]
+  },
+  {
+    "id": 131,
+    "name": "Project 131",
+    "kpis": {
+      "dc_capacity": 1741,
+      "ac_capacity": 1473,
+      "irradiance_now": 155,
+      "power_now": 52
+    },
+    "latLong": [
+      -27,
+      -132
+    ],
+    "belongsTo": [
+      676,
+      534,
+      607
+    ]
+  },
+  {
+    "id": 735,
+    "name": "Project 735",
+    "kpis": {
+      "dc_capacity": 2587,
+      "ac_capacity": 2335,
+      "irradiance_now": 542,
+      "power_now": 53
+    },
+    "latLong": [
+      -24,
+      -31
+    ],
+    "belongsTo": [
+      676,
+      534
+    ]
+  },
+  {
+    "id": 366,
+    "name": "Project 366",
+    "kpis": {
+      "dc_capacity": 2056,
+      "ac_capacity": 1877,
+      "irradiance_now": 993,
+      "power_now": 83
+    },
+    "latLong": [
+      24,
+      112
+    ],
+    "belongsTo": []
+  },
+  {
+    "id": 23,
+    "name": "Project 23",
+    "kpis": {
+      "dc_capacity": 1435,
+      "ac_capacity": 1198,
+      "irradiance_now": 894,
+      "power_now": 72
+    },
+    "latLong": [
+      -22,
+      -54
+    ],
+    "belongsTo": [
+      676
+    ]
+  },
+  {
+    "id": 956,
+    "name": "Project 956",
+    "kpis": {
+      "dc_capacity": 2989,
+      "ac_capacity": 2748,
+      "irradiance_now": 665,
+      "power_now": 15
+    },
+    "latLong": [
+      -37,
+      -20
+    ],
+    "belongsTo": [
+      676
+    ]
+  },
+  {
+    "id": 68,
+    "name": "Project 68",
+    "kpis": {
+      "dc_capacity": 1263,
+      "ac_capacity": 1091,
+      "irradiance_now": 842,
+      "power_now": 55
+    },
+    "latLong": [
+      -35,
+      67
+    ],
+    "belongsTo": []
+  },
+  {
+    "id": 643,
+    "name": "Project 643",
+    "kpis": {
+      "dc_capacity": 2504,
+      "ac_capacity": 2314,
+      "irradiance_now": 282,
+      "power_now": 26
+    },
+    "latLong": [
+      50,
+      4
+    ],
+    "belongsTo": []
+  },
+  {
+    "id": 772,
+    "name": "Project 772",
+    "kpis": {
+      "dc_capacity": 1708,
+      "ac_capacity": 1589,
+      "irradiance_now": 939,
+      "power_now": 75
+    },
+    "latLong": [
+      -42,
+      152
+    ],
+    "belongsTo": []
+  },
+  {
+    "id": 516,
+    "name": "Project 516",
+    "kpis": {
+      "dc_capacity": 2293,
+      "ac_capacity": 2040,
+      "irradiance_now": 902,
+      "power_now": 67
+    },
+    "latLong": [
+      -57,
+      152
+    ],
+    "belongsTo": []
+  },
+  {
+    "id": 349,
+    "name": "Project 349",
+    "kpis": {
+      "dc_capacity": 1527,
+      "ac_capacity": 1237,
+      "irradiance_now": 609,
+      "power_now": 69
+    },
+    "latLong": [
+      12,
+      150
+    ],
+    "belongsTo": []
+  },
+  {
+    "id": 529,
+    "name": "Project 529",
+    "kpis": {
+      "dc_capacity": 1314,
+      "ac_capacity": 1129,
+      "irradiance_now": 674,
+      "power_now": 81
+    },
+    "latLong": [
+      38,
+      74
+    ],
+    "belongsTo": []
+  },
+  {
+    "id": 495,
+    "name": "Project 495",
+    "kpis": {
+      "dc_capacity": 1536,
+      "ac_capacity": 1244,
+      "irradiance_now": 994,
       "power_now": 76
     },
     "latLong": [
-      -70,
-      126
-    ],
-    "belongsTo": []
-  },
-  {
-    "id": 392,
-    "name": "Project 392",
-    "kpis": {
-      "dc_capacity": 2846,
-      "ac_capacity": 2700,
-      "irradiance_now": 634,
-      "power_now": 79
-    },
-    "latLong": [
-      136,
-      166
-    ],
-    "belongsTo": []
-  },
-  {
-    "id": 265,
-    "name": "Project 265",
-    "kpis": {
-      "dc_capacity": 1966,
-      "ac_capacity": 1764,
-      "irradiance_now": 265,
-      "power_now": 62
-    },
-    "latLong": [
-      7,
-      -105
-    ],
-    "belongsTo": []
-  },
-  {
-    "id": 120,
-    "name": "Project 120",
-    "kpis": {
-      "dc_capacity": 1337,
-      "ac_capacity": 1151,
-      "irradiance_now": 495,
-      "power_now": 87
-    },
-    "latLong": [
-      -108,
-      9
+      -51,
+      -123
     ],
     "belongsTo": []
   }
