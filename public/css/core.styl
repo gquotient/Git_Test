@@ -81,25 +81,29 @@ body {
   font-size: 85%; /* Resets 1em to 12px */
   line-height: 1.25em;
   font-family: Helvetica, Arial, Sans-Serif;
+  border-top: 4px solid colorDrakerOrange;
 }
 
 /* Basic layout */
 
+headerHeight = 42px;
+
 header {
   background: #333;
-  height: 36px;
+  height: headerHeight;
   width: 100%;
   overflow: hidden;
   padding: 0 6px;
+  border-bottom: 1px solid #000;
   h1 {
     padding: 0;
     margin: 0;
     float: left;
-    background: url(/public/img/logo_draker_sml.png) center center no-repeat;
+    background: url(/public/img/logo_draker_sml_wShadow.png) center center no-repeat;
     display: inline-block;
     width: 183px;
-    height: 36px;
-    line-height: 36px;
+    height: headerHeight;
+    line-height: headerHeight;
     overflow: hidden;
     a {
       display: inline-block;
@@ -113,20 +117,31 @@ header {
     color: #ccc;
     padding: 0;
     margin: 0;
+    font-weight: 100;
+    text-shadow: 0 0 1px #000;
+    font-size: .85em;
     ul {
       list-style-type: none;
       padding: 0;
       margin: 0;
-      height: 36px
-      line-height: 36px;
+      height: headerHeight
+      line-height: headerHeight;
       li {
-        margin: 0 0 0 6px;
-        padding: 0;
+        padding: 0 9px;
         float: left;
+        border-left: 1px solid #222;
         a {
           padding: 0;
           margin: 0;
         }
+      }
+      li:last-child {
+        border-right: none;
+      }
+      li.username {
+        color: #fff;
+        border-right: 1px solid #444;
+        border-left: none;
       }
     }
   }
