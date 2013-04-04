@@ -171,12 +171,12 @@ define(
 
         // Build marker objects and markers
         _.each(projects, function(project){
-          var latLong = project.attributes.latLong;
+          var latLng = project.attributes.latLng;
 
-          if (latLong && latLong.length) {
+          if (latLng && latLng.length) {
             var newMarker = {
               marker: L.marker(
-                [latLong[0], latLong[1]],
+                [latLng[0], latLng[1]],
                 {
                   icon: that.markerStyles[project.attributes.status]
                 }
