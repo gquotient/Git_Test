@@ -53,13 +53,17 @@ define(
     Project.views.map = Backbone.Marionette.ItemView.extend({
       markerStyles: {
         OK: L.icon({
-          iconUrl: '/public/img/icon_marker_ok.png'
+          iconUrl: '/public/img/icon_marker_ok.png',
+          // They claim L.icon inherits from icon.Default buuuuut it lost some properties...
+          shadowUrl: '/public/img/icon_marker_shadow.png'
         }),
         Warn: L.icon({
-          iconUrl: '/public/img/icon_marker_warn.png'
+          iconUrl: '/public/img/icon_marker_warn.png',
+          shadowUrl: '/public/img/icon_marker_shadow.png'
         }),
         Alert: L.icon({
-          iconUrl: '/public/img/icon_marker_alert.png'
+          iconUrl: '/public/img/icon_marker_alert.png',
+          shadowUrl: '/public/img/icon_marker_shadow.png'
         })
       },
       render: function(){
