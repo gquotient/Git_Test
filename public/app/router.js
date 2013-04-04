@@ -30,14 +30,8 @@ function($, _, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, 
 
     portfolios: function(options){
       var
-        // Build portfolio controller
-        portfolioController = new Portfolio.controller({
-          allPortfolios: ia.allPortfolios,
-          allProjects: ia.allProjects
-        }),
         // Build primary portfolio nav
         portfolioNavigationListView = new Portfolio.views.NavigationListView({
-          controller: portfolioController,
           collection: options.collection,
           model: options.model
         }),
@@ -53,8 +47,8 @@ function($, _, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, 
         breadcrumbModels.push(options.model);
       }
 
-      breadcrumbs = new Portfolio.collections.BreadcrumbList(breadcrumbModels, {controller: portfolioController});
-      breadcrumbsView = new Portfolio.views.Breadcrumbs({ collection: breadcrumbs, controller: portfolioController });
+      breadcrumbs = new Portfolio.collections.BreadcrumbList(breadcrumbModels);
+      breadcrumbsView = new Portfolio.views.Breadcrumbs({ collection: breadcrumbs });
 
       // Populate main layout
       ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
@@ -64,30 +58,19 @@ function($, _, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, 
       // Build detail view
       var
         // Build KPIs
-        kpisView = new Portfolio.views.detailKpis({ model: options.model, controller: portfolioController }),
+        kpisView = new Portfolio.views.detailKpis({ model: options.model }),
 
         // Extend map view for marker filtering
-        portfolioMapView = Project.views.map.extend({
-          controller: portfolioController,
-          initialize: function(options){
-            var that = this;
-
-            this.listenTo(this.controller, 'select:portfolio', function(portfolio){
-              that.hideMarkers(portfolio.model.attributes.projects);
-            });
-          }
-        }),
-        map = new portfolioMapView({
+        map = new Project.views.map({
           collection: ia.allProjects
         }),
 
         // Extend project collection and view to be used for portfolios. May be a better way to do this.
         portfolioProjectList = Project.views.DataList.extend({
-          controller: portfolioController,
           initialize: function(){
             var that = this;
 
-            this.listenTo(this.controller, 'select:portfolio', function(options){
+            this.listenTo(Backbone, 'select:portfolio', function(options){
               // Reset collection and re render
               that.collection = new Project.collections.DataList(options.model.get('projects'));
               that.render();

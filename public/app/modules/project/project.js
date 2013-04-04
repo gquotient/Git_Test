@@ -17,13 +17,7 @@ define(
 
     Project.collections.DataList = Backbone.Collection.extend({
       model: Project.models.Project,
-      url: '/api/projects',
-
-      filterByIDs: function(ids){
-        return this.filter(function(project){
-          return _.contains(ids, project.id);
-        });
-      }
+      url: '/api/projects'
     });
 
     Project.views.DataListItem = Marionette.ItemView.extend({
@@ -32,12 +26,21 @@ define(
         template: DataListItemTemplate
       },
       initialize: function(){
+        // Template helper to make useable ids for elements
         Handlebars.registerHelper('projectId', function() {
           return this.name.replace(' ', '_');
         });
       },
       render: function(){
         this.setElement(this.template.template(this.model.attributes));
+      },
+      events: {
+        'mouseover': function(){
+          Backbone.trigger('mouseover:project', this)
+        },
+        'mouseout': function(){
+          Backbone.trigger('mouseout:project', this)
+        }
       }
     });
 
@@ -70,28 +73,56 @@ define(
         // Create a container for the leaflet map
         this.setElement($('<div id="leafletContainer" />'));
       },
-      hideMarkers: function(projects){
+      selectMarkers: function(projects){
         // projects should be an array of project models
-        var ids = [];
+        var
+          ids = []
+        ;
 
         _.each(projects, function(project){
           ids.push(project.id);
         });
 
+        return ids;
+      },
+      hideMarkers: function(projects){
+        // projects should be an array of project models
+        var ids = this.selectMarkers(projects);
+
         _.each(this.markers, function(marker){
+          var myMarker = $([marker.marker._icon, marker.marker._shadow]);
+
           if (ids.indexOf(marker.id) >= 0) {
             // show marker
             // This is a little hackey but there doesn't seem to be a hide/show method in leaflet
-            $(marker.marker._icon).fadeIn();
-            $(marker.marker._shadow).fadeIn();
+            myMarker.fadeIn();
           } else {
             // hide marker
-            $(marker.marker._icon).fadeOut();
-            $(marker.marker._shadow).fadeOut();
+            myMarker.fadeOut();
           }
         });
 
         return this;
+      },
+      hilightMarkers: function(projects){
+        var ids = this.selectMarkers(projects);
+
+        _.each(this.markers, function(marker){
+          var myMarker = $([marker.marker._icon, marker.marker._shadow]);
+
+          if (ids.length) {
+            if (ids.indexOf(marker.id) >= 0) {
+              myMarker.css({opacity: 1});
+              marker.marker.setZIndexOffset(1000);
+            } else {
+              myMarker.css({opacity: .25});
+              marker.marker.setZIndexOffset(0);
+            }
+          } else {
+            myMarker.css({opacity: 1});
+            marker.marker.setZIndexOffset(0);
+          }
+        });
       },
       fitToBounds: function(bounds){
         var
@@ -192,6 +223,29 @@ define(
         this.fitToBounds();
 
         return this;
+      },
+      initialize: function(){
+        var that = this;
+
+        this.listenTo(Backbone, 'select:portfolio', function(portfolio){
+          that.hideMarkers(portfolio.model.attributes.projects);
+        });
+
+        this.listenTo(Backbone, 'mouseover:project', function(project){
+          that.hilightMarkers(project);
+        });
+
+        this.listenTo(Backbone, 'mouseout:project', function(project){
+          that.hilightMarkers();
+        });
+
+        this.listenTo(Backbone, 'mouseover:portfolio', function(portfolio){
+          that.hilightMarkers(portfolio.model.attributes.projects);
+        });
+
+        this.listenTo(Backbone, 'mouseout:portfolio', function(portfolio){
+          that.hilightMarkers();
+        });
       }
     });
 

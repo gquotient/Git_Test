@@ -17,11 +17,6 @@ define(
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
 
-    // Controller handles event propgation, all views must have the controller
-    Portfolio.controller = Backbone.Marionette.Controller.extend({
-
-    });
-
     /* Setup a model. */
     Portfolio.models.Portfolio = Backbone.Model.extend({
       build: function(){
@@ -97,8 +92,8 @@ define(
 
       initialize: function(models, options){
         var that = this;
-        this.controller = options.controller;
-        this.listenTo(this.controller, 'select:portfolio', function(arg){
+
+        this.listenTo(Backbone, 'select:portfolio', function(arg){
           if ( that.contains(arg.model) ) {
             that.reset( that.slice(0,that.indexOf(arg.model)+1) );
           } else {
@@ -122,6 +117,14 @@ define(
       /* When the portfolio tile is clicked, trigger a 'select:portfolio' event. */
       triggers: {
         'click': 'select:portfolio'
+      },
+      events: {
+        'mouseover': function(){
+          Backbone.trigger('mouseover:portfolio', this)
+        },
+        'mouseout': function(){
+          Backbone.trigger('mouseout:portfolio', this)
+        }
       }
     });
 
@@ -148,15 +151,11 @@ define(
 
       /* Setup an array for tracking breadcrumbs. Attach event listeners. */
       initialize: function(options){
-        this.controller = options.controller;
-
         this.listenTo(this, 'itemview:select:portfolio', function(arg){
-          options.controller.trigger('select:portfolio', arg);
+          Backbone.trigger('select:portfolio', arg);
         });
 
-        this.listenTo(this.controller, 'select:portfolio', this.nextPortfolio);
-
-        this.listenTo(this.controller, 'select:portfolio', function(model){
+        this.listenTo(Backbone, 'select:portfolio', function(model){
           this.nextPortfolio(model);
         });
       },
@@ -183,8 +182,6 @@ define(
         } else {
           Backbone.history.navigate('/');
         }
-
-        this.controller.trigger('set:portfolio', this.model);
       }
     });
 
@@ -206,9 +203,8 @@ define(
         class: 'breadcrumbs'
       },
       initialize: function(options){
-        this.controller = options.controller;
-        this.controller.listenTo(this, 'itemview:select:portfolio', function(arg){
-          options.controller.trigger('select:portfolio', arg);
+        Backbone.listenTo(this, 'itemview:select:portfolio', function(arg){
+          Backbone.trigger('select:portfolio', arg);
         });
       }
     });
@@ -222,9 +218,7 @@ define(
       initialize: function(options){
         var that = this;
 
-        this.controller = options.controller;
-
-        this.listenTo(this.controller, 'select:portfolio', function(options){
+        this.listenTo(Backbone, 'select:portfolio', function(options){
           that.model = options.model;
 
           that.render();
