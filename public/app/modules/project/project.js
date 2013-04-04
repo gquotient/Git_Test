@@ -51,6 +51,17 @@ define(
     });
 
     Project.views.map = Backbone.Marionette.ItemView.extend({
+      markerStyles: {
+        OK: L.icon({
+          iconUrl: '/public/img/icon_marker_ok.png'
+        }),
+        Warn: L.icon({
+          iconUrl: '/public/img/icon_marker_warn.png'
+        }),
+        Alert: L.icon({
+          iconUrl: '/public/img/icon_marker_alert.png'
+        })
+      },
       render: function(){
         // Create a container for the leaflet map
         this.setElement($('<div id="leafletContainer" />'));
@@ -156,7 +167,12 @@ define(
 
           if (latLong && latLong.length) {
             var newMarker = {
-              marker: L.marker([latLong[0], latLong[1]]).addTo(map),
+              marker: L.marker(
+                [latLong[0], latLong[1]],
+                {
+                  icon: that.markerStyles[project.attributes.status]
+                }
+              ).addTo(map),
               id: project.id
             };
 
