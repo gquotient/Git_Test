@@ -11,7 +11,7 @@ html, body {
 /* Main components */
 
 pageNavHeight = 30px;
-primaryBorderStyle = 1px solid #ccc;
+primaryBorderStyle = 1px solid #222;
 
 #nav_page {
   background: #333;
@@ -62,12 +62,13 @@ primaryBorderStyle = 1px solid #ccc;
 }
 
 #nav_content {
-  background: #efefef;
+  background: #333;
   border-right: primaryBorderStyle;
   overflow: auto;
   height: 100%;
   position: relative;
   z-index: 200;
+  color: #aaa;
   .back {
     cursor: pointer;
   }
@@ -80,10 +81,10 @@ primaryBorderStyle = 1px solid #ccc;
     list-style-type: none;
     box-shadow: 0 0 7px rgba(0, 0, 0, .1);
     li.portfolio {
-      border-top: 1px solid #fff;
-      border-bottom: 1px solid #ccc;
-      background-image: linear-gradient(#eee, #eaeaea);
-      text-shadow: 0 1px 0 #fff;
+      border-top: 1px solid #444;
+      border-bottom: 1px solid #222;
+      background-image: linear-gradient(#323232, #313131);
+      text-shadow: 0 1px 0 #000;
       padding: 6px;
       margin: 0;
       cursor: pointer;
@@ -93,11 +94,11 @@ primaryBorderStyle = 1px solid #ccc;
         overflow: ellipsis;
         font-size: 1.5em;
         font-weight: 100;
-        color: #666;
+        color: #ccc;
       }
     }
     .portfolio:hover {
-      background-image: linear-gradient(#f1f1f1, #efefef);
+      background-image: linear-gradient(#3e3e3e, #3c3c3c);
     }
     .portfolio:last-child {
 
@@ -143,7 +144,7 @@ kpiHeight = 30px;
   }
 
   #kpis {
-    background: #ddd;
+    background: #333;
     position: fixed;
     z-index: 100;
     width: 100%;
@@ -151,11 +152,12 @@ kpiHeight = 30px;
     height: kpiHeight;
     line-height: kpiHeight;
     overflow: hidden;
-    background-image: linear-gradient(#ddd, #cfcfcf);
-    border-top: 1px solid #eee;
-    border-bottom: 1px solid #bbb;
+    background-image: linear-gradient(#3c3c3c, #313131);
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #111;
     box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
-    text-shadow: 0 1px 0 #eee;
+    text-shadow: 0 1px 0 #000;
+    color: #ccc;
     ul {
       padding: 0 6px;
       margin: 0;
@@ -170,7 +172,7 @@ kpiHeight = 30px;
           font-weight: bold;
         }
         .unit {
-          color: #777;
+          color: #999;
           font-size: .85em;
         }
       }
@@ -187,17 +189,20 @@ kpiHeight = 30px;
       height: projectTableHeaderHeight;
       position: fixed;
       z-index: 100;
-      background: #ddd;
-      background-image: linear-gradient(#ddd, #cfcfcf);
-      border-top: 1px solid #eee;
-      border-bottom: 1px solid #bbb;
+      background: #333;
+      box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
+      background-image: linear-gradient(#3c3c3c, #313131);
+      border-top: 1px solid #444;
+      border-bottom: 1px solid #111;
       box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
     }
     table {
+      background: #333;
+      color: #ccc;
       thead {
         tr {
           th {
-            text-shadow: 0 1px 0 #eee;
+            text-shadow: 0 1px 0 #000;
             div {
               position: fixed;
               z-index: 101;
@@ -208,7 +213,13 @@ kpiHeight = 30px;
         }
       }
       tbody {
-        border-top: projectTableHeaderHeight solid #fff;
+        border-top: projectTableHeaderHeight solid #333;
+        tr {
+          border-bottom: 1px solid #444;
+        }
+        tr:nth-child(odd) {
+          background-color: #3f3f3f;
+        }
       }
       border: none;
       border-bottom: 1px solid #ccc;
