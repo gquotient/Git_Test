@@ -78,7 +78,7 @@ define(
 
         return this;
       },
-      fitToBounds: function(){
+      fitToBounds: function(bounds){
         var
           south,
           west,
@@ -86,43 +86,50 @@ define(
           east
         ;
 
-        _.each(this.markers, function(marker){
-          var lat = marker.marker._latlng.lat,
-              lng = marker.marker._latlng.lng;
+        if (bounds) {
+          south = bounds.south;
+          west = bounds.west;
+          north = bounds.north;
+          west = bounds.west;
+        } else {
+          _.each(this.markers, function(marker){
+            var lat = marker.marker._latlng.lat,
+                lng = marker.marker._latlng.lng;
 
-          // This stuff is ugly but I couldn't think of a better way since it's 2 dimensional
-          if (south === undefined) {
-            south = lng;
-          } else {
-            if (lng < south) {
+            // This stuff is ugly but I couldn't think of a better way since it's 2 dimensional
+            if (south === undefined) {
               south = lng;
+            } else {
+              if (lng < south) {
+                south = lng;
+              }
             }
-          }
 
-          if (west === undefined) {
-            west = lat;
-          } else {
-            if (lat < west) {
+            if (west === undefined) {
               west = lat;
+            } else {
+              if (lat < west) {
+                west = lat;
+              }
             }
-          }
 
-          if (north === undefined) {
-            north = lng;
-          } else {
-            if (lng > north) {
+            if (north === undefined) {
               north = lng;
+            } else {
+              if (lng > north) {
+                north = lng;
+              }
             }
-          }
 
-          if (east === undefined) {
-            east = lat;
-          } else {
-            if (lat > east) {
+            if (east === undefined) {
               east = lat;
+            } else {
+              if (lat > east) {
+                east = lat;
+              }
             }
-          }
-        });
+          });
+        }
 
         // Leaflet method to snap to bounds
         this.map.fitBounds([
