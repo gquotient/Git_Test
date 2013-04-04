@@ -153,6 +153,7 @@ define(
         );
 
         // Leaflet method to snap to bounds
+        // NOTE: I've come to believe this pad method doesn't work properly. It seems to only have 3 settings. Off, on, and holy crap
         this.map.fitBounds(bounds.pad(0));
       },
       build: function(){
