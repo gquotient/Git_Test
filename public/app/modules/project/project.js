@@ -57,7 +57,7 @@ define(
           // They claim L.icon inherits from icon.Default buuuuut it lost some properties...
           shadowUrl: '/public/img/icon_marker_shadow.png'
         }),
-        Warn: L.icon({
+        Warning: L.icon({
           iconUrl: '/public/img/icon_marker_warn.png',
           shadowUrl: '/public/img/icon_marker_shadow.png'
         }),

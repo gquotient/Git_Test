@@ -42,7 +42,7 @@ function generateProject(){
   var id = _.random(1000);
   var dc_capacity = _.random(1000,3000);
   var status = function(){
-    var myStatus = ['OK', 'Warn', 'Alert'];
+    var myStatus = ['OK', 'Warning', 'Alert'];
 
     return myStatus[_.random(0, 2)];
   }
