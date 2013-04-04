@@ -98,7 +98,8 @@ define(
           south,
           west,
           north,
-          east
+          east,
+          bounds
         ;
 
         if (bounds) {
@@ -146,16 +147,18 @@ define(
           });
         }
 
-        // Leaflet method to snap to bounds
-        this.map.fitBounds([
+        bounds = new L.LatLngBounds(
           [west, south], // southwest
           [east, north]  // northeast
-        ]);
+        );
+
+        // Leaflet method to snap to bounds
+        this.map.fitBounds(bounds.pad(0));
       },
       build: function(){
         var that = this,
             projects = this.collection.models,
-            map = this.map = L.map('leafletContainer').setView([30.2, -97.7], 1);
+            map = this.map = L.map('leafletContainer').setView([0, 0], 1);
 
         // add an OpenStreetMap tile layer
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
