@@ -31,7 +31,7 @@ define(
         type: 'handlebars',
         template: DataListItemTemplate
       },
-      initialize: function(){
+      initialize: function(options){
         Handlebars.registerHelper('projectId', function() {
           return this.name.replace(' ', '_');
         });
@@ -47,7 +47,17 @@ define(
         template: DataListTemplate
       },
       itemViewContainer: 'tbody',
-      itemView: Project.views.DataListItem
+      itemView: Project.views.DataListItem,
+      initialize: function(options){
+        var that = this;
+
+        this.controller = options.controller;
+
+        this.listenTo(this.controller, 'select:portfolio', function(options){
+          // Reset collection and re render
+          that.collection.reset(options.model.get('projects').models);
+        });
+      }
     });
 
     Project.views.map = Backbone.Marionette.ItemView.extend({
@@ -79,7 +89,6 @@ define(
         this.controller = options.controller;
 
         this.listenTo(this.controller, 'select:portfolio', function(options){
-          console.log('map heard select:portfolio', options);
         });
       }
     });

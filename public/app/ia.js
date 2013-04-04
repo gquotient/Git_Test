@@ -74,10 +74,11 @@ define(
     // and create it.
     ia.addInitializer(function(){
       ia.allProjects = new Project.collections.DataList();
-      ia.allProjects.reset( JSON.parse($('#bootstrapProjects').html()) );
       ia.allPortfolios = new Portfolio.collections.All([],{ projects: ia.allProjects });
+      ia.allPortfoliosPortfolio = new Portfolio.models.AllPortfolio({name: 'All Portfolios', projects: ia.allProjects, subPortfolios: ia.allPortfolios });
+
       ia.allPortfolios.reset( JSON.parse($('#bootstrapPortfolios').html()) );
-      ia.allPortfoliosPortfolio = new Portfolio.models.Portfolio({name: 'All Portfolios', projects: ia.allProjects.models, subPortfolios: ia.allPortfolios });
+      ia.allProjects.reset( JSON.parse($('#bootstrapProjects').html()) );
     });
 
     return ia;
