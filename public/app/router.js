@@ -56,7 +56,8 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       var
         // Build KPIs
         kpisView = new Portfolio.views.detailKpis({ model: options.model, controller: portfolioController }),
-        // Prepare map
+
+        // Extend map view for marker filtering
         map = new Project.views.map({
           controller: portfolioController,
           collection: ia.allProjects
@@ -70,7 +71,10 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       detailOverview.map.show(map);
 
       // Fire build function since leaflet doens't fit nicely into the Backbone module pattern
-      map.build();
+      map
+        .build()
+        // Then we can hide the appropriate markers in case page start isn't index
+        .hideMarkers(options.model.get('projects').models);
     }
   });
 

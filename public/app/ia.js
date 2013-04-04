@@ -26,7 +26,6 @@ define(
       });
     };
 
-
     // Instantiate the app
     var ia = new Backbone.Marionette.Application();
 
@@ -47,7 +46,6 @@ define(
         Backbone.trigger('windowResize');
       });
     });
-
 
     // Setup Layouts and Views
     ia.addInitializer(function(){
