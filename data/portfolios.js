@@ -41,6 +41,11 @@ Project:
 function generateProject(){
   var id = _.random(1000);
   var dc_capacity = _.random(1000,3000);
+  var status = function(){
+    var myStatus = ['OK', 'Warn', 'Alert'];
+
+    return myStatus[_.random(0, 2)];
+  }
   var project = {
     id: id,
     name: "Project " + id,
@@ -51,7 +56,8 @@ function generateProject(){
       power_now: _.random(100)
     },
     latLong: [_.random(-60, 60), _.random(-180,180)],
-    belongsTo: []
+    belongsTo: [],
+    status: status()
   };
 
   return project;
