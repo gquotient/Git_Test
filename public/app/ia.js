@@ -77,6 +77,7 @@ define(
 
       ia.allPortfolios.reset( JSON.parse($('#bootstrapPortfolios').html()) );
       ia.allProjects.reset( JSON.parse($('#bootstrapProjects').html()) );
+
     });
 
     return ia;

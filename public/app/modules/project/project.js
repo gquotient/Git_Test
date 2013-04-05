@@ -51,8 +51,9 @@ define(
 
         this.controller = options.controller;
 
+        // This shouldn't really live here?
         this.listenTo(this.controller, 'select:portfolio', function(options){
-          // Reset collection and re render
+          // Reset collection.
           that.collection.reset(options.model.get('projects').models);
         });
       }
@@ -63,9 +64,7 @@ define(
         this.controller = options.controller;
         var that = this;
 
-        this.listenTo(this.controller, 'select:portfolio', function(arg){
-          that.hideMarkers(arg.model.get('projects').models);
-        });
+        this.listenTo(this.collection, 'reset', this.updateMarkers);
       },
       markerStyles: {
         OK: L.icon({
@@ -89,43 +88,28 @@ define(
       updateMarkers: function(){
         var that = this;
 
-        _.each(this.markers, function(marker){
-          if (this.collection.pluck.indexOf(marker.id) >= 0) {
-            // show marker
-            // This is a little hackey but there doesn't seem to be a hide/show method in leaflet
-            $(marker.marker._icon).fadeIn();
-            $(marker.marker._shadow).fadeIn();
-          } else {
-            // hide marker
-            $(marker.marker._icon).fadeOut();
-            $(marker.marker._shadow).fadeOut();
-          }
-        });
+        // Clear Old Markers;
+        this.markers.clearLayers();
 
-      },
-      hideMarkers: function(projects){
-        // projects should be an array of project models
-        var ids = [];
+        // Build marker objects and markers
+        this.collection.each( function(project){
 
-        _.each(projects, function(project){
-          ids.push(project.id);
-        });
+          var latLong = project.get('latLong');
 
-        _.each(this.markers, function(marker){
-          if (ids.indexOf(marker.id) >= 0) {
-            // show marker
-            // This is a little hackey but there doesn't seem to be a hide/show method in leaflet
-            $(marker.marker._icon).fadeIn();
-            $(marker.marker._shadow).fadeIn();
-          } else {
-            // hide marker
-            $(marker.marker._icon).fadeOut();
-            $(marker.marker._shadow).fadeOut();
+          if (latLong && latLong.length) {
+            L.marker(
+              [latLong[0], latLong[1]],
+              {
+                icon: that.markerStyles[project.get('status')],
+                project: project
+              }
+            ).addTo(that.markers);
           }
         });
 
         return this;
       },
+
       fitToBounds: function(bounds){
         var
           south,
@@ -140,9 +124,9 @@ define(
           north = bounds.north;
           west = bounds.west;
         } else {
-          _.each(this.markers, function(marker){
-            var lat = marker.marker._latlng.lat,
-                lng = marker.marker._latlng.lng;
+          this.markers.eachLayer( function(marker){
+            var lat = marker._latlng.lat,
+                lng = marker._latlng.lng;
 
             // This stuff is ugly but I couldn't think of a better way since it's 2 dimensional
             if (south === undefined) {
@@ -185,6 +169,7 @@ define(
           [east, north]  // northeast
         ]);
       },
+
       build: function(){
         var that = this,
             projects = this.collection.models,
@@ -196,26 +181,11 @@ define(
         }).addTo(map);
 
         // Create array to store markers
-        this.markers = [];
+        this.markers = L.layerGroup([]);
+        this.markers.addTo(map);
 
         // Build marker objects and markers
-        this.collection.each( function(project){
-          var latLong = project.attributes.latLong;
-
-          if (latLong && latLong.length) {
-            var newMarker = {
-              marker: L.marker(
-                [latLong[0], latLong[1]],
-                {
-                  icon: that.markerStyles[project.attributes.status]
-                }
-              ).addTo(map),
-              id: project.id
-            };
-
-            that.markers.push(newMarker);
-          }
-        });
+        this.updateMarkers();
 
         // Pan and center on outtermost markers
         this.fitToBounds();

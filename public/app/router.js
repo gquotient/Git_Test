@@ -16,7 +16,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
   ia.Controller = Backbone.Marionette.Controller.extend({
     index: function(){
       // Build primary portfolios view
-      this.portfolios( { collection: ia.allPortfolios, model: ia.allPortfoliosPortfolio } );
+      this.portfolios( { collection: new Portfolio.collections.NavigationList(ia.allPortfolios.models), model: ia.allPortfoliosPortfolio } );
     },
 
     selectPortfolio: function(id){
@@ -57,12 +57,13 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
         // Build KPIs
         kpisView = new Portfolio.views.detailKpis({ model: options.model, controller: portfolioController }),
 
+        projectList = options.model.get('projects');
+
         // Extend map view for marker filtering
         map = new Project.views.map({
           controller: portfolioController,
-          collection: ia.allProjects
+          collection: projectList
         }),
-        projectList = options.model.get('projects');
         projectListView = new Project.views.DataList( { controller: portfolioController, collection: projectList } );
 
       // Poulate detail layout
@@ -71,10 +72,9 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       detailOverview.map.show(map);
 
       // Fire build function since leaflet doens't fit nicely into the Backbone module pattern
-      map
-        .build()
+      map.build();
         // Then we can hide the appropriate markers in case page start isn't index
-        .hideMarkers(options.model.get('projects').models);
+        // .hideMarkers(options.model.get('projects').models);
     }
   });
 

@@ -63,6 +63,7 @@ define(
     Portfolio.models.AllPortfolio = Backbone.Model.extend({
       build: function(){
         var projects = this.get('projects');
+        this.set('projects', this.get('projects').clone());
         this.set('dc_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').dc_capacity; }, 0 ) );
         this.set('ac_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').ac_capacity; }, 0) );
         this.set('irradiance_now', projects.reduce( function(memo, p){ return memo + p.get('kpis').irradiance_now; }, 0) );
@@ -90,11 +91,7 @@ define(
 
     /* Setup the url for the list of portfolios. This will be our list for navigation. */
     Portfolio.collections.NavigationList = Backbone.Collection.extend({
-      model: Portfolio.models.Portfolio,
-
-      subPortfolios: function(model){
-        return this.filterByIDs( model.get('subPortfolioIDs') );
-      }
+      model: Portfolio.models.Portfolio
     });
 
     /* Create a collection just for Breadcrumbs. */
