@@ -30,22 +30,17 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     portfolios: function(options){
 
       var
-        // Build portfolio controller
-        portfolioController = new Portfolio.controller({
-          allPortfolios: ia.allPortfolios,
-          allProjects: ia.allProjects
-        }),
         // Build primary portfolio nav
         portfolioNavigationListView = new Portfolio.views.NavigationListView({
-          controller: portfolioController,
           collection: options.collection,
           model: options.model
         }),
 
         // Build breadcrums
-        breadcrumbs = new Portfolio.collections.BreadcrumbList(_.unique([ia.allPortfoliosPortfolio, options.model]), {controller: portfolioController}),
-        breadcrumbsView = new Portfolio.views.Breadcrumbs({ collection: breadcrumbs, controller: portfolioController }),
-        detailOverview = new Layouts.detailOverview();
+        breadcrumbs = new Portfolio.collections.BreadcrumbList(_.unique([ia.allPortfoliosPortfolio, options.model])),
+        breadcrumbsView = new Portfolio.views.Breadcrumbs({ collection: breadcrumbs }),
+        detailOverview = new Layouts.detailOverview()
+      ;
 
       // Populate main layout
       ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
@@ -55,16 +50,17 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       // Build detail view
       var
         // Build KPIs
-        kpisView = new Portfolio.views.detailKpis({ model: options.model, controller: portfolioController }),
+        kpisView = new Portfolio.views.detailKpis({ model: options.model }),
 
-        projectList = options.model.get('projects');
+        projectList = options.model.get('projects').clone();
 
         // Extend map view for marker filtering
         map = new Project.views.map({
-          controller: portfolioController,
           collection: projectList
         }),
-        projectListView = new Project.views.DataList( { controller: portfolioController, collection: projectList } );
+
+        projectListView = new Project.views.DataListView( { collection: projectList } )
+      ;
 
       // Poulate detail layout
       detailOverview.kpis.show(kpisView);
@@ -73,8 +69,6 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
 
       // Fire build function since leaflet doens't fit nicely into the Backbone module pattern
       map.build();
-        // Then we can hide the appropriate markers in case page start isn't index
-        // .hideMarkers(options.model.get('projects').models);
     }
   });
 

@@ -20,26 +20,31 @@ define(
       url: '/api/projects'
     });
 
-    Project.collections.Markers = Backbone.Collection.extend({
-      model: Project.models.Project
-    });
-
     Project.views.DataListItem = Marionette.ItemView.extend({
       template: {
         type: 'handlebars',
         template: DataListItemTemplate
       },
-      initialize: function(options){
+      initialize: function(){
+        // Template helper to make useable ids for elements
         Handlebars.registerHelper('projectId', function() {
           return this.name.replace(' ', '_');
         });
       },
       render: function(){
         this.setElement(this.template.template(this.model.attributes));
+      },
+      events: {
+        'mouseover': function(){
+          Backbone.trigger('mouseover:project', this.model);
+        },
+        'mouseout': function(){
+          Backbone.trigger('mouseout:project', this.model);
+        }
       }
     });
 
-    Project.views.DataList = Marionette.CompositeView.extend({
+    Project.views.DataListView = Marionette.CompositeView.extend({
       template: {
         type: 'handlebars',
         template: DataListTemplate
@@ -52,7 +57,7 @@ define(
         this.controller = options.controller;
 
         // This shouldn't really live here?
-        this.listenTo(this.controller, 'select:portfolio', function(options){
+        this.listenTo(Backbone, 'select:portfolio', function(options){
           // Reset collection.
           that.collection.reset(options.model.get('projects').models);
         });
@@ -60,12 +65,7 @@ define(
     });
 
     Project.views.map = Backbone.Marionette.ItemView.extend({
-      initialize: function(options){
-        this.controller = options.controller;
-        var that = this;
 
-        this.listenTo(this.collection, 'reset', this.updateMarkers);
-      },
       markerStyles: {
         OK: L.icon({
           iconUrl: '/public/img/icon_marker_ok.png',
@@ -91,23 +91,52 @@ define(
         // Clear Old Markers;
         this.markers.clearLayers();
 
+
         // Build marker objects and markers
         this.collection.each( function(project){
-
-          var latLong = project.get('latLong');
+          var latLong = project.get('latLng');
 
           if (latLong && latLong.length) {
-            L.marker(
+            var marker = L.marker(
               [latLong[0], latLong[1]],
               {
                 icon: that.markerStyles[project.get('status')],
-                project: project
+                id: project.id
               }
             ).addTo(that.markers);
           }
         });
 
         return this;
+      },
+      selectMarkers: function(projects){
+        // projects should be an array of project models
+          var projectMarkers = this.collection.filter( function(project){
+            return _.contains(projects, project)
+          } );
+
+          return _.pluck(projectMarkers, 'id' );
+      },
+
+      hilightMarkers: function(projects){
+        var ids = this.selectMarkers(projects);
+
+        this.markers.eachLayer( function(marker){
+          var myMarker = $([marker._icon, marker._shadow]);
+
+          if (ids.length) {
+            if (ids.indexOf(marker.options.id) >= 0) {
+              myMarker.css({opacity: 1});
+              marker.setZIndexOffset(1000);
+            } else {
+              myMarker.css({opacity: 0.25});
+              marker.setZIndexOffset(0);
+            }
+          } else {
+            myMarker.css({opacity: 1});
+            marker.setZIndexOffset(0);
+          }
+        });
       },
 
       fitToBounds: function(bounds){
@@ -124,6 +153,7 @@ define(
           north = bounds.north;
           west = bounds.west;
         } else {
+
           this.markers.eachLayer( function(marker){
             var lat = marker._latlng.lat,
                 lng = marker._latlng.lng;
@@ -163,17 +193,20 @@ define(
           });
         }
 
-        // Leaflet method to snap to bounds
-        this.map.fitBounds([
+        bounds = new L.LatLngBounds(
           [west, south], // southwest
           [east, north]  // northeast
-        ]);
+        );
+
+        // Leaflet method to snap to bounds
+        // NOTE: I've come to believe this pad method doesn't work properly. It seems to only have 3 settings. Off, on, and holy crap
+        this.map.fitBounds(bounds.pad(0));
       },
 
       build: function(){
         var that = this,
             projects = this.collection.models,
-            map = this.map = L.map('leafletContainer').setView([30.2, -97.7], 1);
+            map = this.map = L.map('leafletContainer').setView([0, 0], 1);
 
         // add an OpenStreetMap tile layer
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -189,7 +222,29 @@ define(
 
         // Pan and center on outtermost markers
         this.fitToBounds();
+
         return this;
+      },
+      initialize: function(){
+        var that = this;
+
+        this.listenTo(this.collection, 'reset', this.updateMarkers);
+
+        this.listenTo(Backbone, 'mouseover:project', function(project){
+          that.hilightMarkers([project]);
+        });
+
+        this.listenTo(Backbone, 'mouseout:project', function(project){
+          that.hilightMarkers();
+        });
+
+        this.listenTo(Backbone, 'mouseover:portfolio', function(portfolio){
+          that.hilightMarkers(portfolio.get('projects').models);
+        });
+
+        this.listenTo(Backbone, 'mouseout:portfolio', function(portfolio){
+          that.hilightMarkers();
+        });
       }
     });
 
