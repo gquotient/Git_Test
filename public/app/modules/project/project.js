@@ -36,10 +36,10 @@ define(
       },
       events: {
         'mouseover': function(){
-          Backbone.trigger('mouseover:project', this)
+          Backbone.trigger('mouseover:project', this);
         },
         'mouseout': function(){
-          Backbone.trigger('mouseout:project', this)
+          Backbone.trigger('mouseout:project', this);
         }
       }
     });
@@ -115,7 +115,7 @@ define(
               myMarker.css({opacity: 1});
               marker.marker.setZIndexOffset(1000);
             } else {
-              myMarker.css({opacity: .25});
+              myMarker.css({opacity: 0.25});
               marker.marker.setZIndexOffset(0);
             }
           } else {
@@ -130,7 +130,7 @@ define(
           west,
           north,
           east,
-          bounds
+          myBounds
         ;
 
         if (bounds) {
@@ -178,14 +178,14 @@ define(
           });
         }
 
-        bounds = new L.LatLngBounds(
+        myBounds = new L.LatLngBounds(
           [west, south], // southwest
           [east, north]  // northeast
         );
 
         // Leaflet method to snap to bounds
         // NOTE: I've come to believe this pad method doesn't work properly. It seems to only have 3 settings. Off, on, and holy crap
-        this.map.fitBounds(bounds.pad(0));
+        this.map.fitBounds(myBounds.pad(0));
       },
       build: function(){
         var that = this,
