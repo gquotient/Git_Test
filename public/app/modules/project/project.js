@@ -112,7 +112,7 @@ define(
       selectMarkers: function(projects){
         // projects should be an array of project models
           var projectMarkers = this.collection.filter( function(project){
-            return _.contains(projects, project)
+            return _.contains(projects, project);
           } );
 
           return _.pluck(projectMarkers, 'id' );
@@ -130,6 +130,7 @@ define(
               marker.setZIndexOffset(1000);
             } else {
               myMarker.css({opacity: 0.25});
+
               marker.setZIndexOffset(0);
             }
           } else {
@@ -144,7 +145,8 @@ define(
           south,
           west,
           north,
-          east
+          east,
+          myBounds
         ;
 
         if (bounds) {
@@ -193,14 +195,14 @@ define(
           });
         }
 
-        bounds = new L.LatLngBounds(
+        myBounds = new L.LatLngBounds(
           [west, south], // southwest
           [east, north]  // northeast
         );
 
         // Leaflet method to snap to bounds
         // NOTE: I've come to believe this pad method doesn't work properly. It seems to only have 3 settings. Off, on, and holy crap
-        this.map.fitBounds(bounds.pad(0));
+        this.map.fitBounds(myBounds.pad(0));
       },
 
       build: function(){
