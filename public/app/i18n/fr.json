@@ -1,3 +1,7 @@
 {
-  "loginBtn": "Le Log In"
+  "DC Capacity": "le DC Capacity",
+  "AC Capacity": "le AC Capacity",
+  "Irradiance Now": "le Irradiance Now",
+  "Power Now": "le Power Now",
+  "All Portfolios": "Tout Les Portfolios"
 }

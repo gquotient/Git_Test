@@ -1,4 +1,6 @@
 @import '../shared';
+@import 'nib';
+@import 'nib/gradients';
 
 /* ==========================================================================
    Portfolio Styles
@@ -82,7 +84,7 @@ primaryBorderStyle = 1px solid #222;
     li.portfolio {
       border-top: 1px solid #444;
       border-bottom: 1px solid #222;
-      background-image: linear-gradient(#323232, #313131);
+      background: linear-gradient(#323232, #313131);
       text-shadow: 0 1px 0 #000;
       padding: 6px;
       margin: 0;
@@ -96,13 +98,13 @@ primaryBorderStyle = 1px solid #222;
         color: #eee;
       }
     }
-    .portfolio:hover {
-      background-image: linear-gradient(#383838, #373737);
+    li.portfolio:hover {
+      background: linear-gradient(#383838, #373737);
     }
-    .portfolio:last-child {
+    li.portfolio:last-child {
 
     }
-    .portfolio:first-child {
+    li.portfolio:first-child {
       border-top: none;
     }
   }
@@ -157,7 +159,7 @@ kpiHeight = 30px;
     line-height: kpiHeight;
     overflow: hidden;
     background-image: linear-gradient(#3c3c3c, #313131);
-    border-top: 1px solid #444;
+    //border-top: 1px solid #444;
     border-bottom: 1px solid #222;
     box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
     text-shadow: 0 1px 0 #000;
