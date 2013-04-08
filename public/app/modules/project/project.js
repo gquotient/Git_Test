@@ -31,9 +31,9 @@ define(
           return this.name.replace(' ', '_');
         });
       },
-      render: function(){
-        this.setElement(this.template.template(this.model.attributes));
-      },
+      // render: function(){
+      //   this.setElement(this.template.template(this.model.attributes));
+      // },
       events: {
         'mouseover': function(){
           Backbone.trigger('mouseover:project', this.model);
@@ -64,8 +64,7 @@ define(
       }
     });
 
-    Project.views.map = Backbone.Marionette.ItemView.extend({
-
+    Project.views.MarkerView = Marionette.ItemView.extend({
       markerStyles: {
         OK: L.icon({
           iconUrl: '/public/img/icon_marker_ok.png',
@@ -82,30 +81,56 @@ define(
         })
       },
       render: function(){
-        // Create a container for the leaflet map
-        this.setElement($('<div id="leafletContainer" />'));
-      },
+        var that = this;
+
+        console.log(this.model);
+
+        var latLong = this.model.get('latLng');
+
+        if (latLong && latLong.length) {
+          var marker = L.marker(
+            [latLong[0], latLong[1]],
+            {
+              icon: that.markerStyles[that.model.get('status')],
+              id: project.id
+            }
+          ).addTo(that.markers);
+        }
+      }
+    })
+
+    Project.views.map = Marionette.CollectionView.extend({
+      itemView: Project.views.MarkerView,
+
+      // render: function(){
+      //   // Create a container for the leaflet map
+      //   this.setElement($('<div id="leafletContainer" />'));
+      //   // console.log(this.collection);
+      // },
       updateMarkers: function(){
         var that = this;
 
         // Clear Old Markers;
         this.markers.clearLayers();
 
+        this.collection.each( function(project) {
 
-        // Build marker objects and markers
-        this.collection.each( function(project){
-          var latLong = project.get('latLng');
+        })
 
-          if (latLong && latLong.length) {
-            var marker = L.marker(
-              [latLong[0], latLong[1]],
-              {
-                icon: that.markerStyles[project.get('status')],
-                id: project.id
-              }
-            ).addTo(that.markers);
-          }
-        });
+        // // Build marker objects and markers
+        // this.collection.each( function(project){
+        //   var latLong = project.get('latLng');
+
+        //   if (latLong && latLong.length) {
+        //     var marker = L.marker(
+        //       [latLong[0], latLong[1]],
+        //       {
+        //         icon: that.markerStyles[project.get('status')],
+        //         id: project.id
+        //       }
+        //     ).addTo(that.markers);
+        //   }
+        // });
 
         return this;
       },
@@ -220,10 +245,10 @@ define(
         this.markers.addTo(map);
 
         // Build marker objects and markers
-        this.updateMarkers();
+        // this.updateMarkers();
 
         // Pan and center on outtermost markers
-        this.fitToBounds();
+        // this.fitToBounds();
 
         return this;
       },
