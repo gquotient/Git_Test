@@ -224,9 +224,38 @@ kpiHeight = 30px;
         border-top: projectTableHeaderHeight solid #333;
         tr {
           border-bottom: 1px solid #3c3c3c;
+          td {
+            //text-align: center;
+            .status {
+              background: colorOKBlue;
+              width: 12px;
+              height: 12px;
+              display: block;
+              text-indent: -100%;
+              overflow: hidden;
+              border-radius: 6px;
+              box-shadow: 0 1px 0 #444;
+              //margin: 0 auto;
+            }
+            .status.OK {
+              background: colorOKBlue;
+            }
+            .status.Warning {
+              background: colorWarningYellow;
+            }
+            .status.Alert {
+              background: colorAlertRed;
+            }
+          }
+          td.name {
+            text-align: left;
+          }
         }
         tr:nth-child(odd) {
           background-color: #353535;
+        }
+        tr:hover {
+          background-color: #383838;
         }
       }
       border: none;
