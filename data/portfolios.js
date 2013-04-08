@@ -55,7 +55,7 @@ function generateProject(){
       irradiance_now: _.random(1000),
       power_now: _.random(100)
     },
-    latLng: [_.random(-60, 60), _.random(-180,180)],
+    latLng: [_.random(34, 47), _.random(-121, -81)],
     belongsTo: [],
     status: status()
   };
