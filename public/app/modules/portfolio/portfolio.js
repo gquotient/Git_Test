@@ -104,7 +104,6 @@ define(
           }
         });
       }
-
     });
 
     /* The item view is the view for the individual portfolios in the navigation. */
@@ -142,25 +141,32 @@ define(
         template: portfolioList
       },
 
-      /* Tell the composite view which view to use as for each portfolio. */
+      // Tell the composite view which view to use as for each portfolio.
       itemView: Portfolio.views.NavigationItemView,
 
-      /* Setup an array for tracking breadcrumbs. Attach event listeners. */
+      // Setup an array for tracking breadcrumbs. Attach event listeners.
       initialize: function(options){
         this.listenTo(Backbone, 'select:portfolio', this.setPortfolio);
       },
 
-      /* Setup the views for the current model. */
+      onRender: function(){
+        // Handle if no sub portfolios exist
+        if (this.collection.length === 0) {
+          this.$el.append('<li>No sub portfolios</li>')
+        }
+      },
+
+      // Setup the views for the current model.
       setPortfolio: function(arg){
         this.model = arg.model;
-        /* Set the current collection to be a new navigation list with the subPortfolios. */
+        // Set the current collection to be a new navigation list with the subPortfolios.
         this.collection = this.model.get('subPortfolios');
 
-        /* Trigger a render. This forces the nav header to update, too. */
+        // Trigger a render. This forces the nav header to update, too.
         this.render();
 
         if(this.model.id){
-          /* Update the address bar to reflect the new model. */
+          // Update the address bar to reflect the new model.
           Backbone.history.navigate('portfolios/'+ this.model.id);
         } else {
           Backbone.history.navigate('/');
