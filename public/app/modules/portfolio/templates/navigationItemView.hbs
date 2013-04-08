@@ -1,3 +1,6 @@
 <h3>{{ name }}</h3>
-<span>{{$ 'DC Capacity' }}: {{ tokW dc_capacity }}kW</span> <br>
-<span>{{ subPortfolios.length }} {{$ 'Portfolios' }}</span> | <span> {{ projects.length }} {{$ 'Projects' }}</span>
+<ul>
+	<li class="DCCapacity">{{ tokW dc_capacity }}kW</li>
+	<li class="subPortfolios">{{ subPortfolios.length }}</li>
+	<li class="projects">{{ projects.length }}</li>
+</ul>
