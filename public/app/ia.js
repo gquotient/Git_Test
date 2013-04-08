@@ -29,8 +29,20 @@ define(
     // Instantiate the app
     var ia = new Backbone.Marionette.Application();
 
+    // Namespace event aggregation
+    ia.listenTo(Backbone, 'all', function(vent, data){
+      var myEvent = vent.split(':');
+      if(myEvent.length > 1){
+        Backbone.trigger(myEvent[0], data);
+      }
+    });
+
     // Empty object to hold different layouts. Should we abstract layouts to a module?
     ia.layouts = {};
+
+    ia.listenTo(Backbone, 'select:*', function(model){
+      console.log('global event', model);
+    });
 
     /* Some app initialization. Breaking it up for clarity. */
 

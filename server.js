@@ -4,6 +4,7 @@
 
 var express = require('express')
   , stylus = require('stylus')
+  , nib = require('nib')
   , _ = require('lodash')
   , http = require('http')
   , path = require('path')
@@ -67,17 +68,25 @@ var Projects = {
 var app = express();
 
 app.configure(function(){
+  var compile = function(str, path) {
+    return stylus(str)
+      .set('filename', path)
+      .set('compress', true)
+      .use(nib());
+  };
+
   app.set('port', process.env.PORT || 3005);
   app.set('view engine', 'hbs');
   app.set('views', __dirname + '/templates');
   app.use( stylus.middleware({
-    src: __dirname
+    src: __dirname,
+    compile: compile
   }) );
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
-  app.use(express.session({ store: new RedisStore, secret: 'adamantium',cookie: { secure: false, maxAge:86400000 } }));
+  app.use(express.session({ store: new RedisStore(), secret: 'adamantium',cookie: { secure: false, maxAge:86400000 } }));
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(flash());

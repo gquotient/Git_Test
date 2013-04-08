@@ -1,8 +1,8 @@
 <tr id="project_{{ projectId }}">
-  <td>
+  <td class="name">
     {{ name }}
   </td>
-  <td>{{ status }}</td>
-  <td>{{ kpis.ac_capacity }} kW</td>
-  <td>{{ kpis.dc_capacity }} kW</td>
+  <td class="status"><span class="status {{ status }}">{{ status }}</span></td>
+  <td class="DCCapacity">{{ kpis.ac_capacity }} kW</td>
+  <td class="ACCapacity">{{ kpis.dc_capacity }} kW</td>
 </tr>
