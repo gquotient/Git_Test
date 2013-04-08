@@ -11,9 +11,10 @@ define(
     'header',
     'portfolio',
     'project',
-    'layouts'
+    'layouts',
+    'breadcrumb'
   ],
-  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, Portfolio, Project, Layouts, indexTemplate){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, Portfolio, Project, Layouts, Breadcrumb){
 
     /* I'm not sure where else to put this right now, so I'm going to put it here.
      * I'm going to extend Backbone's 'Collection' with a method to return a subset of
@@ -68,16 +69,23 @@ define(
 
       ia.layouts.app = new Layouts.Main();
 
+      ia.main.show(ia.layouts.app);
+      // HACK ALERT fire resize method after elements are attached to the DOM
+      ia.layouts.app.resize();
+
+      // Build header
       var headerView = new Header.views.LoggedIn({model: ia.currentUser});
       ia.listenTo(headerView, 'logout', function(){
         window.location = '/logout';
       });
 
-      ia.main.show(ia.layouts.app);
-      // HACK ALERT fire resize method after elements are attached to the DOM
-      ia.layouts.app.resize();
-
       ia.layouts.app.header.show(headerView);
+
+      // Build breadcrumbs
+      var breadcrumbs = new Breadcrumb.collections.BreadcrumbList(),
+      breadcrumbsView = new Breadcrumb.views.Breadcrumbs({ collection: breadcrumbs });
+
+      ia.layouts.app.pageNavigation.show(breadcrumbsView);
     });
 
     // Since the portfolio list is so important to the app, let's go ahead

@@ -13,7 +13,11 @@ define(
 
     var Project = { models: {}, views: {}, layouts: {}, collections: {} };
 
-    Project.models.Project = Backbone.Model.extend({});
+    Project.models.Project = Backbone.Model.extend({
+      defaults: {
+        type: 'project'
+      }
+    });
 
     Project.collections.Projects = Backbone.Collection.extend({
       model: Project.models.Project,
@@ -57,9 +61,9 @@ define(
         this.controller = options.controller;
 
         // This shouldn't really live here?
-        this.listenTo(Backbone, 'select:portfolio', function(options){
+        this.listenTo(Backbone, 'select:portfolio', function(model){
           // Reset collection.
-          that.collection.reset(options.model.get('projects').models);
+          that.collection.reset(model.get('projects').models);
         });
       }
     });

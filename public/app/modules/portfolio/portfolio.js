@@ -11,16 +11,18 @@ define(
 
     'hbs!portfolio/templates/navigationItemView',
     'hbs!portfolio/templates/portfolioList',
-    'hbs!portfolio/templates/detailKpis',
-    'hbs!portfolio/templates/breadcrumbItem'
+    'hbs!portfolio/templates/detailKpis'
   ],
-  function($, _, Backbone, Marionette, L, leafletCSS, Project, navigationItemView, portfolioList, detailKpisTemplate, breadcrumbItemTemplate){
+  function($, _, Backbone, Marionette, L, leafletCSS, Project, navigationItemView, portfolioList, detailKpisTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
 
     /* Setup a model. */
     Portfolio.models.Portfolio = Backbone.Model.extend({
+      defaults: {
+        type: 'portfolio'
+      },
       build: function(){
         var subPortfolioIDs = this.get('subPortfolioIDs'),
             allProjectIDs = [];
@@ -56,6 +58,9 @@ define(
 
     /* Setup Master Portfolio */
     Portfolio.models.AllPortfolio = Backbone.Model.extend({
+      defaults: {
+        type: 'portfolio'
+      },
       build: function(){
         var projects = this.get('projects');
         this.set('projects', this.get('projects').clone());
@@ -124,7 +129,7 @@ define(
           Backbone.trigger('mouseout:portfolio', this.model);
         },
         'click': function(){
-          Backbone.trigger('select:portfolio', { model: this.model });
+          Backbone.trigger('select:portfolio', this.model);
         }
       }
     });
@@ -157,8 +162,8 @@ define(
       },
 
       // Setup the views for the current model.
-      setPortfolio: function(arg){
-        this.model = arg.model;
+      setPortfolio: function(model){
+        this.model = model;
         // Set the current collection to be a new navigation list with the subPortfolios.
         this.collection = this.model.get('subPortfolios');
 
@@ -174,30 +179,6 @@ define(
       }
     });
 
-    Portfolio.views.BreadcrumbItemView = Marionette.ItemView.extend({
-      tagName: 'li',
-      template: {
-        type: 'handlebars',
-        template: breadcrumbItemTemplate
-      },
-      triggers: {
-        'click': 'select:portfolio'
-      }
-    });
-
-    Portfolio.views.Breadcrumbs = Marionette.CollectionView.extend({
-      tagName: 'ul',
-      itemView: Portfolio.views.BreadcrumbItemView,
-      attributes: {
-        class: 'breadcrumbs'
-      },
-      initialize: function(options){
-        Backbone.listenTo(this, 'itemview:select:portfolio', function(arg){
-          Backbone.trigger('select:portfolio', arg);
-        });
-      }
-    });
-
     Portfolio.views.detailKpis = Marionette.ItemView.extend({
       tagName: 'ul',
       template: {
@@ -207,8 +188,8 @@ define(
       initialize: function(options){
         var that = this;
 
-        this.listenTo(Backbone, 'select:portfolio', function(options){
-          that.model = options.model;
+        this.listenTo(Backbone, 'select:portfolio', function(model){
+          that.model = model;
 
           that.render();
         });

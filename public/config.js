@@ -44,6 +44,11 @@ require.config({
       name: 'layouts',
       main: 'layouts',
       location: 'app/modules/layouts'
+    },
+    {
+      name: 'breadcrumb',
+      main: 'breadcrumb',
+      location: 'app/modules/breadcrumb'
     }
   ],
   paths: {

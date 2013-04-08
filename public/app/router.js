@@ -28,7 +28,6 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     },
 
     portfolios: function(options){
-
       var
         // Build primary portfolio nav
         portfolioNavigationListView = new Portfolio.views.NavigationListView({
@@ -36,15 +35,11 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
           model: options.model
         }),
 
-        // Build breadcrums
-        breadcrumbs = new Portfolio.collections.BreadcrumbList(_.unique([ia.allPortfoliosPortfolio, options.model])),
-        breadcrumbsView = new Portfolio.views.Breadcrumbs({ collection: breadcrumbs }),
         detailOverview = new Layouts.detailOverview()
       ;
 
       // Populate main layout
       ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
-      ia.layouts.app.pageNavigation.show(breadcrumbsView);
       ia.layouts.app.mainContent.show(detailOverview);
 
       // Build detail view
@@ -61,6 +56,16 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
 
         projectListView = new Project.views.DataListView( { collection: projectList } )
       ;
+
+
+      // Reset Breadcrumbs
+      var breadcrumbs = [ia.allPortfoliosPortfolio];
+
+      if (options.model !== ia.allPortfoliosPortfolio) {
+        breadcrumbs.push(options.model);
+      }
+
+      Backbone.trigger('set:breadcrumbs', breadcrumbs);
 
       // Poulate detail layout
       detailOverview.kpis.show(kpisView);
