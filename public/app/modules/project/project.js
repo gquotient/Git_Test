@@ -15,7 +15,7 @@ define(
 
     Project.models.Project = Backbone.Model.extend({});
 
-    Project.collections.DataList = Backbone.Collection.extend({
+    Project.collections.Projects = Backbone.Collection.extend({
       model: Project.models.Project,
       url: '/api/projects'
     });
@@ -36,24 +36,36 @@ define(
       },
       events: {
         'mouseover': function(){
-          Backbone.trigger('mouseover:project', this);
+          Backbone.trigger('mouseover:project', this.model);
         },
         'mouseout': function(){
-          Backbone.trigger('mouseout:project', this);
+          Backbone.trigger('mouseout:project', this.model);
         }
       }
     });
 
-    Project.views.DataList = Marionette.CompositeView.extend({
+    Project.views.DataListView = Marionette.CompositeView.extend({
       template: {
         type: 'handlebars',
         template: DataListTemplate
       },
       itemViewContainer: 'tbody',
-      itemView: Project.views.DataListItem
+      itemView: Project.views.DataListItem,
+      initialize: function(options){
+        var that = this;
+
+        this.controller = options.controller;
+
+        // This shouldn't really live here?
+        this.listenTo(Backbone, 'select:portfolio', function(options){
+          // Reset collection.
+          that.collection.reset(options.model.get('projects').models);
+        });
+      }
     });
 
     Project.views.map = Backbone.Marionette.ItemView.extend({
+
       markerStyles: {
         OK: L.icon({
           iconUrl: '/public/img/icon_marker_ok.png',
@@ -73,57 +85,61 @@ define(
         // Create a container for the leaflet map
         this.setElement($('<div id="leafletContainer" />'));
       },
-      selectMarkers: function(projects){
-        // projects should be an array of project models
-        var
-          ids = []
-        ;
+      updateMarkers: function(){
+        var that = this;
 
-        _.each(projects, function(project){
-          ids.push(project.id);
-        });
+        // Clear Old Markers;
+        this.markers.clearLayers();
 
-        return ids;
-      },
-      hideMarkers: function(projects){
-        // projects should be an array of project models
-        var ids = this.selectMarkers(projects);
 
-        _.each(this.markers, function(marker){
-          var myMarker = $([marker.marker._icon, marker.marker._shadow]);
+        // Build marker objects and markers
+        this.collection.each( function(project){
+          var latLong = project.get('latLng');
 
-          if (ids.indexOf(marker.id) >= 0) {
-            // show marker
-            // This is a little hackey but there doesn't seem to be a hide/show method in leaflet
-            myMarker.fadeIn();
-          } else {
-            // hide marker
-            myMarker.fadeOut();
+          if (latLong && latLong.length) {
+            var marker = L.marker(
+              [latLong[0], latLong[1]],
+              {
+                icon: that.markerStyles[project.get('status')],
+                id: project.id
+              }
+            ).addTo(that.markers);
           }
         });
 
         return this;
       },
+      selectMarkers: function(projects){
+        // projects should be an array of project models
+          var projectMarkers = this.collection.filter( function(project){
+            return _.contains(projects, project);
+          } );
+
+          return _.pluck(projectMarkers, 'id' );
+      },
+
       hilightMarkers: function(projects){
         var ids = this.selectMarkers(projects);
 
-        _.each(this.markers, function(marker){
-          var myMarker = $([marker.marker._icon, marker.marker._shadow]);
+        this.markers.eachLayer( function(marker){
+          var myMarker = $([marker._icon, marker._shadow]);
 
           if (ids.length) {
-            if (ids.indexOf(marker.id) >= 0) {
+            if (ids.indexOf(marker.options.id) >= 0) {
               myMarker.css({opacity: 1});
-              marker.marker.setZIndexOffset(1000);
+              marker.setZIndexOffset(1000);
             } else {
               myMarker.css({opacity: 0.25});
-              marker.marker.setZIndexOffset(0);
+
+              marker.setZIndexOffset(0);
             }
           } else {
             myMarker.css({opacity: 1});
-            marker.marker.setZIndexOffset(0);
+            marker.setZIndexOffset(0);
           }
         });
       },
+
       fitToBounds: function(bounds){
         var
           south,
@@ -139,9 +155,10 @@ define(
           north = bounds.north;
           west = bounds.west;
         } else {
-          _.each(this.markers, function(marker){
-            var lat = marker.marker._latlng.lat,
-                lng = marker.marker._latlng.lng;
+
+          this.markers.eachLayer( function(marker){
+            var lat = marker._latlng.lat,
+                lng = marker._latlng.lng;
 
             // This stuff is ugly but I couldn't think of a better way since it's 2 dimensional
             if (south === undefined) {
@@ -187,6 +204,7 @@ define(
         // NOTE: I've come to believe this pad method doesn't work properly. It seems to only have 3 settings. Off, on, and holy crap
         this.map.fitBounds(myBounds.pad(0));
       },
+
       build: function(){
         var that = this,
             projects = this.collection.models,
@@ -198,26 +216,11 @@ define(
         }).addTo(map);
 
         // Create array to store markers
-        this.markers = [];
+        this.markers = L.layerGroup([]);
+        this.markers.addTo(map);
 
         // Build marker objects and markers
-        _.each(projects, function(project){
-          var latLng = project.attributes.latLng;
-
-          if (latLng && latLng.length) {
-            var newMarker = {
-              marker: L.marker(
-                [latLng[0], latLng[1]],
-                {
-                  icon: that.markerStyles[project.attributes.status]
-                }
-              ).addTo(map),
-              id: project.id
-            };
-
-            that.markers.push(newMarker);
-          }
-        });
+        this.updateMarkers();
 
         // Pan and center on outtermost markers
         this.fitToBounds();
@@ -227,12 +230,10 @@ define(
       initialize: function(){
         var that = this;
 
-        this.listenTo(Backbone, 'select:portfolio', function(portfolio){
-          that.hideMarkers(portfolio.model.attributes.projects);
-        });
+        this.listenTo(this.collection, 'reset', this.updateMarkers);
 
         this.listenTo(Backbone, 'mouseover:project', function(project){
-          that.hilightMarkers(project);
+          that.hilightMarkers([project]);
         });
 
         this.listenTo(Backbone, 'mouseout:project', function(project){
@@ -240,7 +241,7 @@ define(
         });
 
         this.listenTo(Backbone, 'mouseover:portfolio', function(portfolio){
-          that.hilightMarkers(portfolio.model.attributes.projects);
+          that.hilightMarkers(portfolio.get('projects').models);
         });
 
         this.listenTo(Backbone, 'mouseout:portfolio', function(portfolio){

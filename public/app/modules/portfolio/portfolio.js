@@ -7,12 +7,14 @@ define(
     'leaflet',
     'css!components/leaflet/dist/leaflet.css',
 
+    'project',
+
     'hbs!portfolio/templates/navigationItemView',
     'hbs!portfolio/templates/portfolioList',
     'hbs!portfolio/templates/detailKpis',
     'hbs!portfolio/templates/breadcrumbItem'
   ],
-  function($, _, Backbone, Marionette, L, leafletCSS, navigationItemView, portfolioList, detailKpisTemplate, breadcrumbItemTemplate){
+  function($, _, Backbone, Marionette, L, leafletCSS, Project, navigationItemView, portfolioList, detailKpisTemplate, breadcrumbItemTemplate){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
@@ -35,31 +37,36 @@ define(
 
         this.set('allProjectIDs', _.uniq(allProjectIDs) );
 
-        var projects = this.collection.projects.filterByIDs(this.get('allProjectIDs'));
+        var projects =  new Project.collections.Projects(this.collection.projects.filterByIDs(this.get('allProjectIDs')) );
         this.set('projects', projects);
-        this.set('dc_capacity', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').dc_capacity; }, 0) );
-        this.set('ac_capacity', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').ac_capacity; }, 0) );
-        this.set('irradiance_now', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').irradiance_now; }, 0) );
-        this.set('power_now', _.reduce(projects, function(memo, p){ return memo + p.get('kpis').power_now; }, 0) );
+        this.set('dc_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').dc_capacity; }, 0 ) );
+        this.set('ac_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').ac_capacity; }, 0) );
+        this.set('irradiance_now', projects.reduce( function(memo, p){ return memo + p.get('kpis').irradiance_now; }, 0) );
+        this.set('power_now', projects.reduce( function(memo, p){ return memo + p.get('kpis').power_now; }, 0) );
 
         this.set('built', true);
       },
 
-      toJSON: function(){
-        // this.aggregate();
-        return this.attributes;
-      },
-
-      updateSubportfolios: function(){
-        this.set('subPortfolios', new Portfolio.collections.NavigationList( this.collection.filterByIDs( this.get('subPortfolioIDs')) ));
-        this.set( 'allProjectIDs', this.getAllProjectIDs() );
-      },
-
       initialize: function(){
         this.set('built', false);
-        if(this.collection){
-          this.listenTo(this.collection, 'reset', this.build);
-        }
+        this.listenTo(this.collection, 'reset', this.build);
+        this.listenTo(this.collection.projects, 'reset', this.build);
+      }
+    });
+
+    /* Setup Master Portfolio */
+    Portfolio.models.AllPortfolio = Backbone.Model.extend({
+      build: function(){
+        var projects = this.get('projects');
+        this.set('projects', this.get('projects').clone());
+        this.set('dc_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').dc_capacity; }, 0 ) );
+        this.set('ac_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').ac_capacity; }, 0) );
+        this.set('irradiance_now', projects.reduce( function(memo, p){ return memo + p.get('kpis').irradiance_now; }, 0) );
+        this.set('power_now', projects.reduce( function(memo, p){ return memo + p.get('kpis').power_now; }, 0) );
+      },
+
+      initialize: function(options){
+        this.listenTo(options.projects, "reset", this.build);
       }
     });
 
@@ -79,11 +86,7 @@ define(
 
     /* Setup the url for the list of portfolios. This will be our list for navigation. */
     Portfolio.collections.NavigationList = Backbone.Collection.extend({
-      model: Portfolio.models.Portfolio,
-
-      subPortfolios: function(model){
-        return this.filterByIDs( model.get('subPortfolioIDs') );
-      }
+      model: Portfolio.models.Portfolio
     });
 
     /* Create a collection just for Breadcrumbs. */
@@ -101,11 +104,10 @@ define(
           }
         });
       }
-
     });
 
     /* The item view is the view for the individual portfolios in the navigation. */
-    Portfolio.views.NavigationItemView = Backbone.Marionette.ItemView.extend({
+    Portfolio.views.NavigationItemView = Marionette.ItemView.extend({
       tagName: 'li',
       template: {
         type: 'handlebars',
@@ -114,23 +116,22 @@ define(
       attributes: {
         class: 'portfolio'
       },
-      /* When the portfolio tile is clicked, trigger a 'select:portfolio' event. */
-      triggers: {
-        'click': 'select:portfolio'
-      },
       events: {
         'mouseover': function(){
-          Backbone.trigger('mouseover:portfolio', this);
+          Backbone.trigger('mouseover:portfolio', this.model);
         },
         'mouseout': function(){
-          Backbone.trigger('mouseout:portfolio', this);
+          Backbone.trigger('mouseout:portfolio', this.model);
+        },
+        'click': function(){
+          Backbone.trigger('select:portfolio', { model: this.model });
         }
       }
     });
 
     /* This composite view is the wrapper view for the list of portfolios.
        It handles nesting the list while allowing for the navigation header. */
-    Portfolio.views.NavigationListView = Backbone.Marionette.CompositeView.extend({
+    Portfolio.views.NavigationListView = Marionette.CompositeView.extend({
       tagName: 'ul',
       attributes: {
         class: 'portfolios'
@@ -140,44 +141,32 @@ define(
         template: portfolioList
       },
 
-      /* Tell the composite view which view to use as for each portfolio. */
+      // Tell the composite view which view to use as for each portfolio.
       itemView: Portfolio.views.NavigationItemView,
 
-      /* Trigger events when we click 'back' or 'all'. */
-      triggers: {
-        'click .back': 'set:back',
-        'click .all': 'set:all'
-      },
-
-      /* Setup an array for tracking breadcrumbs. Attach event listeners. */
+      // Setup an array for tracking breadcrumbs. Attach event listeners.
       initialize: function(options){
-        this.listenTo(this, 'itemview:select:portfolio', function(arg){
-          Backbone.trigger('select:portfolio', arg);
-        });
-
-        this.listenTo(Backbone, 'select:portfolio', function(model){
-          this.nextPortfolio(model);
-        });
+        this.listenTo(Backbone, 'select:portfolio', this.setPortfolio);
       },
 
-      /* Adds this _current_ model to the breadcrumb before setting the new model to be
-       * the current model.
-       */
-      nextPortfolio: function(arg){
+      onRender: function(){
+        // Handle if no sub portfolios exist
+        if (this.collection.length === 0) {
+          this.$el.append('<li>No sub portfolios</li>')
+        }
+      },
+
+      // Setup the views for the current model.
+      setPortfolio: function(arg){
         this.model = arg.model;
-        this.setPortfolio();
-      },
-
-      /* Setup the views for the current model. */
-      setPortfolio: function(){
-        /* Set the current collection to be a new navigation list with the subPortfolios. */
+        // Set the current collection to be a new navigation list with the subPortfolios.
         this.collection = this.model.get('subPortfolios');
 
-        /* Trigger a render. This forces the nav header to update, too. */
+        // Trigger a render. This forces the nav header to update, too.
         this.render();
 
         if(this.model.id){
-          /* Update the address bar to reflect the new model. */
+          // Update the address bar to reflect the new model.
           Backbone.history.navigate('portfolios/'+ this.model.id);
         } else {
           Backbone.history.navigate('/');
@@ -185,7 +174,7 @@ define(
       }
     });
 
-    Portfolio.views.BreadcrumbItemView = Backbone.Marionette.ItemView.extend({
+    Portfolio.views.BreadcrumbItemView = Marionette.ItemView.extend({
       tagName: 'li',
       template: {
         type: 'handlebars',
@@ -196,7 +185,7 @@ define(
       }
     });
 
-    Portfolio.views.Breadcrumbs = Backbone.Marionette.CollectionView.extend({
+    Portfolio.views.Breadcrumbs = Marionette.CollectionView.extend({
       tagName: 'ul',
       itemView: Portfolio.views.BreadcrumbItemView,
       attributes: {
@@ -209,7 +198,7 @@ define(
       }
     });
 
-    Portfolio.views.detailKpis = Backbone.Marionette.ItemView.extend({
+    Portfolio.views.detailKpis = Marionette.ItemView.extend({
       tagName: 'ul',
       template: {
         type: 'handlebars',
