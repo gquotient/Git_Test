@@ -31,9 +31,9 @@ define(
           return this.name.replace(' ', '_');
         });
       },
-      // render: function(){
-      //   this.setElement(this.template.template(this.model.attributes));
-      // },
+      render: function(){
+        this.setElement(this.template.template(this.model.attributes));
+      },
       events: {
         'mouseover': function(){
           Backbone.trigger('mouseover:project', this.model);
@@ -65,6 +65,26 @@ define(
     });
 
     Project.views.MarkerView = Marionette.ItemView.extend({
+      initialize: function(options){
+
+        var that = this;
+
+        var latLong = this.model.get('latLng');
+
+        if (latLong && latLong.length) {
+          this.marker = L.marker(
+            [latLong[0], latLong[1]],
+            {
+              icon: that.markerStyles[that.model.get('status')],
+              id: that.model.id
+            }
+          )
+        }
+
+      },
+      click: function(){
+        
+      },
       markerStyles: {
         OK: L.icon({
           iconUrl: '/public/img/icon_marker_ok.png',
@@ -80,27 +100,34 @@ define(
           shadowUrl: '/public/img/icon_marker_shadow.png'
         })
       },
+
+
+
       render: function(){
+
         var that = this;
 
-        console.log(this.model);
+        //append marker to the map
+        this.marker.addTo(this.options.markers);
 
-        var latLong = this.model.get('latLng');
-
-        if (latLong && latLong.length) {
-          var marker = L.marker(
-            [latLong[0], latLong[1]],
-            {
-              icon: that.markerStyles[that.model.get('status')],
-              id: project.id
-            }
-          ).addTo(that.markers);
-        }
-      }
+        //can't use events hash, because the events are bound
+        //to the marker, not the element. It would be possible
+        //to set the view's element to this.marker._icon after
+        //adding it to the map, but it's a bit hacky.
+        this.marker.on('click', that.click );
+      },
     })
 
     Project.views.map = Marionette.CollectionView.extend({
       itemView: Project.views.MarkerView,
+
+      itemViewOptions: function(){
+          return { markers: this.markers }
+      },
+
+      attributes: {
+        id: 'leafletContainer'
+      },
 
       // render: function(){
       //   // Create a container for the leaflet map
@@ -112,25 +139,6 @@ define(
 
         // Clear Old Markers;
         this.markers.clearLayers();
-
-        this.collection.each( function(project) {
-
-        })
-
-        // // Build marker objects and markers
-        // this.collection.each( function(project){
-        //   var latLong = project.get('latLng');
-
-        //   if (latLong && latLong.length) {
-        //     var marker = L.marker(
-        //       [latLong[0], latLong[1]],
-        //       {
-        //         icon: that.markerStyles[project.get('status')],
-        //         id: project.id
-        //       }
-        //     ).addTo(that.markers);
-        //   }
-        // });
 
         return this;
       },
@@ -230,27 +238,27 @@ define(
         this.map.fitBounds(myBounds.pad(0));
       },
 
-      build: function(){
-        var that = this,
-            projects = this.collection.models,
-            map = this.map = L.map('leafletContainer').setView([0, 0], 1);
+      render: function(){
+        this.isClosed = false;
+        this.triggerBeforeRender();
+        
+        this.triggerRendered();
+        return this;
+      },
+
+      onShow: function(){
+        var map = this.map = L.map('leafletContainer').setView([0, 0], 1);
 
         // add an OpenStreetMap tile layer
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Create array to store markers
-        this.markers = L.layerGroup([]);
-        this.markers.addTo(map);
+        this.markers = new L.layerGroup([]);
 
-        // Build marker objects and markers
-        // this.updateMarkers();
+        this.markers.addTo(this.map);
 
-        // Pan and center on outtermost markers
-        // this.fitToBounds();
-
-        return this;
+        this._renderChildren();
       },
       initialize: function(){
         var that = this;
