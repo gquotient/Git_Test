@@ -80,7 +80,10 @@ primaryBorderStyle = 1px solid #222;
     padding: 0;
     margin: 0;
     list-style-type: none;
-    box-shadow: 0 0 7px rgba(0, 0, 0, .1);
+    li.empty {
+      padding: 6px;
+      text-shadow: 0 1px 0 #222;
+    }
     li.portfolio {
       border-top: 1px solid #444;
       border-bottom: 1px solid #222;
@@ -125,7 +128,7 @@ primaryBorderStyle = 1px solid #222;
       background: linear-gradient(#383838, #373737);
     }
     li.portfolio:last-child {
-
+      box-shadow: 0 0 7px rgba(0, 0, 0, .15);
     }
     li.portfolio:first-child {
       border-top: none;

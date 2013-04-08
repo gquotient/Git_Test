@@ -152,7 +152,7 @@ define(
       onRender: function(){
         // Handle if no sub portfolios exist
         if (this.collection.length === 0) {
-          this.$el.append('<li>No sub portfolios</li>')
+          this.$el.append('<li class="empty">No sub portfolios</li>')
         }
       },
 
