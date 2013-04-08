@@ -21,10 +21,10 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
 
     selectPortfolio: function(id){
       // Build custom portfolios view
-      var model = ia.allPortfolios.get(id),
-          collection = model.get("subPortfolios");
+      var portfolio = ia.allPortfolios.get(id),
+          subPortfolios = portfolio.get("subPortfolios");
 
-      this.portfolios( {collection: collection, model: model });
+      this.portfolios( {collection: subPortfolios, model: portfolio });
     },
 
     portfolios: function(options){

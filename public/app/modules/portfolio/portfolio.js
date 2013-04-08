@@ -37,7 +37,7 @@ define(
 
         this.set('allProjectIDs', _.uniq(allProjectIDs) );
 
-        var projects =  new Project.collections.DataList(this.collection.projects.filterByIDs(this.get('allProjectIDs')) );
+        var projects =  new Project.collections.Projects(this.collection.projects.filterByIDs(this.get('allProjectIDs')) );
         this.set('projects', projects);
         this.set('dc_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').dc_capacity; }, 0 ) );
         this.set('ac_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').ac_capacity; }, 0) );
@@ -117,16 +117,15 @@ define(
       attributes: {
         class: 'portfolio'
       },
-      /* When the portfolio tile is clicked, trigger a 'select:portfolio' event. */
-      triggers: {
-        'click': 'select:portfolio'
-      },
       events: {
         'mouseover': function(){
           Backbone.trigger('mouseover:portfolio', this.model);
         },
         'mouseout': function(){
           Backbone.trigger('mouseout:portfolio', this.model);
+        },
+        'click': function(){
+          Backbone.trigger('select:portfolio', { model: this.model });
         }
       }
     });
@@ -148,10 +147,6 @@ define(
 
       /* Setup an array for tracking breadcrumbs. Attach event listeners. */
       initialize: function(options){
-        this.listenTo(this, 'itemview:select:portfolio', function(arg){
-          Backbone.trigger('select:portfolio', arg);
-        });
-
         this.listenTo(Backbone, 'select:portfolio', this.setPortfolio);
       },
 

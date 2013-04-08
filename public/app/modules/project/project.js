@@ -15,7 +15,7 @@ define(
 
     Project.models.Project = Backbone.Model.extend({});
 
-    Project.collections.DataList = Backbone.Collection.extend({
+    Project.collections.Projects = Backbone.Collection.extend({
       model: Project.models.Project,
       url: '/api/projects'
     });
