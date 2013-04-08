@@ -120,10 +120,10 @@ define(
       },
       events: {
         'mouseover': function(){
-          Backbone.trigger('mouseover:portfolio', this)
+          Backbone.trigger('mouseover:portfolio', this);
         },
         'mouseout': function(){
-          Backbone.trigger('mouseout:portfolio', this)
+          Backbone.trigger('mouseout:portfolio', this);
         }
       }
     });
