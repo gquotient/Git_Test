@@ -61,8 +61,8 @@ define([
           that.collection.update(models);
         });
         // Listen for prune event on ItemView
-        Backbone.listenTo(this, 'itemview:prune', function(view){
-          var model = view.model;
+        Backbone.listenTo(this, 'itemview:prune', function(itemView){
+          var model = itemView.model;
           // Fire global select event
           Backbone.trigger('select:' + model.get('type'), model);
           // Prune collection
