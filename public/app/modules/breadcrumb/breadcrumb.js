@@ -29,17 +29,6 @@ define([
         var models = this.models.slice(0, (this.models.indexOf(model)) + 1);
         // Set the collection as the new list of models
         this.reset(models);
-      },
-      initialize: function(){
-        var that = this;
-        // Any select event will add it's selected model to the bread crumbs
-        this.listenTo(Backbone, 'select', function(model){
-          that.add( model );
-        });
-        // Listen for routers to reset breadcrumbs completely
-        this.listenTo(Backbone, 'set:breadcrumbs', function(models){
-          that.update(models);
-        });
       }
     });
 
@@ -63,6 +52,15 @@ define([
       initialize: function(options){
         var that = this;
 
+        // Any select event will add it's selected model to the bread crumbs
+        this.listenTo(Backbone, 'select', function(model){
+          that.collection.add( model );
+        });
+        // Listen for routers to reset breadcrumbs completely
+        this.listenTo(Backbone, 'set:breadcrumbs', function(models){
+          that.collection.update(models);
+        });
+        // Listen for prune event on ItemView
         Backbone.listenTo(this, 'itemview:prune', function(view){
           var model = view.model;
           // Fire global select event
