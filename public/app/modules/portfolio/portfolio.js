@@ -169,13 +169,6 @@ define(
 
         // Trigger a render. This forces the nav header to update, too.
         this.render();
-
-        if(this.model.id){
-          // Update the address bar to reflect the new model.
-          Backbone.history.navigate('portfolios/'+ this.model.id);
-        } else {
-          Backbone.history.navigate('/');
-        }
       }
     });
 

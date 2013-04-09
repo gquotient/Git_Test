@@ -39,12 +39,18 @@ define(
         this.setElement(this.template.template(this.model.attributes));
       },
       events: {
-        'mouseover': function(){
+        mouseover: function(){
           Backbone.trigger('mouseover:project', this.model);
         },
-        'mouseout': function(){
+        mouseout: function(){
           Backbone.trigger('mouseout:project', this.model);
-        }
+        },
+        click: function(){
+          Backbone.trigger('select:project', this.model);
+
+          Backbone.history.navigate('project/'+ this.model.get('id'));
+        },
+
       }
     });
 

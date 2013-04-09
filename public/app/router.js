@@ -35,12 +35,12 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
           model: options.model
         }),
 
-        detailOverview = new Layouts.detailOverview()
+        portfolioDetail = new Layouts.PortfolioDetail()
       ;
 
       // Populate main layout
       ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
-      ia.layouts.app.mainContent.show(detailOverview);
+      ia.layouts.app.mainContent.show(portfolioDetail);
 
       // Build detail view
       var
@@ -68,12 +68,36 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       Backbone.trigger('set:breadcrumbs', breadcrumbs);
 
       // Poulate detail layout
-      detailOverview.kpis.show(kpisView);
-      detailOverview.projects.show(projectListView);
-      detailOverview.map.show(map);
+      portfolioDetail.kpis.show(kpisView);
+      portfolioDetail.projects.show(projectListView);
+      portfolioDetail.map.show(map);
 
       // Fire build function since leaflet doens't fit nicely into the Backbone module pattern
       map.build();
+    },
+    selectProject: function(id){
+      console.log('selectProject', id);
+      this.projects();
+    },
+    project: function(){
+      var projectDetail = new Layouts.ProjectDetail();
+
+      // Populate main layout
+      ia.layouts.app.contentNavigation.close();
+      ia.layouts.app.mainContent.show(projectDetail);
+    },
+    updateURL: function(){
+
+    },
+    initialize: function(){
+      this.listenTo(Backbone, 'select:portfolio', function(model){
+        if(model.id){
+          // Update the address bar to reflect the new model.
+          Backbone.history.navigate('portfolios/'+ model.get('id'));
+        } else {
+          Backbone.history.navigate('/');
+        }
+      });
     }
   });
 
@@ -82,7 +106,9 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       appRoutes: {
         '': 'index',
         'portfolios': 'index',
-        'portfolios/:id': 'selectPortfolio'
+        'portfolios/:id': 'selectPortfolio',
+        'project': 'project',
+        'project/:id': 'selectProject'
       }
     });
 

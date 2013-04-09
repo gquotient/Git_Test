@@ -9,7 +9,8 @@ define([
   'project',
 
   'hbs!layouts/templates/index',
-  'hbs!layouts/templates/detailOverview'
+  'hbs!layouts/templates/portfolioDetail',
+  'hbs!layouts/templates/projectDetail'
 ], function(
   $,
   _,
@@ -19,7 +20,8 @@ define([
   Portfolio,
   Project,
   indexTemplate,
-  detailOverviewTemplate
+  portfolioDetailTemplate,
+  projectDetailTemplate
 ){
   var Layouts = {};
 
@@ -72,10 +74,10 @@ define([
     }
   });
 
-  Layouts.detailOverview = Backbone.Marionette.Layout.extend({
+  Layouts.PortfolioDetail = Backbone.Marionette.Layout.extend({
     template: {
       type: 'handlebars',
-      template: detailOverviewTemplate
+      template: portfolioDetailTemplate
     },
     regions: {
       //header: '#detail_header',
@@ -83,6 +85,19 @@ define([
       map: '#map_view',
       //alarms: '#alarms',
       projects: '#projects'
+    },
+    initialize: function(){
+
+    }
+  });
+
+  Layouts.ProjectDetail = Backbone.Marionette.Layout.extend({
+    template: {
+      type: 'handlebars',
+      template: projectDetailTemplate
+    },
+    regions: {
+
     },
     initialize: function(){
 

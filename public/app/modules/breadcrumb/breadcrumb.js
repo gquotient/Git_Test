@@ -9,6 +9,27 @@ define([
   var Breadcrumb = { models: {}, views: {}, layouts: {}, collections: {} };
 
     Breadcrumb.collections.BreadcrumbList = Backbone.Collection.extend({
+      update: function(models){
+        // Check if the origin is the same
+        if (this.models[0] === models[0]) {
+          // If the last model exists, just prune
+          if (this.models.indexOf(models[models.length - 1]) >= 0) {
+            this.prune(models[1]);
+          } else {
+            // If last model doesn't exist, something is awry so just reset
+            this.reset(models);
+          }
+        } else {
+          // If origin is different, force fresh models
+          this.reset(models);
+        }
+      },
+      prune: function(model){
+        // Return only the models from the first to the passed model
+        var models = this.models.slice(0, (this.models.indexOf(model)) + 1);
+        // Set the collection as the new list of models
+        this.reset(models);
+      },
       initialize: function(){
         var that = this;
         // Any select event will add it's selected model to the bread crumbs
@@ -17,7 +38,7 @@ define([
         });
         // Listen for routers to reset breadcrumbs completely
         this.listenTo(Backbone, 'set:breadcrumbs', function(models){
-          that.reset(models);
+          that.update(models);
         });
       }
     });
@@ -39,12 +60,6 @@ define([
       attributes: {
         class: 'breadcrumbs'
       },
-      prune: function(model){
-        // Return only the models from the first to the passed model
-        var models = this.collection.slice(0, (this.collection.indexOf(model)) + 1);
-        // Set the collection as the new list of models
-        this.collection.reset(models);
-      },
       initialize: function(options){
         var that = this;
 
@@ -53,7 +68,7 @@ define([
           // Fire global select event
           Backbone.trigger('select:' + model.get('type'), model);
           // Prune collection
-          that.prune(model);
+          that.collection.prune(model);
         });
       }
     });

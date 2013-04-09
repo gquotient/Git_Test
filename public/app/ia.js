@@ -41,10 +41,6 @@ define(
     // Empty object to hold different layouts. Should we abstract layouts to a module?
     ia.layouts = {};
 
-    ia.listenTo(Backbone, 'select:*', function(model){
-      console.log('global event', model);
-    });
-
     /* Some app initialization. Breaking it up for clarity. */
 
     // Bootstrap User
