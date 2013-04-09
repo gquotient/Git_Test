@@ -65,6 +65,8 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
         breadcrumbs.push(options.model);
       }
 
+      console.log(breadcrumbs);
+
       Backbone.trigger('set:breadcrumbs', breadcrumbs);
 
       // Poulate detail layout

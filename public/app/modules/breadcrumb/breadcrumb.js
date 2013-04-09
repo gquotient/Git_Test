@@ -11,7 +11,7 @@ define([
     Breadcrumb.collections.BreadcrumbList = Backbone.Collection.extend({
       update: function(models){
         // Check if the origin is the same
-        if (this.models[0] === models[0]) {
+        if (models.length > 1 && this.models[0] === models[0]) {
           // If the last model exists, just prune
           if (this.models.indexOf(models[models.length - 1]) >= 0) {
             this.prune(models[1]);
