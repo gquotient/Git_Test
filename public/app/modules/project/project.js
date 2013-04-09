@@ -47,10 +47,7 @@ define(
         },
         click: function(){
           Backbone.trigger('select:project', this.model);
-
-          Backbone.history.navigate('project/'+ this.model.get('id'));
-        },
-
+        }
       }
     });
 
