@@ -44,6 +44,10 @@ define(
       }
     });
 
+
+
+
+
     Project.views.DataListView = Marionette.CompositeView.extend({
       template: {
         type: 'handlebars',
@@ -64,6 +68,10 @@ define(
       }
     });
 
+
+
+
+
     Project.views.MarkerView = Marionette.ItemView.extend({
       initialize: function(options){
 
@@ -78,13 +86,15 @@ define(
               icon: that.markerStyles[that.model.get('status')],
               id: that.model.id
             }
-          )
+          );
         }
 
+        this.listenTo(Backbone, 'mouseover:project', this.highlight);
+        this.listenTo(Backbone, 'mouseout:project', this.restore);
+        this.listenTo(Backbone, 'mouseover:portfolio', this.highlight);
+        this.listenTo(Backbone, 'mouseout:portfolio', this.restore);
       },
-      click: function(){
-        
-      },
+
       markerStyles: {
         OK: L.icon({
           iconUrl: '/public/img/icon_marker_ok.png',
@@ -101,7 +111,25 @@ define(
         })
       },
 
+      highlight: function(projectOrPortfolio){
+        // This is a little hacky right now.
+        if(projectOrPortfolio.get('projects') === undefined){
+          if(this.model !== projectOrPortfolio){
+            this.marker.setOpacity(0.5);
+            this.marker.setZIndexOffset(0);
+          }
+        } else {
+          if(!projectOrPortfolio.get('projects').contains(this.model)){
+             this.marker.setOpacity(0.5);
+             this.marker.setZIndexOffset(0);
+          }
+        }
+      },
 
+      restore: function(){
+        this.marker.setOpacity(1.0);
+        this.marker.setZIndexOffset(1000);
+      },
 
       render: function(){
 
@@ -114,63 +142,37 @@ define(
         //to the marker, not the element. It would be possible
         //to set the view's element to this.marker._icon after
         //adding it to the map, but it's a bit hacky.
-        this.marker.on('click', that.click );
+        this.marker.on('mouseover', function(){
+         Backbone.trigger('mouseover:project', that.model);
+        } );
+
+        this.marker.on('mouseout', function(){
+          Backbone.trigger('mouseout:project', that.model);
+        });
       },
-    })
+
+      remove: function(){
+        this.stopListening();
+        this.options.markers.removeLayer(this.marker);
+      }
+    });
+
+
+
+
+
+
+
 
     Project.views.map = Marionette.CollectionView.extend({
       itemView: Project.views.MarkerView,
 
       itemViewOptions: function(){
-          return { markers: this.markers }
+          return { markers: this.markers };
       },
 
       attributes: {
         id: 'leafletContainer'
-      },
-
-      // render: function(){
-      //   // Create a container for the leaflet map
-      //   this.setElement($('<div id="leafletContainer" />'));
-      //   // console.log(this.collection);
-      // },
-      updateMarkers: function(){
-        var that = this;
-
-        // Clear Old Markers;
-        this.markers.clearLayers();
-
-        return this;
-      },
-      selectMarkers: function(projects){
-        // projects should be an array of project models
-          var projectMarkers = this.collection.filter( function(project){
-            return _.contains(projects, project);
-          } );
-
-          return _.pluck(projectMarkers, 'id' );
-      },
-
-      hilightMarkers: function(projects){
-        var ids = this.selectMarkers(projects);
-
-        this.markers.eachLayer( function(marker){
-          var myMarker = $([marker._icon, marker._shadow]);
-
-          if (ids.length) {
-            if (ids.indexOf(marker.options.id) >= 0) {
-              myMarker.css({opacity: 1});
-              marker.setZIndexOffset(1000);
-            } else {
-              myMarker.css({opacity: 0.25});
-
-              marker.setZIndexOffset(0);
-            }
-          } else {
-            myMarker.css({opacity: 1});
-            marker.setZIndexOffset(0);
-          }
-        });
       },
 
       fitToBounds: function(bounds){
@@ -241,13 +243,13 @@ define(
       render: function(){
         this.isClosed = false;
         this.triggerBeforeRender();
-        
+
         this.triggerRendered();
         return this;
       },
 
       onShow: function(){
-        var map = this.map = L.map('leafletContainer').setView([0, 0], 1);
+        var map = this.map = L.map(this.el).setView([0, 0], 1);
 
         // add an OpenStreetMap tile layer
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -263,23 +265,10 @@ define(
       initialize: function(){
         var that = this;
 
-        this.listenTo(this.collection, 'reset', this.updateMarkers);
+        // Since we are overriding the 'render' method to get the map to work,
+        // we need to explicitly call _renderChildren on reset.
+        this.listenTo(this.collection, 'reset', this._renderChildren);
 
-        this.listenTo(Backbone, 'mouseover:project', function(project){
-          that.hilightMarkers([project]);
-        });
-
-        this.listenTo(Backbone, 'mouseout:project', function(project){
-          that.hilightMarkers();
-        });
-
-        this.listenTo(Backbone, 'mouseover:portfolio', function(portfolio){
-          that.hilightMarkers(portfolio.get('projects').models);
-        });
-
-        this.listenTo(Backbone, 'mouseout:portfolio', function(portfolio){
-          that.hilightMarkers();
-        });
       }
     });
 
