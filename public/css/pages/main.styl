@@ -13,23 +13,22 @@ html, body {
 /* Main components */
 
 pageNavHeight = 30px;
-primaryBorderStyle = 1px solid #222;
+primaryBorderStyle = borderBasicDark;
 
 #nav_page {
-  background: #333;
-  background-image: linear-gradient(#3c3c3c, #313131);
-  border-top: 1px solid #555;
-  border-bottom: 1px solid #222;
-  height: pageNavHeight;
   width: 100%;
+  height: pageNavHeight;
+  line-height: pageNavHeight;
   overflow: hidden;
   position: relative;
-  line-height: pageNavHeight;
+  z-index: 201;
   padding: 0 6px;
   margin:0;
-  color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.33);
-  z-index: 201;
+  background: colorBGDarkGrey;
+  background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+  border-top: borderBasicMedium;
+  border-bottom: borderBasicDark;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   font-weight: 100;
   text-shadow: 0 0 1px #000;
   ul.breadcrumbs {
@@ -37,15 +36,12 @@ primaryBorderStyle = 1px solid #222;
     margin: 0;
     list-style-type: none;
     float: left;
-
     li {
       background: url(../../img/arrow_breadcrumbs.png) right center no-repeat;
       float: left;
       padding: 0 15px 0 0;
       margin: 0 6px 0 0;
-      color: #ccc;
       cursor: pointer;
-
       a:hover {
         text-decoration: underline;
       }
@@ -63,19 +59,13 @@ primaryBorderStyle = 1px solid #222;
 }
 
 #nav_content {
-  background: #333;
-  border-right: primaryBorderStyle;
-  overflow: auto;
   height: 100%;
+  overflow: auto;
   position: relative;
   z-index: 200;
+  background: colorBGDarkGrey;
+  border-right: primaryBorderStyle;
   color: #aaa;
-  .back {
-    cursor: pointer;
-  }
-  .all {
-    cursor: pointer;
-  }
   ul.portfolios {
     padding: 0;
     margin: 0;
@@ -85,9 +75,9 @@ primaryBorderStyle = 1px solid #222;
       text-shadow: 0 1px 0 #222;
     }
     li.portfolio {
-      border-top: 1px solid #444;
-      border-bottom: 1px solid #222;
-      background: linear-gradient(#323232, #313131);
+      border-top: borderBasicMedium;
+      border-bottom: borderBasicDark;
+      background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
       text-shadow: 0 1px 0 #000;
       padding: 6px;
       margin: 0;
@@ -125,7 +115,7 @@ primaryBorderStyle = 1px solid #222;
       }
     }
     li.portfolio:hover {
-      background: linear-gradient(#383838, #373737);
+      background: linear-gradient(#252627, #282828);
     }
     li.portfolio:last-child {
       box-shadow: 0 0 7px rgba(0, 0, 0, .15);
@@ -143,8 +133,8 @@ kpiHeight = 30px;
 
 #content {
   //border: 1px solid #f00;
-  overflow: auto;
   height: 100%;
+  overflow: auto;
   position: relative;
   > div { // This is an artifact of how Backbone/Marionette views work
     height: 100%;
@@ -169,14 +159,14 @@ kpiHeight = 30px;
     height: 100%;
     padding: kpiHeight 0 0 0;
     #leafletContainer {
-      background: #B5D0D0 url(loadingIcon) center center no-repeat;
       width: 100%;
       height: 100%;
+      background: #B5D0D0 url(loadingIcon) center center no-repeat;
     }
   }
 
   #kpis {
-    background: #333;
+    background: colorBGDarkGrey;
     position: fixed;
     z-index: 100;
     width: 100%;
@@ -184,17 +174,16 @@ kpiHeight = 30px;
     height: kpiHeight;
     line-height: kpiHeight;
     overflow: hidden;
-    background-image: linear-gradient(#3c3c3c, #313131);
-    //border-top: 1px solid #444;
-    border-bottom: 1px solid #222;
+    background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+    //border-top: borderBasicMedium;
+    border-bottom: borderBasicDark;
     box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
     text-shadow: 0 1px 0 #000;
-    color: #ccc;
     ul {
+      width: 100%;
       padding: 0 6px;
       margin: 0;
       list-style-type: none;
-      width: 100%;
       overflow: hidden;
       li {
         margin: 0 6px;
@@ -215,32 +204,41 @@ kpiHeight = 30px;
   }
 
   #projects {
+    height: 100%;
     position: relative;
     .bg_tableHeader {
       width: 100%;
       height: projectTableHeaderHeight;
       position: fixed;
       z-index: 100;
-      background: #333;
+      background: colorBGDarkGrey;
       box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
-      background-image: linear-gradient(#3c3c3c, #313131);
-      border-top: 1px solid #444;
-      border-bottom: 1px solid #222;
+      background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+      border-top: borderBasicMedium;
+      border-bottom: borderBasicDark;
       box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
     }
+    > div {
+      height: 100%;
+    }
     table {
-      background: #333;
+      height: 100%;
+      overflow: auto;
+      background: colorBGDarkGrey;
       thead {
+        height: 0;
+        padding: 0;
+        margin: 0;
         color: #eee;
         tr {
           th {
             font-weight: normal;
             text-shadow: 0 1px 0 #000;
             div {
+              display: block;
+              height: projectTableHeaderHeight;
               position: fixed;
               z-index: 101;
-              height: projectTableHeaderHeight;
-              display: block;
               white-space: nowrap;
               .unit {
                 font-weight: 100;
@@ -252,10 +250,11 @@ kpiHeight = 30px;
         }
       }
       tbody {
+        overflow: auto;
         color: #aaa;
         border-top: projectTableHeaderHeight solid #333;
         tr {
-          border-bottom: 1px solid #3c3c3c;
+          border-bottom: 1px solid #202020;
           td {
             width: 25%;
             //text-align: center;
@@ -285,10 +284,10 @@ kpiHeight = 30px;
           }
         }
         tr:nth-child(odd) {
-          background-color: #353535;
+          background-color: colorBGMediumGrey;
         }
         tr:hover {
-          background-color: #383838;
+          background-color: colorBGLightGrey;
         }
       }
       border: none;
