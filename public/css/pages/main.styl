@@ -218,7 +218,11 @@ kpiHeight = 30px;
       border-bottom: borderBasicDark;
       box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
     }
+    > div {
+      height: 100%;
+    }
     table {
+      height: 100%;
       overflow: auto;
       background: colorBGDarkGrey;
       thead {
@@ -246,6 +250,7 @@ kpiHeight = 30px;
         }
       }
       tbody {
+        overflow: auto;
         color: #aaa;
         border-top: projectTableHeaderHeight solid #333;
         tr {
