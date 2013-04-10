@@ -16,16 +16,20 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
   ia.Controller = Backbone.Marionette.Controller.extend({
     currentState: 'index',
     index: function(){
-      // Build primary portfolios view
-      this.portfolios( { collection: new Portfolio.collections.NavigationList(ia.allPortfolios.models), model: ia.allPortfoliosPortfolio } );
+      this.selectPortfolio();
     },
 
     selectPortfolio: function(id){
-      // Build custom portfolios view
-      var portfolio = ia.allPortfolios.get(id),
-          subPortfolios = portfolio.get("subPortfolios");
+      if (id) {
+        // Build custom portfolios view
+        var portfolio = ia.allPortfolios.get(id),
+            subPortfolios = portfolio.get("subPortfolios");
 
-      this.portfolios( {collection: subPortfolios, model: portfolio });
+        this.portfolios( {collection: subPortfolios, model: portfolio });
+      } else {
+        // Build primary portfolios view
+        this.portfolios( { collection: new Portfolio.collections.NavigationList(ia.allPortfolios.models), model: ia.allPortfoliosPortfolio } );
+      }
     },
 
     portfolios: function(options){
