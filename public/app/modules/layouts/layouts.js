@@ -79,11 +79,12 @@ define([
       type: 'handlebars',
       template: portfolioDetailTemplate
     },
+    attributes: {
+      class: 'portfolioView'
+    },
     regions: {
-      //header: '#detail_header',
       kpis: '#kpis',
       map: '#map_view',
-      //alarms: '#alarms',
       projects: '#projects',
       contentNavigation: '#nav_content',
     },
@@ -97,8 +98,11 @@ define([
       type: 'handlebars',
       template: projectDetailTemplate
     },
+    attributes: {
+      class: 'projectView'
+    },
     regions: {
-
+      map: '#map_view'
     },
     initialize: function(){
 

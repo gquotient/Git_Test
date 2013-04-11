@@ -92,18 +92,22 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     },
 
     project: function(options){
-      var projectDetail = new Layouts.ProjectDetail({model: options.model});
-
       // Reset Breadcrumbs
-      var breadcrumbs = [ia.allPortfoliosPortfolio];
-
-      breadcrumbs.push(options.model);
-
+      var breadcrumbs = [ia.allPortfoliosPortfolio, options.model];
       this.update_breadcrumbs(breadcrumbs);
 
       // Populate main layout
-      //ia.layouts.app.contentNavigation.close();
+      var projectDetail = new Layouts.ProjectDetail({model: options.model});
       ia.layouts.app.mainContent.show(projectDetail);
+
+      var map = new Project.views.map({
+        collection: new Project.collections.Projects([options.model])
+      });
+
+      projectDetail.map.show(map);
+
+      // Fire build function since leaflet doens't fit nicely into the Backbone module pattern
+      map.build();
 
       this.currentState = 'project';
     },

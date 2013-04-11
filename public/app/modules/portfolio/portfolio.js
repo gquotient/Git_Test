@@ -94,23 +94,6 @@ define(
       model: Portfolio.models.Portfolio
     });
 
-    /* Create a collection just for Breadcrumbs. */
-    Portfolio.collections.BreadcrumbList = Backbone.Collection.extend({
-      model: Portfolio.models.Portfolio,
-
-      initialize: function(models, options){
-        var that = this;
-
-        this.listenTo(Backbone, 'select:portfolio', function(arg){
-          if ( that.contains(arg.model) ) {
-            that.reset( that.slice(0,that.indexOf(arg.model)+1) );
-          } else {
-            that.add(arg.model);
-          }
-        });
-      }
-    });
-
     /* The item view is the view for the individual portfolios in the navigation. */
     Portfolio.views.NavigationItemView = Marionette.ItemView.extend({
       tagName: 'li',

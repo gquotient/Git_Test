@@ -213,6 +213,7 @@ define(
       },
 
       build: function(){
+        console.log('build map', this.$el, this.collection);
         var that = this,
             projects = this.collection.models,
             map = this.map = L.map('leafletContainer').setView([0, 0], 1);
