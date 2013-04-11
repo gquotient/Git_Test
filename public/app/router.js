@@ -133,17 +133,17 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     }
   });
 
-    var Router = Backbone.Marionette.AppRouter.extend({
-      controller: new ia.Controller(),
-      appRoutes: {
-        '': 'index',
-        'portfolio': 'index',
-        'portfolio/:id': 'select_portfolio',
-        'project': 'project',
-        'project/:id': 'select_project'
-      }
-    });
+  var Router = Backbone.Marionette.AppRouter.extend({
+    controller: new ia.Controller(),
+    appRoutes: {
+      '': 'index',
+      'portfolio': 'index',
+      'portfolio/:id': 'select_portfolio',
+      'project': 'project',
+      'project/:id': 'select_project'
+    }
+  });
 
-    return Router;
-  }
-);
+  return Router;
+
+});
