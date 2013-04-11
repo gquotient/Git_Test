@@ -40,22 +40,27 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     },
 
     portfolio: function(options){
+      // Reset Breadcrumbs
+      var breadcrumbs = [ia.allPortfoliosPortfolio];
+
+      if (options.model !== ia.allPortfoliosPortfolio) {
+        breadcrumbs.push(options.model);
+      }
+
+      this.update_breadcrumbs(breadcrumbs);
+
+      // Populate main layout
+      var portfolioDetail = new Layouts.PortfolioDetail();
+
+      ia.layouts.app.mainContent.show(portfolioDetail);
+
+      // Build detail view
       var
         // Build primary portfolio nav
         portfolioNavigationListView = new Portfolio.views.NavigationListView({
           collection: options.collection,
           model: options.model
         }),
-
-        portfolioDetail = new Layouts.PortfolioDetail()
-      ;
-
-      // Populate main layout
-      ia.layouts.app.contentNavigation.show(portfolioNavigationListView);
-      ia.layouts.app.mainContent.show(portfolioDetail);
-
-      // Build detail view
-      var
         // Build KPIs
         kpisView = new Portfolio.views.detailKpis({ model: options.model }),
 
@@ -69,17 +74,8 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
         projectListView = new Project.views.DataListView( { collection: projectList } )
       ;
 
-
-      // Reset Breadcrumbs
-      var breadcrumbs = [ia.allPortfoliosPortfolio];
-
-      if (options.model !== ia.allPortfoliosPortfolio) {
-        breadcrumbs.push(options.model);
-      }
-
-      this.update_breadcrumbs(breadcrumbs);
-
       // Poulate detail layout
+      portfolioDetail.contentNavigation.show(portfolioNavigationListView);
       portfolioDetail.kpis.show(kpisView);
       portfolioDetail.projects.show(projectListView);
       portfolioDetail.map.show(map);
@@ -96,7 +92,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     },
 
     project: function(options){
-      var projectDetail = new Layouts.ProjectDetail();
+      var projectDetail = new Layouts.ProjectDetail({model: options.model});
 
       // Reset Breadcrumbs
       var breadcrumbs = [ia.allPortfoliosPortfolio];
@@ -106,7 +102,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       this.update_breadcrumbs(breadcrumbs);
 
       // Populate main layout
-      ia.layouts.app.contentNavigation.close();
+      //ia.layouts.app.contentNavigation.close();
       ia.layouts.app.mainContent.show(projectDetail);
 
       this.currentState = 'project';
