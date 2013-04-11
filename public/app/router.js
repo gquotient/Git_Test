@@ -15,6 +15,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
 
   ia.Controller = Backbone.Marionette.Controller.extend({
     currentState: 'index',
+
     index: function(){
       console.log('index');
       this.select_portfolio();
@@ -23,16 +24,19 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
 
     select_portfolio: function(id){
       console.log('selectPortfolio', id);
+      var portfolio, subPortfolios;
+
       if (id && id !== 'all') {
         // Build custom portfolios view
-        var portfolio = ia.allPortfolios.get(id),
-            subPortfolios = portfolio.get("subPortfolios");
-
-        this.portfolio( {collection: subPortfolios, model: portfolio });
+        portfolio = ia.allPortfolios.get(id);
+        subPortfolios = portfolio.get("subPortfolios");
       } else {
         // Build primary portfolios view
-        this.portfolio( { collection: new Portfolio.collections.NavigationList(ia.allPortfolios.models), model: ia.allPortfoliosPortfolio } );
+        portfolio = ia.allPortfoliosPortfolio;
+        subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
+
+      this.portfolio( { collection: subPortfolios, model: portfolio } );
     },
 
     portfolio: function(options){
@@ -85,10 +89,12 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
 
       this.currentState = 'portfolio';
     },
+
     select_project: function(id){
       console.log('selectProject', id);
       this.project({model: ia.allProjects.get(id)});
     },
+
     project: function(options){
       var projectDetail = new Layouts.ProjectDetail();
 
@@ -105,9 +111,12 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
 
       this.currentState = 'project';
     },
+
     update_breadcrumbs: function(models){
+      // This is simple-minded but I have a feeling this abstraction will end up being useful
       Backbone.trigger('set:breadcrumbs', models);
     },
+
     initialize: function(){
       var that = this;
 
