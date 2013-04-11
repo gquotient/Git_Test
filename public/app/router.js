@@ -80,10 +80,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       portfolioDetail.projects.show(projectListView);
       portfolioDetail.map.show(map);
 
-      // Fire build function since leaflet doens't fit nicely into the Backbone module pattern
-      map.build();
-
-      this.currentState = 'portfolio';
+      this.currentState = 'portfolios';
     },
 
     select_project: function(id){

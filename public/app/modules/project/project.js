@@ -51,6 +51,10 @@ define(
       }
     });
 
+
+
+
+
     Project.views.DataListView = Marionette.CompositeView.extend({
       template: {
         type: 'handlebars',
@@ -71,7 +75,32 @@ define(
       }
     });
 
-    Project.views.map = Backbone.Marionette.ItemView.extend({
+
+
+
+
+    Project.views.MarkerView = Marionette.ItemView.extend({
+      initialize: function(options){
+
+        var that = this;
+
+        var latLong = this.model.get('latLng');
+
+        if (latLong && latLong.length) {
+          this.marker = L.marker(
+            [latLong[0], latLong[1]],
+            {
+              icon: that.markerStyles[that.model.get('status')],
+              id: that.model.id
+            }
+          );
+        }
+
+        this.listenTo(Backbone, 'mouseover:project', this.highlight);
+        this.listenTo(Backbone, 'mouseout:project', this.restore);
+        this.listenTo(Backbone, 'mouseover:portfolio', this.highlight);
+        this.listenTo(Backbone, 'mouseout:portfolio', this.restore);
+      },
 
       markerStyles: {
         OK: L.icon({
@@ -88,63 +117,62 @@ define(
           shadowUrl: '/public/img/icon_marker_shadow.png'
         })
       },
-      render: function(){
-        // Create a container for the leaflet map
-        this.setElement($('<div id="leafletContainer" />'));
+
+      highlight: function(projectOrPortfolio){
+        // This is a little hacky right now.
+        if(projectOrPortfolio.get('projects') === undefined){
+          if(this.model !== projectOrPortfolio){
+            this.marker.setOpacity(0.5);
+            this.marker.setZIndexOffset(0);
+          }
+        } else {
+          if(!projectOrPortfolio.get('projects').contains(this.model)){
+             this.marker.setOpacity(0.5);
+             this.marker.setZIndexOffset(0);
+          }
+        }
       },
-      updateMarkers: function(){
+
+      restore: function(){
+        this.marker.setOpacity(1.0);
+        this.marker.setZIndexOffset(1000);
+      },
+
+      render: function(){
+
         var that = this;
 
-        // Clear Old Markers;
-        this.markers.clearLayers();
+        //append marker to the map
+        this.marker.addTo(this.options.markers);
 
+        //can't use events hash, because the events are bound
+        //to the marker, not the element. It would be possible
+        //to set the view's element to this.marker._icon after
+        //adding it to the map, but it's a bit hacky.
+        this.marker.on('mouseover', function(){
+         Backbone.trigger('mouseover:project', that.model);
+        } );
 
-        // Build marker objects and markers
-        this.collection.each( function(project){
-          var latLong = project.get('latLng');
-
-          if (latLong && latLong.length) {
-            var marker = L.marker(
-              [latLong[0], latLong[1]],
-              {
-                icon: that.markerStyles[project.get('status')],
-                id: project.id
-              }
-            ).addTo(that.markers);
-          }
+        this.marker.on('mouseout', function(){
+          Backbone.trigger('mouseout:project', that.model);
         });
-
-        return this;
-      },
-      selectMarkers: function(projects){
-        // projects should be an array of project models
-          var projectMarkers = this.collection.filter( function(project){
-            return _.contains(projects, project);
-          } );
-
-          return _.pluck(projectMarkers, 'id' );
       },
 
-      hilightMarkers: function(projects){
-        var ids = this.selectMarkers(projects);
+      remove: function(){
+        this.stopListening();
+        this.options.markers.removeLayer(this.marker);
+      }
+    });
 
-        this.markers.eachLayer( function(marker){
-          var myMarker = $([marker._icon, marker._shadow]);
+    Project.views.map = Marionette.CollectionView.extend({
+      itemView: Project.views.MarkerView,
 
-          if (ids.length) {
-            if (ids.indexOf(marker.options.id) >= 0) {
-              myMarker.css({opacity: 1});
-              marker.setZIndexOffset(1000);
-            } else {
-              myMarker.css({opacity: 0.25});
+      itemViewOptions: function(){
+          return { markers: this.markers };
+      },
 
-              marker.setZIndexOffset(0);
-            }
-          } else {
-            myMarker.css({opacity: 1});
-            marker.setZIndexOffset(0);
-          }
-        });
+      attributes: {
+        id: 'leafletContainer'
       },
 
       fitToBounds: function(bounds){
@@ -212,49 +240,37 @@ define(
         this.map.fitBounds(myBounds.pad(0));
       },
 
-      build: function(){
-        console.log('build map', this.$el, this.collection);
-        var that = this,
-            projects = this.collection.models,
-            map = this.map = L.map('leafletContainer').setView([0, 0], 1);
+      render: function(){
+        this.isClosed = false;
+        this.triggerBeforeRender();
+
+        this.triggerRendered();
+        return this;
+      },
+
+      onShow: function(){
+        var map = this.map = L.map(this.el).setView([0, 0], 1);
 
         // add an OpenStreetMap tile layer
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Create array to store markers
-        this.markers = L.layerGroup([]);
-        this.markers.addTo(map);
+        this.markers = new L.layerGroup([]);
 
-        // Build marker objects and markers
-        this.updateMarkers();
+        this.markers.addTo(this.map);
 
-        // Pan and center on outtermost markers
+        this._renderChildren();
+
         this.fitToBounds();
-
-        return this;
       },
       initialize: function(){
         var that = this;
 
-        this.listenTo(this.collection, 'reset', this.updateMarkers);
+        // Since we are overriding the 'render' method to get the map to work,
+        // we need to explicitly call _renderChildren on reset.
+        this.listenTo(this.collection, 'reset', this._renderChildren);
 
-        this.listenTo(Backbone, 'mouseover:project', function(project){
-          that.hilightMarkers([project]);
-        });
-
-        this.listenTo(Backbone, 'mouseout:project', function(project){
-          that.hilightMarkers();
-        });
-
-        this.listenTo(Backbone, 'mouseover:portfolio', function(portfolio){
-          that.hilightMarkers(portfolio.get('projects').models);
-        });
-
-        this.listenTo(Backbone, 'mouseout:portfolio', function(portfolio){
-          that.hilightMarkers();
-        });
       }
     });
 

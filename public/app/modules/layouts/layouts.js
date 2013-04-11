@@ -29,7 +29,7 @@ define([
   var roundNumber = function(num, dec) {
     var result = (num !== null)?Math.round(num*Math.pow(10,dec))/Math.pow(10,dec):null;
     return result;
-  }
+  };
 
   Handlebars.registerHelper('tokW', function(value) {
     return roundNumber((+value / 1000), 1);
