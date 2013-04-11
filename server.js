@@ -179,7 +179,11 @@ app.all('/ia/*', ensureAuthenticated, function(req, res){
 
 app.get('/login', function(req, res){
   if (req.isAuthenticated() ) {
-    res.redirect('/ia');
+    if (req.session.redirectUrl) {
+      res.redirect(req.session.redirectUrl);
+    } else {
+      res.redirect('/ia');
+    }
   } else {
     res.render('login', { flash: req.flash('error') });
   }
@@ -195,13 +199,17 @@ app.post('/login',
 ));
 
 /* Reset Password */
-app.get('/reset', ensureAuthenticated, function(req, res){
+app.get('/reset', ensureAuthenticated, function(req, res){  
   if( req.user.firsttime ){
     res.render('resetpassword', { flash: req.flash('error') });
   } else {
-    res.redirect('/ia');
+      if (req.session.redirectUrl) {
+        res.redirect(req.session.redirectUrl);
+      } else {
+        res.redirect('/ia');
+      }
   }
-})
+});
 
 app.post('/reset', function(req, res){
   // console.log( 'passwords:' + req.body.password + ':' + req.body.password_new + ':' + req.body.password_check );
@@ -279,6 +287,7 @@ app.get('/api/projects',
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   else {
+    req.session.redirectUrl = req.url;
     res.redirect('/login');
   }
 }
