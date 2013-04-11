@@ -111,6 +111,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       var that = this;
 
       this.listenTo(Backbone, 'select', function(model){
+        // Set address bar
         Backbone.history.navigate('/' + model.get('type') + '/' + model.get('id'));
 
         // Build the page type if not already built
