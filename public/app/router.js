@@ -92,6 +92,15 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     project: function(options){
       var projectDetail = new Layouts.ProjectDetail();
 
+      // Reset Breadcrumbs
+      var breadcrumbs = [ia.allPortfoliosPortfolio];
+
+      if (options.model !== ia.allPortfoliosPortfolio) {
+        breadcrumbs.push(options.model);
+      }
+
+      Backbone.trigger('set:breadcrumbs', breadcrumbs);
+
       // Populate main layout
       ia.layouts.app.contentNavigation.close();
       ia.layouts.app.mainContent.show(projectDetail);
