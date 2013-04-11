@@ -73,7 +73,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
         breadcrumbs.push(options.model);
       }
 
-      Backbone.trigger('set:breadcrumbs', breadcrumbs);
+      this.update_breadcrumbs(breadcrumbs);
 
       // Poulate detail layout
       portfolioDetail.kpis.show(kpisView);
@@ -95,17 +95,18 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       // Reset Breadcrumbs
       var breadcrumbs = [ia.allPortfoliosPortfolio];
 
-      if (options.model !== ia.allPortfoliosPortfolio) {
-        breadcrumbs.push(options.model);
-      }
+      breadcrumbs.push(options.model);
 
-      Backbone.trigger('set:breadcrumbs', breadcrumbs);
+      this.update_breadcrumbs(breadcrumbs);
 
       // Populate main layout
       ia.layouts.app.contentNavigation.close();
       ia.layouts.app.mainContent.show(projectDetail);
 
       this.currentState = 'project';
+    },
+    update_breadcrumbs: function(models){
+      Backbone.trigger('set:breadcrumbs', models);
     },
     initialize: function(){
       var that = this;
