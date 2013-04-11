@@ -89,7 +89,7 @@ define(
     ia.addInitializer(function(){
       ia.allProjects = new Project.collections.Projects();
       ia.allPortfolios = new Portfolio.collections.All([],{ projects: ia.allProjects });
-      ia.allPortfoliosPortfolio = new Portfolio.models.AllPortfolio({name: 'All Portfolios', projects: ia.allProjects, subPortfolios: ia.allPortfolios });
+      ia.allPortfoliosPortfolio = new Portfolio.models.AllPortfolio({id: 'all', name: 'All Portfolios', projects: ia.allProjects, subPortfolios: ia.allPortfolios });
 
       ia.allPortfolios.reset( JSON.parse($('#bootstrapPortfolios').html()) );
       ia.allProjects.reset( JSON.parse($('#bootstrapProjects').html()) );

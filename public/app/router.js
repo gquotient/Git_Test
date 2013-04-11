@@ -16,23 +16,26 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
   ia.Controller = Backbone.Marionette.Controller.extend({
     currentState: 'index',
     index: function(){
-      this.selectPortfolio();
+      console.log('index');
+      this.select_portfolio();
+      Backbone.history.navigate('portfolio/all');
     },
 
-    selectPortfolio: function(id){
-      if (id) {
+    select_portfolio: function(id){
+      console.log('selectPortfolio', id);
+      if (id && id !== 'all') {
         // Build custom portfolios view
         var portfolio = ia.allPortfolios.get(id),
             subPortfolios = portfolio.get("subPortfolios");
 
-        this.portfolios( {collection: subPortfolios, model: portfolio });
+        this.portfolio( {collection: subPortfolios, model: portfolio });
       } else {
         // Build primary portfolios view
-        this.portfolios( { collection: new Portfolio.collections.NavigationList(ia.allPortfolios.models), model: ia.allPortfoliosPortfolio } );
+        this.portfolio( { collection: new Portfolio.collections.NavigationList(ia.allPortfolios.models), model: ia.allPortfoliosPortfolio } );
       }
     },
 
-    portfolios: function(options){
+    portfolio: function(options){
       var
         // Build primary portfolio nav
         portfolioNavigationListView = new Portfolio.views.NavigationListView({
@@ -80,42 +83,31 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       // Fire build function since leaflet doens't fit nicely into the Backbone module pattern
       map.build();
 
-      this.currentState = 'portfolios';
+      this.currentState = 'portfolio';
     },
-    selectProject: function(id){
+    select_project: function(id){
       console.log('selectProject', id);
-      this.projects({model: ia.allProjects.get(id)});
+      this.project({model: ia.allProjects.get(id)});
     },
-    projects: function(options){
+    project: function(options){
       var projectDetail = new Layouts.ProjectDetail();
 
       // Populate main layout
       ia.layouts.app.contentNavigation.close();
       ia.layouts.app.mainContent.show(projectDetail);
 
-      this.currentState = 'projects';
+      this.currentState = 'project';
     },
     initialize: function(){
       var that = this;
 
-      this.listenTo(Backbone, 'select:portfolio', function(model){
-        if(model.get('id')){
-          // Update the address bar to reflect the new model.
-          Backbone.history.navigate('portfolios/'+ model.get('id'));
-        } else {
-          Backbone.history.navigate('/');
-        }
+      this.listenTo(Backbone, 'select', function(model){
+        Backbone.history.navigate('/' + model.get('type') + '/' + model.get('id'));
 
-        if (that.currentState !== 'portfolios') {
-          that.selectPortfolio(model.get('id'));
-        }
-      });
-
-      this.listenTo(Backbone, 'select:project', function(model){
-        Backbone.history.navigate('projects/'+ model.get('id'));
-
-        if (that.currentState !== 'projects') {
-          that.selectProject(model.get('id'));
+        // Build the page type if not already built
+        if (that.currentState !== model.get('type')) {
+          console.log('types don\'t match');
+          that['select_' + model.get('type')](model.get('id'));
         }
       });
     }
@@ -125,10 +117,10 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       controller: new ia.Controller(),
       appRoutes: {
         '': 'index',
-        'portfolios': 'index',
-        'portfolios/:id': 'selectPortfolio',
-        'projects': 'projects',
-        'projects/:id': 'selectProject'
+        'portfolio': 'index',
+        'portfolio/:id': 'select_portfolio',
+        'project': 'project',
+        'project/:id': 'select_project'
       }
     });
 
