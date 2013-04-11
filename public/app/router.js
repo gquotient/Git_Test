@@ -101,10 +101,8 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
         collection: new Project.collections.Projects([options.model])
       });
 
+      // Populate project detail view
       projectDetail.map.show(map);
-
-      // Fire build function since leaflet doens't fit nicely into the Backbone module pattern
-      map.build();
 
       this.currentState = 'project';
     },
