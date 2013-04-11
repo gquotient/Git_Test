@@ -49,8 +49,8 @@ define([
       header: '#header',
       navigation: '#navigation',
       pageNavigation: '#nav_page',
-      contentNavigation: '#nav_content',
-      mainContent: '#content'
+      //contentNavigation: '#nav_content',
+      mainContent: '#page'
     },
     onRender: function(){
       // This is almost useless sense render will have fire before the elements are added to the DOM
@@ -84,7 +84,8 @@ define([
       kpis: '#kpis',
       map: '#map_view',
       //alarms: '#alarms',
-      projects: '#projects'
+      projects: '#projects',
+      contentNavigation: '#nav_content',
     },
     initialize: function(){
 

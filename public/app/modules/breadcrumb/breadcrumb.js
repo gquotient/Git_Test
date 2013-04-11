@@ -16,8 +16,8 @@ define([
           if (this.models.indexOf(models[models.length - 1]) >= 0) {
             this.prune(models[1]);
           } else {
-            // If last model doesn't exist, something is awry so just reset
-            this.reset(models);
+            // If last model doesn't exist, assume we are pushing a child
+            this.add(models[models.length - 1]);
           }
         } else {
           // If origin is different, force fresh models
