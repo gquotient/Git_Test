@@ -80,7 +80,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       portfolioDetail.projects.show(projectListView);
       portfolioDetail.map.show(map);
 
-      this.currentState = 'portfolios';
+      this.currentState = 'portfolio';
     },
 
     select_project: function(id){
