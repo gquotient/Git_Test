@@ -45,10 +45,10 @@ primaryBorderStyle = borderBasicDark;
       a:hover {
         text-decoration: underline;
       }
-    }
-    li.active, li:last-child {
-      color: #fff;
-      background: none;
+      &.active, &:last-child {
+        color: #fff;
+        background: none;
+      }
     }
   }
 }
@@ -74,51 +74,54 @@ primaryBorderStyle = borderBasicDark;
       padding: 6px;
       text-shadow: 0 1px 0 #222;
       margin: 0;
-    }
-    li.portfolio {
-      border-top: borderBasicMedium;
-      border-bottom: borderBasicDark;
-      background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-      cursor: pointer;
-      h3 {
-        margin: 0 0 6px;
-        white-space: nowrap;
-        overflow: ellipsis;
-        font-size: 1.25em;
-        font-weight: 100;
-        color: #eee;
+      &.empty {
+        font-style: italic;
       }
-      ul {
-        padding: 0;
-        margin: 0;
-        overflow: hidden;
-        list-style-type: none;
-        li {
-          background: url(../../img/icon_project_9x12.png) left center no-repeat;
-          padding: 0 0 0 12px;
-          margin: 0 12px 0 0;
-          float: left;
-          &.projects {
-            background-image: url(../../img/icon_project_9x12.png);
-          }
-          &.subPortfolios {
-            background-image: url(../../img/icon_portfolio_12x9.png);
-            padding: 0 0 0 15px;
-          }
-          &.DCCapacity {
-            background-image: url(../../img/icon_energy_12x12.png);
-            padding: 0 0 0 15px;
+      &.portfolio {
+        border-top: borderBasicMedium;
+        border-bottom: borderBasicDark;
+        background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+        cursor: pointer;
+        h3 {
+          margin: 0 0 6px;
+          white-space: nowrap;
+          overflow: ellipsis;
+          font-size: 1.25em;
+          font-weight: 100;
+          color: #eee;
+        }
+        ul {
+          padding: 0;
+          margin: 0;
+          overflow: hidden;
+          list-style-type: none;
+          li {
+            background: url(../../img/icon_project_9x12.png) left center no-repeat;
+            padding: 0 0 0 12px;
+            margin: 0 12px 0 0;
+            float: left;
+            &.projects {
+              background-image: url(../../img/icon_project_9x12.png);
+            }
+            &.subPortfolios {
+              background-image: url(../../img/icon_portfolio_12x9.png);
+              padding: 0 0 0 15px;
+            }
+            &.DCCapacity {
+              background-image: url(../../img/icon_energy_12x12.png);
+              padding: 0 0 0 15px;
+            }
           }
         }
-      }
-      &.portfolio:hover {
-        background: linear-gradient(#252627, #282828);
-      }
-      &.portfolio:last-child {
-        box-shadow: 0 0 7px rgba(0, 0, 0, .15);
-      }
-      &.portfolio:first-child {
-        border-top: none;
+        &.portfolio:hover {
+          background: linear-gradient(#252627, #282828);
+        }
+        &.portfolio:last-child {
+          box-shadow: 0 0 7px rgba(0, 0, 0, .15);
+        }
+        &.portfolio:first-child {
+          border-top: none;
+        }
       }
     }
   }
@@ -144,31 +147,11 @@ kpiHeight = 30px;
     overflow: auto;
     border-bottom: primaryBorderStyle;
     position: relative;
-  }
-  .verticalPane.top {
-    height: 60%;
-  }
-  .verticalPane.bottom {
-    height: 40%;
-  }
-  // Baseline leaflet styles
-  #leafletContainer {
-    width: 100%;
-    height: 100%;
-    background: #B5D0D0 url(loadingIcon) center center no-repeat;
-    // Map View Icons
-    .icon {
-      width: 25px;
-      height: 41px;
-      &.ok {
-        background: url('/public/img/icon_marker_ok.png');
-      }
-      &.warning {
-        background: url('/public/img/icon_marker_warn.png');
-      }
-      &.alert {
-        background: url('/public/img/icon_marker_alert.png');
-      }
+    &.top {
+      height: 60%;
+    }
+    &.bottom {
+      height: 40%;
     }
   }
   .portfolioView {
@@ -177,7 +160,6 @@ kpiHeight = 30px;
       height: 100%;
       padding: kpiHeight 0 0 0;
     }
-
     #kpis {
       background: colorBGDarkGrey;
       position: fixed;
@@ -215,7 +197,6 @@ kpiHeight = 30px;
         }
       }
     }
-
     #projects {
       .bg_tableHeader {
         width: 100%;
@@ -274,15 +255,15 @@ kpiHeight = 30px;
                 border-radius: 6px;
                 box-shadow: 0 1px 0 #444;
                 //margin: 0 auto;
-              }
-              .status.OK {
-                background: colorOKBlue;
-              }
-              .status.Warning {
-                background: colorWarningYellow;
-              }
-              .status.Alert {
-                background: colorAlertRed;
+                &.OK {
+                  background: colorOKBlue;
+                }
+                &.Warning {
+                  background: colorWarningYellow;
+                }
+                &.Alert {
+                  background: colorAlertRed;
+                }
               }
             }
             td.name {
