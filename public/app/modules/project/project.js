@@ -249,7 +249,7 @@ define(
       },
 
       onShow: function(){
-        var map = this.map = L.map(this.el).setView([0, 0], 1);
+        var map = this.map = L.map(this.el, {fadeAnimation: false, zoomAnimation: false}).setView([0, 0], 1);
 
         // add an OpenStreetMap tile layer
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
