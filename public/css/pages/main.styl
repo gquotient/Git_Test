@@ -70,18 +70,24 @@ primaryBorderStyle = borderBasicDark;
     padding: 0;
     margin: 0;
     list-style-type: none;
-    li.empty {
+    li {
       padding: 6px;
       text-shadow: 0 1px 0 #222;
+      margin: 0;
     }
     li.portfolio {
       border-top: borderBasicMedium;
       border-bottom: borderBasicDark;
       background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-      text-shadow: 0 1px 0 #000;
-      padding: 6px;
-      margin: 0;
       cursor: pointer;
+      h3 {
+        margin: 0 0 6px;
+        white-space: nowrap;
+        overflow: ellipsis;
+        font-size: 1.25em;
+        font-weight: 100;
+        color: #eee;
+      }
       ul {
         padding: 0;
         margin: 0;
@@ -92,36 +98,28 @@ primaryBorderStyle = borderBasicDark;
           padding: 0 0 0 12px;
           margin: 0 12px 0 0;
           float: left;
-        }
-        li.projects {
-          background-image: url(../../img/icon_project_9x12.png);
-        }
-        li.subPortfolios {
-          background-image: url(../../img/icon_portfolio_12x9.png);
-          padding: 0 0 0 15px;
-        }
-        li.DCCapacity {
-          background-image: url(../../img/icon_energy_12x12.png);
-          padding: 0 0 0 15px;
+          &.projects {
+            background-image: url(../../img/icon_project_9x12.png);
+          }
+          &.subPortfolios {
+            background-image: url(../../img/icon_portfolio_12x9.png);
+            padding: 0 0 0 15px;
+          }
+          &.DCCapacity {
+            background-image: url(../../img/icon_energy_12x12.png);
+            padding: 0 0 0 15px;
+          }
         }
       }
-      h3 {
-        margin: 0 0 6px;
-        white-space: nowrap;
-        overflow: ellipsis;
-        font-size: 1.25em;
-        font-weight: 100;
-        color: #eee;
+      &.portfolio:hover {
+        background: linear-gradient(#252627, #282828);
       }
-    }
-    li.portfolio:hover {
-      background: linear-gradient(#252627, #282828);
-    }
-    li.portfolio:last-child {
-      box-shadow: 0 0 7px rgba(0, 0, 0, .15);
-    }
-    li.portfolio:first-child {
-      border-top: none;
+      &.portfolio:last-child {
+        box-shadow: 0 0 7px rgba(0, 0, 0, .15);
+      }
+      &.portfolio:first-child {
+        border-top: none;
+      }
     }
   }
 }
