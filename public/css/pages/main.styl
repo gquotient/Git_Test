@@ -158,6 +158,20 @@ kpiHeight = 30px;
     width: 100%;
     height: 100%;
     background: #B5D0D0 url(loadingIcon) center center no-repeat;
+    // Map View Icons
+    .icon {
+      width: 25px;
+      height: 41px;
+      &.ok {
+        background: url('/public/img/icon_marker_ok.png');
+      }
+      &.warning {
+        background: url('/public/img/icon_marker_warn.png');
+      }
+      &.alert {
+        background: url('/public/img/icon_marker_alert.png');
+      }
+    }
   }
   .portfolioView {
     #map_view {
@@ -296,22 +310,4 @@ kpiHeight = 30px;
       height: 300px;
     }
   }
-}
-
-// Map View Icons
-.icon {
-  width: 25px;
-  height: 41px;
-}
-
-.ok {
-  background: url('/public/img/icon_marker_ok.png');
-}
-
-.warning {
-  background: url('/public/img/icon_marker_warn.png');
-}
-
-.alert {
-  background: url('/public/img/icon_marker_alert.png');
 }
