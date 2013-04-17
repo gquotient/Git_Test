@@ -51,7 +51,7 @@ define([
       pageNavigation: '#nav_page',
       //contentNavigation: '#nav_content',
       mainContent: '#page'
-    },
+    }/*,
     onRender: function(){
       // This is almost useless sense render will have fire before the elements are added to the DOM
       this.resize();
@@ -62,7 +62,7 @@ define([
       myOffset = $content.offset();
 
       // Window height minus offset is the easy way to _fill the rest_ of the window
-      //$content.height($(window).height() - myOffset.top);
+      $content.height($(window).height() - myOffset.top);
     },
     initialize: function(){
       var that = this;
@@ -71,7 +71,7 @@ define([
       this.listenTo(Backbone, 'window:resize', function(event){
         that.resize();
       });
-    }
+    }*/
   });
 
   Layouts.PortfolioDetail = Backbone.Marionette.Layout.extend({

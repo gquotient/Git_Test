@@ -48,13 +48,14 @@ define(
       // Create a new user instance that is the current session user
       ia.currentUser = new User.Model( JSON.parse($('#currentUserData').html()) );
     });
-
+    /*
     ia.addInitializer(function(){
       // Fire a global resize event
       $(window).on('resize', function(event){
         Backbone.trigger('window:resize');
       });
     });
+    */
 
     // Setup Layouts and Views
     ia.addInitializer(function(){
@@ -66,8 +67,10 @@ define(
       ia.layouts.app = new Layouts.Main();
 
       ia.main.show(ia.layouts.app);
+      /*
       // HACK ALERT fire resize method after elements are attached to the DOM
       ia.layouts.app.resize();
+      */
 
       // Build header
       var headerView = new Header.views.LoggedIn({model: ia.currentUser});
