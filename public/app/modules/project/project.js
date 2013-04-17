@@ -51,10 +51,6 @@ define(
       }
     });
 
-
-
-
-
     Project.views.DataListView = Marionette.CompositeView.extend({
       template: {
         type: 'handlebars',
