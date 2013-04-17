@@ -77,6 +77,10 @@ textarea {
   box-sizing: border-box;     /* Opera/IE 8+ */
 }
 
+html {
+  height: 100%;
+}
+
 body {
   background: colorBGDarkGrey;
   color: colorPrimaryText;
@@ -85,6 +89,7 @@ body {
   font-family: Helvetica, Arial, Sans-Serif;
   font-weight: 100;
   border-top: 4px solid colorDrakerOrange;
+  height: 100%;
 }
 
 /* Basic layout */
@@ -98,6 +103,8 @@ header {
   overflow: hidden;
   padding: 0 6px;
   border-bottom: borderBasicDark;
+  position: relative;
+  z-index: 201;
   h1 {
   padding: 0;
   margin: 0;

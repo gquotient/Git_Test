@@ -62,7 +62,7 @@ define([
       myOffset = $content.offset();
 
       // Window height minus offset is the easy way to _fill the rest_ of the window
-      $content.height($(window).height() - myOffset.top);
+      //$content.height($(window).height() - myOffset.top);
     },
     initialize: function(){
       var that = this;
