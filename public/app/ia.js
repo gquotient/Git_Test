@@ -8,13 +8,12 @@ define(
     'backbone.marionette.handlebars',
 
     'user',
-    'header',
     'portfolio',
     'project',
     'layouts',
     'breadcrumb'
   ],
-  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Header, Portfolio, Project, Layouts, Breadcrumb){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, User, Portfolio, Project, Layouts, Breadcrumb){
 
     /* I'm not sure where else to put this right now, so I'm going to put it here.
      * I'm going to extend Backbone's 'Collection' with a method to return a subset of
@@ -73,7 +72,7 @@ define(
       */
 
       // Build header
-      var headerView = new Header.views.LoggedIn({model: ia.currentUser});
+      var headerView = new Layouts.Header({model: ia.currentUser});
       ia.listenTo(headerView, 'logout', function(){
         window.location = '/logout';
       });

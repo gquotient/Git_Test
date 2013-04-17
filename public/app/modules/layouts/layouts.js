@@ -9,6 +9,7 @@ define([
   'project',
 
   'hbs!layouts/templates/index',
+  'hbs!layouts/templates/header',
   'hbs!layouts/templates/portfolioDetail',
   'hbs!layouts/templates/projectDetail'
 ], function(
@@ -20,6 +21,7 @@ define([
   Portfolio,
   Project,
   indexTemplate,
+  headerTemplate,
   portfolioDetailTemplate,
   projectDetailTemplate
 ){
@@ -47,7 +49,7 @@ define([
     },
     regions: {
       header: '#header',
-      navigation: '#navigation',
+      //navigation: '#navigation',
       pageNavigation: '#nav_page',
       //contentNavigation: '#nav_content',
       mainContent: '#page'
@@ -72,6 +74,17 @@ define([
         that.resize();
       });
     }*/
+  });
+
+  Layouts.Header = Backbone.Marionette.Layout.extend({
+    template: {
+      type: 'handlebars',
+      template: headerTemplate
+    },
+
+    triggers: {
+      "click .logout": "logout"
+    }
   });
 
   Layouts.PortfolioDetail = Backbone.Marionette.Layout.extend({
