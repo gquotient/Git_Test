@@ -89,10 +89,18 @@ define(
           );
         }
 
+        var highlight = function() {
+          that.unmask()
+        }
+
+        var highlightTimeout = function() {
+          that.highlightTimeout = setTimeout(highlight, 200);
+        }
+
         this.listenTo(Backbone, 'mouseover:project', this.highlight);
-        this.listenTo(Backbone, 'mouseout:project', this.restore);
+        this.listenTo(Backbone, 'mouseout:project', highlightTimeout);
         this.listenTo(Backbone, 'mouseover:portfolio', this.highlight);
-        this.listenTo(Backbone, 'mouseout:portfolio', this.restore);
+        this.listenTo(Backbone, 'mouseout:portfolio', highlightTimeout);
       },
 
       markerStyles: {
@@ -111,16 +119,21 @@ define(
       },
 
       highlight: function(projectOrPortfolio){
+        clearTimeout(this.highlightTimeout);
         // This is a little hacky right now.
-        if(projectOrPortfolio.get('projects') === undefined){
-          if(this.model !== projectOrPortfolio){
-            this.marker.setOpacity(0.33);
-            this.marker.setZIndexOffset(0);
+        if (!projectOrPortfolio) {
+          this.unmask();
+        } else if (projectOrPortfolio.get('projects') === undefined) {
+          if (this.model !== projectOrPortfolio) {
+            this.mask();
+          } else {
+            this.unmask();
           }
         } else {
-          if(!projectOrPortfolio.get('projects').contains(this.model)){
-             this.marker.setOpacity(0.33);
-             this.marker.setZIndexOffset(0);
+          if (!projectOrPortfolio.get('projects').contains(this.model)){
+             this.mask();
+          } else {
+            this.unmask();
           }
         }
       },
@@ -129,7 +142,12 @@ define(
         $(this.marker._icon).stop().fadeTo(duration, opacity, callback);
       },
 
-      restore: function(){
+      mask: function(){
+        this.marker.setOpacity(0.33);
+        this.marker.setZIndexOffset(0);
+      },
+
+      unmask: function(){
         this.marker.setOpacity(1.0);
         this.marker.setZIndexOffset(1000);
       },
