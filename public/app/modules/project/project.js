@@ -75,10 +75,6 @@ define(
       }
     });
 
-
-
-
-
     Project.views.MarkerView = Marionette.ItemView.extend({
       initialize: function(options){
 
