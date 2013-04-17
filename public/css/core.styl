@@ -19,13 +19,13 @@
  */
 
 ::-moz-selection {
-    background: #b3d4fc;
-    text-shadow: none;
+  background: #b3d4fc;
+  text-shadow: none;
 }
 
 ::selection {
-    background: #b3d4fc;
-    text-shadow: none;
+  background: #b3d4fc;
+  text-shadow: none;
 }
 
 /*
@@ -33,12 +33,12 @@
  */
 
 hr {
-    display: block;
-    height: 1px;
-    border: 0;
-    border-top: 1px solid #ccc;
-    margin: 1em 0;
-    padding: 0;
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
 }
 
 /*
@@ -46,7 +46,7 @@ hr {
  */
 
 img {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 /*
@@ -54,9 +54,9 @@ img {
  */
 
 fieldset {
-    border: 0;
-    margin: 0;
-    padding: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
 }
 
 /*
@@ -64,7 +64,7 @@ fieldset {
  */
 
 textarea {
-    resize: vertical;
+  resize: vertical;
 }
 
 /* ==========================================================================
@@ -73,8 +73,8 @@ textarea {
 
 * {
   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-  box-sizing: border-box;         /* Opera/IE 8+ */
+  -moz-box-sizing: border-box;  /* Firefox, other Gecko */
+  box-sizing: border-box;     /* Opera/IE 8+ */
 }
 
 body {
@@ -99,53 +99,53 @@ header {
   padding: 0 6px;
   border-bottom: borderBasicDark;
   h1 {
-    padding: 0;
-    margin: 0;
-    float: left;
-    background: url(/public/img/logo_draker_sml_wShadow.png) center center no-repeat;
+  padding: 0;
+  margin: 0;
+  float: left;
+  background: url(/public/img/logo_draker_sml_wShadow.png) center center no-repeat;
+  display: inline-block;
+  width: 183px;
+  height: headerHeight;
+  line-height: headerHeight;
+  overflow: hidden;
+  a {
     display: inline-block;
-    width: 183px;
-    height: headerHeight;
-    line-height: headerHeight;
-    overflow: hidden;
-    a {
-      display: inline-block;
-      width: 100%
-      height: 100%;
-      text-indent: -200%;
-    }
+    width: 100%
+    height: 100%;
+    text-indent: -200%;
+  }
   }
   nav.global {
-    float: right;
+  float: right;
+  padding: 0;
+  margin: 0;
+  font-weight: 100;
+  text-shadow: 0 0 1px #000;
+  font-size: .85em;
+  ul {
+    list-style-type: none;
     padding: 0;
     margin: 0;
-    font-weight: 100;
-    text-shadow: 0 0 1px #000;
-    font-size: .85em;
-    ul {
-      list-style-type: none;
+    height: headerHeight
+    line-height: headerHeight;
+    li {
+    padding: 0 9px;
+    float: left;
+    border-left: borderBasicDark;
+    a {
       padding: 0;
       margin: 0;
-      height: headerHeight
-      line-height: headerHeight;
-      li {
-        padding: 0 9px;
-        float: left;
-        border-left: borderBasicDark;
-        a {
-          padding: 0;
-          margin: 0;
-        }
-        &:last-child {
-          border-right: none;
-        }
-        &.username {
-          color: #fff;
-          border-right: borderBasicMedium;
-          border-left: none;
-        }
-      }
     }
+    &:last-child {
+      border-right: none;
+    }
+    &.username {
+      color: #fff;
+      border-right: borderBasicMedium;
+      border-left: none;
+    }
+    }
+  }
   }
 }
 
@@ -181,29 +181,29 @@ button.button, a.button {
   text-shadow: 0 1px 0 #eee;
   box-shadow: inset 0 1px 0 #eee;
   &.primary {
-    background-color: colorDrakerOrange;
-    background-image: linear-gradient(#f57a2a, #f0501c);
-    border: 1px solid colorDrakerOrange;
-    color: #fff;
-    text-shadow: 0 1px 0 #d84515;
-    box-shadow: inset 0 1px 0 #f8ad7c;
+  background-color: colorDrakerOrange;
+  background-image: linear-gradient(#f57a2a, #f0501c);
+  border: 1px solid colorDrakerOrange;
+  color: #fff;
+  text-shadow: 0 1px 0 #d84515;
+  box-shadow: inset 0 1px 0 #f8ad7c;
   }
   &.disabled,
   &.disabled:hover {
-    border: 1px solid #ccc;
-    background-color: #eee;
-    background-position: 0 -600px;
-    color: #999;
-    text-shadow: 0 1px 0 #fff;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  background-position: 0 -600px;
+  color: #999;
+  text-shadow: 0 1px 0 #fff;
   }
   &.sml {
-    line-height: 16px;
-    min-height: 16px; /* FireFox doesn't like line-height in its buttons */
-    padding: 0 .75em;
-    margin: 0 3px 0 0;
-    font-size: .75em;
-    vertical-align: text-bottom;
-    border-radius: 2px;
+  line-height: 16px;
+  min-height: 16px; /* FireFox doesn't like line-height in its buttons */
+  padding: 0 .75em;
+  margin: 0 3px 0 0;
+  font-size: .75em;
+  vertical-align: text-bottom;
+  border-radius: 2px;
   }
 }
 
@@ -219,77 +219,77 @@ table.basic {
   padding: 0;
   border: borderBasicDark;
   thead {
-    height: 24px;
-    background: colorBGDarkGrey;
-    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
-    background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-    border-top: borderBasicMedium;
-    border-bottom: borderBasicDark;
-    tr {
-      th {
-        line-height: 24px;
-        padding: 0 6px;
-        font-weight: bold;
-        text-align: left;
-        text-shadow: 0 1px 0 #222;
-        &:first-child {
-          //border-left: none;
-        }
-        &:last-child {
-          //border-right: none;
-        }
-      }
+  height: 24px;
+  background: colorBGDarkGrey;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
+  background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+  border-top: borderBasicMedium;
+  border-bottom: borderBasicDark;
+  tr {
+    th {
+    line-height: 24px;
+    padding: 0 6px;
+    font-weight: bold;
+    text-align: left;
+    text-shadow: 0 1px 0 #222;
+    &:first-child {
+      //border-left: none;
+    }
+    &:last-child {
+      //border-right: none;
+    }
     }
   }
+  }
   tbody {
-    color: #aaa;
-    tr {
-      border-bottom: 1px solid #202020;
-      &:nth-child(odd) {
-        background-color: colorBGMediumGrey;
-      }
-      &:hover {
-        background-color: colorBGLightGrey;
-      }
-      &:last-child {
-        border-bottom: none;
-      }
-      td {
-        padding: 3px 6px;
-        &.label {
-          font-weight: bold;
-        }
-      }
+  color: #aaa;
+  tr {
+    border-bottom: 1px solid #202020;
+    &:nth-child(odd) {
+    background-color: colorBGMediumGrey;
     }
+    &:hover {
+    background-color: colorBGLightGrey;
+    }
+    &:last-child {
+    border-bottom: none;
+    }
+    td {
+    padding: 3px 6px;
+    &.label {
+      font-weight: bold;
+    }
+    }
+  }
   }
   input[type="checkbox"],
   input[type="radio"] {
-    padding: 0;
-    margin: 0;
-    vertical-align: middle;
+  padding: 0;
+  margin: 0;
+  vertical-align: middle;
   }
 }
 
 table {
   .statusIndicator {
+  background: colorOKBlue;
+  width: 12px;
+  height: 12px;
+  display: block;
+  text-indent: -100%;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 1px 0 #444;
+  //margin: 0 auto;
+  &.OK {
     background: colorOKBlue;
-    width: 12px;
-    height: 12px;
-    display: block;
-    text-indent: -100%;
-    overflow: hidden;
-    border-radius: 6px;
-    box-shadow: 0 1px 0 #444;
-    //margin: 0 auto;
-    &.OK {
-      background: colorOKBlue;
-    }
-    &.Warning {
-      background: colorWarningYellow;
-    }
-    &.Alert {
-      background: colorAlertRed;
-    }
+  }
+  &.Warning {
+    background: colorWarningYellow;
+  }
+  &.Alert {
+    background: colorAlertRed;
+  }
   }
 }
 
@@ -327,12 +327,12 @@ leftColumnWidth = 240px;
 .container {
   overflow: hidden;
   .left {
-    width: 50%;
-    float: left;
+  width: 50%;
+  float: left;
   }
   .right {
-    width: 50%;
-    float: right;
+  width: 50%;
+  float: right;
   }
 }
 
@@ -344,17 +344,17 @@ leftColumnWidth = 240px;
   background: #B5D0D0 url(loadingIcon) center center no-repeat;
   // Map View Icons
   .leaflet-marker-icon {
-    background: url('/public/img/sprite_markers.png') 0 0 no-repeat;
-    width: 15px;
-    height: 32px;
-    &.ok {
-      background-position: 0 0;
-    }
-    &.warning {
-      background-position: 0 -32px;
-    }
-    &.alert {
-      background-position: 0 -64px;
-    }
+  background: url('/public/img/sprite_markers.png') 0 0 no-repeat;
+  width: 15px;
+  height: 32px;
+  &.ok {
+    background-position: 0 0;
+  }
+  &.warning {
+    background-position: 0 -32px;
+  }
+  &.alert {
+    background-position: 0 -64px;
+  }
   }
 }
