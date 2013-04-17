@@ -70,7 +70,7 @@ define(
         // This shouldn't really live here?
         this.listenTo(Backbone, 'select:portfolio', function(model){
           // Reset collection.
-          that.collection.reset(model.get('projects').models);
+          that.collection.set(model.get('projects').models);
         });
       }
     });
@@ -91,7 +91,8 @@ define(
             [latLong[0], latLong[1]],
             {
               icon: that.markerStyles[that.model.get('status')],
-              id: that.model.id
+              id: that.model.id,
+              opacity: 0
             }
           );
         }
@@ -103,18 +104,17 @@ define(
       },
 
       markerStyles: {
-        OK: L.icon({
-          iconUrl: '/public/img/icon_marker_ok.png',
-          // They claim L.icon inherits from icon.Default buuuuut it lost some properties...
-          shadowUrl: '/public/img/icon_marker_shadow.png'
+        OK: L.divIcon({
+          className: 'icon ok',
+          iconSize: [25,41] // Leaflet is overriding the CSS width and heigh with element styles, so I added these iconSizes.
         }),
-        Warning: L.icon({
-          iconUrl: '/public/img/icon_marker_warn.png',
-          shadowUrl: '/public/img/icon_marker_shadow.png'
+        Warning: L.divIcon({
+          className: 'icon warning',
+          iconSize: [25,41]
         }),
-        Alert: L.icon({
-          iconUrl: '/public/img/icon_marker_alert.png',
-          shadowUrl: '/public/img/icon_marker_shadow.png'
+        Alert: L.divIcon({
+          className: 'icon alert',
+          iconSize: [25,41]
         })
       },
 
@@ -133,6 +133,10 @@ define(
         }
       },
 
+      fadeTo: function(duration, opacity, callback){
+        $(this.marker._icon).stop().fadeTo(duration, opacity, callback);
+      },
+
       restore: function(){
         this.marker.setOpacity(1.0);
         this.marker.setZIndexOffset(1000);
@@ -144,6 +148,8 @@ define(
 
         //append marker to the map
         this.marker.addTo(this.options.markers);
+
+        this.fadeTo(300, 1);
 
         //can't use events hash, because the events are bound
         //to the marker, not the element. It would be possible
@@ -159,8 +165,9 @@ define(
       },
 
       remove: function(){
+        var that = this;
         this.stopListening();
-        this.options.markers.removeLayer(this.marker);
+        this.fadeTo(250, 0, function(){ that.options.markers.removeLayer(that.marker); } );
       }
     });
 
@@ -249,7 +256,7 @@ define(
       },
 
       onShow: function(){
-        var map = this.map = L.map(this.el, {fadeAnimation: false, zoomAnimation: false}).setView([0, 0], 1);
+        var map = this.map = L.map(this.el).setView([0, 0], 1);
 
         // add an OpenStreetMap tile layer
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -263,14 +270,6 @@ define(
         this._renderChildren();
 
         this.fitToBounds();
-      },
-      initialize: function(){
-        var that = this;
-
-        // Since we are overriding the 'render' method to get the map to work,
-        // we need to explicitly call _renderChildren on reset.
-        this.listenTo(this.collection, 'reset', this._renderChildren);
-
       }
     });
 
