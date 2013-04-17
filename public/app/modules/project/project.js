@@ -105,16 +105,16 @@ define(
 
       markerStyles: {
         OK: L.divIcon({
-          className: 'icon ok',
-          iconSize: [25,41] // Leaflet is overriding the CSS width and heigh with element styles, so I added these iconSizes.
+          className: 'ok',
+          iconSize: [15,32] // Leaflet is overriding the CSS width and heigh with element styles, so I added these iconSizes.
         }),
         Warning: L.divIcon({
-          className: 'icon warning',
-          iconSize: [25,41]
+          className: 'warning',
+          iconSize: [15,32]
         }),
         Alert: L.divIcon({
-          className: 'icon alert',
-          iconSize: [25,41]
+          className: 'alert',
+          iconSize: [15,32]
         })
       },
 

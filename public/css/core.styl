@@ -206,7 +206,7 @@ button.button.sml, a.button.sml {
   margin: 0 3px 0 0;
   font-size: .75em;
   vertical-align: text-bottom;
-  border-radius: 9px;
+  border-radius: 2px;
 }
 
 a, a:active, a:hover, a:visited {
@@ -307,16 +307,17 @@ leftColumnWidth = 240px;
   background: #B5D0D0 url(loadingIcon) center center no-repeat;
   // Map View Icons
   .leaflet-marker-icon {
-    width: 25px;
-    height: 41px;
+    background: url('/public/img/sprite_markers.png') 0 0 no-repeat;
+    width: 15px;
+    height: 32px;
     &.ok {
-      background: url('/public/img/icon_marker_ok.png');
+      background-position: 0 0;
     }
     &.warning {
-      background: url('/public/img/icon_marker_warn.png');
+      background-position: 0 -32px;
     }
     &.alert {
-      background: url('/public/img/icon_marker_alert.png');
+      background-position: 0 -64px;
     }
   }
 }
