@@ -246,6 +246,7 @@ table.basic {
   tbody {
     color: #aaa;
     tr {
+      border-bottom: 1px solid #202020;
       &:nth-child(odd) {
         background-color: colorBGMediumGrey;
       }
@@ -268,6 +269,29 @@ table.basic {
     padding: 0;
     margin: 0;
     vertical-align: middle;
+  }
+}
+
+table {
+  .statusIndicator {
+    background: colorOKBlue;
+    width: 12px;
+    height: 12px;
+    display: block;
+    text-indent: -100%;
+    overflow: hidden;
+    border-radius: 6px;
+    box-shadow: 0 1px 0 #444;
+    //margin: 0 auto;
+    &.OK {
+      background: colorOKBlue;
+    }
+    &.Warning {
+      background: colorWarningYellow;
+    }
+    &.Alert {
+      background: colorAlertRed;
+    }
   }
 }
 
