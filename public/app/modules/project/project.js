@@ -154,6 +154,10 @@ define(
         this.marker.on('mouseout', function(){
           Backbone.trigger('mouseout:project', that.model);
         });
+
+        this.marker.on('click', function(){
+          Backbone.trigger('select:project', that.model);
+        });
       },
 
       remove: function(){
