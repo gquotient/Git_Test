@@ -207,15 +207,13 @@ kpiHeight = 30px;
         box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
       }
       table {
-        background: colorBGDarkGrey;
+        border: none;
+        width: 100%;
+        height: 100%;
+        margin: 0;
         thead {
-          height: 0;
-          padding: 0;
-          margin: 0;
-          color: #eee;
           tr {
             th {
-              text-shadow: 0 1px 0 #000;
               div {
                 display: block;
                 height: projectTableHeaderHeight;
@@ -232,8 +230,7 @@ kpiHeight = 30px;
           }
         }
         tbody {
-          color: #aaa;
-          border-top: projectTableHeaderHeight solid #333;
+          border-top: projectTableHeaderHeight solid #222;
           tr {
             border-bottom: 1px solid #202020;
             cursor: pointer;
@@ -265,18 +262,7 @@ kpiHeight = 30px;
               text-align: left;
             }
           }
-          tr:nth-child(odd) {
-            background-color: colorBGMediumGrey;
-          }
-          tr:hover {
-            background-color: colorBGLightGrey;
-          }
         }
-        border: none;
-        border-bottom: 1px solid #ccc;
-        width: 100%;
-        margin: 0;
-        height: 100%;
       }
     }
   }
