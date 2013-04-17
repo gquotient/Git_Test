@@ -84,7 +84,7 @@ define([
     },
     regions: {
       kpis: '#kpis',
-      map: '#map_view',
+      map: '#map',
       projects: '#projects',
       contentNavigation: '#nav_content',
     },
@@ -102,7 +102,9 @@ define([
       class: 'projectView'
     },
     regions: {
-      map: '#map_view'
+      map: '#map',
+      kpis: '#kpis',
+      alarms: '#alarms'
     },
     initialize: function(){
 
