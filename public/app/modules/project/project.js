@@ -114,12 +114,12 @@ define(
         // This is a little hacky right now.
         if(projectOrPortfolio.get('projects') === undefined){
           if(this.model !== projectOrPortfolio){
-            this.marker.setOpacity(0.5);
+            this.marker.setOpacity(0.33);
             this.marker.setZIndexOffset(0);
           }
         } else {
           if(!projectOrPortfolio.get('projects').contains(this.model)){
-             this.marker.setOpacity(0.5);
+             this.marker.setOpacity(0.33);
              this.marker.setZIndexOffset(0);
           }
         }
