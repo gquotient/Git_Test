@@ -68,7 +68,7 @@ define([
       var that = this;
 
       // Listen for global window resize trigger and fire resize method
-      this.listenTo(Backbone, 'windowResize', function(event){
+      this.listenTo(Backbone, 'window:resize', function(event){
         that.resize();
       });
     }

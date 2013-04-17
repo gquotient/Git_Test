@@ -52,7 +52,7 @@ define(
     ia.addInitializer(function(){
       // Fire a global resize event
       $(window).on('resize', function(event){
-        Backbone.trigger('windowResize');
+        Backbone.trigger('window:resize');
       });
     });
 
