@@ -142,19 +142,15 @@ kpiHeight = 30px;
     max-height: 100%;
     overflow: hidden;
   }
-  .verticalPane {
-    height: 50%;
-    overflow: auto;
-    border-bottom: primaryBorderStyle;
-    position: relative;
-    &.top {
-      height: 60%;
-    }
-    &.bottom {
-      height: 40%;
-    }
-  }
   .portfolioView {
+    .verticalPane {
+      &.top {
+        height: 60%;
+      }
+      &.bottom {
+        height: 40%;
+      }
+    }
     #map_view {
       width: 100%;
       height: 100%;
@@ -286,8 +282,9 @@ kpiHeight = 30px;
     }
   }
   .projectView {
+
     #map_view {
-      height: 300px;
+      height: 400px;
     }
   }
 }

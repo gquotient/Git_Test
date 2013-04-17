@@ -299,6 +299,25 @@ leftColumnWidth = 240px;
   float: left;
 }
 
+.verticalPane {
+  height: 50%;
+  overflow: auto;
+  border-bottom: primaryBorderStyle;
+  position: relative;
+}
+
+.container {
+  overflow: hidden;
+  .left {
+    width: 50%;
+    float: left;
+  }
+  .right {
+    width: 50%;
+    float: right;
+  }
+}
+
 /* Baseline leaflet styles */
 
 #leafletContainer {
