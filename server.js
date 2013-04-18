@@ -82,7 +82,7 @@ app.configure(function(){
   app.use(
     stylus
       .middleware({
-        src: __dirname + '/public',
+        src: __dirname,
         compile: compile // Use custom compile function
       })
   );
