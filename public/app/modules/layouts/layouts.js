@@ -81,6 +81,8 @@ define([
     }
   });
 
+  // PORTFOLIO DETAIL LAYOUT
+
   Layouts.PortfolioDetail = Backbone.Marionette.Layout.extend({
     template: {
       type: 'handlebars',
@@ -99,8 +101,15 @@ define([
       this.listenTo(Backbone, 'select:project', function(model){
         Backbone.trigger('layout:projectDetail', model);
       });
+
+      this.listenTo(Backbone, 'select', function(model){
+        // Set address bar
+        Backbone.history.navigate('/' + model.get('type') + '/' + model.get('id'));
+      });
     }
   });
+
+  // PROJECT DETAIL LAYOUT
 
   Layouts.ProjectDetail = Backbone.Marionette.Layout.extend({
     template: {
@@ -119,9 +128,15 @@ define([
       this.listenTo(Backbone, 'select:portfolio', function(model){
         Backbone.trigger('layout:portfolioDetail', model, model.get("subPortfolios"));
       });
+
+      this.listenTo(Backbone, 'select', function(model){
+        // Set address bar
+        Backbone.history.navigate('/' + model.get('type') + '/' + model.get('id'));
+      });
     }
   });
 
+  // PORTFOLIO DASHBOARD LAYOUT
 
   Layouts.PortfolioDashboard = Backbone.Marionette.Layout.extend({
     template: {
@@ -134,8 +149,16 @@ define([
     regions: {
       dashboard: '#dashboard',
       contentNavigation: '#nav_content'
+    },
+    initialize: function(){
+      this.listenTo(Backbone, 'select', function(model){
+        // Set address bar
+        Backbone.history.navigate('/' + model.get('type') + '/dashboard/' + model.get('id'));
+      });
     }
   });
+
+  // LAYOUT CONTROLLER
 
   Layouts.Controller = Backbone.Marionette.Controller.extend({
     portfolioDetail: function(model, collection){
@@ -208,6 +231,10 @@ define([
     },
 
     portfolioDashboard: function(model, collection){
+
+      var breadcrumbs = [this.app.allPortfoliosPortfolio];
+      Backbone.trigger('set:breadcrumbs', breadcrumbs);
+
       var
         dashboardLayout = new Layouts.PortfolioDashboard(),
         projectList = model.get('projects').clone(),
@@ -216,7 +243,14 @@ define([
           collection: collection,
           model: model
         }),
-        dashboard = new Project.views.Dashboard({ collection: projectList });
+        dashboard = new Project.views.Dashboard({ collection: projectList })
+      ;
+
+      projectList.listenTo(Backbone, 'select:portfolio', function(model){
+        // Update the collection.
+        console.log('called', model);
+        projectList.set(model.get('projects').models);
+      });
 
       this.app.layouts.app.mainContent.show(dashboardLayout);
       dashboardLayout.dashboard.show(dashboard);

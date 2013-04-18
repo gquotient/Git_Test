@@ -72,25 +72,10 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       this.currentState = 'project';
     },
 
-    // update_breadcrumbs: function(models){
-    //   // This is simple-minded but I have a feeling this abstraction will end up being useful
-    //   Backbone.trigger('set:breadcrumbs', models);
-    // },
-
     initialize: function(){
       var that = this;
 
       this.layoutController = new Layouts.Controller(ia);
-
-      this.listenTo(Backbone, 'select', function(model){
-        // Set address bar
-        Backbone.history.navigate('/' + model.get('type') + '/' + model.get('id'));
-
-        // Build the page type if not already built
-        // if (that.currentState !== model.get('type')) {
-        //   that['select_' + model.get('type')](model.get('id'));
-        // }
-      });
     }
   });
 
