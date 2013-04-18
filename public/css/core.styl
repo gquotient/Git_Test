@@ -107,7 +107,7 @@ header {
   padding: 0;
   margin: 0;
   float: left;
-  background: url(/public/img/logo_draker_sml_wShadow.png) center center no-repeat;
+  background: url(../img/logo_draker_sml_wShadow.png) center center no-repeat;
   display: inline-block;
   width: 183px;
   height: headerHeight;
@@ -349,17 +349,18 @@ leftColumnWidth = 240px;
   background: #B5D0D0 url(loadingIcon) center center no-repeat;
   // Map View Icons
   .leaflet-marker-icon {
-  background: url('/public/img/sprite_markers.png') 0 0 no-repeat;
-  width: 15px;
-  height: 32px;
-  &.ok {
     background-position: 0 0;
-  }
-  &.warning {
-    background-position: 0 -32px;
-  }
-  &.alert {
-    background-position: 0 -64px;
-  }
+    background-repeat: no-repeat;
+    width: 15px;
+    height: 32px;
+    &.ok {
+      background-image: url(../img/marker_ok.png);
+    }
+    &.warning {
+      background-image: url(../img/marker_warning.png);
+    }
+    &.alert {
+      background-image: url(../img/marker_alert.png);
+    }
   }
 }

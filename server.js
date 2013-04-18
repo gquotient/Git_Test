@@ -71,9 +71,9 @@ app.configure(function(){
   var compile = function(str, path) {
     return stylus(str)
       .set('filename', path)
-      .set('compress', true)
-      .define('url', stylus.url())
-      .use(nib());
+      .set('compress', true) // minify
+      .define('url', stylus.url()) // Turn images to data URIs
+      .use(nib()); // Use nib for cross-browser CSS3 help
   };
 
   app.set('port', process.env.PORT || 3005);
@@ -82,8 +82,8 @@ app.configure(function(){
   app.use(
     stylus
       .middleware({
-        src: __dirname,
-        compile: compile
+        src: __dirname + '/public',
+        compile: compile // Use custom compile function
       })
   );
   app.use(express.logger('dev'));
