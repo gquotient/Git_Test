@@ -10,7 +10,9 @@ define([
 
   'hbs!layouts/templates/index',
   'hbs!layouts/templates/portfolioDetail',
-  'hbs!layouts/templates/projectDetail'
+  'hbs!layouts/templates/projectDetail',
+
+  'hbs!layouts/templates/portfolioDashboard'
 ], function(
   $,
   _,
@@ -21,7 +23,8 @@ define([
   Project,
   indexTemplate,
   portfolioDetailTemplate,
-  projectDetailTemplate
+  projectDetailTemplate,
+  portfolioDashboardTemplate
 ){
   var Layouts = {};
 
@@ -37,6 +40,10 @@ define([
 
   Handlebars.registerHelper('toMW', function(value) {
     return roundNumber((+value / 1000000), 2);
+  });
+
+  Handlebars.registerHelper('percent', function(value, max){
+    return value/max * 100;
   });
 
   // Layouts
@@ -86,7 +93,7 @@ define([
       kpis: '#kpis',
       map: '#map',
       projects: '#projects',
-      contentNavigation: '#nav_content',
+      contentNavigation: '#nav_content'
     },
     initialize: function(){
 
@@ -110,6 +117,20 @@ define([
 
     }
   });
+
+  Layouts.PortfolioDashboard = Backbone.Marionette.Layout.extend({
+    template: {
+      type: 'handlebars',
+      template: portfolioDashboardTemplate
+    },
+    attributes: {
+      class: 'portfolioDashboard'
+    },
+    regions: {
+      dashboard: '#dashboard',
+      contentNavigation: '#nav_content'
+    }
+  })
 
   return Layouts;
 });

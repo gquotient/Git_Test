@@ -1,0 +1,18 @@
+<div class="projectStatus">
+  <div class="name">{{ name }}</div>
+  <div class="resource">
+      <div class="irradiance">
+        <div class="indicator" style="width: {{ percent kpis.irradiance_now 1000 }} %"></div>
+      </div>
+    <div class="power">
+      <div class="indicator" style="width:{{ percent kpis.power_now kpis.ac_capacity }}%"></div>
+    </div>
+  </div>
+  
+  <div class="performanceRatio">
+    <span class="value">{{ percent kpis.power_now kpis.ac_capacity }}</span>
+    <span class="unit">%</span>
+  </div>
+
+  <div class="alarm {{status}}"><div>
+</div>

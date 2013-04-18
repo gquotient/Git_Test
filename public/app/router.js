@@ -17,13 +17,11 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     currentState: 'index',
 
     index: function(){
-      console.log('index');
       this.select_portfolio();
       Backbone.history.navigate('portfolio/all');
     },
 
     select_portfolio: function(id){
-      console.log('selectPortfolio', id);
       var portfolio, subPortfolios;
 
       if (id && id !== 'all') {
@@ -37,6 +35,39 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       }
 
       this.portfolio( { collection: subPortfolios, model: portfolio } );
+    },
+
+    select_portfolio_dashboard: function(id){
+      var portfolio, subPortfolios;
+
+      if (id && id !== 'all') {
+        // Build custom portfolios view
+        portfolio = ia.allPortfolios.get(id);
+        subPortfolios = portfolio.get("subPortfolios");
+      } else {
+        // Build primary portfolios view
+        portfolio = ia.allPortfoliosPortfolio;
+        subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
+      }
+
+      this.portfolio_dashboard( { collection: subPortfolios, model: portfolio } );
+    },
+
+    portfolio_dashboard: function(options){
+
+      var
+        dashboardLayout = new Layouts.PortfolioDashboard(),
+        projectList = options.model.get('projects').clone(),
+        // Build primary portfolio nav
+        portfolioNavigationListView = new Portfolio.views.NavigationListView({
+          collection: options.collection,
+          model: options.model
+        }),
+        dashboard = new Project.views.Dashboard({ collection: projectList });
+
+      ia.layouts.app.mainContent.show(dashboardLayout);
+      dashboardLayout.dashboard.show(dashboard);
+      dashboardLayout.contentNavigation.show(portfolioNavigationListView);
     },
 
     portfolio: function(options){
@@ -84,7 +115,6 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     },
 
     select_project: function(id){
-      console.log('selectProject', id);
       this.project({model: ia.allProjects.get(id)});
     },
 
@@ -121,7 +151,6 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
 
         // Build the page type if not already built
         if (that.currentState !== model.get('type')) {
-          console.log('types don\'t match');
           that['select_' + model.get('type')](model.get('id'));
         }
       });
@@ -134,6 +163,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       '': 'index',
       'portfolio': 'index',
       'portfolio/:id': 'select_portfolio',
+      'portfolio/dashboard/:id': 'select_portfolio_dashboard',
       'project': 'project',
       'project/:id': 'select_project'
     }

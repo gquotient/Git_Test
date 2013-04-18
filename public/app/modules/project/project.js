@@ -7,9 +7,11 @@ define(
     'backbone.marionette.handlebars',
 
     'hbs!app/modules/project/templates/dataList',
-    'hbs!app/modules/project/templates/dataListItem'
+    'hbs!app/modules/project/templates/dataListItem',
+
+    'hbs!app/modules/project/templates/dashboardItem'
   ],
-  function($, _, Backbone, Marionette, MarionetteHandlebars, DataListTemplate, DataListItemTemplate){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, DataListTemplate, DataListItemTemplate, DashboardItemTemplate){
 
     var Project = { models: {}, views: {}, layouts: {}, collections: {} };
 
@@ -69,6 +71,18 @@ define(
           that.collection.set(model.get('projects').models);
         });
       }
+    });
+
+
+    Project.views.DashboardItemView = Marionette.ItemView.extend({
+      template: {
+        type: 'handlebars',
+        template: DashboardItemTemplate
+      }
+    });
+
+    Project.views.Dashboard = Marionette.CollectionView.extend({
+      itemView: Project.views.DashboardItemView
     });
 
     Project.views.MarkerView = Marionette.ItemView.extend({
