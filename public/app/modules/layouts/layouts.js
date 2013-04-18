@@ -86,7 +86,7 @@ define([
       kpis: '#kpis',
       map: '#map',
       projects: '#projects',
-      contentNavigation: '#nav_content',
+      contentNavigation: '#nav_content'
     },
     initialize: function(){
 
@@ -108,6 +108,72 @@ define([
     },
     initialize: function(){
 
+    }
+  });
+
+  Layouts.Controller = Backbone.Marionette.Controller.extend({
+    portfolioDetail: function(model, collection){
+      var breadcrumbs = [this.app.allPortfoliosPortfolio];
+
+      if (model !== this.app.allPortfoliosPortfolio) {
+        breadcrumbs.push(model);
+      }
+
+      Backbone.trigger('set:breadcrumbs', breadcrumbs);
+
+      // Populate main layout
+      var portfolioDetail = new Layouts.PortfolioDetail();
+
+      this.app.layouts.app.mainContent.show(portfolioDetail);
+
+      // Build detail view
+      var
+        // Build primary portfolio nav
+        portfolioNavigationListView = new Portfolio.views.NavigationListView({
+          collection: collection,
+          model: model
+        }),
+        // Build KPIs
+        kpisView = new Portfolio.views.detailKpis({ model: model }),
+
+        projectList = model.get('projects').clone();
+
+        // Extend map view for marker filtering
+        map = new Project.views.map({
+          collection: projectList
+        }),
+
+        projectListView = new Project.views.DataListView( { collection: projectList } )
+      ;
+
+      // Poulate detail layout
+      portfolioDetail.contentNavigation.show(portfolioNavigationListView);
+      portfolioDetail.kpis.show(kpisView);
+      portfolioDetail.projects.show(projectListView);
+      portfolioDetail.map.show(map);
+    },
+    projectDetail: function(model){
+      // Reset Breadcrumbs
+      var breadcrumbs = [this.app.allPortfoliosPortfolio, model];
+
+      Backbone.trigger('set:breadcrumbs', breadcrumbs);
+
+      // Populate main layout
+      var projectDetail = new Layouts.ProjectDetail({model: model});
+      this.app.layouts.app.mainContent.show(projectDetail);
+
+      var map = new Project.views.map({
+        collection: new Project.collections.Projects([model])
+      });
+
+      // Populate project detail view
+      projectDetail.map.show(map);
+
+    },
+    initialize: function(app){
+      this.app = app;
+      this.listenTo(Backbone, 'layout:portfolioDetail', this.portfolioDetail);
+      this.listenTo(Backbone, 'layout:projectDetail', this.projectDetail);
     }
   });
 

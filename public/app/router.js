@@ -17,13 +17,11 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     currentState: 'index',
 
     index: function(){
-      console.log('index');
       this.select_portfolio();
       Backbone.history.navigate('portfolio/all');
     },
 
     select_portfolio: function(id){
-      console.log('selectPortfolio', id);
       var portfolio, subPortfolios;
 
       if (id && id !== 'all') {
@@ -40,80 +38,28 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     },
 
     portfolio: function(options){
-      // Reset Breadcrumbs
-      var breadcrumbs = [ia.allPortfoliosPortfolio];
-
-      if (options.model !== ia.allPortfoliosPortfolio) {
-        breadcrumbs.push(options.model);
-      }
-
-      this.update_breadcrumbs(breadcrumbs);
-
-      // Populate main layout
-      var portfolioDetail = new Layouts.PortfolioDetail();
-
-      ia.layouts.app.mainContent.show(portfolioDetail);
-
-      // Build detail view
-      var
-        // Build primary portfolio nav
-        portfolioNavigationListView = new Portfolio.views.NavigationListView({
-          collection: options.collection,
-          model: options.model
-        }),
-        // Build KPIs
-        kpisView = new Portfolio.views.detailKpis({ model: options.model }),
-
-        projectList = options.model.get('projects').clone();
-
-        // Extend map view for marker filtering
-        map = new Project.views.map({
-          collection: projectList
-        }),
-
-        projectListView = new Project.views.DataListView( { collection: projectList } )
-      ;
-
-      // Poulate detail layout
-      portfolioDetail.contentNavigation.show(portfolioNavigationListView);
-      portfolioDetail.kpis.show(kpisView);
-      portfolioDetail.projects.show(projectListView);
-      portfolioDetail.map.show(map);
-
+      Backbone.trigger('layout:portfolioDetail', options.model, options.collection);
       this.currentState = 'portfolio';
     },
 
     select_project: function(id){
-      console.log('selectProject', id);
       this.project({model: ia.allProjects.get(id)});
     },
 
     project: function(options){
-      // Reset Breadcrumbs
-      var breadcrumbs = [ia.allPortfoliosPortfolio, options.model];
-      this.update_breadcrumbs(breadcrumbs);
-
-      // Populate main layout
-      var projectDetail = new Layouts.ProjectDetail({model: options.model});
-      ia.layouts.app.mainContent.show(projectDetail);
-
-      var map = new Project.views.map({
-        collection: new Project.collections.Projects([options.model])
-      });
-
-      // Populate project detail view
-      projectDetail.map.show(map);
-
+      Backbone.trigger('layout:projectDetail', options.model);
       this.currentState = 'project';
     },
 
-    update_breadcrumbs: function(models){
-      // This is simple-minded but I have a feeling this abstraction will end up being useful
-      Backbone.trigger('set:breadcrumbs', models);
-    },
+    // update_breadcrumbs: function(models){
+    //   // This is simple-minded but I have a feeling this abstraction will end up being useful
+    //   Backbone.trigger('set:breadcrumbs', models);
+    // },
 
     initialize: function(){
       var that = this;
+
+      this.layoutController = new Layouts.Controller(ia);
 
       this.listenTo(Backbone, 'select', function(model){
         // Set address bar
