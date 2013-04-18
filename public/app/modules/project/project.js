@@ -59,18 +59,7 @@ define(
         template: DataListTemplate
       },
       itemViewContainer: 'tbody',
-      itemView: Project.views.DataListItem,
-      initialize: function(options){
-        var that = this;
-
-        this.controller = options.controller;
-
-        // This shouldn't really live here?
-        this.listenTo(Backbone, 'select:portfolio', function(model){
-          // Reset collection.
-          that.collection.set(model.get('projects').models);
-        });
-      }
+      itemView: Project.views.DataListItem
     });
 
 
@@ -167,6 +156,10 @@ define(
 
         this.marker.on('mouseout', function(){
           Backbone.trigger('mouseout:project', that.model);
+        });
+
+        this.marker.on('click', function(){
+          Backbone.trigger('select:project', that.model);
         });
       },
 

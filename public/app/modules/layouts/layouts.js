@@ -96,7 +96,9 @@ define([
       contentNavigation: '#nav_content'
     },
     initialize: function(){
-
+      this.listenTo(Backbone, 'select:project', function(model){
+        Backbone.trigger('layout:projectDetail', model);
+      });
     }
   });
 
@@ -114,9 +116,12 @@ define([
       alarms: '#alarms'
     },
     initialize: function(){
-
+      this.listenTo(Backbone, 'select:portfolio', function(model){
+        Backbone.trigger('layout:portfolioDetail', model, model.get("subPortfolios"));
+      });
     }
   });
+
 
   Layouts.PortfolioDashboard = Backbone.Marionette.Layout.extend({
     template: {
@@ -130,7 +135,101 @@ define([
       dashboard: '#dashboard',
       contentNavigation: '#nav_content'
     }
-  })
+  });
+
+  Layouts.Controller = Backbone.Marionette.Controller.extend({
+    portfolioDetail: function(model, collection){
+      var breadcrumbs = [this.app.allPortfoliosPortfolio];
+
+      if (model !== this.app.allPortfoliosPortfolio) {
+        breadcrumbs.push(model);
+      }
+
+      Backbone.trigger('set:breadcrumbs', breadcrumbs);
+
+      // Populate main layout
+      var portfolioDetail = new Layouts.PortfolioDetail();
+
+      this.app.layouts.app.mainContent.show(portfolioDetail);
+
+      // Build detail view
+      var
+        // Build primary portfolio nav
+        portfolioNavigationListView = new Portfolio.views.NavigationListView({
+          collection: collection,
+          model: model
+        }),
+        // Build KPIs
+        kpisView = new Portfolio.views.detailKpis({ model: model }),
+
+        projectList = model.get('projects').clone();
+
+        // Extend map view for marker filtering
+        map = new Project.views.map({
+          collection: projectList
+        }),
+
+        projectListView = new Project.views.DataListView({
+          collection: projectList
+        })
+      ;
+
+      projectList.listenTo(Backbone, 'select:portfolio', function(model){
+        // Update the collection.
+        console.log('called', model);
+        projectList.set(model.get('projects').models);
+      });
+
+
+      // Poulate detail layout
+      portfolioDetail.contentNavigation.show(portfolioNavigationListView);
+      portfolioDetail.kpis.show(kpisView);
+      portfolioDetail.projects.show(projectListView);
+      portfolioDetail.map.show(map);
+    },
+
+    projectDetail: function(model){
+      // Reset Breadcrumbs
+      var breadcrumbs = [this.app.allPortfoliosPortfolio, model];
+
+      Backbone.trigger('set:breadcrumbs', breadcrumbs);
+
+      // Populate main layout
+      var projectDetail = new Layouts.ProjectDetail({model: model});
+      this.app.layouts.app.mainContent.show(projectDetail);
+
+      var map = new Project.views.map({
+        collection: new Project.collections.Projects([model])
+      });
+
+      // Populate project detail view
+      projectDetail.map.show(map);
+
+    },
+
+    portfolioDashboard: function(model, collection){
+      var
+        dashboardLayout = new Layouts.PortfolioDashboard(),
+        projectList = model.get('projects').clone(),
+        // Build primary portfolio nav
+        portfolioNavigationListView = new Portfolio.views.NavigationListView({
+          collection: collection,
+          model: model
+        }),
+        dashboard = new Project.views.Dashboard({ collection: projectList });
+
+      this.app.layouts.app.mainContent.show(dashboardLayout);
+      dashboardLayout.dashboard.show(dashboard);
+      dashboardLayout.contentNavigation.show(portfolioNavigationListView);
+    },
+
+    initialize: function(app){
+      this.app = app;
+      this.listenTo(Backbone, 'layout:portfolioDetail', this.portfolioDetail);
+      this.listenTo(Backbone, 'layout:projectDetail', this.projectDetail);
+      this.listenTo(Backbone, 'layout:portfolioDashboard', this.portfolioDashboard);
+    }
+  });
 
   return Layouts;
 });
