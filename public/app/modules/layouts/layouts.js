@@ -140,7 +140,7 @@ define([
   Layouts.Controller = Backbone.Marionette.Controller.extend({
     portfolioDetail: function(model, collection){
       var breadcrumbs = [this.app.allPortfoliosPortfolio];
-
+      console.log('portfolioDetail', arguments)
       if (model !== this.app.allPortfoliosPortfolio) {
         breadcrumbs.push(model);
       }
@@ -174,12 +174,12 @@ define([
         })
       ;
 
+      projectList.id = Math.random();
       projectList.listenTo(Backbone, 'select:portfolio', function(model){
         // Update the collection.
-        console.log('called', model);
+        console.log(projectList.id, model);
         projectList.set(model.get('projects').models);
       });
-
 
       // Poulate detail layout
       portfolioDetail.contentNavigation.show(portfolioNavigationListView);

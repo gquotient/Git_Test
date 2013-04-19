@@ -59,7 +59,13 @@ define(
         template: DataListTemplate
       },
       itemViewContainer: 'tbody',
-      itemView: Project.views.DataListItem
+      itemView: Project.views.DataListItem,
+
+      onClose: function(){
+        console.log("before", this.collection);
+        this.collection = null;
+        console.log("after", this.collection);
+      }
     });
 
 
@@ -252,6 +258,10 @@ define(
 
         this.triggerRendered();
         return this;
+      },
+
+      onClose: function(){
+        this.collection = null;
       },
 
       onShow: function(){
