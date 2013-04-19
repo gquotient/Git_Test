@@ -80,8 +80,8 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       '': 'index',
       'portfolio': 'index',
       'portfolio/:id': 'portfolio',
+      'portfolio/dashboard': 'portfolio_dashboard',
       'portfolio/dashboard/:id': 'portfolio_dashboard',
-      'project': 'project',
       'project/:id': 'project'
     }
   });
