@@ -273,6 +273,8 @@ define(
         this._renderChildren();
 
         this.fitToBounds();
+
+        this.listenTo(Backbone, 'window:resize', this.map.viewreset);
       }
     });
 

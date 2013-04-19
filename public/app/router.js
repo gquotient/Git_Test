@@ -17,11 +17,11 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     currentState: 'index',
 
     index: function(){
-      this.select_portfolio();
+      this.portfolio();
       Backbone.history.navigate('portfolio/all');
     },
 
-    select_portfolio: function(id){
+    portfolio_dashboard: function(id){
       var portfolio, subPortfolios;
 
       if (id && id !== 'all') {
@@ -33,42 +33,33 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
         portfolio = ia.allPortfoliosPortfolio;
         subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
-
-      this.portfolio( { collection: subPortfolios, model: portfolio } );
-    },
-
-    select_portfolio_dashboard: function(id){
-      var portfolio, subPortfolios;
-
-      if (id && id !== 'all') {
-        // Build custom portfolios view
-        portfolio = ia.allPortfolios.get(id);
-        subPortfolios = portfolio.get("subPortfolios");
-      } else {
-        // Build primary portfolios view
-        portfolio = ia.allPortfoliosPortfolio;
-        subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
-      }
-
-      this.portfolio_dashboard( { collection: subPortfolios, model: portfolio } );
-    },
-
-    portfolio_dashboard: function(options){
 
       Backbone.trigger('layout:portfolioDashboard', options.model, options.collection);
+
+      this.currentState = 'portfolio_dashboard';
     },
 
-    portfolio: function(options){
-      Backbone.trigger('layout:portfolioDetail', options.model, options.collection);
-      this.currentState = 'portfolio';
+    portfolio: function(id){
+      var portfolio, subPortfolios;
+
+      if (id && id !== 'all') {
+        // Build custom portfolios view
+        portfolio = ia.allPortfolios.get(id);
+        subPortfolios = portfolio.get("subPortfolios");
+      } else {
+        // Build primary portfolios view
+        portfolio = ia.allPortfoliosPortfolio;
+        subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
+      }
+
+      Backbone.trigger('layout:portfolioDetail', portfolio, subPortfolios);
     },
 
-    select_project: function(id){
-      this.project({model: ia.allProjects.get(id)});
-    },
+    project: function(id){
+      var project = ia.allProjects.get(id);
 
-    project: function(options){
       Backbone.trigger('layout:projectDetail', options.model);
+
       this.currentState = 'project';
     },
 
@@ -88,10 +79,10 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     appRoutes: {
       '': 'index',
       'portfolio': 'index',
-      'portfolio/:id': 'select_portfolio',
-      'portfolio/dashboard/:id': 'select_portfolio_dashboard',
+      'portfolio/:id': 'portfolio',
+      'portfolio/dashboard/:id': 'portfolio_dashboard',
       'project': 'project',
-      'project/:id': 'select_project'
+      'project/:id': 'project'
     }
   });
 
