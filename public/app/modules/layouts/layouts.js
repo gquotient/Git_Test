@@ -140,7 +140,6 @@ define([
   Layouts.Controller = Backbone.Marionette.Controller.extend({
     portfolioDetail: function(model, collection){
       var breadcrumbs = [this.app.allPortfoliosPortfolio];
-      console.log('portfolioDetail', arguments)
       if (model !== this.app.allPortfoliosPortfolio) {
         breadcrumbs.push(model);
       }
@@ -162,7 +161,7 @@ define([
         // Build KPIs
         kpisView = new Portfolio.views.detailKpis({ model: model }),
 
-        projectList = model.get('projects').clone();
+        projectList = model.get('projects').clone(),
 
         // Extend map view for marker filtering
         map = new Project.views.map({
@@ -174,10 +173,8 @@ define([
         })
       ;
 
-      projectList.id = Math.random();
-      projectList.listenTo(Backbone, 'select:portfolio', function(model){
+      portfolioDetail.listenTo(Backbone, 'select:portfolio', function(model){
         // Update the collection.
-        console.log(projectList.id, model);
         projectList.set(model.get('projects').models);
       });
 
