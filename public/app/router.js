@@ -76,6 +76,10 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       var that = this;
 
       this.layoutController = new Layouts.Controller(ia);
+
+      this.listenTo(Backbone, 'select:portfolio', function(model){
+        console.log('router', model);
+      });
     }
   });
 

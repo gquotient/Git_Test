@@ -46,7 +46,8 @@ define([
     return value/max * 100;
   });
 
-  // Layouts
+  // MAIN LAYOUT
+
   Layouts.Main = Backbone.Marionette.Layout.extend({
     template: {
       type: 'handlebars',
@@ -56,11 +57,10 @@ define([
       header: '#header',
       navigation: '#navigation',
       pageNavigation: '#nav_page',
-      //contentNavigation: '#nav_content',
       mainContent: '#page'
     },
     onRender: function(){
-      // This is almost useless sense render will have fire before the elements are added to the DOM
+      // This is almost useless since render will have fired before the elements are added to the DOM
       this.resize();
     },
     resize: function(){
@@ -197,9 +197,11 @@ define([
         })
       ;
 
+      projectList.id = Math.random();
+      projectList.stopListening();
       projectList.listenTo(Backbone, 'select:portfolio', function(model){
         // Update the collection.
-        console.log('called', model);
+        console.log(projectList.id, model);
         projectList.set(model.get('projects').models);
       });
 

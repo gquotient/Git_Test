@@ -132,7 +132,6 @@ define(
       // Tell the composite view which view to use as for each portfolio.
       itemView: Portfolio.views.NavigationItemView,
 
-      // Setup an array for tracking breadcrumbs. Attach event listeners.
       initialize: function(options){
         this.listenTo(Backbone, 'select:portfolio', this.setPortfolio);
       },
