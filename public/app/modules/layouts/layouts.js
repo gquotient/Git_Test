@@ -9,6 +9,7 @@ define([
   'project',
 
   'hbs!layouts/templates/index',
+  'hbs!layouts/templates/header',
   'hbs!layouts/templates/portfolioDetail',
   'hbs!layouts/templates/projectDetail',
 
@@ -22,6 +23,7 @@ define([
   Portfolio,
   Project,
   indexTemplate,
+  headerTemplate,
   portfolioDetailTemplate,
   projectDetailTemplate,
   portfolioDashboardTemplate
@@ -55,10 +57,10 @@ define([
     },
     regions: {
       header: '#header',
-      navigation: '#navigation',
+      //navigation: '#navigation',
       pageNavigation: '#nav_page',
       mainContent: '#page'
-    },
+    }/*,
     onRender: function(){
       // This is almost useless since render will have fired before the elements are added to the DOM
       this.resize();
@@ -78,6 +80,17 @@ define([
       this.listenTo(Backbone, 'window:resize', function(event){
         that.resize();
       });
+    }*/
+  });
+
+  Layouts.Header = Backbone.Marionette.Layout.extend({
+    template: {
+      type: 'handlebars',
+      template: headerTemplate
+    },
+
+    triggers: {
+      "click .logout": "logout"
     }
   });
 

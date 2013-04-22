@@ -12,7 +12,6 @@ html, body {
 
 /* Main components */
 
-pageNavHeight = 30px;
 primaryBorderStyle = borderBasicDark;
 
 #nav_page {
@@ -53,9 +52,19 @@ primaryBorderStyle = borderBasicDark;
   }
 }
 
+body > div {
+  height: 100%;
+}
+
 .contentContainer {
   // Force overflow hidden to prevent any chance of doubled scroll bars
+  position: absolute;
+  top: 0;
   overflow: hidden;
+  padding-top: 0;
+  height: 100%;
+  width: 100%;
+  padding-top: headerHeight + pageNavHeight;
 }
 
 #nav_content {
@@ -96,7 +105,8 @@ primaryBorderStyle = borderBasicDark;
           overflow: hidden;
           list-style-type: none;
           li {
-            background: url(../../img/icon_project_9x12.png) left center no-repeat;
+            background-position: left center;
+            background-repeat: no-repeat;
             padding: 0 0 0 12px;
             margin: 0 12px 0 0;
             float: left;
@@ -136,7 +146,7 @@ kpiHeight = 30px;
   //border: 1px solid #f00;
   height: 100%;
   overflow: auto;
-  position: relative;
+
   > div { // This is an artifact of how Backbone/Marionette views work
     height: 100%;
     max-height: 100%;

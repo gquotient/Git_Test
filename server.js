@@ -71,17 +71,21 @@ app.configure(function(){
   var compile = function(str, path) {
     return stylus(str)
       .set('filename', path)
-      .set('compress', true)
-      .use(nib());
+      .set('compress', true) // minify
+      .define('url', stylus.url()) // Turn images to data URIs
+      .use(nib()); // Use nib for cross-browser CSS3 help
   };
 
   app.set('port', process.env.PORT || 3005);
   app.set('view engine', 'hbs');
   app.set('views', __dirname + '/templates');
-  app.use( stylus.middleware({
-    src: __dirname,
-    compile: compile
-  }) );
+  app.use(
+    stylus
+      .middleware({
+        src: __dirname,
+        compile: compile // Use custom compile function
+      })
+  );
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
@@ -199,7 +203,7 @@ app.post('/login',
 ));
 
 /* Reset Password */
-app.get('/reset', ensureAuthenticated, function(req, res){  
+app.get('/reset', ensureAuthenticated, function(req, res){
   if( req.user.firsttime ){
     res.render('resetpassword', { flash: req.flash('error') });
   } else {

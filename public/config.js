@@ -21,11 +21,6 @@ require.config({
   baseUrl: '/public',
   packages: [
     {
-      name: 'header',
-      main: 'header',
-      location: 'app/modules/header'
-    },
-    {
       name: 'user',
       main: 'user',
       location: 'app/modules/user'

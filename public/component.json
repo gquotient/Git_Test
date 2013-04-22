@@ -10,7 +10,7 @@
     "modernizr": "latest",
     "backbone": "latest",
     "requirejs-text": "latest",
-    "css": "latest",
+    "css": "git://github.com/justinwinslow/css.git",
     "handlebars": "latest",
     "require-handlebars-plugin": "latest",
     "messageformat.js": "git://github.com/SlexAxton/messageformat.js.git#~0.1.5",
