@@ -7,9 +7,11 @@ define(
     'backbone.marionette.handlebars',
 
     'hbs!app/modules/project/templates/dataList',
-    'hbs!app/modules/project/templates/dataListItem'
+    'hbs!app/modules/project/templates/dataListItem',
+
+    'hbs!app/modules/project/templates/dashboardItem'
   ],
-  function($, _, Backbone, Marionette, MarionetteHandlebars, DataListTemplate, DataListItemTemplate){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, DataListTemplate, DataListItemTemplate, DashboardItemTemplate){
 
     var Project = { models: {}, views: {}, layouts: {}, collections: {} };
 
@@ -58,17 +60,22 @@ define(
       },
       itemViewContainer: 'tbody',
       itemView: Project.views.DataListItem,
-      initialize: function(options){
-        var that = this;
 
-        this.controller = options.controller;
-
-        // This shouldn't really live here?
-        this.listenTo(Backbone, 'select:portfolio', function(model){
-          // Reset collection.
-          that.collection.set(model.get('projects').models);
-        });
+      onClose: function(){
+        this.collection = null;
       }
+    });
+
+
+    Project.views.DashboardItemView = Marionette.ItemView.extend({
+      template: {
+        type: 'handlebars',
+        template: DashboardItemTemplate
+      }
+    });
+
+    Project.views.Dashboard = Marionette.CollectionView.extend({
+      itemView: Project.views.DashboardItemView
     });
 
     Project.views.MarkerView = Marionette.ItemView.extend({
@@ -284,6 +291,8 @@ define(
         this._renderChildren();
 
         this.fitToBounds();
+
+        this.listenTo(Backbone, 'window:resize', this.map.viewreset);
       }
     });
 

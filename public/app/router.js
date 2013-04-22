@@ -17,13 +17,11 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     currentState: 'index',
 
     index: function(){
-      console.log('index');
-      this.select_portfolio();
+      this.portfolio();
       Backbone.history.navigate('portfolio/all');
     },
 
-    select_portfolio: function(id){
-      console.log('selectPortfolio', id);
+    portfolio_dashboard: function(id){
       var portfolio, subPortfolios;
 
       if (id && id !== 'all') {
@@ -36,94 +34,42 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
         subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
 
-      this.portfolio( { collection: subPortfolios, model: portfolio } );
+      Backbone.trigger('layout:portfolioDashboard', options.model, options.collection);
+
+      this.currentState = 'portfolio_dashboard';
     },
 
-    portfolio: function(options){
-      // Reset Breadcrumbs
-      var breadcrumbs = [ia.allPortfoliosPortfolio];
+    portfolio: function(id){
+      var portfolio, subPortfolios;
 
-      if (options.model !== ia.allPortfoliosPortfolio) {
-        breadcrumbs.push(options.model);
+      if (id && id !== 'all') {
+        // Build custom portfolios view
+        portfolio = ia.allPortfolios.get(id);
+        subPortfolios = portfolio.get("subPortfolios");
+      } else {
+        // Build primary portfolios view
+        portfolio = ia.allPortfoliosPortfolio;
+        subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
 
-      this.update_breadcrumbs(breadcrumbs);
-
-      // Populate main layout
-      var portfolioDetail = new Layouts.PortfolioDetail();
-
-      ia.layouts.app.mainContent.show(portfolioDetail);
-
-      // Build detail view
-      var
-        // Build primary portfolio nav
-        portfolioNavigationListView = new Portfolio.views.NavigationListView({
-          collection: options.collection,
-          model: options.model
-        }),
-        // Build KPIs
-        kpisView = new Portfolio.views.detailKpis({ model: options.model }),
-
-        projectList = options.model.get('projects').clone();
-
-        // Extend map view for marker filtering
-        map = new Project.views.map({
-          collection: projectList
-        }),
-
-        projectListView = new Project.views.DataListView( { collection: projectList } )
-      ;
-
-      // Poulate detail layout
-      portfolioDetail.contentNavigation.show(portfolioNavigationListView);
-      portfolioDetail.kpis.show(kpisView);
-      portfolioDetail.projects.show(projectListView);
-      portfolioDetail.map.show(map);
-
-      this.currentState = 'portfolio';
+      Backbone.trigger('layout:portfolioDetail', portfolio, subPortfolios);
     },
 
-    select_project: function(id){
-      console.log('selectProject', id);
-      this.project({model: ia.allProjects.get(id)});
-    },
+    project: function(id){
+      var project = ia.allProjects.get(id);
 
-    project: function(options){
-      // Reset Breadcrumbs
-      var breadcrumbs = [ia.allPortfoliosPortfolio, options.model];
-      this.update_breadcrumbs(breadcrumbs);
-
-      // Populate main layout
-      var projectDetail = new Layouts.ProjectDetail({model: options.model});
-      ia.layouts.app.mainContent.show(projectDetail);
-
-      var map = new Project.views.map({
-        collection: new Project.collections.Projects([options.model])
-      });
-
-      // Populate project detail view
-      projectDetail.map.show(map);
+      Backbone.trigger('layout:projectDetail', project);
 
       this.currentState = 'project';
-    },
-
-    update_breadcrumbs: function(models){
-      // This is simple-minded but I have a feeling this abstraction will end up being useful
-      Backbone.trigger('set:breadcrumbs', models);
     },
 
     initialize: function(){
       var that = this;
 
-      this.listenTo(Backbone, 'select', function(model){
-        // Set address bar
-        Backbone.history.navigate('/' + model.get('type') + '/' + model.get('id'));
+      this.layoutController = new Layouts.Controller(ia);
 
-        // Build the page type if not already built
-        if (that.currentState !== model.get('type')) {
-          console.log('types don\'t match');
-          that['select_' + model.get('type')](model.get('id'));
-        }
+      this.listenTo(Backbone, 'select:portfolio', function(model){
+        console.log('router', model);
       });
     }
   });
@@ -133,9 +79,10 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     appRoutes: {
       '': 'index',
       'portfolio': 'index',
-      'portfolio/:id': 'select_portfolio',
-      'project': 'project',
-      'project/:id': 'select_project'
+      'portfolio/:id': 'portfolio',
+      'portfolio/dashboard': 'portfolio_dashboard',
+      'portfolio/dashboard/:id': 'portfolio_dashboard',
+      'project/:id': 'project'
     }
   });
 

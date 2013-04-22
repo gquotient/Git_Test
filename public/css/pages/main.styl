@@ -219,9 +219,11 @@ kpiHeight = 30px;
       table {
         border: none;
         width: 100%;
-        height: 100%;
         margin: 0;
         thead {
+          // Hack to push the table body contents visible
+          // This seems to work better than putting it on the body
+          border-bottom: projectTableHeaderHeight solid #222;
           tr {
             th {
               div {
@@ -240,7 +242,7 @@ kpiHeight = 30px;
           }
         }
         tbody {
-          border-top: projectTableHeaderHeight solid #222;
+
           tr {
             cursor: pointer;
             td {
@@ -269,5 +271,14 @@ kpiHeight = 30px;
         border-top: none;
       }
     }
+  }
+}
+
+.portfolioDashboard {
+  .projectStatus {
+    float: left;
+    width: 22%;
+    margin: 0.5em 1%;
+    background: #444;
   }
 }

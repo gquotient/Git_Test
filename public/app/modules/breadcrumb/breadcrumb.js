@@ -28,7 +28,7 @@ define([
         // Return only the models from the first to the passed model
         var models = this.models.slice(0, (this.models.indexOf(model)) + 1);
         // Set the collection as the new list of models
-        this.reset(models);
+        this.set(models);
       }
     });
 
