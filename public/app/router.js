@@ -58,7 +58,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     project: function(id){
       var project = ia.allProjects.get(id);
 
-      Backbone.trigger('layout:projectDetail', options.model);
+      Backbone.trigger('layout:projectDetail', project);
 
       this.currentState = 'project';
     },
