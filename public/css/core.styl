@@ -288,13 +288,23 @@ table {
   //margin: 0 auto;
   &.OK {
     background: colorOKBlue;
-  }
-  &.Warning {
-    background: colorWarningYellow;
-  }
-  &.Alert {
-    background: colorAlertRed;
-  }
+    width: 12px;
+    height: 12px;
+    display: block;
+    text-indent: -200%;
+    overflow: hidden;
+    border-radius: 6px;
+    box-shadow: 0 1px 0 #444;
+    //margin: 0 auto;
+    &.OK {
+      background: colorOKBlue;
+    }
+    &.Warning {
+      background: colorWarningYellow;
+    }
+    &.Alert {
+      background: colorAlertRed;
+    }
   }
 }
 
