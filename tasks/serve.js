@@ -2,7 +2,6 @@
 module.exports = function(grunt){
 
   var children = [],
-    util = require('util'),
     cp = require('child_process');
 
   grunt.event.on('services.add', function(cmd, args){
@@ -39,10 +38,15 @@ module.exports = function(grunt){
     children = [];
   });
 
-  grunt.registerTask('serve', 'Start front end server with auth', function(){
+  grunt.registerTask('serve', 'Start front end server, use serve:remote for remote auth', function(){
     var done = this.async();
 
-    grunt.event.emit('services.add', '/bin/sh', ['-c', 'bin/auth_service.sh']);
+    if (this.flags.remote || grunt.option('remote')) {
+      process.env.NODE_ENV = 'development-remote';
+    } else {
+      grunt.event.emit('services.add', '/bin/sh', ['-c', 'bin/auth_service.sh']);
+    }
+
     grunt.event.emit('services.add', process.argv[0], ['server.js']);
 
     process.on('SIGINT', function(){
