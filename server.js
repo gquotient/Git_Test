@@ -98,17 +98,17 @@ app.configure(function(){
   app.use('/public', express.static(path.join(__dirname, 'public')));
 });
 
-app.configure('development-local', function(){
+app.configure('development', function(){
   console.log("Using Development");
   app.use(express.errorHandler());
   app.set('clientID', 'IA6_0.1');
   app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
   app.set('callbackURL', 'http://127.0.0.1:' + port + '/token');
   app.set('authPort', 8431);
-  app.set('authUrl', 'http://127.0.0.1');
+  app.set('authUrl', '127.0.0.1');
 });
 
-app.configure('development', function(){
+app.configure('development-remote', function(){
   console.log("Using Remote");
   app.use(express.errorHandler());
   app.set('clientID', 'IA6_0.1');
@@ -307,7 +307,7 @@ app.get('/api/projects',
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   else {
-    req.session.redirectUrl = req.url;
+    if(req.url !== '/reset' || req.url !== '/login') { req.session.redirectUrl = req.url; }
     res.redirect('/login');
   }
 }
