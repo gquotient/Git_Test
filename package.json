@@ -18,6 +18,7 @@
     "connect-flash": "~0.1.0"
   },
   "devDependencies": {
-    "passport-local": "~0.1.6"
+    "passport-local": "~0.1.6",
+    "grunt": "~0.4.1"
   }
 }
