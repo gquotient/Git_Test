@@ -44,6 +44,8 @@ To run
 
 From your project root folder, run `$ node server.js` to start the server. Default port is set to 3005.
 
+To use the staging authentication server, run `$ export NODE_ENV=development-remote` before starting your node server. To switch back to using a local auth server, run `$ export NODE_ENV=development`.
+
 Testing (Optional)
 ------------------
 

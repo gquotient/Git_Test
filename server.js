@@ -99,10 +99,25 @@ app.configure(function(){
 });
 
 app.configure('development', function(){
+  console.log("Using Development");
   app.use(express.errorHandler());
   app.set('clientID', 'IA6_0.1');
   app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
   app.set('callbackURL', 'http://127.0.0.1:' + port + '/token');
+  app.set('authPort', 8431);
+  app.set('authUrl', '127.0.0.1');
+});
+
+app.configure('development-remote', function(){
+  console.log("Using Remote");
+  app.use(express.errorHandler());
+  app.set('clientID', 'IA6_0.1');
+  app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
+  app.set('callbackURL', 'http://127.0.0.1:' + port + '/token');
+  app.set('authorizationURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/auth');
+  app.set('tokenURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/token');
+  app.set('authPort', 80);
+  app.set('authUrl', 'auth.stage.intelligentarray.com');
 });
 
 /**
@@ -112,7 +127,9 @@ app.configure('development', function(){
 passport.use(new DrakerIA6Strategy( {
     clientID: app.get('clientID'),
     clientSecret: app.get('clientSecret'),
-    callbackURL: app.get('callbackURL')
+    callbackURL: app.get('callbackURL'),
+    authorizationURL: app.get('authorizationURL'),
+    tokenURL: app.get('tokenURL')
   },
   function(token, tokenSecret, profile, done) {
     return done(null, profile);
@@ -176,7 +193,6 @@ app.all('/ia', ensureAuthenticated, function(req, res){
 
 app.all('/ia/*', ensureAuthenticated, function(req, res){
   var newUrl = req.url.split('/').slice(2).join('/');
-  console.log( req.protocol + '://' + req.get('Host') + '/ia/#/' + newUrl );
   res.redirect( req.protocol + '://' + req.get('Host') + '/ia/#/' + newUrl );
 });
 
@@ -219,9 +235,9 @@ app.post('/reset', function(req, res){
   // console.log( 'passwords:' + req.body.password + ':' + req.body.password_new + ':' + req.body.password_check );
   if (req.body.password_new === req.body.password_check) {
     if (req.body.password_new.length > 5) {
-      // console.log( 'post the password reset request' );
+      console.log( 'post the password reset request' );
       DrakerIA6Strategy.reset(req, res, app, function(req, res, post_res) {
-        // console.log( "Back from reset:" + post_res.status );
+        console.log( "Back from reset:" + post_res.status );
         if ( post_res.status === 200 ) {
           res.redirect('/ia');
         } else {
@@ -291,7 +307,7 @@ app.get('/api/projects',
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   else {
-    req.session.redirectUrl = req.url;
+    if(req.url !== '/reset' || req.url !== '/login') { req.session.redirectUrl = req.url; }
     res.redirect('/login');
   }
 }
