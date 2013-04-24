@@ -6,12 +6,14 @@ define(
     'backbone.marionette',
     'backbone.marionette.handlebars',
 
+    'leaflet',
+
     'hbs!app/modules/project/templates/dataList',
     'hbs!app/modules/project/templates/dataListItem',
 
     'hbs!app/modules/project/templates/dashboardItem'
   ],
-  function($, _, Backbone, Marionette, MarionetteHandlebars, DataListTemplate, DataListItemTemplate, DashboardItemTemplate){
+  function($, _, Backbone, Marionette, MarionetteHandlebars, L, DataListTemplate, DataListItemTemplate, DashboardItemTemplate){
 
     var Project = { models: {}, views: {}, layouts: {}, collections: {} };
 
