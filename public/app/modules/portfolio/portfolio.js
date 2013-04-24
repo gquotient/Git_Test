@@ -13,7 +13,18 @@ define(
     'hbs!portfolio/templates/portfolioList',
     'hbs!portfolio/templates/detailKpis'
   ],
-  function($, _, Backbone, Marionette, L, leafletCSS, Project, navigationItemView, portfolioList, detailKpisTemplate){
+  function(
+    $,
+    _,
+    Backbone,
+    Marionette,
+    L,
+    leafletCSS,
+    Project,
+    navigationItemViewTemplate,
+    portfolioListTemplate,
+    detailKpisTemplate
+  ){
 
     /* We could probably automate the stubbing out of this module structure. */
     var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
@@ -71,7 +82,7 @@ define(
       },
 
       initialize: function(options){
-        this.listenTo(options.projects, "reset", this.build);
+        this.listenTo(options.projects, 'reset', this.build);
       }
     });
 
@@ -99,7 +110,7 @@ define(
       tagName: 'li',
       template: {
         type: 'handlebars',
-        template: navigationItemView
+        template: navigationItemViewTemplate
       },
       attributes: {
         class: 'portfolio'
@@ -126,7 +137,7 @@ define(
       },
       template: {
         type: 'handlebars',
-        template: portfolioList
+        template: portfolioListTemplate
       },
 
       // Tell the composite view which view to use as for each portfolio.

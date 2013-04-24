@@ -1,11 +1,11 @@
 define(
 [
-  "backbone",
-  "backbone.marionette",
-  "backbone.marionette.handlebars",
+  'backbone',
+  'backbone.marionette',
+  'backbone.marionette.handlebars',
 
-  "hbs!user/templates/itemView",
-  "hbs!user/templates/detailView"
+  'hbs!user/templates/itemView',
+  'hbs!user/templates/detailView'
 ], function(Backbone, Marionette, MarionetteHandlebars, itemViewTemplate, detailViewTemplate){
 
   var User = { views: {} };
@@ -28,12 +28,12 @@ define(
     triggers: {
       'click': 'select:user'
     },
-    tagName: "li"
+    tagName: 'li'
   });
 
   User.views.listView = Backbone.Marionette.CollectionView.extend({
     itemView: User.views.itemView,
-    tagName: "ul"
+    tagName: 'ul'
   });
 
   User.views.detailView = Backbone.Marionette.ItemView.extend({

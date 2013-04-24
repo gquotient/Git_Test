@@ -2,10 +2,12 @@
 define(
   [
     'jquery',
+    'backbone',
+
     'ia',
     'app/router'
   ],
-  function ($, ia, Router) {
+  function ($, Backbone, ia, Router) {
     // Tell jQuery to watch for any 401 or 403 errors and handle them appropriately
     $.ajaxSetup({
       statusCode: {

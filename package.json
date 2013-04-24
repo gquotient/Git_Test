@@ -19,6 +19,8 @@
   },
   "devDependencies": {
     "passport-local": "~0.1.6",
-    "grunt": "~0.4.1"
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.4.3",
+    "grunt-contrib-watch": "~0.3.1"
   }
 }
