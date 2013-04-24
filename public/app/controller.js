@@ -164,6 +164,11 @@ function(
       });
     },
 
+    profile: function(){
+      console.log('profile layout');
+      this.app.layouts.app.mainContent.close();
+    },
+
     initialize: function(app){
       this.app = app;
     }

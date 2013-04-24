@@ -58,7 +58,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
     },
 
     profile: function(){
-      Backbone.trigger('layout:profile');
+      this.layoutController.profile();
     },
 
     initialize: function(){
