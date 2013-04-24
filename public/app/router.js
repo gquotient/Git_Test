@@ -14,11 +14,9 @@ define([
 function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, Controller){
 
   ia.Controller = Backbone.Marionette.Controller.extend({
-    currentState: 'index',
-
     index: function(){
-      this.portfolio();
-      Backbone.history.navigate('portfolio/all');
+      //this.portfolio();
+      Backbone.history.navigate('portfolio/all', true);
     },
 
     portfolio_dashboard: function(id){
@@ -35,8 +33,6 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
       }
 
       this.layoutController.portfolioDashboard(portfolio, subPortfolios);
-
-      this.currentState = 'portfolio_dashboard';
     },
 
     portfolio: function(id){
@@ -56,12 +52,9 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
     },
 
     project: function(id){
-      console.log('route:project', id);
       var project = ia.allProjects.get(id);
 
       this.layoutController.projectDetail(project);
-
-      this.currentState = 'project';
     },
 
     profile: function(){

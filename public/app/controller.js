@@ -22,6 +22,8 @@ function(
     currentState: '',
 
     portfolioDetail: function(model, collection){
+      // Reset listeners
+      this.stopListening();
       // Reset breadcrumbs
       var breadcrumbs = [this.app.allPortfoliosPortfolio];
 
@@ -32,6 +34,7 @@ function(
       Backbone.trigger('set:breadcrumbs', breadcrumbs);
 
       // Build detail view if not currently there
+      // NOTE: this is for back/forward support
       if (this.currentState !== 'portfolioDetail') {
         // Populate main layout
         var portfolioDetail = new Layouts.PortfolioDetail();
@@ -73,40 +76,57 @@ function(
 
         this.currentState = 'portfolioDetail';
       } else {
-        // Trigger select event - We may want to pull global event
-        // listening out of the modules
+        // Trigger select event
         Backbone.trigger('select:portfolio', model);
       }
+
+      // Set up listeners
+      this.listenTo(Backbone, 'select:portfolio', function(model){
+        // Set address bar
+        Backbone.history.navigate('/portfolio/' + model.get('id'));
+      });
+
+      this.listenTo(Backbone, 'select:project', function(model){
+        // Set address bar and force routing
+        Backbone.history.navigate('/project/' + model.get('id'), true);
+      });
     },
 
     projectDetail: function(model){
+      this.stopListening();
       // Reset Breadcrumbs
       var breadcrumbs = [this.app.allPortfoliosPortfolio, model];
 
       Backbone.trigger('set:breadcrumbs', breadcrumbs);
 
-      // Build detail view if not currently there
-      if (this.currentState !== 'projectDetail') {
-        // Populate main layout
-        var projectDetail = new Layouts.ProjectDetail({model: model});
-        this.app.layouts.app.mainContent.show(projectDetail);
+      // Populate main layout
+      var projectDetail = new Layouts.ProjectDetail({model: model});
+      this.app.layouts.app.mainContent.show(projectDetail);
 
-        var map = new Project.views.map({
-          collection: new Project.collections.Projects([model])
-        });
+      var map = new Project.views.map({
+        collection: new Project.collections.Projects([model])
+      });
 
-        // Populate project detail view
-        projectDetail.map.show(map);
+      // Populate project detail view
+      projectDetail.map.show(map);
 
-        this.currentState = 'projectDetail';
-      } else {
-        // Trigger select event - We may want to pull global event
-        // listening out of the modules
-        Backbone.trigger('select:project', model);
-      }
+      this.currentState = 'projectDetail';
+
+      // Set up listeners
+      this.listenTo(Backbone, 'select:portfolio', function(model){
+        // Set address bar and force routing
+        Backbone.history.navigate('/portfolio/' + model.get('id'), true);
+      });
+
+      this.listenTo(Backbone, 'select:project', function(model){
+        // Set address bar
+        Backbone.history.navigate('/project/' + model.get('id'));
+      });
     },
 
     portfolioDashboard: function(model, collection){
+      this.stopListening();
+
       var breadcrumbs = [this.app.allPortfoliosPortfolio];
       Backbone.trigger('set:breadcrumbs', breadcrumbs);
 
@@ -137,17 +157,15 @@ function(
         // listening out of the modules
         Backbone.trigger('select:portfolio', model);
       }
+
+      this.listenTo(Backbone, 'select:portfolio', function(model){
+        // Set address bar
+        Backbone.history.navigate('/portfolio/dashboard/' + model.get('id'));
+      });
     },
 
     initialize: function(app){
       this.app = app;
-      var that = this;
-
-      this.listenTo(Backbone, 'select', function(model){
-        console.log('select', that);
-        // Set address bar
-        Backbone.history.navigate('/' + model.get('type') + '/' + model.get('id'), true);
-      });
     }
   });
 });
