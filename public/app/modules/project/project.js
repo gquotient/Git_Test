@@ -44,12 +44,6 @@ define(
         type: 'handlebars',
         template: dataListItemTemplate
       },
-      initialize: function(){
-        // Template helper to make useable ids for elements
-        Handlebars.registerHelper('projectId', function() {
-          return this.name.replace(' ', '_');
-        });
-      },
       render: function(){
         this.setElement(this.template.template(this.model.attributes));
       },
