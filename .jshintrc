@@ -3,7 +3,7 @@
   "curly": true,
   "eqeqeq": true,
   "forin": true,
-  "immed": false,
+  "immed": true,
   "indent": 2,
   "latedef": true,
   "newcap": true,
@@ -19,6 +19,6 @@
   "devel": true,
 
   "globals": {
-    "define": true
+    "define": false
   }
 }
