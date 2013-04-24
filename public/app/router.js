@@ -27,14 +27,14 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
       if (id && id !== 'all') {
         // Build custom portfolios view
         portfolio = ia.allPortfolios.get(id);
-        subPortfolios = portfolio.get("subPortfolios");
+        subPortfolios = portfolio.get('subPortfolios');
       } else {
         // Build primary portfolios view
         portfolio = ia.allPortfoliosPortfolio;
         subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
 
-      Backbone.trigger('layout:portfolioDashboard', portfolio, subPortfolios);
+      this.layoutController.portfolioDashboard(portfolio, subPortfolios);
 
       this.currentState = 'portfolio_dashboard';
     },
@@ -45,21 +45,21 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
       if (id && id !== 'all') {
         // Build custom portfolios view
         portfolio = ia.allPortfolios.get(id);
-        subPortfolios = portfolio.get("subPortfolios");
+        subPortfolios = portfolio.get('subPortfolios');
       } else {
         // Build primary portfolios view
         portfolio = ia.allPortfoliosPortfolio;
         subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
 
-      Backbone.trigger('layout:portfolioDetail', portfolio, subPortfolios);
+      this.layoutController.portfolioDetail(portfolio, subPortfolios);
     },
 
     project: function(id){
       console.log('route:project', id);
       var project = ia.allProjects.get(id);
 
-      Backbone.trigger('layout:projectDetail', project);
+      this.layoutController.projectDetail(project);
 
       this.currentState = 'project';
     },
@@ -72,10 +72,6 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
       var that = this;
 
       this.layoutController = new Controller(ia);
-
-      this.listenTo(Backbone, 'select:portfolio', function(model){
-        console.log('router', model);
-      });
     }
   });
 
