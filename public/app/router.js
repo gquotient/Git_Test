@@ -34,7 +34,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
         subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
 
-      Backbone.trigger('layout:portfolioDashboard', options.model, options.collection);
+      Backbone.trigger('layout:portfolioDashboard', portfolio, subPortfolios);
 
       this.currentState = 'portfolio_dashboard';
     },
