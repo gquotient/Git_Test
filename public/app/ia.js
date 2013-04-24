@@ -64,12 +64,7 @@ define(
       });
 
       ia.layouts.app = new Layouts.Main();
-
       ia.main.show(ia.layouts.app);
-      /*
-      // HACK ALERT fire resize method after elements are attached to the DOM
-      ia.layouts.app.resize();
-      */
 
       // Build header
       var headerView = new Layouts.Header({model: ia.currentUser});

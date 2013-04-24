@@ -167,6 +167,8 @@ function(
     profile: function(){
       console.log('profile layout');
       this.app.layouts.app.mainContent.close();
+
+      this.currentState = 'profile';
     },
 
     initialize: function(app){
