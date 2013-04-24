@@ -165,8 +165,11 @@ function(
     },
 
     profile: function(){
-      console.log('profile layout');
-      this.app.layouts.app.mainContent.close();
+      var profile = new Layouts.Profile({model: this.app.currentUser});
+
+      Backbone.trigger('set:breadcrumbs', {name: 'Profile'});
+
+      this.app.layouts.app.mainContent.show(profile);
 
       this.currentState = 'profile';
     },

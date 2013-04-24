@@ -7,6 +7,7 @@ define([
 
   'hbs!layouts/templates/index',
   'hbs!layouts/templates/header',
+  'hbs!layouts/templates/profile',
   'hbs!layouts/templates/portfolioDetail',
   'hbs!layouts/templates/projectDetail',
 
@@ -19,6 +20,7 @@ define([
   Handlebars,
   indexTemplate,
   headerTemplate,
+  profileTemplate,
   portfolioDetailTemplate,
   projectDetailTemplate,
   portfolioDashboardTemplate
@@ -58,6 +60,8 @@ define([
     }
   });
 
+  // HEADER
+
   Layouts.Header = Backbone.Marionette.Layout.extend({
     template: {
       type: 'handlebars',
@@ -75,6 +79,18 @@ define([
       this.listenTo(this, 'profile', function(){
         Backbone.history.navigate('/profile', true);
       });
+    }
+  });
+
+  // PROJECT DETAIL LAYOUT
+
+  Layouts.Profile = Backbone.Marionette.Layout.extend({
+    template: {
+      type: 'handlebars',
+      template: profileTemplate
+    },
+    regions: {
+
     }
   });
 
