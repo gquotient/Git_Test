@@ -5,7 +5,7 @@ define(
     'backbone',
     'backbone.marionette',
     'backbone.marionette.handlebars',
-
+    'handlebars',
     'leaflet',
 
     'hbs!app/modules/project/templates/dataList',
@@ -13,7 +13,18 @@ define(
 
     'hbs!app/modules/project/templates/dashboardItem'
   ],
-  function($, _, Backbone, Marionette, MarionetteHandlebars, L, DataListTemplate, DataListItemTemplate, DashboardItemTemplate){
+  function(
+    $,
+    _,
+    Backbone,
+    Marionette,
+    MarionetteHandlebars,
+    Handlebars,
+    L,
+    dataListTemplate,
+    dataListItemTemplate,
+    dashboardItemTemplate
+  ){
 
     var Project = { models: {}, views: {}, layouts: {}, collections: {} };
 
@@ -31,7 +42,7 @@ define(
     Project.views.DataListItem = Marionette.ItemView.extend({
       template: {
         type: 'handlebars',
-        template: DataListItemTemplate
+        template: dataListItemTemplate
       },
       initialize: function(){
         // Template helper to make useable ids for elements
@@ -58,7 +69,7 @@ define(
     Project.views.DataListView = Marionette.CompositeView.extend({
       template: {
         type: 'handlebars',
-        template: DataListTemplate
+        template: dataListTemplate
       },
       itemViewContainer: 'tbody',
       itemView: Project.views.DataListItem,
@@ -72,7 +83,7 @@ define(
     Project.views.DashboardItemView = Marionette.ItemView.extend({
       template: {
         type: 'handlebars',
-        template: DashboardItemTemplate
+        template: dashboardItemTemplate
       }
     });
 
@@ -99,12 +110,12 @@ define(
         }
 
         var highlight = function() {
-          that.unmask()
-        }
+          that.unmask();
+        };
 
         var highlightTimeout = function() {
           that.highlightTimeout = setTimeout(highlight, 200);
-        }
+        };
 
         this.listenTo(Backbone, 'mouseover:project', this.highlight);
         this.listenTo(Backbone, 'mouseout:project', highlightTimeout);
@@ -140,7 +151,7 @@ define(
           }
         } else {
           if (!projectOrPortfolio.get('projects').contains(this.model)){
-             this.mask();
+            this.mask();
           } else {
             this.unmask();
           }
@@ -175,8 +186,8 @@ define(
         //to set the view's element to this.marker._icon after
         //adding it to the map, but it's a bit hacky.
         this.marker.on('mouseover', function(){
-         Backbone.trigger('mouseover:project', that.model);
-        } );
+          Backbone.trigger('mouseover:project', that.model);
+        });
 
         this.marker.on('mouseout', function(){
           Backbone.trigger('mouseout:project', that.model);
@@ -198,7 +209,7 @@ define(
       itemView: Project.views.MarkerView,
 
       itemViewOptions: function(){
-          return { markers: this.markers };
+        return { markers: this.markers };
       },
 
       attributes: {
@@ -283,7 +294,7 @@ define(
 
         // add an OpenStreetMap tile layer
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
         this.markers = new L.layerGroup([]);
@@ -299,4 +310,5 @@ define(
     });
 
     return Project;
-});
+  }
+);

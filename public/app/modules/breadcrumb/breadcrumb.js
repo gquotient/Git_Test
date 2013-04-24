@@ -1,12 +1,14 @@
-define([
-  'jquery',
-  'underscore',
-  'backbone',
-  'backbone.marionette',
+define(
+  [
+    'jquery',
+    'underscore',
+    'backbone',
+    'backbone.marionette',
 
-  'hbs!breadcrumb/templates/breadcrumbItemView'
-], function($, _, Backbone, Marionette, breadcrumbItemViewTemplate){
-  var Breadcrumb = { models: {}, views: {}, layouts: {}, collections: {} };
+    'hbs!breadcrumb/templates/breadcrumbItemView'
+  ],
+  function($, _, Backbone, Marionette, breadcrumbItemViewTemplate){
+    var Breadcrumb = { models: {}, views: {}, layouts: {}, collections: {} };
 
     Breadcrumb.collections.BreadcrumbList = Backbone.Collection.extend({
       update: function(models){
@@ -72,4 +74,5 @@ define([
     });
 
     return Breadcrumb;
-});
+  }
+);
