@@ -89,6 +89,9 @@ define([
       type: 'handlebars',
       template: profileTemplate
     },
+    attributes: {
+      class: 'basicView'
+    },
     regions: {
 
     }

@@ -4,6 +4,8 @@ define(
   'backbone',
   'backbone.marionette',
 
+  'ia',
+
   'layouts',
 
   'portfolio',
@@ -13,6 +15,7 @@ function(
   $,
   Backbone,
   Marionette,
+  ia,
   Layouts,
   Portfolio,
   Project
@@ -25,9 +28,9 @@ function(
       // Reset listeners
       this.stopListening();
       // Reset breadcrumbs
-      var breadcrumbs = [this.app.allPortfoliosPortfolio];
+      var breadcrumbs = [ia.allPortfoliosPortfolio];
 
-      if (model !== this.app.allPortfoliosPortfolio) {
+      if (model !== ia.allPortfoliosPortfolio) {
         breadcrumbs.push(model);
       }
 
@@ -39,7 +42,7 @@ function(
         // Populate main layout
         var portfolioDetail = new Layouts.PortfolioDetail();
 
-        this.app.layouts.app.mainContent.show(portfolioDetail);
+        ia.layouts.app.mainContent.show(portfolioDetail);
 
         // Build detail view
         var
@@ -95,13 +98,13 @@ function(
     projectDetail: function(model){
       this.stopListening();
       // Reset Breadcrumbs
-      var breadcrumbs = [this.app.allPortfoliosPortfolio, model];
+      var breadcrumbs = [ia.allPortfoliosPortfolio, model];
 
       Backbone.trigger('set:breadcrumbs', breadcrumbs);
 
       // Populate main layout
       var projectDetail = new Layouts.ProjectDetail({model: model});
-      this.app.layouts.app.mainContent.show(projectDetail);
+      ia.layouts.app.mainContent.show(projectDetail);
 
       var map = new Project.views.map({
         collection: new Project.collections.Projects([model])
@@ -127,7 +130,7 @@ function(
     portfolioDashboard: function(model, collection){
       this.stopListening();
 
-      var breadcrumbs = [this.app.allPortfoliosPortfolio];
+      var breadcrumbs = [ia.allPortfoliosPortfolio];
       Backbone.trigger('set:breadcrumbs', breadcrumbs);
 
       if (this.currentState !== 'portfolioDashboard') {
@@ -147,7 +150,7 @@ function(
           projectList.set(model.get('projects').models);
         });
 
-        this.app.layouts.app.mainContent.show(dashboardLayout);
+        ia.layouts.app.mainContent.show(dashboardLayout);
         dashboardLayout.dashboard.show(dashboard);
         dashboardLayout.contentNavigation.show(portfolioNavigationListView);
 
@@ -165,17 +168,18 @@ function(
     },
 
     profile: function(){
-      var profile = new Layouts.Profile({model: this.app.currentUser});
+      console.log('profile', ia.currentUser);
+      var profile = new Layouts.Profile({model: ia.currentUser});
 
       Backbone.trigger('set:breadcrumbs', {name: 'Profile'});
 
-      this.app.layouts.app.mainContent.show(profile);
+      ia.layouts.app.mainContent.show(profile);
 
       this.currentState = 'profile';
     },
 
     initialize: function(app){
-      this.app = app;
+      ia = app;
     }
   });
 });

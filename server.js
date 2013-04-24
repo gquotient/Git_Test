@@ -181,7 +181,10 @@ app.all('/ia', ensureAuthenticated, function(req, res){
         res.render(
           'index',
           {
-            user: '{ "username": "' + req.user.name + '" }',
+            user: JSON.stringify({
+              username: req.user.name,
+              email: req.user.email
+            }),
             portfolios: portfolios,
             projects: projects,
             locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
