@@ -73,9 +73,6 @@ define(
 
       // Build header
       var headerView = new Layouts.Header({model: ia.currentUser});
-      ia.listenTo(headerView, 'logout', function(){
-        window.location = '/logout';
-      });
 
       ia.layouts.app.header.show(headerView);
 

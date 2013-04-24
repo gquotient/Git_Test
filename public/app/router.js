@@ -6,12 +6,12 @@ define([
 
   'ia',
 
-  'user',
   'portfolio',
   'project',
-  'layouts'
+
+  'app/controller'
 ],
-function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Project, Layouts){
+function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, Controller){
 
   ia.Controller = Backbone.Marionette.Controller.extend({
     currentState: 'index',
@@ -56,6 +56,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
     },
 
     project: function(id){
+      console.log('route:project', id);
       var project = ia.allProjects.get(id);
 
       Backbone.trigger('layout:projectDetail', project);
@@ -63,10 +64,14 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       this.currentState = 'project';
     },
 
+    profile: function(){
+      Backbone.trigger('layout:profile');
+    },
+
     initialize: function(){
       var that = this;
 
-      this.layoutController = new Layouts.Controller(ia);
+      this.layoutController = new Controller(ia);
 
       this.listenTo(Backbone, 'select:portfolio', function(model){
         console.log('router', model);
@@ -82,7 +87,8 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, User, Portfolio, Pro
       'portfolio/:id': 'portfolio',
       'portfolio/dashboard': 'portfolio_dashboard',
       'portfolio/dashboard/:id': 'portfolio_dashboard',
-      'project/:id': 'project'
+      'project/:id': 'project',
+      'profile': 'profile'
     }
   });
 
