@@ -11,10 +11,11 @@ define([
 
   'app/layouts/mainLayout',
   'app/layouts/portfolioDetailLayout',
-  'app/layouts/ProjectDetailLayout',
-  'app/layouts/PortfolioDashboardLayout'
+  'app/layouts/projectDetailLayout',
+  'app/layouts/portfolioDashboardLayout',
+  'app/layouts/profileLayout'
 ],
-function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, MainLayout, PortfolioDetailLayout, ProjectDetailLayout, PortfolioDashboardLayout){
+function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, MainLayout, PortfolioDetailLayout, ProjectDetailLayout, PortfolioDashboardLayout, ProfileLayout){
 
   var RouteController = Backbone.Marionette.Controller.extend({
     index: function(){
@@ -63,7 +64,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
     },
 
     profile: function(){
-      this.layoutController.profile();
+      this.mainLayout.mainContent.show( new ProfileLayout( {model: ia.currentUser }));
     },
 
     initialize: function(){

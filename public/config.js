@@ -44,6 +44,11 @@ require.config({
       name: 'breadcrumb',
       main: 'breadcrumb',
       location: 'app/modules/breadcrumb'
+    },
+    {
+      name: 'form',
+      main: 'form',
+      location: 'app/modules/form'
     }
   ],
   paths: {

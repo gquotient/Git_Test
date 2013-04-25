@@ -14,9 +14,9 @@ define([
   Backbone,
   Marionette,
   Handlebars,
+
   indexTemplate,
-  headerTemplate,
-  profileTemplate
+  headerTemplate
 ){
   var Layouts = {};
 

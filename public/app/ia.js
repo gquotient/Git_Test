@@ -9,9 +9,7 @@ define(
 
     'user',
     'portfolio',
-    'project',
-    'layouts',
-    'breadcrumb'
+    'project'
   ],
   function($, _, Backbone, Marionette, MarionetteHandlebars, User, Portfolio, Project, Layouts, Breadcrumb){
 
