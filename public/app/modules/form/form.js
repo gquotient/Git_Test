@@ -23,6 +23,11 @@ function(
         event.preventDefault();
         console.log('form submitted', event, this);
         console.log(this.$el.serialize());
+      },
+      'reset': function(event){
+        event.preventDefault();
+        console.log('form reset', event, this);
+        this.render();
       }
     }
   });
