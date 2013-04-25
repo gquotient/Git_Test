@@ -192,8 +192,8 @@ app.all('/ia', ensureAuthenticated, function(req, res){
             locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
           }
         );
+      });
     });
-  });
 });
 
 app.all('/ia/*', ensureAuthenticated, function(req, res){

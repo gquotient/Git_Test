@@ -15,8 +15,20 @@ define([
   'app/layouts/portfolioDashboardLayout',
   'app/layouts/profileLayout'
 ],
-function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, MainLayout, PortfolioDetailLayout, ProjectDetailLayout, PortfolioDashboardLayout, ProfileLayout){
-
+function(
+  _,
+  Backbone,
+  Marionette,
+  MarionetteHandlebars,
+  ia,
+  Portfolio,
+  Project,
+  MainLayout,
+  PortfolioDetailLayout,
+  ProjectDetailLayout,
+  PortfolioDashboardLayout,
+  ProfileLayout
+){
   var RouteController = Backbone.Marionette.Controller.extend({
     index: function(){
       Backbone.history.navigate('portfolio/all', true);
@@ -36,6 +48,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
       }
 
       this.currentState = 'portfolioDashboard';
+      this.mainLayout.updateBreadcrumbs(portfolio);
       this.mainLayout.mainContent.show( new PortfolioDashboardLayout({model: portfolio, collection: subPortfolios }) );
     },
 
@@ -52,6 +65,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
         subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
 
+      this.mainLayout.updateBreadcrumbs(portfolio);
       this.mainLayout.mainContent.show( new PortfolioDetailLayout({model: portfolio, collection: subPortfolios}) );
     },
 
@@ -60,6 +74,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
 
       this.currentState = 'projectDetail';
 
+      this.mainLayout.updateBreadcrumbs(project);
       this.mainLayout.mainContent.show( new ProjectDetailLayout({model: project}) );
     },
 

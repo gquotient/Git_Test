@@ -29,14 +29,11 @@ define([
 
 
     onShow: function(){
-      var editUser = new User.views.edit({model: this.model});
-
-      this.editUser.show(editUser);
+      this.editUser.show( new User.views.edit({model: this.user}) );
     },
 
     initialize: function(options){
-      console.log(options.model);
-      this.model = options.model;
+      this.user = options.model;
     }
   });
 });
