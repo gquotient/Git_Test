@@ -29,6 +29,22 @@ define(
     // Instantiate the app
     var ia = new Backbone.Marionette.Application();
 
+    // Bootstrap User
+    ia.currentUser = new User.Model( JSON.parse($('#currentUserData').html()) );
+
+    // Since the portfolio list is so important to the app, let's go ahead
+    // and create it.
+    ia.allProjects = new Project.collections.Projects();
+    ia.allPortfolios = new Portfolio.collections.All([],{ projects: ia.allProjects });
+    ia.allPortfoliosPortfolio = new Portfolio.models.AllPortfolio({id: 'all', name: 'All Portfolios', projects: ia.allProjects, subPortfolios: ia.allPortfolios });
+
+    ia.allPortfolios.reset( JSON.parse($('#bootstrapPortfolios').html()) );
+    ia.allProjects.reset( JSON.parse($('#bootstrapProjects').html()) );
+
+    ia.addRegions({
+      main: '#ia'
+    });
+
     // Namespace event aggregation
     ia.listenTo(Backbone, 'all', function(vent, data){
       var myEvent = vent.split(':');
@@ -40,13 +56,8 @@ define(
     // Empty object to hold different layouts. Should we abstract layouts to a module?
     ia.layouts = {};
 
-    /* Some app initialization. Breaking it up for clarity. */
 
-    // Bootstrap User
-    ia.addInitializer(function(){
-      // Create a new user instance that is the current session user
-      ia.currentUser = new User.Model( JSON.parse($('#currentUserData').html()) );
-    });
+
     /*
     ia.addInitializer(function(){
       // Fire a global resize event
@@ -57,38 +68,6 @@ define(
     */
 
     // Setup Layouts and Views
-    ia.addInitializer(function(){
-      // Define the primary region (this is the body)
-      ia.addRegions({
-        main: '#ia'
-      });
-
-      ia.layouts.app = new Layouts.Main();
-      ia.main.show(ia.layouts.app);
-
-      // Build header
-      var headerView = new Layouts.Header({model: ia.currentUser});
-
-      ia.layouts.app.header.show(headerView);
-
-      // Build breadcrumbs
-      var breadcrumbs = new Breadcrumb.collections.BreadcrumbList(),
-      breadcrumbsView = new Breadcrumb.views.Breadcrumbs({ collection: breadcrumbs });
-
-      ia.layouts.app.pageNavigation.show(breadcrumbsView);
-    });
-
-    // Since the portfolio list is so important to the app, let's go ahead
-    // and create it.
-    ia.addInitializer(function(){
-      ia.allProjects = new Project.collections.Projects();
-      ia.allPortfolios = new Portfolio.collections.All([],{ projects: ia.allProjects });
-      ia.allPortfoliosPortfolio = new Portfolio.models.AllPortfolio({id: 'all', name: 'All Portfolios', projects: ia.allProjects, subPortfolios: ia.allPortfolios });
-
-      ia.allPortfolios.reset( JSON.parse($('#bootstrapPortfolios').html()) );
-      ia.allProjects.reset( JSON.parse($('#bootstrapProjects').html()) );
-
-    });
 
     return ia;
   }

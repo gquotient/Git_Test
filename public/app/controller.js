@@ -9,7 +9,8 @@ define(
   'layouts',
 
   'portfolio',
-  'project'
+  'project',
+  'breadcrumb'
 ],
 function(
   $,
@@ -18,7 +19,8 @@ function(
   ia,
   Layouts,
   Portfolio,
-  Project
+  Project,
+  Breadcrumb
 ){
   // LAYOUT CONTROLLER
   return Backbone.Marionette.Controller.extend({
@@ -178,8 +180,20 @@ function(
       this.currentState = 'profile';
     },
 
-    initialize: function(app){
-      ia = app;
+    initialize: function(){
+      ia.layouts.app = new Layouts.Main();
+      ia.main.show(ia.layouts.app);
+
+      // Build header
+      var headerView = new Layouts.Header({model: ia.currentUser});
+
+      ia.layouts.app.header.show(headerView);
+
+      // Build breadcrumbs
+      var breadcrumbs = new Breadcrumb.collections.BreadcrumbList(),
+      breadcrumbsView = new Breadcrumb.views.Breadcrumbs({ collection: breadcrumbs });
+
+      ia.layouts.app.pageNavigation.show(breadcrumbsView);
     }
   });
 });

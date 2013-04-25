@@ -13,7 +13,7 @@ define([
 ],
 function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, Controller){
 
-  ia.Controller = Backbone.Marionette.Controller.extend({
+  var routeController = Backbone.Marionette.Controller.extend({
     index: function(){
       //this.portfolio();
       Backbone.history.navigate('portfolio/all', true);
@@ -69,7 +69,7 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
   });
 
   var Router = Backbone.Marionette.AppRouter.extend({
-    controller: new ia.Controller(),
+    controller: new routeController(),
     appRoutes: {
       '': 'index',
       'portfolio': 'index',
