@@ -53,22 +53,6 @@ define(
       }
     });
 
-    // Empty object to hold different layouts. Should we abstract layouts to a module?
-    ia.layouts = {};
-
-
-
-    /*
-    ia.addInitializer(function(){
-      // Fire a global resize event
-      $(window).on('resize', function(event){
-        Backbone.trigger('window:resize');
-      });
-    });
-    */
-
-    // Setup Layouts and Views
-
     return ia;
   }
 );

@@ -9,13 +9,15 @@ define([
   'portfolio',
   'project',
 
-  'app/controller'
+  'app/layouts/mainLayout',
+  'app/layouts/portfolioDetailLayout',
+  'app/layouts/ProjectDetailLayout',
+  'app/layouts/PortfolioDashboardLayout'
 ],
-function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, Controller){
+function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, MainLayout, PortfolioDetailLayout, ProjectDetailLayout, PortfolioDashboardLayout){
 
-  var routeController = Backbone.Marionette.Controller.extend({
+  var RouteController = Backbone.Marionette.Controller.extend({
     index: function(){
-      //this.portfolio();
       Backbone.history.navigate('portfolio/all', true);
     },
 
@@ -32,7 +34,8 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
         subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
 
-      this.layoutController.portfolioDashboard(portfolio, subPortfolios);
+      this.currentState = 'portfolioDashboard';
+      this.mainLayout.mainContent.show( new PortfolioDashboardLayout({model: portfolio, collection: subPortfolios }) );
     },
 
     portfolio: function(id){
@@ -48,13 +51,15 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
         subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
 
-      this.layoutController.portfolioDetail(portfolio, subPortfolios);
+      this.mainLayout.mainContent.show( new PortfolioDetailLayout({model: portfolio, collection: subPortfolios}) );
     },
 
     project: function(id){
       var project = ia.allProjects.get(id);
 
-      this.layoutController.projectDetail(project);
+      this.currentState = 'projectDetail';
+
+      this.mainLayout.mainContent.show( new ProjectDetailLayout({model: project}) );
     },
 
     profile: function(){
@@ -63,13 +68,13 @@ function(_, Backbone, Marionette, MarionetteHandlebars, ia, Portfolio, Project, 
 
     initialize: function(){
       var that = this;
-
-      this.layoutController = new Controller(ia);
+      this.mainLayout = new MainLayout(ia);
+      ia.main.show(this.mainLayout);
     }
   });
 
   var Router = Backbone.Marionette.AppRouter.extend({
-    controller: new routeController(),
+    controller: new RouteController(),
     appRoutes: {
       '': 'index',
       'portfolio': 'index',
