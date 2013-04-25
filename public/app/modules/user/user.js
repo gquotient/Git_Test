@@ -4,9 +4,22 @@ define(
   'backbone.marionette',
   'backbone.marionette.handlebars',
 
-  'hbs!user/templates/itemView',
-  'hbs!user/templates/detailView'
-], function(Backbone, Marionette, MarionetteHandlebars, itemViewTemplate, detailViewTemplate){
+  'form',
+
+  'hbs!user/templates/item',
+  'hbs!user/templates/detail',
+  'hbs!user/templates/edit'
+], function(
+  Backbone,
+  Marionette,
+  MarionetteHandlebars,
+
+  DefaultForm,
+
+  itemTemplate,
+  detailTemplate,
+  editTemplate
+){
 
   var User = { views: {} };
 
@@ -23,7 +36,7 @@ define(
   User.views.itemView = Backbone.Marionette.ItemView.extend({
     template: {
       type: 'handlebars',
-      template: itemViewTemplate
+      template: itemTemplate
     },
     triggers: {
       'click': 'select:user'
@@ -40,21 +53,15 @@ define(
     model: User.Model,
     template: {
       type: 'handlebars',
-      template: detailViewTemplate
+      template: detailTemplate
     }
   });
 
-  User.controller = {
-    users: function(){}
-  };
-
-  User.Router = new Backbone.Marionette.AppRouter.extend({
-    controller: User.controller,
-
-    appRoutes: {
-      '/users': 'users'
+  User.views.edit = DefaultForm.extend({
+    template: {
+      type: 'handlebars',
+      template: editTemplate
     }
-
   });
 
   return User;

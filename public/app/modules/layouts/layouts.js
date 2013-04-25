@@ -5,6 +5,10 @@ define([
   'backbone.marionette',
   'handlebars',
 
+  'ia',
+
+  'user',
+
   'hbs!layouts/templates/index',
   'hbs!layouts/templates/header',
   'hbs!layouts/templates/profile',
@@ -18,6 +22,8 @@ define([
   Backbone,
   Marionette,
   Handlebars,
+  ia,
+  User,
   indexTemplate,
   headerTemplate,
   profileTemplate,
@@ -93,6 +99,14 @@ define([
       class: 'basicView'
     },
     regions: {
+      editUser: '#editUser'
+    },
+    onShow: function(){
+      var editUser = new User.views.edit({model: ia.currentUser});
+
+      this.editUser.show(editUser);
+    },
+    initialize: function(){
 
     }
   });

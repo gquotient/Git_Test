@@ -183,6 +183,8 @@ app.all('/ia', ensureAuthenticated, function(req, res){
           {
             user: JSON.stringify({
               username: req.user.name,
+              firstName: req.user.name.split(' ')[0],
+              lastName: req.user.name.split(' ')[1],
               email: req.user.email
             }),
             portfolios: portfolios,
