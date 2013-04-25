@@ -21,8 +21,8 @@ function(
     events: {
       'submit': function(event){
         event.preventDefault();
-        console.log('form submitted', event);
-        console.log($(this).serialize());
+        console.log('form submitted', event, this);
+        console.log(this.$el.serialize());
       }
     }
   });
