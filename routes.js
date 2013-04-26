@@ -37,10 +37,12 @@ function makeRequest(options, translate){
       form: formData
     });
 
+    console.log('formDatat', requestOptions.form);
+
     request(requestOptions, function(error, response, body){
       if (error) {
         req.flash('error', error.message);
-        console.log(error);
+        console.log('error!:', error);
         res.redirect('/ia');
       } else {
         if (translate) {
@@ -87,9 +89,7 @@ module.exports = function(app){
             'index',
             {
               user: JSON.stringify({
-                username: req.user.name,
-                firstName: req.user.name.split(' ')[0],
-                lastName: req.user.name.split(' ')[1],
+                name: req.user.name,
                 email: req.user.email
               }),
               portfolios: portfolios,
@@ -244,19 +244,22 @@ module.exports = function(app){
     })
   );
 
-  app.get('/api/user', ensureAuthorized('vendor_admin'), makeRequest(
-    {
-      host: 'http://model.stage.intelligentarray.com',
-      path: '/res/users',
-      method: 'GET'
-    })
-  );
+  // app.get('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
+  //   {
+  //     host: 'http://model.stage.intelligentarray.com',
+  //     path: '/res/users',
+  //     method: 'GET'
+  //   })
+  // );
 
-  app.put('/api/user', ensureAuthorized('vendor_admin'), makeRequest(
+  app.put('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
     {
       host: 'http://model.stage.intelligentarray.com',
-      path: '/res/users',
+      path: '/res/user',
       method: 'PUT'
+    }, function(data, next){
+      console.log('data', data);
+      next(data);
     })
   );
 

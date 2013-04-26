@@ -23,7 +23,10 @@ define(
 
   var User = { views: {} };
 
-  User.Model = Backbone.Model.extend({});
+  User.Model = Backbone.Model.extend({
+    url: '/api/users',
+    idAttribute: "email"
+  });
 
   User.Collection = Backbone.Collection.extend({
     url: '/api/users',

@@ -29,7 +29,7 @@ define([
 
 
     onShow: function(){
-      this.editUser.show( new User.views.edit({model: this.user}) );
+      this.editUser.show( new User.views.edit( {model: this.user} ));
     },
 
     initialize: function(options){

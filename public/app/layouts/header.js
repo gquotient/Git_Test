@@ -30,6 +30,8 @@ define([
         window.location = '/logout';
       });
 
+      this.listenTo(this.model, 'change', this.render);
+
       this.listenTo(this, 'profile', function(){
         Backbone.history.navigate('/profile', true);
       });
