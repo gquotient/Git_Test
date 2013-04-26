@@ -91,7 +91,7 @@ function(
     },
 
     profile: function(){
-      this.mainLayout.updateBreadcrumbs({name: 'My Profile'});
+      this.mainLayout.updateBreadcrumbs({name: 'My Profile'}, true);
       this.mainLayout.mainContent.show( new ProfileLayout( {model: ia.currentUser }));
     },
 
