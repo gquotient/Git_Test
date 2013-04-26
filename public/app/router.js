@@ -8,6 +8,7 @@ define([
 
   'portfolio',
   'project',
+  'error',
 
   'app/layouts/helpers',
   'app/layouts/main',
@@ -27,6 +28,7 @@ function(
 
   Portfolio,
   Project,
+  Error,
 
   Helpers,
   MainLayout,
