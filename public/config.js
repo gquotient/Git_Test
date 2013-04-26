@@ -49,6 +49,16 @@ require.config({
       name: 'form',
       main: 'form',
       location: 'app/modules/form'
+    },
+    {
+      name: 'team',
+      main: 'team',
+      location: 'app/modules/team'
+    },
+    {
+      name: 'organization',
+      main: 'organization',
+      location: 'app/modules/organization'
     }
   ],
   paths: {

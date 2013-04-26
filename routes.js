@@ -1,7 +1,8 @@
 
 var fs = require('fs')
   , passport = require('passport')
-  , DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy;
+  , DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy
+  , http = require('http');
 
 /*
  * Basic routing (temporary).
@@ -161,9 +162,55 @@ module.exports = function(app){
       });
     });
 
-  // app.get('/api/users', ensureAuthenticated, ensureAuthorized('vendor-admin'), function(req, res){
+  app.get('/api/teams', ensureAuthenticated, ensureAuthorized('vendor_admin'), function(req, res){
+    var options = {
+      host: 'model.stage.intelligentarray.com',
+      path: '/res/teams',
+      method: 'GET',
+      headers: { 'currentUser' : req.user.email }
+    };
 
-  // });
+    var request = http.request(options, function(response) {
+      console.log('STATUS: ' + response.statusCode);
+      response.on('data', function(d){
+        res.write(d);
+      });
+      res.end();
+    });
+
+    request.end();
+    console.log('Request sent!');
+    req.on('error', function(e){
+      console.log(e.message);
+      req.flash('error', e.message);
+      res.redirect('/ia');
+    });
+  });
+
+
+  app.get('/api/organizations', ensureAuthenticated, ensureAuthorized('vendor_admin'), function(req, res){
+    var options = {
+      host: 'model.stage.intelligentarray.com',
+      path: '/res/organizations',
+      method: 'GET',
+      headers: { 'currentUser' : req.user.email }
+    };
+
+    var request = http.request(options, function(response) {
+      console.log('STATUS: ' + response.statusCode);
+      response.on('data', function(d){
+        res.write(d);
+      });
+      res.end();
+    });
+
+    request.end();
+    req.on('error', function(e){
+      console.log(e.message);
+      req.flash('error', e.message);
+      res.redirect('/ia');
+    });
+  });
 
 
   function ensureAuthenticated(req, res, next) {
@@ -173,4 +220,16 @@ module.exports = function(app){
       res.redirect('/login');
     }
   }
+
+  function ensureAuthorized(role){
+    return function(req, res, next) {
+      if (req.user.role === role){
+        next();
+      } else {
+        req.flash('error', 'Unauthorized');
+        res.redirect('/ia');
+      }
+    };
+  }
+
 };
