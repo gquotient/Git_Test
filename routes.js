@@ -2,7 +2,59 @@
 var fs = require('fs')
   , passport = require('passport')
   , DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy
-  , http = require('http');
+  , http = require('http')
+  , _ = require('lodash')
+  , request = require('request');
+
+
+// Route Middleware
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  else {
+    if(req.url !== '/reset' || req.url !== '/login') { req.session.redirectUrl = req.url; }
+    res.redirect('/login');
+  }
+}
+
+function ensureAuthorized(role){
+  return function(req, res, next) {
+    if (req.user.role === role){
+      next();
+    } else {
+      req.flash('error', 'Unauthorized');
+      res.redirect('/ia');
+    }
+  };
+}
+
+function makeRequest(options, translate){
+  return function(req, res, next){
+    var formData = _.extend(req.body, {});
+    var requestOptions = _.extend(options, {
+      headers: { 'currentUser' : req.user.email },
+      uri: options.host + options.path,
+      form: formData
+    });
+
+    request(requestOptions, function(error, response, body){
+      if (error) {
+        req.flash('error', error.message);
+        console.log(error);
+        res.redirect('/ia');
+      } else {
+        if (translate) {
+          translate(JSON.parse(body), function(translatedData){
+            res.end(JSON.stringify(translatedData));
+          });
+        } else {
+          console.log(body);
+          res.end(body);
+        }
+      }
+    });
+  };
+}
 
 /*
  * Basic routing (temporary).
@@ -121,7 +173,7 @@ module.exports = function(app){
   app.get('/token',
     passport.authenticate('draker-ia6', { failureRedirect: '/login', failureFlash: true }),
     function(req, res){
-      req.session['draker-ia6'] = req.session['passport']['user'];
+      req.session['draker-ia6'] = req.session.passport.user;
       /* res.render("index",checkSession(req)); */
       res.redirect('/reset');
     }
@@ -139,7 +191,9 @@ module.exports = function(app){
     }
   );
 
-  /* API */
+
+
+
   app.all('/api/*', ensureAuthenticated);
 
   app.get('/api/portfolios',
@@ -162,74 +216,60 @@ module.exports = function(app){
       });
     });
 
-  app.get('/api/teams', ensureAuthenticated, ensureAuthorized('vendor_admin'), function(req, res){
-    var options = {
-      host: 'model.stage.intelligentarray.com',
+  //////
+  // TEAMS
+  //////
+
+  app.get('/api/teams', ensureAuthorized('vendor_admin'), makeRequest(
+    {
+      host: 'http://model.stage.intelligentarray.com',
       path: '/res/teams',
-      method: 'GET',
-      headers: { 'currentUser' : req.user.email }
-    };
+      method: 'GET'
+    },
+    function(data, next){
+      next(data.teams);
+    })
+  );
 
-    var request = http.request(options, function(response) {
-      console.log('STATUS: ' + response.statusCode);
-      response.on('data', function(d){
-        res.write(d);
-      });
-      res.end();
-    });
+  //////
+  // USERS
+  //////
 
-    request.end();
-    console.log('Request sent!');
-    req.on('error', function(e){
-      console.log(e.message);
-      req.flash('error', e.message);
-      res.redirect('/ia');
-    });
-  });
+  // Get all users  
+  app.get('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
+    {
+      host: 'http://model.stage.intelligentarray.com',
+      path: '/res/users',
+      method: 'GET'
+    })
+  );
 
+  app.get('/api/user', ensureAuthorized('vendor_admin'), makeRequest(
+    {
+      host: 'http://model.stage.intelligentarray.com',
+      path: '/res/users',
+      method: 'GET'
+    })
+  );
 
-  app.get('/api/organizations', ensureAuthenticated, ensureAuthorized('vendor_admin'), function(req, res){
-    var options = {
-      host: 'model.stage.intelligentarray.com',
+  app.put('/api/user', ensureAuthorized('vendor_admin'), makeRequest(
+    {
+      host: 'http://model.stage.intelligentarray.com',
+      path: '/res/users',
+      method: 'PUT'
+    })
+  );
+
+  ////////
+  // ORGANIZATIONS
+  ///////
+
+  app.get('/api/organizations', ensureAuthorized('vendor_admin'), makeRequest(
+    {
+      host: 'http://model.stage.intelligentarray.com',
       path: '/res/organizations',
-      method: 'GET',
-      headers: { 'currentUser' : req.user.email }
-    };
-
-    var request = http.request(options, function(response) {
-      console.log('STATUS: ' + response.statusCode);
-      response.on('data', function(d){
-        res.write(d);
-      });
-      res.end();
-    });
-
-    request.end();
-    req.on('error', function(e){
-      console.log(e.message);
-      req.flash('error', e.message);
-      res.redirect('/ia');
-    });
-  });
-
-
-  function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) { return next(); }
-    else {
-      if(req.url !== '/reset' || req.url !== '/login') { req.session.redirectUrl = req.url; }
-      res.redirect('/login');
-    }
-  }
-
-  function ensureAuthorized(role){
-    return function(req, res, next) {
-      if (req.user.role === role){
-        next();
-      } else {
-        req.flash('error', 'Unauthorized');
-        res.redirect('/ia');
-      }
-    };
-  }
+      method: 'GET'
+    })
+  );
 
 };

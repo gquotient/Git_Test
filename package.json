@@ -15,7 +15,8 @@
     "connect-redis": "~1.4.5",
     "handlebars": "~1.0.9",
     "hbs": "~2.0.2",
-    "connect-flash": "~0.1.0"
+    "connect-flash": "~0.1.0",
+    "request": "~2.20.0"
   },
   "devDependencies": {
     "passport-local": "~0.1.6",
