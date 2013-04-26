@@ -25,7 +25,7 @@ define(
 
   User.Model = Backbone.Model.extend({
     url: '/api/users',
-    idAttribute: "email"
+    idAttribute: 'email'
   });
 
   User.Collection = Backbone.Collection.extend({
