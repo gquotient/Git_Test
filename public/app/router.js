@@ -1,4 +1,5 @@
 define([
+  'jquery',
   'underscore',
   'backbone',
   'backbone.marionette',
@@ -16,6 +17,7 @@ define([
   'app/layouts/profile'
 ],
 function(
+  $,
   _,
   Backbone,
   Marionette,
@@ -65,8 +67,15 @@ function(
         subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
 
-      this.mainLayout.updateBreadcrumbs(portfolio);
-      this.mainLayout.mainContent.show( new PortfolioDetailLayout({model: portfolio, collection: subPortfolios}) );
+      // Build detail view if not currently there
+      // NOTE: this is for back/forward support
+      if (!$('.portfolioDetailView').length) {
+        this.mainLayout.updateBreadcrumbs(portfolio);
+        this.mainLayout.mainContent.show( new PortfolioDetailLayout({model: portfolio, collection: subPortfolios}) );
+      } else {
+        // Trigger select event
+        Backbone.trigger('select:portfolio', portfolio);
+      }
     },
 
     project: function(id){
