@@ -15,11 +15,11 @@ define(
     var Team = { models: {}, collections: {} };
 
     Team.models.Team = Backbone.Model.extend({
-      url: '/api/organizations'
     });
 
-    Team.collection.Teams = Backbone.Collection.extend({
-      model: Team.models.Team
+    Team.collections.Teams = Backbone.Collection.extend({
+      model: Team.models.Team,
+      url: '/api/organizations'
     });
 
     return Team;
