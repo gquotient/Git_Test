@@ -10,13 +10,13 @@ function(
   Backbone,
   Marionette
 ){
-  var Error = { views: {} };
+  var Message = { views: {} };
 
-  Error.model = Backbone.Model.extend({});
+  Message.model = Backbone.Model.extend({});
 
-  Error.views.floating = Backbone.View.extend({
+  Message.views.floating = Backbone.View.extend({
     options: {
-      message: 'Unknown error',
+      message: 'Unknown Message',
       closable: false,
       autoHide: true,
       hideTime: 3000,
@@ -59,5 +59,5 @@ function(
     }
   });
 
-  return Error;
+  return Message;
 });
