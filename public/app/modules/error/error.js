@@ -1,18 +1,18 @@
 define([
-	'jquery',
-	'underscore',
-	'backbone',
-	'backbone.marionette'
+  'jquery',
+  'underscore',
+  'backbone',
+  'backbone.marionette'
 ],
 function(
-	$,
-	_,
-	Backbone,
-	Marionette
+  $,
+  _,
+  Backbone,
+  Marionette
 ){
-	var Error = { views: {} };
+  var Error = { views: {} };
 
-	Error.model = Backbone.Model.extend({});
+  Error.model = Backbone.Model.extend({});
 
-	Error.views.floating = Marionette.itemView.extend({});
+  Error.views.floating = Marionette.itemView.extend({});
 });
