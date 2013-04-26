@@ -50,6 +50,10 @@ function(
       this.breadcrumbs.add(model);
     },
 
+    resetBreadcrumbs: function(models){
+      
+    },
+
     initialize: function(app){
       this.app = app;
 
