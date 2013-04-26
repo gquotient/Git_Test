@@ -59,6 +59,11 @@ require.config({
       name: 'organization',
       main: 'organization',
       location: 'app/modules/organization'
+    },
+    {
+      name: 'error',
+      main: 'error',
+      location: 'app/modules/error'
     }
   ],
   paths: {

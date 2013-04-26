@@ -160,13 +160,20 @@ header {
 
 /* Messages */
 
-.message.flash {
+.message {
   border: 1px solid #aaa;
   background: #ccc;
   box-shadow: inset 0 1px 0 #ddd;
   color: #111;
   padding: 3px;
   border-radius: 1px;
+  &.flash {
+
+  }
+  &.error {
+    background: #FFC1B8;
+    border-color: colorAlertRed;
+  }
 }
 
 /* Buttons and Links */

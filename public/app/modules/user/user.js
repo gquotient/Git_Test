@@ -58,6 +58,10 @@ define(
   });
 
   User.views.edit = DefaultForm.extend({
+    attributes: {
+      id: 'form_editUser',
+      name: 'form_editUser'
+    },
     template: {
       type: 'handlebars',
       template: editTemplate
