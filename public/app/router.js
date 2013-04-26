@@ -14,7 +14,8 @@ define([
   'app/layouts/portfolioDetail',
   'app/layouts/projectDetail',
   'app/layouts/portfolioDashboard',
-  'app/layouts/profile'
+  'app/layouts/profile',
+  'app/layouts/admin'
 ],
 function(
   $,
@@ -32,7 +33,8 @@ function(
   PortfolioDetailLayout,
   ProjectDetailLayout,
   PortfolioDashboardLayout,
-  ProfileLayout
+  ProfileLayout,
+  AdminLayout
 ){
   var RouteController = Backbone.Marionette.Controller.extend({
     index: function(){
@@ -91,8 +93,13 @@ function(
     },
 
     profile: function(){
-      this.mainLayout.updateBreadcrumbs({name: 'My Profile'});
+      this.mainLayout.updateBreadcrumbs({name: 'My Profile'}, true);
       this.mainLayout.mainContent.show( new ProfileLayout( {model: ia.currentUser }));
+    },
+
+    admin: function(){
+      this.mainLayout.updateBreadcrumbs({name: 'Admin'}, true);
+      this.mainLayout.mainContent.show( new AdminLayout({}) );
     },
 
     initialize: function(){
@@ -111,7 +118,8 @@ function(
       'portfolio/dashboard': 'portfolio_dashboard',
       'portfolio/dashboard/:id': 'portfolio_dashboard',
       'project/:id': 'project',
-      'profile': 'profile'
+      'profile': 'profile',
+      'admin': 'admin'
     }
   });
 

@@ -41,19 +41,17 @@ function(
       mainContent: '#page'
     },
 
-    currentState: '',
-
     onShow: function(){
       this.header.show(this.headerView);
       this.pageNavigation.show(this.breadcrumbsView);
     },
 
-    updateBreadcrumbs: function(model){
-      this.breadcrumbs.add(model);
-    },
-
-    resetBreadcrumbs: function(models){
-      
+    updateBreadcrumbs: function(model, reset){
+      if (reset) {
+        this.breadcrumbs.reset(model);
+      } else {
+        this.breadcrumbs.add(model);
+      }
     },
 
     initialize: function(app){

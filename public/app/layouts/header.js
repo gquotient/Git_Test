@@ -22,7 +22,8 @@ define([
     },
     triggers: {
       'click .logout': 'logout',
-      'click .profile': 'profile'
+      'click .profile': 'profile',
+      'click .admin': 'admin'
     },
     initialize: function(){
       this.listenTo(this, 'logout', function(){
@@ -31,6 +32,10 @@ define([
 
       this.listenTo(this, 'profile', function(){
         Backbone.history.navigate('/profile', true);
+      });
+
+      this.listenTo(this, 'admin', function(){
+        Backbone.history.navigate('/admin', true);
       });
     }
   });
