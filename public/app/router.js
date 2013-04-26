@@ -1,28 +1,33 @@
 define([
+  'jquery',
   'underscore',
   'backbone',
   'backbone.marionette',
-  'backbone.marionette.handlebars',
 
   'ia',
 
   'portfolio',
   'project',
 
-  'app/layouts/mainLayout',
-  'app/layouts/portfolioDetailLayout',
-  'app/layouts/projectDetailLayout',
-  'app/layouts/portfolioDashboardLayout',
-  'app/layouts/profileLayout'
+  'app/layouts/helpers',
+  'app/layouts/main',
+  'app/layouts/portfolioDetail',
+  'app/layouts/projectDetail',
+  'app/layouts/portfolioDashboard',
+  'app/layouts/profile'
 ],
 function(
+  $,
   _,
   Backbone,
   Marionette,
-  MarionetteHandlebars,
+
   ia,
+
   Portfolio,
   Project,
+
+  Helpers,
   MainLayout,
   PortfolioDetailLayout,
   ProjectDetailLayout,
@@ -65,8 +70,15 @@ function(
         subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
 
-      this.mainLayout.updateBreadcrumbs(portfolio);
-      this.mainLayout.mainContent.show( new PortfolioDetailLayout({model: portfolio, collection: subPortfolios}) );
+      // Build detail view if not currently there
+      // NOTE: this is for back/forward support
+      if (!$('.portfolioDetail').length) {
+        this.mainLayout.updateBreadcrumbs(portfolio);
+        this.mainLayout.mainContent.show( new PortfolioDetailLayout({model: portfolio, collection: subPortfolios}) );
+      } else {
+        // Trigger select event
+        Backbone.trigger('select:portfolio', portfolio);
+      }
     },
 
     project: function(id){
@@ -79,6 +91,7 @@ function(
     },
 
     profile: function(){
+      this.mainLayout.updateBreadcrumbs({name: 'My Profile'});
       this.mainLayout.mainContent.show( new ProfileLayout( {model: ia.currentUser }));
     },
 

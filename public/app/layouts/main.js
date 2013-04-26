@@ -3,12 +3,13 @@ define(
   'jquery',
   'backbone',
   'backbone.marionette',
-
-  'layouts',
+  'handlebars',
 
   'portfolio',
   'project',
   'breadcrumb',
+
+  'layouts/header',
 
   'hbs!layouts/templates/index'
 ],
@@ -16,17 +17,18 @@ function(
   $,
   Backbone,
   Marionette,
-
-  Layouts,
+  Handlebars,
 
   Portfolio,
   Project,
   Breadcrumb,
 
+  Header,
+
   indexTemplate
 ){
 
-// MAIN LAYOUT/CONTROLLER
+  // MAIN LAYOUT/CONTROLLER
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',
@@ -58,7 +60,7 @@ function(
       this.app = app;
 
       // Build header
-      this.headerView = new Layouts.Header({model: app.currentUser});
+      this.headerView = new Header({model: app.currentUser});
       // Build breadcrumbs
       this.breadcrumbs = new Breadcrumb.collections.BreadcrumbList([app.allPortfoliosPortfolio]);
       this.breadcrumbsView = new Breadcrumb.views.Breadcrumbs({ collection: this.breadcrumbs });

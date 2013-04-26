@@ -23,7 +23,7 @@ define([
       template: portfolioDetailTemplate
     },
     attributes: {
-      class: 'portfolioView'
+      class: 'portfolioDetail'
     },
     regions: {
       kpis: '#kpis',
@@ -41,39 +41,31 @@ define([
       },
 
     initialize: function(options){
-      // Build detail view if not currently there
-      // NOTE: this is for back/forward support
-      if (this.currentState !== 'portfolioDetail') {
+      // Build primary portfolio nav
+      this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
+          collection: options.collection,
+          model: options.model
+        });
+        // Build KPIs
+      this.kpisView = new Portfolio.views.detailKpis({ model: options.model }),
 
-          // Build primary portfolio nav
-        this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
-            collection: options.collection,
-            model: options.model
-          });
-          // Build KPIs
-        this.kpisView = new Portfolio.views.detailKpis({ model: options.model }),
+      this.projectList = options.model.get('projects').clone(),
 
-        this.projectList = options.model.get('projects').clone(),
-
-          // Extend map view for marker filtering
-        this.mapView = new Project.views.map({
-            collection: this.projectList
-          });
-
-        this.projectListView = new Project.views.DataListView({
-            collection: this.projectList
-          });
-
-        this.listenTo(Backbone, 'select:portfolio', function(model){
-          // Update the collection.
-          this.projectList.set(model.get('projects').models);
+        // Extend map view for marker filtering
+      this.mapView = new Project.views.map({
+          collection: this.projectList
         });
 
-        this.currentState = 'portfolioDetail';
-      } else {
-        // Trigger select event
-        Backbone.trigger('select:portfolio', options.model);
-      }
+      this.projectListView = new Project.views.DataListView({
+          collection: this.projectList
+        });
+
+      this.listenTo(Backbone, 'select:portfolio', function(model){
+        // Update the collection.
+        this.projectList.set(model.get('projects').models);
+      });
+
+      this.currentState = 'portfolioDetail';
 
       // Set up listeners
       this.listenTo(Backbone, 'select:portfolio', function(model){
@@ -85,7 +77,6 @@ define([
         // Set address bar and force routing
         Backbone.history.navigate('/project/' + model.get('id'), true);
       });
-
     }
   });
 });
