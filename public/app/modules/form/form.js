@@ -15,8 +15,8 @@ function(
   var DefaultForm = Marionette.ItemView.extend({
     tagName: 'form',
     attributes: {
-      id: 'someForm',
-      name: 'someForm'
+      id: '',
+      name: ''
     },
     events: {
       'submit': function(event){
