@@ -69,7 +69,7 @@ function(
 
       // Build detail view if not currently there
       // NOTE: this is for back/forward support
-      if (!$('.portfolioDetailView').length) {
+      if (!$('.portfolioDetail').length) {
         this.mainLayout.updateBreadcrumbs(portfolio);
         this.mainLayout.mainContent.show( new PortfolioDetailLayout({model: portfolio, collection: subPortfolios}) );
       } else {

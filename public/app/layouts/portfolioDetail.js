@@ -23,7 +23,7 @@ define([
       template: portfolioDetailTemplate
     },
     attributes: {
-      class: 'portfolioDetailView'
+      class: 'portfolioDetail'
     },
     regions: {
       kpis: '#kpis',
