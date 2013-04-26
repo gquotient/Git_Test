@@ -161,9 +161,9 @@ module.exports = function(app){
       });
     });
 
-  app.get('/api/users', ensureAuthenticated, ensureAuthorized('vendor-admin'), function(req, res){
+  // app.get('/api/users', ensureAuthenticated, ensureAuthorized('vendor-admin'), function(req, res){
 
-  });
+  // });
 
 
   function ensureAuthenticated(req, res, next) {
