@@ -9,11 +9,11 @@ define([
   'portfolio',
   'project',
 
-  'app/layouts/mainLayout',
-  'app/layouts/portfolioDetailLayout',
-  'app/layouts/projectDetailLayout',
-  'app/layouts/portfolioDashboardLayout',
-  'app/layouts/profileLayout'
+  'app/layouts/main',
+  'app/layouts/portfolioDetail',
+  'app/layouts/projectDetail',
+  'app/layouts/portfolioDashboard',
+  'app/layouts/profile'
 ],
 function(
   _,
@@ -79,6 +79,7 @@ function(
     },
 
     profile: function(){
+      this.mainLayout.updateBreadcrumbs({name: 'My Profile'});
       this.mainLayout.mainContent.show( new ProfileLayout( {model: ia.currentUser }));
     },
 

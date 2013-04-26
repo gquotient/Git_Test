@@ -85,7 +85,6 @@ define([
         // Set address bar and force routing
         Backbone.history.navigate('/project/' + model.get('id'), true);
       });
-
     }
   });
 });

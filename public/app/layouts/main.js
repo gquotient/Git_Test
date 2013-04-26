@@ -3,12 +3,13 @@ define(
   'jquery',
   'backbone',
   'backbone.marionette',
-
-  'layouts',
+  'handlebars',
 
   'portfolio',
   'project',
   'breadcrumb',
+
+  'layouts/header',
 
   'hbs!layouts/templates/index'
 ],
@@ -16,15 +17,34 @@ function(
   $,
   Backbone,
   Marionette,
-
-  Layouts,
+  Handlebars,
 
   Portfolio,
   Project,
   Breadcrumb,
 
+  Header,
+
   indexTemplate
 ){
+
+  // Unit conversion
+  var roundNumber = function(num, dec) {
+    var result = (num !== null)?Math.round(num*Math.pow(10,dec))/Math.pow(10,dec):null;
+    return result;
+  };
+
+  Handlebars.registerHelper('tokW', function(value) {
+    return roundNumber((+value / 1000), 1);
+  });
+
+  Handlebars.registerHelper('toMW', function(value) {
+    return roundNumber((+value / 1000000), 2);
+  });
+
+  Handlebars.registerHelper('percent', function(value, max){
+    return value/max * 100;
+  });
 
 // MAIN LAYOUT/CONTROLLER
   return Marionette.Layout.extend({
@@ -54,7 +74,7 @@ function(
       this.app = app;
 
       // Build header
-      this.headerView = new Layouts.Header({model: app.currentUser});
+      this.headerView = new Header({model: app.currentUser});
       // Build breadcrumbs
       this.breadcrumbs = new Breadcrumb.collections.BreadcrumbList([app.allPortfoliosPortfolio]);
       this.breadcrumbsView = new Breadcrumb.views.Breadcrumbs({ collection: this.breadcrumbs });
