@@ -10,6 +10,7 @@ define([
   'portfolio',
   'project',
 
+  'app/layouts/helpers',
   'app/layouts/main',
   'app/layouts/portfolioDetail',
   'app/layouts/projectDetail',
@@ -22,9 +23,13 @@ function(
   Backbone,
   Marionette,
   MarionetteHandlebars,
+
   ia,
+
   Portfolio,
   Project,
+
+  Helpers,
   MainLayout,
   PortfolioDetailLayout,
   ProjectDetailLayout,
