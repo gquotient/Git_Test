@@ -29,7 +29,8 @@ define([
 
     onShow: function(){
       var users = new User.Collection();
-      console.log(users);
+      users.fetch();
+
       this.editUsers.show( new User.views.editTable({ collection: users }) );
     },
 

@@ -32,9 +32,7 @@ define(
 
   User.Collection = Backbone.Collection.extend({
     url: '/api/users',
-    parse: function(res){
-      return res.data;
-    },
+
     model: User.Model
   });
 
