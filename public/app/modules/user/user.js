@@ -8,17 +8,19 @@ define(
 
   'hbs!user/templates/item',
   'hbs!user/templates/detail',
-  'hbs!user/templates/edit'
+  'hbs!user/templates/edit',
+  'hbs!user/templates/editTableRow'
 ], function(
   Backbone,
   Marionette,
   MarionetteHandlebars,
 
-  DefaultForm,
+  Forms,
 
   itemTemplate,
   detailTemplate,
-  editTemplate
+  editTemplate,
+  editTableRowTemplate
 ){
 
   var User = { views: {} };
@@ -60,7 +62,8 @@ define(
     }
   });
 
-  User.views.edit = DefaultForm.extend({
+  // Basic single user form edit view
+  User.views.edit = Forms.views.basic.extend({
     attributes: {
       id: 'form_editUser',
       name: 'form_editUser'
@@ -68,6 +71,32 @@ define(
     template: {
       type: 'handlebars',
       template: editTemplate
+    }
+  });
+
+  // Table row edit ItemView extended from form ItemView
+  User.views.editTableRow = Forms.views.tableRow.extend({
+    attributes: {
+      id: 'form_editUser',
+      name: 'form_editUser'
+    },
+    template: {
+      type: 'handlebars',
+      template: editTableRowTemplate
+    }
+  });
+
+  // Table CompositeView extended from form
+  User.views.editTable = Forms.views.table.extend({
+    attributes: {
+      id: 'form_editUsers',
+      name: 'form_editUsers'
+    },
+    itemView: User.views.editTableRow,
+    onRender: function(){
+      // Add the table header cells
+      // NOTE: there's gotta be a smarter way to do this
+      this.$el.find('thead > tr').html('<th>Name</th><th>Email</th><th>Actions</th>');
     }
   });
 
