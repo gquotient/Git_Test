@@ -27,7 +27,7 @@ define(
 
     Team.collections.Teams = Backbone.Collection.extend({
       model: Team.models.Team,
-      url: '/api/organizations'
+      url: '/api/teams'
     });
 
     // Table row edit ItemView extended from form ItemView

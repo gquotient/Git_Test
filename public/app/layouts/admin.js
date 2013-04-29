@@ -5,6 +5,7 @@ define([
 
   'user',
   'team',
+  'organization',
 
   'hbs!layouts/templates/admin'
 ], function(
@@ -14,6 +15,7 @@ define([
 
   User,
   Team,
+  Organization,
 
   adminTemplate
 ){
@@ -41,6 +43,11 @@ define([
       teams.fetch();
 
       this.editTeams.show( new Team.views.editTable({ collection: teams }) );
+
+      var organizations = new Organization.collections.Organizations();
+      organizations.fetch();
+
+      this.editOrganizations.show( new Organization.views.editTable({ collection: organizations }) );
     },
 
     initialize: function(){
