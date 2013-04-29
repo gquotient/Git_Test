@@ -35,11 +35,10 @@ app.configure(function(){
   app.set('view engine', 'hbs');
   app.set('views', __dirname + '/templates');
   app.use(
-    stylus
-      .middleware({
-        src: __dirname,
-        compile: compile // Use custom compile function
-      })
+    stylus.middleware({
+      src: __dirname,
+      compile: compile // Use custom compile function
+    })
   );
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
@@ -92,7 +91,6 @@ passport.use(new DrakerIA6Strategy( {
 ));
 
 passport.serializeUser(function(user, done) {
-  // console.log('serialize user', user)
   done(null, user);
 });
 

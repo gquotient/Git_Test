@@ -28,36 +28,6 @@ function ensureAuthorized(role){
   };
 }
 
-function makeRequest(options, translate){
-  return function(req, res, next){
-    var formData = _.extend(req.body, {});
-    var requestOptions = _.extend(options, {
-      headers: { 'currentUser' : req.user.email },
-      uri: options.host + options.path,
-      form: formData
-    });
-
-    console.log('formDatat', requestOptions.form);
-
-    request(requestOptions, function(error, response, body){
-      if (error) {
-        req.flash('error', error.message);
-        console.log('error!:', error);
-        res.redirect('/ia');
-      } else {
-        if (translate) {
-          translate(JSON.parse(body), function(translatedData){
-            res.end(JSON.stringify(translatedData));
-          });
-        } else {
-          console.log(body);
-          res.end(body);
-        }
-      }
-    });
-  };
-}
-
 /*
  * Basic routing (temporary).
  */
@@ -244,13 +214,13 @@ module.exports = function(app){
     })
   );
 
-  // app.get('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
-  //   {
-  //     host: 'http://model.stage.intelligentarray.com',
-  //     path: '/res/users',
-  //     method: 'GET'
-  //   })
-  // );
+  app.get('/api/users/:org_label', ensureAuthorized('vendor_admin'), makeRequest(
+    {
+      host: 'http://model.stage.intelligentarray.com',
+      path: '/res/users',
+      method: 'GET'
+    })
+  );
 
   app.put('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
     {
@@ -258,7 +228,7 @@ module.exports = function(app){
       path: '/res/user',
       method: 'PUT'
     }, function(data, next){
-      console.log('data', data);
+      console.log('data', data);  
       next(data);
     })
   );
@@ -274,5 +244,34 @@ module.exports = function(app){
       method: 'GET'
     })
   );
+
+
+  function makeRequest(options, translate){
+    return function(req, res, next){
+      var formData = _.extend(req.body, {});
+      var requestOptions = _.extend(options, {
+        headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
+        uri: options.host + options.path,
+        // form: formData
+      });
+
+      request(requestOptions, function(error, response, body){
+        if (error) {
+          req.flash('error', error.message);
+          console.log('error!:', error);
+          res.redirect('/ia');
+        } else {
+          if (translate) {
+            translate(JSON.parse(body), function(translatedData){
+              res.end(JSON.stringify(translatedData));
+            });
+          } else {
+            console.log(body);
+            res.end(body);
+          }
+        }
+      });
+    };
+  }
 
 };
