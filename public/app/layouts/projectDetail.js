@@ -53,5 +53,5 @@ define([
         Backbone.history.navigate('/project/' + model.get('id'));
       });
     }
-  })
+  });
 });
