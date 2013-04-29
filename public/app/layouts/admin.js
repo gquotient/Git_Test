@@ -4,6 +4,7 @@ define([
   'handlebars',
 
   'user',
+  'team',
 
   'hbs!layouts/templates/admin'
 ], function(
@@ -12,6 +13,7 @@ define([
   Handlebars,
 
   User,
+  Team,
 
   adminTemplate
 ){
@@ -24,7 +26,9 @@ define([
       class: 'basicView'
     },
     regions: {
-      editUsers: '#editUsers'
+      editUsers: '#editUsers',
+      editTeams: '#editTeams',
+      editOrganizations: '#editOrganizations'
     },
 
     onShow: function(){
@@ -32,6 +36,11 @@ define([
       users.fetch();
 
       this.editUsers.show( new User.views.editTable({ collection: users }) );
+
+      var teams = new Team.collections.Teams();
+      teams.fetch();
+
+      this.editTeams.show( new Team.views.editTable({ collection: teams }) );
     },
 
     initialize: function(){
