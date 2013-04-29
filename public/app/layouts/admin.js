@@ -24,11 +24,13 @@ define([
       class: 'basicView'
     },
     regions: {
-
+      editUsers: '#editUsers'
     },
 
     onShow: function(){
-
+      var users = new User.Collection();
+      console.log(users);
+      this.editUsers.show( new User.views.editTable({ collection: users }) );
     },
 
     initialize: function(){
