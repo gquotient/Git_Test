@@ -39,11 +39,12 @@ define(
     ia.allPortfolios.reset( JSON.parse($('#bootstrapPortfolios').html()) );
     ia.allProjects.reset( JSON.parse($('#bootstrapProjects').html()) );
 
+    // Add body#ia has the main app region
     ia.addRegions({
       main: '#ia'
     });
 
-    // Namespace event aggregation
+    // Namespaced event aggregation
     ia.listenTo(Backbone, 'all', function(vent, data){
       var myEvent = vent.split(':');
       if(myEvent.length > 1){

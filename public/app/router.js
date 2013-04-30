@@ -41,7 +41,8 @@ function(
       Backbone.history.navigate('portfolio/all', true);
     },
 
-    portfolio_dashboard: function(id){
+    // Utility function for getting portfolio model/collection
+    getPortfoliosById: function(id){
       var portfolio, subPortfolios;
 
       if (id && id !== 'all') {
@@ -54,39 +55,45 @@ function(
         subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
       }
 
-      this.currentState = 'portfolioDashboard';
-      this.mainLayout.updateBreadcrumbs(portfolio);
-      this.mainLayout.mainContent.show( new PortfolioDashboardLayout({model: portfolio, collection: subPortfolios }) );
+      return {
+        portfolio: portfolio,
+        subPortfolios: subPortfolios
+      };
+    },
+
+    portfolio_dashboard: function(id){
+      var portfolios = this.getPortfoliosById(id);
+
+      this.mainLayout.updateBreadcrumbs(portfolios.portfolio);
+      this.mainLayout.mainContent.show(
+        new PortfolioDashboardLayout({
+          model: portfolios.portfolio,
+          collection: portfolios.subPortfolios
+        })
+      );
     },
 
     portfolio: function(id){
-      var portfolio, subPortfolios;
-
-      if (id && id !== 'all') {
-        // Build custom portfolios view
-        portfolio = ia.allPortfolios.get(id);
-        subPortfolios = portfolio.get('subPortfolios');
-      } else {
-        // Build primary portfolios view
-        portfolio = ia.allPortfoliosPortfolio;
-        subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
-      }
+      var portfolios = this.getPortfoliosById(id);
 
       // Build detail view if not currently there
-      // NOTE: this is for back/forward support
+      // NOTE: this is a hack for better back/forward support
       if (!$('.portfolioDetail').length) {
-        this.mainLayout.updateBreadcrumbs(portfolio);
-        this.mainLayout.mainContent.show( new PortfolioDetailLayout({model: portfolio, collection: subPortfolios}) );
+        this.mainLayout.updateBreadcrumbs(portfolios.portfolio);
+        this.mainLayout.mainContent.show(
+          new PortfolioDetailLayout({
+            model: portfolios.portfolio,
+            collection: portfolios.subPortfolios
+          })
+        );
       } else {
         // Trigger select event
-        Backbone.trigger('select:portfolio', portfolio);
+        Backbone.trigger('select:portfolio', portfolios.portfolio);
       }
     },
 
     project: function(id){
       var project = ia.allProjects.get(id);
-
-      this.currentState = 'projectDetail';
 
       this.mainLayout.updateBreadcrumbs(project);
       this.mainLayout.mainContent.show( new ProjectDetailLayout({model: project}) );
