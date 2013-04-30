@@ -167,20 +167,20 @@ module.exports = function(app){
   app.all('/api/*', ensureAuthenticated);
 
   // app.get('/api/portfolios', makeRequest({
-  //   host: 'http://model.stage.intelligentarray.com',
+  //   host: app.get('modelUrl'),
   //   path: '/res/portfolios',
   //   method: 'GET'
   // }))
 
   // app.get('/api/portfolios/:label', makeRequest({
-  //   host: 'http://model.stage.intelligentarray.com',
+  //   host: app.get('modelUrl'),
   //   path: '/res/portfolios',
   //   method: 'GET'
   // }))
 
 
   // app.get('/api/projects', makeRequest({
-  //   host: 'http://model.stage.intelligentarray.com',
+  //   host: app.get('modelUrl'),
   //   path: '/res/projects',
   //   method: 'GET'
   // }))
@@ -211,7 +211,7 @@ module.exports = function(app){
 
   app.get('/api/teams', ensureAuthorized('vendor_admin'), makeRequest(
     {
-      host: 'http://model.stage.intelligentarray.com',
+      host: app.get('modelUrl'),
       path: '/res/teams',
       method: 'GET'
     },
@@ -227,7 +227,7 @@ module.exports = function(app){
   // Get all users  
   app.get('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
     {
-      host: 'http://model.stage.intelligentarray.com',
+      host: app.get('modelUrl'),
       path: '/res/users',
       method: 'GET'
     }
@@ -235,7 +235,7 @@ module.exports = function(app){
 
   app.get('/api/users/:org_label', ensureAuthorized('vendor_admin'), makeRequest(
     {
-      host: 'http://model.stage.intelligentarray.com',
+      host: app.get('modelUrl'),
       path: '/res/users',
       method: 'GET'
     }
@@ -243,7 +243,7 @@ module.exports = function(app){
 
   app.put('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
     {
-      host: 'http://model.stage.intelligentarray.com',
+      host: app.get('modelUrl'),
       path: '/res/user',
       method: 'PUT'
     }
@@ -251,7 +251,7 @@ module.exports = function(app){
 
   app.post('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
     {
-      host: 'http://model.stage.intelligentarray.com',
+      host: app.get('modelUrl'),
       path: '/res/usermgt',
       method: 'POST'
     }
@@ -263,7 +263,7 @@ module.exports = function(app){
 
   app.get('/api/organizations', ensureAuthorized('vendor_admin'), makeRequest(
     {
-      host: 'http://model.stage.intelligentarray.com',
+      host: app.get('modelUrl'),
       path: '/res/organizations',
       method: 'GET'
     })
