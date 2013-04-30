@@ -47,7 +47,11 @@ function(
 
   // Composite view for editing multiple items of the same type quickly
   Forms.views.tableRow = Marionette.ItemView.extend({
-    tagName: 'tr'
+    tagName: 'tr',
+    onShow: function(){
+      this.$el.find('input').attr('disabled', true);
+      this.$el.find('select').attr('disabled', true);
+    }
   });
 
   Forms.views.table = Marionette.CompositeView.extend({
@@ -62,6 +66,11 @@ function(
       id: '',
       name: ''
     },
+    edit: function(){
+      console.log(this.$el.find('input'));
+      this.$el.find('input').attr('disabled', false);
+      this.$el.find('select').attr('disabled', false);
+    },
     events: {
       'submit': function(event){
         // this.model.set('id') = this.model.get('email');
@@ -74,6 +83,11 @@ function(
         //});
         //this.model.save();
         console.log(that.model.attributes);
+        this.render();
+      },
+      'click button.edit': function(event){
+        console.log('edit', event);
+        this.edit();
       },
       'reset': function(event){
         event.preventDefault();
