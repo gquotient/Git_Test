@@ -22,4 +22,14 @@ function(
   Handlebars.registerHelper('percent', function(value, max){
     return value/max * 100;
   });
+
+  Handlebars.registerHelper('equal', function(argLeft, argRight, options) {
+    if (arguments.length < 3) {
+      throw new Error('Handlebars Helper equal needs 2 parameters');
+    }
+    if (argLeft === argRight) {
+      return options.fn(this);
+    }
+    return options.inverse(this);
+  });
 });

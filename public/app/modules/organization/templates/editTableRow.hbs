@@ -2,5 +2,11 @@
   <input id="org_name" name="org_name" type="text" value="{{ name }}">
 </td>
 <td>
+  <select id="org_type" name="org_type">
+    <option value="unspecified" {{#equal type 'unspecified'}}selected{{/equal}}>Unspecified</option>
+    <option value="vendor" {{#equal type 'vendor'}}selected{{/equal}}>Vendor</option>
+  </select>
+</td>
+<td>
   Actions
 </td>
