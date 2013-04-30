@@ -63,7 +63,7 @@ define([
     portfolioDashboard: function(id){
       var portfolios = this.getPortfoliosById(id);
 
-      this.mainLayout.updateBreadcrumbs(portfolios.portfolio);
+      Backbone.trigger('set:breadcrumbs', portfolios.portfolio);
       this.mainLayout.mainContent.show(
         new PortfolioDashboardLayout({
           model: portfolios.portfolio,
@@ -78,7 +78,7 @@ define([
       // Build detail view if not currently there
       // NOTE: this is a hack for better back/forward support
       if (!$('.portfolioDetail').length) {
-        this.mainLayout.updateBreadcrumbs(portfolios.portfolio);
+        Backbone.trigger('set:breadcrumbs', portfolios.portfolio);
         this.mainLayout.mainContent.show(
           new PortfolioDetailLayout({
             model: portfolios.portfolio,
@@ -94,17 +94,17 @@ define([
     project: function(id){
       var project = ia.allProjects.get(id);
 
-      this.mainLayout.updateBreadcrumbs(project);
+      Backbone.trigger('set:breadcrumbs', project);
       this.mainLayout.mainContent.show( new ProjectDetailLayout({model: project}) );
     },
 
     profile: function(){
-      this.mainLayout.updateBreadcrumbs({name: 'My Profile'}, true);
+      Backbone.trigger('reset:breadcrumbs', {name: 'My Profile'});
       this.mainLayout.mainContent.show( new ProfileLayout( {model: ia.currentUser }));
     },
 
     admin: function(){
-      this.mainLayout.updateBreadcrumbs({name: 'Admin'}, true);
+      Backbone.trigger('reset:breadcrumbs', {name: 'Admin'});
       this.mainLayout.mainContent.show( new AdminLayout({}) );
     },
 
