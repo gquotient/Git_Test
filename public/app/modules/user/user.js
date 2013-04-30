@@ -9,7 +9,8 @@ define(
   'hbs!user/templates/item',
   'hbs!user/templates/detail',
   'hbs!user/templates/edit',
-  'hbs!user/templates/editTableRow'
+  'hbs!user/templates/editTableRow',
+  'hbs!user/templates/newTableRow'
 ], function(
   Backbone,
   Marionette,
@@ -20,7 +21,8 @@ define(
   itemTemplate,
   detailTemplate,
   editTemplate,
-  editTableRowTemplate
+  editTableRowTemplate,
+  newTableRowTemplate
 ){
 
   var User = { views: {} };
@@ -84,6 +86,24 @@ define(
     }
   });
 
+  User.views.newTableRow = Forms.views.tableRow.extend({
+    template: {
+      type: 'handlebars',
+      template: newTableRowTemplate
+    },
+    events: {
+      'click button.create': function(event){
+        event.preventDefault();
+        this.model.set('name', this.$el.find('input[name=name]').val());
+        this.model.set('email', this.$el.find('input[name=email]').val());
+        this.model.set('org_label', this.$el.find('input[name=org_label]').val());
+        Backbone.sync('create', this.model)
+        this.collection.add(this.model);
+        this.close();
+      }
+    }
+  })
+
   // Table CompositeView extended from form
   User.views.editTable = Forms.views.table.extend({
     attributes: {
@@ -94,7 +114,15 @@ define(
     onRender: function(){
       // Add the table header cells
       // NOTE: there's gotta be a smarter way to do this
-      this.$el.find('thead > tr').html('<th>Name</th><th>Email</th>');
+      this.$el.find('thead > tr').html('<th>Name</th><th>Email</th><th>Org Label</th><th>Actions</th>');
+    },
+    events: {
+      'click button.add': function(event){
+        event.preventDefault();
+        var newUser = new User.Model();
+        var newUserView = new User.views.newTableRow({model: newUser, collection: this.collection}); 
+        this.$el.find('tbody').append( newUserView.render().el );
+      }
     }
   });
 

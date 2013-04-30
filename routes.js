@@ -166,6 +166,25 @@ module.exports = function(app){
 
   app.all('/api/*', ensureAuthenticated);
 
+  // app.get('/api/portfolios', makeRequest({
+  //   host: 'http://model.stage.intelligentarray.com',
+  //   path: '/res/portfolios',
+  //   method: 'GET'
+  // }))
+
+  // app.get('/api/portfolios/:label', makeRequest({
+  //   host: 'http://model.stage.intelligentarray.com',
+  //   path: '/res/portfolios',
+  //   method: 'GET'
+  // }))
+
+
+  // app.get('/api/projects', makeRequest({
+  //   host: 'http://model.stage.intelligentarray.com',
+  //   path: '/res/projects',
+  //   method: 'GET'
+  // }))
+
   app.get('/api/portfolios',
     function(req, res){
       fs.readFile('./data/json/portfolios.json', 'utf8', function (err, data) {
@@ -211,27 +230,32 @@ module.exports = function(app){
       host: 'http://model.stage.intelligentarray.com',
       path: '/res/users',
       method: 'GET'
-    })
-  );
+    }
+  ));
 
   app.get('/api/users/:org_label', ensureAuthorized('vendor_admin'), makeRequest(
     {
       host: 'http://model.stage.intelligentarray.com',
       path: '/res/users',
       method: 'GET'
-    })
-  );
+    }
+  ));
 
   app.put('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
     {
       host: 'http://model.stage.intelligentarray.com',
       path: '/res/user',
       method: 'PUT'
-    }, function(data, next){
-      console.log('data', data);  
-      next(data);
-    })
-  );
+    }
+  ));
+
+  app.post('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
+    {
+      host: 'http://model.stage.intelligentarray.com',
+      path: '/res/usermgt',
+      method: 'POST'
+    }
+  ));
 
   ////////
   // ORGANIZATIONS
@@ -246,14 +270,27 @@ module.exports = function(app){
   );
 
 
+  ////////
+  // makeRequest needs access to 'app', which is why it's in the routes function.
+  // Can move later.
+  ///////
+
   function makeRequest(options, translate){
     return function(req, res, next){
-      var formData = _.extend(req.body, {});
-      var requestOptions = _.extend(options, {
-        headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
-        uri: options.host + options.path,
-        // form: formData
-      });
+      console.log(options.method);
+      if(options.method === 'GET' || options.method === 'DELETE') {
+        var requestOptions = _.extend(options, {
+          headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
+          uri: options.host + options.path,
+          qs: _.extend(req.params, {})
+        });
+      } else {
+        var requestOptions = _.extend(options, {
+          headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
+          uri: options.host + options.path,
+          form: _.extend(req.body, {})
+        });
+      }
 
       request(requestOptions, function(error, response, body){
         if (error) {
