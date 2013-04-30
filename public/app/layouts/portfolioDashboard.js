@@ -23,7 +23,7 @@ define([
       template: portfolioDashboardTemplate
     },
     attributes: {
-      class: 'portfolioDashboard'
+      id: 'page-portfolioDashboard'
     },
     regions: {
       dashboard: '#dashboard',

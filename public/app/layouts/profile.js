@@ -21,7 +21,8 @@ define([
       template: profileTemplate
     },
     attributes: {
-      class: 'basicView'
+      class: 'basicView',
+      id: 'page-profile'
     },
     regions: {
       editUser: '#editUser'

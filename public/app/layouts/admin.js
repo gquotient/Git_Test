@@ -1,4 +1,5 @@
 define([
+  'jquery',
   'backbone',
   'backbone.marionette',
   'handlebars',
@@ -9,6 +10,7 @@ define([
 
   'hbs!layouts/templates/admin'
 ], function(
+  $,
   Backbone,
   Marionette,
   Handlebars,
@@ -25,33 +27,77 @@ define([
       template: adminTemplate
     },
     attributes: {
-      class: 'basicView'
+      id: 'page-admin'
     },
     regions: {
-      editUsers: '#editUsers',
-      editTeams: '#editTeams',
-      editOrganizations: '#editOrganizations'
+      pageContent: '.pageContent',
+      pageNav: '.column_left'
+      //editUsers: '#editUsers',
+      //editTeams: '#editTeams',
+      //editOrganizations: '#editOrganizations'
+    },
+
+    initialView: 'users',
+
+    subViews: {
+      users: {
+        title: 'Edit Users'
+      },
+      teams: {
+        title: 'Edit Teams'
+      },
+      organizations: {
+        title: 'Edit Organizations'
+      }
+    },
+
+    renderView: function(view){
+      var myView = this.subViews[view];
+
+      console.log(view, myView);
+
+      this.$el.find('.pageTitle').text(myView.title);
+      this.pageContent.show(myView.view);
     },
 
     onShow: function(){
+      this.renderView(this.initialView);
+    },
+
+    events: {
+      'click .nav_content a': function(event){
+        event.preventDefault();
+
+        // This seems kind of hacky, but (shrug)
+        var route = event.target.hash.replace('#', '');
+
+        // Build view
+        this.renderView(route);
+
+        // Update history
+        Backbone.history.navigate('/admin/' + route);
+      }
+    },
+
+    initialize: function(options){
+      if (options.initialView) {
+        this.initialView = options.initialView;
+      }
+
       var users = new User.Collection();
       users.fetch();
 
-      this.editUsers.show( new User.views.editTable({ collection: users }) );
+      this.subViews.users.view = new User.views.editTable({ collection: users });
 
       var teams = new Team.collections.Teams();
       teams.fetch();
 
-      this.editTeams.show( new Team.views.editTable({ collection: teams }) );
+      this.subViews.teams.view = new Team.views.editTable({ collection: teams });
 
       var organizations = new Organization.collections.Organizations();
       organizations.fetch();
 
-      this.editOrganizations.show( new Organization.views.editTable({ collection: organizations }) );
-    },
-
-    initialize: function(){
-
+      this.subViews.organizations.view = new Organization.views.editTable({ collection: organizations });
     }
   });
 });

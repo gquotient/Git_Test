@@ -104,9 +104,10 @@ function(
       this.mainLayout.mainContent.show( new ProfileLayout( {model: ia.currentUser }));
     },
 
-    admin: function(){
+    admin: function(page){
+      console.log(page);
       this.mainLayout.updateBreadcrumbs({name: 'Admin'}, true);
-      this.mainLayout.mainContent.show( new AdminLayout({}) );
+      this.mainLayout.mainContent.show( new AdminLayout({initialView: page}) );
     },
 
     initialize: function(){
@@ -126,7 +127,8 @@ function(
       'portfolio/dashboard/:id': 'portfolio_dashboard',
       'project/:id': 'project',
       'profile': 'profile',
-      'admin': 'admin'
+      'admin': 'admin',
+      'admin/:page': 'admin'
     }
   });
 

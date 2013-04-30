@@ -23,7 +23,7 @@ define([
       template: projectDetailTemplate
     },
     attributes: {
-      class: 'projectView'
+      id: 'page-projectDetail'
     },
     regions: {
       map: '#map',
