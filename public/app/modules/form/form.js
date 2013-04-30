@@ -26,16 +26,19 @@ function(
     },
     events: {
       'submit': function(event){
+        event.preventDefault();
+
         // this.model.set('id') = this.model.get('email');
         var that = this;
-        event.preventDefault();
-        console.log(this.$el.serializeArray());
+
         _.each(this.$el.serializeArray(), function(obj){
           that.model.set(obj.name, obj.value);
           console.log(that.model.get(obj.name) );
         });
+
         this.model.save();
-        console.log(that.model.attributes);
+
+        console.log(this.model.attributes);
       },
       'reset': function(event){
         event.preventDefault();
@@ -49,8 +52,11 @@ function(
   Forms.views.tableRow = Marionette.ItemView.extend({
     tagName: 'tr',
     onShow: function(){
+      // Disable form elements
       this.$el.find('input').attr('disabled', true);
       this.$el.find('select').attr('disabled', true);
+      this.$el.find('checkbox').attr('disabled', true);
+      this.$el.find('radio').attr('disabled', true);
     }
   });
 
@@ -67,16 +73,20 @@ function(
       name: ''
     },
     edit: function(){
-      console.log(this.$el.find('input'));
+      // Enable form elements
       this.$el.find('input').attr('disabled', false);
       this.$el.find('select').attr('disabled', false);
+      this.$el.find('checkbox').attr('disabled', false);
+      this.$el.find('radio').attr('disabled', false);
     },
     events: {
       'submit': function(event){
-        // this.model.set('id') = this.model.get('email');
-        var that = this;
         event.preventDefault();
-        console.log(this.$el.serializeArray());
+        // this.model.set('id') = this.model.get('email');
+
+        var that = this;
+
+        //console.log(this.$el.serializeArray());
         //_.each(this.$el.serializeArray(), function(obj){
         //  that.model.set(obj.name, obj.value);
         //  console.log(that.model.get(obj.name) );
