@@ -1,5 +1,4 @@
-define(
-[
+define([
   'jquery',
   'backbone',
   'backbone.marionette',
@@ -12,8 +11,7 @@ define(
   'layouts/header',
 
   'hbs!layouts/templates/index'
-],
-function(
+], function(
   $,
   Backbone,
   Marionette,

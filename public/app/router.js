@@ -16,8 +16,7 @@ define([
   'app/layouts/portfolioDashboard',
   'app/layouts/profile',
   'app/layouts/admin'
-],
-function(
+], function(
   $,
   _,
   Backbone,
@@ -61,7 +60,7 @@ function(
       };
     },
 
-    portfolio_dashboard: function(id){
+    portfolioDashboard: function(id){
       var portfolios = this.getPortfoliosById(id);
 
       this.mainLayout.updateBreadcrumbs(portfolios.portfolio);
@@ -110,7 +109,6 @@ function(
     },
 
     initialize: function(){
-      var that = this;
       this.mainLayout = new MainLayout(ia);
       ia.main.show(this.mainLayout);
     }
@@ -122,8 +120,8 @@ function(
       '': 'index',
       'portfolio': 'index',
       'portfolio/:id': 'portfolio',
-      'portfolio/dashboard': 'portfolio_dashboard',
-      'portfolio/dashboard/:id': 'portfolio_dashboard',
+      'portfolio/dashboard': 'portfolioDashboard',
+      'portfolio/dashboard/:id': 'portfolioDashboard',
       'project/:id': 'project',
       'profile': 'profile',
       'admin': 'admin'
@@ -131,6 +129,4 @@ function(
   });
 
   return Router;
-
 });
-
