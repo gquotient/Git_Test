@@ -38,9 +38,6 @@ define([
     initialize: function(options){
     //   this.stopListening();
 
-    //   var breadcrumbs = [ia.allPortfoliosPortfolio];
-    //   Backbone.trigger('set:breadcrumbs', breadcrumbs);
-
       if (this.currentState !== 'portfolioDashboard') {
 
         this.projectList = options.model.get('projects').clone();

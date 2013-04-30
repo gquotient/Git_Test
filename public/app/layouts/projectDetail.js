@@ -22,21 +22,23 @@ define([
       type: 'handlebars',
       template: projectDetailTemplate
     },
+
     attributes: {
       id: 'page-projectDetail'
     },
+
     regions: {
       map: '#map',
       kpis: '#kpis',
       alarms: '#alarms'
     },
+
     onShow: function(){
       this.map.show(this.mapView);
     },
+
     initialize: function(options){
-      // var breadcrumbs = [ia.allPortfoliosPortfolio, model];
       this.model = options.model;
-      // Backbone.trigger('set:breadcrumbs', breadcrumbs);
 
       this.mapView = new Project.views.map({
         collection: new Project.collections.Projects([options.model])
