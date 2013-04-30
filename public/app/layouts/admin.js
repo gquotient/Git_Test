@@ -56,6 +56,10 @@ define([
 
       console.log(view, myView);
 
+      // Set active nav element
+      this.$el.find('.nav_content li').removeClass('active');
+      this.$el.find('.nav_content li.nav-' + view).addClass('active');
+
       this.$el.find('.pageTitle').text(myView.title);
       this.pageContent.show(myView.view);
     },
