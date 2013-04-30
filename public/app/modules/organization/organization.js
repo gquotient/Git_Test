@@ -52,7 +52,9 @@ define(
       onRender: function(){
         // Add the table header cells
         // NOTE: there's gotta be a smarter way to do this
-        this.$el.find('thead > tr').html('<th>Name</th><th>Type</th><th>Actions</th>');
+        this.$el.find('thead > tr').html(
+          '<th>Name</th><th>Type</th><th>Salesforce ID</th>'
+        );
       }
     });
 

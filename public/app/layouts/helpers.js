@@ -11,16 +11,24 @@ function(
     return result;
   };
 
-  Handlebars.registerHelper('tokW', function(value) {
-    return roundNumber((+value / 1000), 1);
-  });
+  Handlebars.registerHelper('unitConversion', function(value, factor) {
+    var factors = {
+      M: 1000000,
+      k: 1000
+    };
 
-  Handlebars.registerHelper('toMW', function(value) {
-    return roundNumber((+value / 1000000), 2);
+    if (typeof factor === 'number') {
+      // Arbitrary reduction
+      // NOTE: this might not be useful
+      return roundNumber((+value / factor), 1);
+    } else {
+      // Typical watt unit reduction
+      return roundNumber((+value / factors[factor]), 1);
+    }
   });
 
   Handlebars.registerHelper('percent', function(value, max){
-    return value/max * 100;
+    return value / max * 100;
   });
 
   Handlebars.registerHelper('equal', function(argLeft, argRight, options) {

@@ -3,6 +3,6 @@
     {{ name }}
   </td>
   <td class="status"><span class="statusIndicator {{ status }}">{{ status }}</span></td>
-  <td class="DCCapacity">{{ tokW kpis.ac_capacity }}</td>
-  <td class="ACCapacity">{{ tokW kpis.dc_capacity }}</td>
+  <td class="DCCapacity">{{ unitConversion kpis.ac_capacity 'k' }}</td>
+  <td class="ACCapacity">{{ unitConversion kpis.dc_capacity 'k' }}</td>
 </tr>
