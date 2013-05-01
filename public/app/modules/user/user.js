@@ -50,7 +50,6 @@ define([
 
   User.Collection = Backbone.Collection.extend({
     url: '/api/users',
-
     model: User.Model
   });
 
@@ -90,36 +89,6 @@ define([
     }
   });
 
-  // Table row edit ItemView extended from form ItemView
-  User.views.editTableRow = Forms.views.tableRow.extend({
-    attributes: {
-      id: 'form_editUser',
-      name: 'form_editUser'
-    },
-    template: {
-      type: 'handlebars',
-      template: editTableRowTemplate
-    }
-  });
-
-  User.views.newTableRow = Forms.views.tableRow.extend({
-    template: {
-      type: 'handlebars',
-      template: newTableRowTemplate
-    },
-    events: {
-      'click button.create': function(event){
-        event.preventDefault();
-        this.model.set('name', this.$el.find('input[name=name]').val());
-        this.model.set('email', this.$el.find('input[name=email]').val());
-        this.model.set('org_label', this.$el.find('input[name=org_label]').val());
-        Backbone.sync('create', this.model);
-        this.collection.add(this.model);
-        this.close();
-      }
-    }
-  });
-
   // Table CompositeView extended from form
   User.views.editTable = Forms.views.table.extend({
     attributes: {
@@ -142,15 +111,7 @@ define([
         }
       }
     },
-    itemView: User.views.editTableRow,
-    events: {
-      'click button.add': function(event){
-        event.preventDefault();
-        var newUser = new User.Model();
-        var newUserView = new User.views.newTableRow({model: newUser, collection: this.collection});
-        this.$el.find('tbody').append( newUserView.render().el );
-      }
-    }
+    protoModel: User.Model
   });
 
   return User;

@@ -48,14 +48,23 @@ define(
         id: 'form_editUsers',
         name: 'form_editUsers'
       },
-      itemView: Organization.views.editTableRow,
-      onRender: function(){
-        // Add the table header cells
-        // NOTE: there's gotta be a smarter way to do this
-        this.$el.find('thead > tr').html(
-          '<th>Name</th><th>Type</th><th>Label</th>'
-        );
-      }
+      schema: {
+        attributes: {
+          'name': {
+            type: 'text',
+            title: 'Name'
+          },
+          'type': {
+            type: 'select',
+            title: 'Type',
+            options: {
+              'unspecified': 'unspecified',
+              'vendor': 'vendor'
+            }
+          }
+        }
+      },
+      protoModel: Organization.models.Organization
     });
 
     return Organization;

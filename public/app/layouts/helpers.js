@@ -59,11 +59,19 @@ function(
    * FORM ELEMENTS
    */
   var formElements = {
-    text: function(name, value){
+    text: function(name, value, model){
       return '<td><input id="' + name + '" name="' + name + '" type=text value="' + value + '"></td>';
     },
-    select: function(name, value){
-      
+    select: function(name, value, model){
+      var select = '<td><select id="org_' + name +'_type" name="'+name+'">';
+
+      _.each(model.schema.attributes[name].options, function(val, key){
+        var selected = val === value ? 'selected' : '';
+        select += '<option value="' + val + '" ' + selected +'>'+val+'</option>';
+      });
+
+      select += '</select></td>';
+      return select;
     }
   };
 
@@ -73,20 +81,34 @@ function(
   Handlebars.registerHelper('edit_table_rows', function(){
     var that = this;
     var row = '';
+
     _.each(this.schema.attributes, function(val, key){
-      row += formElements[ val.type ]( key, that[key] );
+      row += formElements[ val.type ]( key, that[key], that );
     });
+
     return new Handlebars.SafeString(row);
   });
 
   /*
    * EDIT TABLE ROW ACTION BUTTONS
    */
-  Handlebars.registerHelper('action_buttons', function(){
-    return new Handlebars.SafeString(
-      ['<button type="button" class="button save primary">Save</button>',
-      '<button type="button" class="button edit">Edit</button>',
-      '<button type="reset" class="button">Reset</button>'].join('')
+  Handlebars.registerHelper('edit_action_buttons', function(){
+    return new Handlebars.SafeString([
+        '<button type="button" class="button save primary">Save</button>',
+        '<button type="button" class="button edit">Edit</button>',
+        '<button type="reset" class="button cancel">Cancel</button>'
+      ].join('')
+    );
+  });
+
+  /*
+   * NEW TABLE ROW ACTION BUTTONS
+   */
+  Handlebars.registerHelper('new_action_buttons', function(){
+    return new Handlebars.SafeString([
+        '<button type="button" class="button create primary">Create</button>',
+        '<button type="reset" class="button cancel">cancel</button>'
+      ].join('')
     );
   });
 

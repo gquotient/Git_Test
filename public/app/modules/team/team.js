@@ -23,23 +23,12 @@ define(
     var Team = { models: {}, collections: {}, views: {} };
 
     Team.models.Team = Backbone.Model.extend({
+      idAttribute: 'label'
     });
 
     Team.collections.Teams = Backbone.Collection.extend({
       model: Team.models.Team,
       url: '/api/teams'
-    });
-
-    // Table row edit ItemView extended from form ItemView
-    Team.views.editTableRow = Forms.views.tableRow.extend({
-      attributes: {
-        id: 'form_editUser',
-        name: 'form_editUser'
-      },
-      template: {
-        type: 'handlebars',
-        template: editTableRowTemplate
-      }
     });
 
     // Table CompositeView extended from form
@@ -53,14 +42,10 @@ define(
           'name': {
             type: 'text',
             title: 'Name'
-          },
-          'label': {
-            type: 'text',
-            title: 'Label'
           }
         }
       },
-      itemView: Team.views.editTableRow
+      protoModel: Team.models.Team
     });
 
     return Team;
