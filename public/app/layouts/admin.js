@@ -54,14 +54,16 @@ define([
     renderView: function(view){
       var myView = this.subViews[view];
 
-      console.log(view, myView);
-
       // Set active nav element
       this.$el.find('.nav_content li').removeClass('active');
       this.$el.find('.nav_content li.nav-' + view).addClass('active');
 
       this.$el.find('.pageTitle').text(myView.title);
       this.pageContent.show(myView.view);
+
+      // Fetch latest
+      // NOTE: this is mostly a hack to avoid the itemViewError in Marionette
+      myView.view.collection.fetch();
     },
 
     onShow: function(){
@@ -89,17 +91,17 @@ define([
       }
 
       var users = new User.Collection();
-      users.fetch();
+      //users.fetch();
 
       this.subViews.users.view = new User.views.editTable({ collection: users });
 
       var teams = new Team.collections.Teams();
-      teams.fetch();
+      //teams.fetch();
 
       this.subViews.teams.view = new Team.views.editTable({ collection: teams });
 
       var organizations = new Organization.collections.Organizations();
-      organizations.fetch();
+      //organizations.fetch();
 
       this.subViews.organizations.view = new Organization.views.editTable({ collection: organizations });
     }
