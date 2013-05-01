@@ -54,13 +54,17 @@ define([
     renderView: function(view){
       var myView = this.subViews[view];
 
-      console.log(view, myView);
-
       // Set active nav element
       this.$el.find('.nav_content li').removeClass('active');
-      this.$el.find('.nav_content li.nav-' + view).addClass('active');
+      this.$el.find('.nav_content li.' + view).addClass('active');
 
+      // Update page title
       this.$el.find('.pageTitle').text(myView.title);
+
+      // Fetch latest data
+      myView.view.collection.fetch();
+
+      // Display view
       this.pageContent.show(myView.view);
     },
 
@@ -84,20 +88,25 @@ define([
     },
 
     initialize: function(options){
+      // Update initial view if available
+      // NOTE: there's probably a sexier way to do this
       if (options.initialView) {
         this.initialView = options.initialView;
       }
 
+      // Buid users edit view
       var users = new User.Collection();
       users.fetch();
 
       this.subViews.users.view = new User.views.editTable({ collection: users });
 
+      // Buid teams edit view
       var teams = new Team.collections.Teams();
       teams.fetch();
 
       this.subViews.teams.view = new Team.views.editTable({ collection: teams });
 
+      // Buid organizations edit view
       var organizations = new Organization.collections.Organizations();
       organizations.fetch();
 
