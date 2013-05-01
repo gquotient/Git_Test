@@ -23,13 +23,13 @@ define([
       template: portfolioDetailTemplate
     },
     attributes: {
-      class: 'portfolioDetail'
+      id: 'page-portfolioDetail'
     },
     regions: {
       kpis: '#kpis',
       map: '#map',
       projects: '#projects',
-      contentNavigation: '#nav_content'
+      contentNavigation: '.column_left'
     },
 
     onShow: function(){

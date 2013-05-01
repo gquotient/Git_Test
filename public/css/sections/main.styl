@@ -64,10 +64,10 @@ body > div {
   padding-top: 0;
   height: 100%;
   width: 100%;
-  padding-top: headerHeight + pageNavHeight;
+  padding-top: headerHeight + pageNavHeight + 4; // 4 is for body border-top
 }
 
-#nav_content {
+.nav_content {
   height: 100%;
   overflow: auto;
   position: relative;
@@ -75,22 +75,35 @@ body > div {
   background: colorBGDarkGrey;
   border-right: primaryBorderStyle;
   color: #aaa;
-  ul.portfolios {
+  > ul {
     padding: 0;
     margin: 0;
     list-style-type: none;
-    li {
-      padding: 6px;
+    > li {
+      padding: 0px;
       text-shadow: 0 1px 0 #222;
       margin: 0;
+      border-top: borderBasicMedium;
+      border-bottom: borderBasicDark;
+      background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+      cursor: pointer;
+      a {
+        display: block;
+        padding: 6px;
+        text-decoration: none;
+      }
+      &.active {
+        a {
+          border-right: 3px solid colorDrakerOrange;
+          color: colorPrimaryText;
+        }
+      }
       &.empty {
+        padding: 6px;
         font-style: italic;
       }
       &.portfolio {
-        border-top: borderBasicMedium;
-        border-bottom: borderBasicDark;
-        background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-        cursor: pointer;
+        padding: 6px;
         h3 {
           margin: 0 0 6px;
           white-space: nowrap;
@@ -123,15 +136,15 @@ body > div {
             }
           }
         }
-        &.portfolio:hover {
-          background: linear-gradient(#252627, #282828);
-        }
-        &.portfolio:last-child {
-          box-shadow: 0 0 7px rgba(0, 0, 0, .15);
-        }
-        &.portfolio:first-child {
-          border-top: none;
-        }
+      }
+      &:hover {
+        background: linear-gradient(#252627, #282828);
+      }
+      &:last-child {
+        box-shadow: 0 0 7px rgba(0, 0, 0, .15);
+      }
+      &:first-child {
+        border-top: none;
       }
     }
   }
@@ -155,7 +168,7 @@ kpiHeight = 30px;
   .basicView {
     padding: 15px;
   }
-  .portfolioDetail {
+  #page-portfolioDetail {
     .verticalPane {
       &.top {
         height: 60%;
@@ -260,7 +273,7 @@ kpiHeight = 30px;
       }
     }
   }
-  .projectView {
+  #page-projectDetail {
     #map {
       height: 400px;
       border-bottom: borderBasicDark;
@@ -275,13 +288,19 @@ kpiHeight = 30px;
       }
     }
   }
-}
 
-.portfolioDashboard {
-  .projectStatus {
-    float: left;
-    width: 22%;
-    margin: 0.5em 1%;
-    background: #444;
+  #page-portfolioDashboard {
+    .projectStatus {
+      float: left;
+      width: 22%;
+      margin: 0.5em 1%;
+      background: #444;
+    }
+  }
+
+  #page-admin {
+    .column_right {
+      padding: 12px;
+    }
   }
 }

@@ -23,7 +23,7 @@ define([
       template: portfolioDashboardTemplate
     },
     attributes: {
-      class: 'portfolioDashboard'
+      id: 'page-portfolioDashboard'
     },
     regions: {
       dashboard: '#dashboard',
@@ -37,9 +37,6 @@ define([
 
     initialize: function(options){
     //   this.stopListening();
-
-    //   var breadcrumbs = [ia.allPortfoliosPortfolio];
-    //   Backbone.trigger('set:breadcrumbs', breadcrumbs);
 
       if (this.currentState !== 'portfolioDashboard') {
 
