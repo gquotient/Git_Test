@@ -66,6 +66,10 @@ define([
 
       // Display view
       this.pageContent.show(myView.view);
+
+      // Fetch latest
+      // NOTE: this is mostly a hack to avoid the itemViewError in Marionette
+      myView.view.collection.fetch();
     },
 
     onShow: function(){
@@ -96,19 +100,19 @@ define([
 
       // Buid users edit view
       var users = new User.Collection();
-      users.fetch();
+      //users.fetch();
 
       this.subViews.users.view = new User.views.editTable({ collection: users });
 
       // Buid teams edit view
       var teams = new Team.collections.Teams();
-      teams.fetch();
+      //teams.fetch();
 
       this.subViews.teams.view = new Team.views.editTable({ collection: teams });
 
       // Buid organizations edit view
       var organizations = new Organization.collections.Organizations();
-      organizations.fetch();
+      //organizations.fetch();
 
       this.subViews.organizations.view = new Organization.views.editTable({ collection: organizations });
     }

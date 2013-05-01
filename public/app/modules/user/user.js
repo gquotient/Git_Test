@@ -1,8 +1,8 @@
-define(
-[
+define([
+  'jquery',
+  'underscore',
   'backbone',
   'backbone.marionette',
-  'backbone.marionette.handlebars',
 
   'form',
 
@@ -12,9 +12,10 @@ define(
   'hbs!user/templates/editTableRow',
   'hbs!user/templates/newTableRow'
 ], function(
+  $,
+  _,
   Backbone,
   Marionette,
-  MarionetteHandlebars,
 
   Forms,
 
@@ -24,7 +25,6 @@ define(
   editTableRowTemplate,
   newTableRowTemplate
 ){
-
   var User = { views: {} };
 
   User.Model = Backbone.Model.extend({
@@ -154,5 +154,4 @@ define(
   });
 
   return User;
-
 });
