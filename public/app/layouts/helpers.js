@@ -1,8 +1,10 @@
 define(
 [
+  'underscore',
   'handlebars'
 ],
 function(
+  _,
   Handlebars
 ){
   // Unit conversion
@@ -39,6 +41,25 @@ function(
       return options.fn(this);
     }
     return options.inverse(this);
+  });
+
+  Handlebars.registerHelper('edit_table_header', function(){
+    var header = ''
+    console.log(this);
+    _.each(this, function(val, key){
+      header += '<th>' + val + '</th>'
+    })
+    console.log(header);
+    return new Handlebars.SafeString(header);
+  })
+
+  Handlebars.registerHelper('edit_table_row', function(){
+    var that = this;
+    var row = '';
+    _.each(this.schema.attributes, function(val, key){
+      row += '<td><input id="' + key + '" name="' + key + '" type=text value="' + that[key] + '"></td>'
+    })
+    return new Handlebars.SafeString(row);
   });
 
   Handlebars.registerHelper('action_buttons', function(){

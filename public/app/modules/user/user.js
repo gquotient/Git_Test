@@ -83,6 +83,10 @@ define(
     template: {
       type: 'handlebars',
       template: editTableRowTemplate
+    },
+    serializeData: function(model){
+      this.model.set('schema', this.options.schema)
+      return this.model.toJSON();
     }
   });
 
@@ -110,11 +114,29 @@ define(
       id: 'form_editUsers',
       name: 'form_editUsers'
     },
+    schema: {
+      attributes: {
+        'name': 'Name',
+        'email': 'Email',
+        'org_label': 'Org Label'
+      },
+      toJSON: function(){
+        return this.attributes;
+      }
+    },
     itemView: User.views.editTableRow,
+    itemViewOptions: function(model, index){
+      return{
+        schema: this.schema
+      }
+    },
     onRender: function(){
       // Add the table header cells
       // NOTE: there's gotta be a smarter way to do this
-      this.$el.find('thead > tr').html('<th>Name</th><th>Email</th><th>Org Label</th><th>Actions</th>');
+      // this.$el.find('thead > tr').html('<th>Name</th><th>Email</th><th>Org Label</th><th>Actions</th>');
+    },
+    initialize: function(){
+      this.model = this.schema;
     },
     events: {
       'click button.add': function(event){
