@@ -43,23 +43,45 @@ function(
     return options.inverse(this);
   });
 
+
+  /*
+   * EDIT TABLE HEADERS
+   */
   Handlebars.registerHelper('edit_table_header', function(){
     var header = '';
     _.each(this.attributes, function(val, key){
-      header += '<th>' + val + '</th>';
+      header += '<th>' + val.title + '</th>';
     });
     return new Handlebars.SafeString(header);
   });
 
+  /*
+   * FORM ELEMENTS
+   */
+  var formElements = {
+    text: function(name, value){
+      return '<td><input id="' + name + '" name="' + name + '" type=text value="' + value + '"></td>';
+    },
+    select: function(name, value){
+      
+    }
+  };
+
+  /*
+   * EDIT TABLE ROWS
+   */
   Handlebars.registerHelper('edit_table_rows', function(){
     var that = this;
     var row = '';
     _.each(this.schema.attributes, function(val, key){
-      row += '<td><input id="' + key + '" name="' + key + '" type=text value="' + that[key] + '"></td>';
+      row += formElements[ val.type ]( key, that[key] );
     });
     return new Handlebars.SafeString(row);
   });
 
+  /*
+   * EDIT TABLE ROW ACTION BUTTONS
+   */
   Handlebars.registerHelper('action_buttons', function(){
     return new Handlebars.SafeString(
       ['<button type="button" class="button save primary">Save</button>',

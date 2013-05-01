@@ -50,16 +50,17 @@ define(
       },
       schema: {
         attributes: {
-          'name': 'Name',
-          'label': 'Label'
+          'name': {
+            type: 'text',
+            title: 'Name'
+          },
+          'label': {
+            type: 'text',
+            title: 'Label'
+          }
         }
       },
-      itemView: Team.views.editTableRow,
-      onRender: function(){
-        // Add the table header cells
-        // NOTE: there's gotta be a smarter way to do this
-        this.$el.find('thead > tr').html('<th>Name</th><th>Label</th>');
-      }
+      itemView: Team.views.editTableRow
     });
 
     return Team;

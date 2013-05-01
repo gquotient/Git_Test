@@ -30,6 +30,22 @@ define(
   User.Model = Backbone.Model.extend({
     url: '/api/users',
     idAttribute: 'email'
+    // schema: {
+    //   attributes: {
+    //     'name': {
+    //       type: 'text',
+    //       title: 'Name'
+    //     },
+    //     'email': {
+    //       type: 'text',
+    //       title: 'Email'
+    //     },
+    //     'org_label': {
+    //       type: 'text',
+    //       title: 'Org Label'
+    //     }
+    //   }
+    // }
   });
 
   User.Collection = Backbone.Collection.extend({
@@ -112,9 +128,18 @@ define(
     },
     schema: {
       attributes: {
-        'name': 'Name',
-        'email': 'Email',
-        'org_label': 'Org Label'
+        'name': {
+          type: 'text',
+          title: 'Name'
+        },
+        'email': {
+          type: 'text',
+          title: 'Email'
+        },
+        'org_label': {
+          type: 'text',
+          title: 'Org Label'
+        }
       }
     },
     itemView: User.views.editTableRow,
