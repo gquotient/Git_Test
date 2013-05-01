@@ -48,6 +48,12 @@ define(
         id: 'form_editUsers',
         name: 'form_editUsers'
       },
+      schema: {
+        attributes: {
+          'name': 'Name',
+          'label': 'Label'
+        }
+      },
       itemView: Team.views.editTableRow,
       onRender: function(){
         // Add the table header cells

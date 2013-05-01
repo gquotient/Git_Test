@@ -83,10 +83,6 @@ define(
     template: {
       type: 'handlebars',
       template: editTableRowTemplate
-    },
-    serializeData: function(model){
-      this.model.set('schema', this.options.schema)
-      return this.model.toJSON();
     }
   });
 
@@ -101,12 +97,12 @@ define(
         this.model.set('name', this.$el.find('input[name=name]').val());
         this.model.set('email', this.$el.find('input[name=email]').val());
         this.model.set('org_label', this.$el.find('input[name=org_label]').val());
-        Backbone.sync('create', this.model)
+        Backbone.sync('create', this.model);
         this.collection.add(this.model);
         this.close();
       }
     }
-  })
+  });
 
   // Table CompositeView extended from form
   User.views.editTable = Forms.views.table.extend({
@@ -119,30 +115,14 @@ define(
         'name': 'Name',
         'email': 'Email',
         'org_label': 'Org Label'
-      },
-      toJSON: function(){
-        return this.attributes;
       }
     },
     itemView: User.views.editTableRow,
-    itemViewOptions: function(model, index){
-      return{
-        schema: this.schema
-      }
-    },
-    onRender: function(){
-      // Add the table header cells
-      // NOTE: there's gotta be a smarter way to do this
-      // this.$el.find('thead > tr').html('<th>Name</th><th>Email</th><th>Org Label</th><th>Actions</th>');
-    },
-    initialize: function(){
-      this.model = this.schema;
-    },
     events: {
       'click button.add': function(event){
         event.preventDefault();
         var newUser = new User.Model();
-        var newUserView = new User.views.newTableRow({model: newUser, collection: this.collection}); 
+        var newUserView = new User.views.newTableRow({model: newUser, collection: this.collection});
         this.$el.find('tbody').append( newUserView.render().el );
       }
     }

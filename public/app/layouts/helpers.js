@@ -44,21 +44,19 @@ function(
   });
 
   Handlebars.registerHelper('edit_table_header', function(){
-    var header = ''
-    console.log(this);
-    _.each(this, function(val, key){
-      header += '<th>' + val + '</th>'
-    })
-    console.log(header);
+    var header = '';
+    _.each(this.attributes, function(val, key){
+      header += '<th>' + val + '</th>';
+    });
     return new Handlebars.SafeString(header);
-  })
+  });
 
-  Handlebars.registerHelper('edit_table_row', function(){
+  Handlebars.registerHelper('edit_table_rows', function(){
     var that = this;
     var row = '';
     _.each(this.schema.attributes, function(val, key){
-      row += '<td><input id="' + key + '" name="' + key + '" type=text value="' + that[key] + '"></td>'
-    })
+      row += '<td><input id="' + key + '" name="' + key + '" type=text value="' + that[key] + '"></td>';
+    });
     return new Handlebars.SafeString(row);
   });
 
@@ -66,8 +64,8 @@ function(
     return new Handlebars.SafeString(
       ['<button type="button" class="button save primary">Save</button>',
       '<button type="button" class="button edit">Edit</button>',
-      '<button type="reset" class="button">Reset</button>'].join()
+      '<button type="reset" class="button">Reset</button>'].join('')
     );
-  })
-    
+  });
+
 });
