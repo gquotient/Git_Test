@@ -34,7 +34,7 @@ define([
 
   // Create global collections and models
   ia.users = new User.Collection();
-  ia.rootPortfolio = new Portfolio.Root();
+  ia.rootPortfolio = new Portfolio.Root({id: 'all', name: 'All Portfolios'});
 
   ia.getPortfolio = function(id){
     return this.rootPortfolio.portfolios.get(id);

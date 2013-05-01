@@ -6,9 +6,6 @@ define([
 
   'ia',
 
-  'portfolio',
-  'project',
-
   'app/layouts/helpers',
   'app/layouts/main',
   'app/layouts/portfolioDetail',
@@ -24,9 +21,6 @@ define([
 
   ia,
 
-  Portfolio,
-  Project,
-
   Helpers,
   MainLayout,
   PortfolioDetailLayout,
@@ -41,58 +35,41 @@ define([
     },
 
     // Utility function for getting portfolio model/collection
-    getPortfoliosById: function(id){
-      var portfolio, subPortfolios;
-
-      if (id && id !== 'all') {
-        // Build custom portfolios view
-        portfolio = ia.allPortfolios.get(id);
-        subPortfolios = portfolio.get('subPortfolios');
+    getPortfolioById: function(id){
+      if (!id || id === 'all') {
+        return ia.rootPortfolio;
       } else {
-        // Build primary portfolios view
-        portfolio = ia.allPortfoliosPortfolio;
-        subPortfolios = new Portfolio.collections.NavigationList(ia.allPortfolios.models);
+        return ia.getPortfolio(id);
       }
-
-      return {
-        portfolio: portfolio,
-        subPortfolios: subPortfolios
-      };
     },
 
     portfolioDashboard: function(id){
-      var portfolios = this.getPortfoliosById(id);
+      var portfolio = this.getPortfolioById(id);
 
-      Backbone.trigger('set:breadcrumbs', portfolios.portfolio);
+      Backbone.trigger('set:breadcrumbs', portfolio);
       this.mainLayout.mainContent.show(
-        new PortfolioDashboardLayout({
-          model: portfolios.portfolio,
-          collection: portfolios.subPortfolios
-        })
+        new PortfolioDashboardLayout({model: portfolio})
       );
     },
 
     portfolio: function(id){
-      var portfolios = this.getPortfoliosById(id);
+      var portfolio = this.getPortfolioById(id);
 
       // Build detail view if not currently there
       // NOTE: this is a hack for better back/forward support
       if (!$('.portfolioDetail').length) {
-        Backbone.trigger('set:breadcrumbs', portfolios.portfolio);
+        Backbone.trigger('set:breadcrumbs', portfolio);
         this.mainLayout.mainContent.show(
-          new PortfolioDetailLayout({
-            model: portfolios.portfolio,
-            collection: portfolios.subPortfolios
-          })
+          new PortfolioDetailLayout({model: portfolio})
         );
       } else {
         // Trigger select event
-        Backbone.trigger('select:portfolio', portfolios.portfolio);
+        Backbone.trigger('select:portfolio', portfolio);
       }
     },
 
     project: function(id){
-      var project = ia.allProjects.get(id);
+      var project = ia.getProject(id);
 
       Backbone.trigger('set:breadcrumbs', project);
       this.mainLayout.mainContent.show( new ProjectDetailLayout({model: project}) );

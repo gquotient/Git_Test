@@ -27,6 +27,9 @@ define([
     defaults: {
       type: 'portfolio',
 
+      total_portfolios: 0,
+      total_projects: 0,
+
       dc_capacity: 0,
       ac_capacity: 0,
       irradiance_now: 0,
@@ -60,15 +63,25 @@ define([
 
       this.listenTo(portfolio.portfolios, 'add', this.addPortfolio);
       this.listenTo(portfolio.projects, 'add', this.addProject);
+
+      this.set('total_portfolios', this.portfolios.length);
     },
 
     addProject: function(project){
       this.projects.add(project, {merge: true});
 
-      _.each(project.get('kpis'), function(value, key){
-        var aggr = this.get(key) || 0;
-        this.set(key, aggr + value);
-      }, this);
+      this.set('total_projects', this.projects.length);
+      this.set(this.aggregateKpis());
+    },
+
+    aggregateKpis: function(){
+      return this.projects.reduce(function(memo, project){
+        _.each(project.get('kpis'), function(value, key){
+          memo[key] = (memo[key] || 0) + value;
+        });
+
+        return memo;
+      }, {});
     }
   });
 
@@ -83,8 +96,14 @@ define([
         url: '/api/projects'
       });
 
-      this.listenTo(this.portfolios, 'change:kpis', this.calcKpis);
-      this.listenTo(this.projects, 'change:kpis', this.calcKpis);
+      this.listenTo(this.portfolios, 'add', function(model){
+        this.set('total_portfolios', this.portfolios.length);
+      });
+
+      this.listenTo(this.projects, 'add', function(model){
+        this.set('total_projects', this.projects.length);
+        this.set(this.aggregateKpis());
+      });
     }
   });
 
@@ -147,9 +166,8 @@ define([
 
     // Setup the views for the current model.
     setPortfolio: function(model){
-      this.model = model;
       // Set the current collection to be a new navigation list with the subPortfolios.
-      this.collection = this.model.get('subPortfolios');
+      this.collection = model.portfolios;
 
       // Trigger a render. This forces the nav header to update, too.
       this.render();

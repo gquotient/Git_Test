@@ -40,17 +40,18 @@ define([
 
       if (this.currentState !== 'portfolioDashboard') {
 
-        this.projectList = options.model.get('projects').clone();
-          // Build primary portfolio nav
+        this.projectList = options.model.projects.clone();
+
+        // Build primary portfolio nav
         this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
-            collection: options.collection,
-            model: options.model
-          });
+          collection: options.model.portfolios
+        });
+
         this.dashboardView = new Project.views.Dashboard({ collection: this.projectList });
 
         this.listenTo(Backbone, 'select:portfolio', function(model){
           // Update the collection.
-          this.projectList.set(model.get('projects').models);
+          this.projectList.set(model.projects.models);
         });
 
       } else {

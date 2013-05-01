@@ -43,26 +43,24 @@ define([
     initialize: function(options){
       // Build primary portfolio nav
       this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
-          collection: options.collection,
-          model: options.model
-        });
-        // Build KPIs
+        collection: options.model.portfolios
+      });
+
+      // Build KPIs
       this.kpisView = new Portfolio.views.detailKpis({ model: options.model }),
 
-      this.projectList = options.model.get('projects').clone(),
+      this.projectList = options.model.projects.clone();
 
-        // Extend map view for marker filtering
-      this.mapView = new Project.views.map({
-          collection: this.projectList
-        });
+      // Extend map view for marker filtering
+      this.mapView = new Project.views.map({ collection: this.projectList });
 
       this.projectListView = new Project.views.DataListView({
-          collection: this.projectList
-        });
+        collection: this.projectList
+      });
 
       this.listenTo(Backbone, 'select:portfolio', function(model){
         // Update the collection.
-        this.projectList.set(model.get('projects').models);
+        this.projectList.set(model.projects.models);
       });
 
       this.currentState = 'portfolioDetail';

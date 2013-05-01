@@ -41,7 +41,7 @@ define([
       this.model = options.model;
 
       this.mapView = new Project.views.map({
-        collection: new Project.collections.Projects([options.model])
+        collection: new Project.Collection([options.model])
       });
 
       // Set up listeners

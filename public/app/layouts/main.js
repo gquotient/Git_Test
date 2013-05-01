@@ -4,9 +4,6 @@ define([
   'backbone.marionette',
   'handlebars',
 
-  'portfolio',
-  'project',
-
   'layouts/header',
   'layouts/navigation',
 
@@ -16,9 +13,6 @@ define([
   Backbone,
   Marionette,
   Handlebars,
-
-  Portfolio,
-  Project,
 
   Header,
   Navigation,
@@ -53,7 +47,7 @@ define([
       this.navigationView = new Navigation();
 
       // Seed breadcrumbs
-      Backbone.trigger('reset:breadcrumbs', app.allPortfolioPortfolio);
+      Backbone.trigger('reset:breadcrumbs', app.rootPortfolio);
     }
   });
 });

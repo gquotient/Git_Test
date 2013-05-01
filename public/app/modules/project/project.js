@@ -128,23 +128,17 @@ define([
       })
     },
 
-    highlight: function(projectOrPortfolio){
+    highlight: function(model){
       clearTimeout(this.highlightTimeout);
-      // This is a little hacky right now.
-      if (!projectOrPortfolio) {
+
+      if (!model) {
         this.unmask();
-      } else if (projectOrPortfolio.get('projects') === undefined) {
-        if (this.model !== projectOrPortfolio) {
-          this.mask();
-        } else {
-          this.unmask();
-        }
+      } else if (model === this.model) {
+        this.unmask();
+      } else if (model.projects && model.projects.contains(this.model)) {
+        this.unmask();
       } else {
-        if (!projectOrPortfolio.get('projects').contains(this.model)){
-          this.mask();
-        } else {
-          this.unmask();
-        }
+        this.mask();
       }
     },
 
