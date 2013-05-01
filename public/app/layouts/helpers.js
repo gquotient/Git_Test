@@ -40,4 +40,13 @@ function(
     }
     return options.inverse(this);
   });
+
+  Handlebars.registerHelper('action_buttons', function(){
+    return new Handlebars.SafeString(
+      ['<button type="button" class="button save primary">Save</button>',
+      '<button type="button" class="button edit">Edit</button>',
+      '<button type="reset" class="button">Reset</button>'].join()
+    );
+  })
+    
 });
