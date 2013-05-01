@@ -21,83 +21,79 @@ define([
   portfolioListTemplate,
   detailKpisTemplate
 ){
-  /* We could probably automate the stubbing out of this module structure. */
-  var Portfolio = { models: {}, views: {}, layouts: {}, collections: {} };
+  var Portfolio = { views: {} };
 
-  /* Setup a model. */
-  Portfolio.models.Portfolio = Backbone.Model.extend({
+  Portfolio.Model = Backbone.Model.extend({
     defaults: {
-      type: 'portfolio'
-    },
-    build: function(){
-      var subPortfolioIDs = this.get('subPortfolioIDs'),
-          allProjectIDs = [];
+      type: 'portfolio',
 
-      allProjectIDs = allProjectIDs.concat(this.get('projectIDs'));
-
-      this.set('subPortfolios', new Portfolio.collections.NavigationList( this.collection.filterByIDs( subPortfolioIDs ) ));
-      this.get('subPortfolios').each( function(portfolio){
-        if(!portfolio.get('built')) {
-          portfolio.build();
-        }
-        allProjectIDs = allProjectIDs.concat(portfolio.get('allProjectIDs'));
-      });
-
-      this.set('allProjectIDs', _.uniq(allProjectIDs) );
-
-      var projects =  new Project.collections.Projects(this.collection.projects.filterByIDs(this.get('allProjectIDs')) );
-      this.set('projects', projects);
-      this.set('dc_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').dc_capacity; }, 0 ) );
-      this.set('ac_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').ac_capacity; }, 0) );
-      this.set('irradiance_now', projects.reduce( function(memo, p){ return memo + p.get('kpis').irradiance_now; }, 0) );
-      this.set('power_now', projects.reduce( function(memo, p){ return memo + p.get('kpis').power_now; }, 0) );
-
-      this.set('built', true);
-    },
-
-    initialize: function(){
-      this.set('built', false);
-      this.listenTo(this.collection, 'reset', this.build);
-      this.listenTo(this.collection.projects, 'reset', this.build);
-    }
-  });
-
-  /* Setup Master Portfolio */
-  Portfolio.models.AllPortfolio = Backbone.Model.extend({
-    defaults: {
-      type: 'portfolio'
-    },
-    build: function(){
-      var projects = this.get('projects');
-      this.set('projects', this.get('projects').clone());
-      this.set('dc_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').dc_capacity; }, 0 ) );
-      this.set('ac_capacity', projects.reduce( function(memo, p){ return memo + p.get('kpis').ac_capacity; }, 0) );
-      this.set('irradiance_now', projects.reduce( function(memo, p){ return memo + p.get('kpis').irradiance_now; }, 0) );
-      this.set('power_now', projects.reduce( function(memo, p){ return memo + p.get('kpis').power_now; }, 0) );
+      dc_capacity: 0,
+      ac_capacity: 0,
+      irradiance_now: 0,
+      power_now: 0
     },
 
     initialize: function(options){
-      this.listenTo(options.projects, 'reset', this.build);
-    }
-  });
+      var root = this.collection.root;
 
-  /* Create a canonical 'All Portfolios' */
-  Portfolio.collections.All = Backbone.Collection.extend({
-    model: Portfolio.models.Portfolio,
-    url: '/api/portfolios',
+      this.portfolios = new Portfolio.Collection([], {root: root});
+      this.projects = new Project.Collection();
 
-    subPortfolios: function(model){
-      return this.filterByIDs( model.get('subPortfolioIDs') );
+      this.listenTo(root.portfolios, 'add', function(model){
+        if (_.contains(this.get('subPortfolioIDs'), model.id)) {
+          this.addPortfolio(model);
+        }
+      });
+
+      this.listenTo(root.projects, 'add', function(model){
+        if (_.contains(this.get('projectIDs'), model.id)) {
+          this.addProject(model);
+        }
+      });
     },
 
-    initialize: function(models, options){
-      this.projects = options.projects;
+    addPortfolio: function(portfolio){
+      this.portfolios.add(portfolio, {merge: true});
+
+      this.portfolios.add(portfolio.portfolios.models, {merge: true});
+      this.projects.add(portfolio.projects.models, {merge: true});
+
+      this.listenTo(portfolio.portfolios, 'add', this.addPortfolio);
+      this.listenTo(portfolio.projects, 'add', this.addProject);
+    },
+
+    addProject: function(project){
+      this.projects.add(project, {merge: true});
+
+      _.each(project.get('kpis'), function(value, key){
+        var aggr = this.get(key) || 0;
+        this.set(key, aggr + value);
+      }, this);
     }
   });
 
-  /* Setup the url for the list of portfolios. This will be our list for navigation. */
-  Portfolio.collections.NavigationList = Backbone.Collection.extend({
-    model: Portfolio.models.Portfolio
+  Portfolio.Root = Portfolio.Model.extend({
+    initialize: function(options){
+      this.portfolios = new Portfolio.Collection([], {
+        url: '/api/portfolios',
+        root: this
+      });
+
+      this.projects = new Project.Collection([], {
+        url: '/api/projects'
+      });
+
+      this.listenTo(this.portfolios, 'change:kpis', this.calcKpis);
+      this.listenTo(this.projects, 'change:kpis', this.calcKpis);
+    }
+  });
+
+  Portfolio.Collection = Backbone.Collection.extend({
+    model: Portfolio.Model,
+
+    initialize: function(models, options){
+      this.root = options.root;
+    }
   });
 
   /* The item view is the view for the individual portfolios in the navigation. */

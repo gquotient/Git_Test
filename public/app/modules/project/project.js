@@ -23,17 +23,16 @@ define([
   dataListItemTemplate,
   dashboardItemTemplate
 ){
-  var Project = { models: {}, views: {}, layouts: {}, collections: {} };
+  var Project = { views: {} };
 
-  Project.models.Project = Backbone.Model.extend({
+  Project.Model = Backbone.Model.extend({
     defaults: {
       type: 'project'
     }
   });
 
-  Project.collections.Projects = Backbone.Collection.extend({
-    model: Project.models.Project,
-    url: '/api/projects'
+  Project.Collection = Backbone.Collection.extend({
+    model: Project.Model
   });
 
   Project.views.DataListItem = Marionette.ItemView.extend({
