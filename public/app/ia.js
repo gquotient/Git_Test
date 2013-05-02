@@ -37,7 +37,11 @@ define([
   ia.rootPortfolio = new Portfolio.Root({id: 'all', name: 'All Portfolios'});
 
   ia.getPortfolio = function(id){
-    return this.rootPortfolio.portfolios.get(id);
+    if (!id || id === 'all') {
+      return this.rootPortfolio;
+    } else {
+      return this.rootPortfolio.portfolios.get(id);
+    }
   };
 
   ia.getProject = function(id){

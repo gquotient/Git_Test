@@ -34,55 +34,44 @@ define([
       Backbone.history.navigate('portfolio/all', true);
     },
 
-    // Utility function for getting portfolio model/collection
-    getPortfolioById: function(id){
-      if (!id || id === 'all') {
-        return ia.rootPortfolio;
+    portfolioDetail: function(id){
+      var portfolio = ia.getPortfolio(id);
+
+      Backbone.trigger('set:breadcrumbs', portfolio);
+      if (this.contentLayout instanceof PortfolioDetailLayout) {
+        Backbone.trigger('select:portfolio', portfolio);
       } else {
-        return ia.getPortfolio(id);
+        this.contentLayout = new PortfolioDetailLayout({model: portfolio});
+        this.mainLayout.mainContent.show(this.contentLayout);
       }
     },
 
     portfolioDashboard: function(id){
-      var portfolio = this.getPortfolioById(id);
+      var portfolio = ia.getPortfolio(id);
 
       Backbone.trigger('set:breadcrumbs', portfolio);
-      this.mainLayout.mainContent.show(
-        new PortfolioDashboardLayout({model: portfolio})
-      );
+      this.contentLayout = new PortfolioDashboardLayout({model: portfolio});
+      this.mainLayout.mainContent.show(this.contentLayout);
     },
 
-    portfolio: function(id){
-      var portfolio = this.getPortfolioById(id);
-
-      // Build detail view if not currently there
-      // NOTE: this is a hack for better back/forward support
-      if (!$('#page-portfolioDetail').length) {
-        Backbone.trigger('set:breadcrumbs', portfolio);
-        this.mainLayout.mainContent.show(
-          new PortfolioDetailLayout({model: portfolio})
-        );
-      } else {
-        // Trigger select event
-        Backbone.trigger('select:portfolio', portfolio);
-      }
-    },
-
-    project: function(id){
+    projectDetail: function(id){
       var project = ia.getProject(id);
 
       Backbone.trigger('set:breadcrumbs', project);
-      this.mainLayout.mainContent.show( new ProjectDetailLayout({model: project}) );
+      this.contentLayout = new ProjectDetailLayout({model: project});
+      this.mainLayout.mainContent.show(this.contentLayout);
     },
 
     profile: function(){
       Backbone.trigger('reset:breadcrumbs', {name: 'My Profile'});
-      this.mainLayout.mainContent.show( new ProfileLayout( {model: ia.currentUser }));
+      this.contentLayout = new ProfileLayout( {model: ia.currentUser });
+      this.mainLayout.mainContent.show(this.contentLayout);
     },
 
     admin: function(page){
       Backbone.trigger('reset:breadcrumbs', {name: 'Admin'});
-      this.mainLayout.mainContent.show( new AdminLayout({initialView: page}) );
+      this.contentLayout = new AdminLayout({initialView: page});
+      this.mainLayout.mainContent.show(this.contentLayout);
     },
 
     initialize: function(){
@@ -96,10 +85,10 @@ define([
     appRoutes: {
       '': 'index',
       'portfolio': 'index',
-      'portfolio/:id': 'portfolio',
+      'portfolio/:id': 'portfolioDetail',
       'portfolio/dashboard': 'portfolioDashboard',
       'portfolio/dashboard/:id': 'portfolioDashboard',
-      'project/:id': 'project',
+      'project/:id': 'projectDetail',
       'profile': 'profile',
       'admin': 'admin',
       'admin/:page': 'admin'
