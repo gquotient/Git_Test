@@ -5,6 +5,8 @@ define(
   'backbone',
   'backbone.marionette',
 
+  './form-helpers',
+
   'hbs!form/templates/table',
   'hbs!form/templates/editTableRow',
   'hbs!form/templates/newTableRow'
@@ -14,6 +16,8 @@ function(
   _,
   Backbone,
   Marionette,
+
+  formHelpers,
 
   tableTemplate,
   editTableRowTemplate,
@@ -60,7 +64,7 @@ function(
       template: editTableRowTemplate
     },
     templateHelpers: function(){
-      return { schema: this.options.schema };
+      return { schema: this.options.schema, fields: this.options.fields };
     },
     onShow: function(){
       // Disable form elements
@@ -106,7 +110,7 @@ function(
       template: newTableRowTemplate
     },
     templateHelpers: function(){
-      return { schema: this.options.schema };
+      return { schema: this.options.schema, fields: this.options.fields };
     },
     events:{
       'click button.create': function(event){
@@ -136,11 +140,12 @@ function(
     itemViewContainer: 'tbody',
     itemViewOptions: function(model, index){
       return {
-        schema: this.schema
+        fields: this.fields,
+        schema: this.model.schema
       };
     },
     serializeData: function() {
-      return this.schema;
+      return {fields: this.fields, schema: this.model.schema};
     },
     itemView: Forms.views.tableRow,
     newRowView: Forms.views.newTableRow,
@@ -151,8 +156,8 @@ function(
     events: {
       'click button.add': function(event){
         event.preventDefault();
-        var newModel = new this.protoModel();
-        var newModelView = new this.newRowView( { model: newModel, collection: this.collection, schema: this.schema } );
+        var newModel = new this.model();
+        var newModelView = new this.newRowView( { model: newModel, collection: this.collection, schema: this.model.schema, fields: this.fields } );
         this.$el.find('tbody').append( newModelView.render().el );
       }
     }

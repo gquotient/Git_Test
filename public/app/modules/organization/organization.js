@@ -5,9 +5,7 @@ define(
     'backbone',
     'backbone.marionette',
 
-    'form',
-
-    'hbs!organization/templates/editTableRow'
+    'form'
   ],
   function(
     $,
@@ -22,7 +20,23 @@ define(
 
     var Organization = { models: {}, collections: {}, views: {} };
 
-    Organization.models.Organization = Backbone.Model.extend({
+    Organization.models.Organization = Backbone.Model.extend({}, {
+      schema: {
+        attributes: {
+          'name': {
+            type: 'text',
+            title: 'Name'
+          },
+          'type': {
+            type: 'select',
+            title: 'Type',
+            options: {
+              'unspecified': 'unspecified',
+              'vendor': 'vendor'
+            }
+          }
+        }
+      }
     });
 
     Organization.collections.Organizations = Backbone.Collection.extend({
@@ -44,27 +58,8 @@ define(
 
     // Table CompositeView extended from form
     Organization.views.editTable = Forms.views.table.extend({
-      attributes: {
-        id: 'form_editUsers',
-        name: 'form_editUsers'
-      },
-      schema: {
-        attributes: {
-          'name': {
-            type: 'text',
-            title: 'Name'
-          },
-          'type': {
-            type: 'select',
-            title: 'Type',
-            options: {
-              'unspecified': 'unspecified',
-              'vendor': 'vendor'
-            }
-          }
-        }
-      },
-      protoModel: Organization.models.Organization
+      fields: ['name', 'type'],
+      model: Organization.models.Organization
     });
 
     return Organization;

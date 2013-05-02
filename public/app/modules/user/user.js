@@ -9,9 +9,8 @@ define([
   'hbs!user/templates/item',
   'hbs!user/templates/detail',
   'hbs!user/templates/edit',
-  'hbs!user/templates/editTableRow',
-  'hbs!user/templates/newTableRow'
-], function(
+],
+function(
   $,
   _,
   Backbone,
@@ -21,31 +20,30 @@ define([
 
   itemTemplate,
   detailTemplate,
-  editTemplate,
-  editTableRowTemplate,
-  newTableRowTemplate
+  editTemplate
 ){
   var User = { views: {} };
 
   User.Model = Backbone.Model.extend({
     url: '/api/users',
     idAttribute: 'email'
-    // schema: {
-    //   attributes: {
-    //     'name': {
-    //       type: 'text',
-    //       title: 'Name'
-    //     },
-    //     'email': {
-    //       type: 'text',
-    //       title: 'Email'
-    //     },
-    //     'org_label': {
-    //       type: 'text',
-    //       title: 'Org Label'
-    //     }
-    //   }
-    // }
+  }, {
+    schema: {
+      attributes: {
+        'name': {
+          type: 'text',
+          title: 'Name'
+        },
+        'email': {
+          type: 'text',
+          title: 'Email'
+        },
+        'org_label': {
+          type: 'text',
+          title: 'Org Label'
+        }
+      }
+    }
   });
 
   User.Collection = Backbone.Collection.extend({
@@ -91,27 +89,8 @@ define([
 
   // Table CompositeView extended from form
   User.views.editTable = Forms.views.table.extend({
-    attributes: {
-      id: 'form_editUsers',
-      name: 'form_editUsers'
-    },
-    schema: {
-      attributes: {
-        'name': {
-          type: 'text',
-          title: 'Name'
-        },
-        'email': {
-          type: 'text',
-          title: 'Email'
-        },
-        'org_label': {
-          type: 'text',
-          title: 'Org Label'
-        }
-      }
-    },
-    protoModel: User.Model
+    fields: ['name', 'email'],
+    model: User.Model
   });
 
   return User;
