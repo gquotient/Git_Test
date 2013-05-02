@@ -90,7 +90,8 @@ function(
   // Table CompositeView extended from form
   User.views.EditTable = Forms.views.table.extend({
     fields: ['name', 'email'],
-    model: User.Model
+    model: User.Model,
+    actions: true
   });
 
   return User;

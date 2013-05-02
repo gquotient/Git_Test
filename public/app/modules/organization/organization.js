@@ -45,7 +45,8 @@ define(
     // Table CompositeView extended from form
     Organization.views.EditTable = Forms.views.table.extend({
       fields: ['name', 'type'],
-      model: Organization.models.Organization
+      model: Organization.models.Organization,
+      actions: true
     });
 
     return Organization;

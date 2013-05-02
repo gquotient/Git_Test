@@ -153,6 +153,12 @@ function(
       id: '',
       name: ''
     },
+    actions: false,
+    onRender: function(){
+      if(this.actions){
+        this.$el.find('thead tr').append('<th>Actions</th>');
+      }
+    },
     events: {
       'click button.add': function(event){
         event.preventDefault();
