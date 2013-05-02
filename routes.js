@@ -162,7 +162,9 @@ module.exports = function(app){
   );
 
 
-
+  /*
+   * API ROUTES
+   */ 
 
   app.all('/api/*', ensureAuthenticated);
 
