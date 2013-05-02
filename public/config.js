@@ -88,7 +88,8 @@ require.config({
     'backbone.marionette.handlebars': 'components/backbone.marionette.handlebars/backbone.marionette.handlebars',
     handlebars: 'components/handlebars/handlebars',
     modernizr: 'components/modernizr/modernizr',
-    leaflet: 'components/leaflet/dist/leaflet'
+    leaflet: 'components/leaflet/dist/leaflet',
+    messageformat: 'components/messageformat.js/messageformat'
   },
   shim: {
     backbone: {
