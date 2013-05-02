@@ -38,7 +38,7 @@ define([
         collection: Team.collections.Teams,
         view: Team.views.EditTable,
         title: 'Teams'
-      },
+      }
     }
   };
 
@@ -63,10 +63,12 @@ define([
 
     initialView: 'users',
 
-    getView: function(view){
-      var viewConfig = config.views[view];
-      var collection = new viewConfig.collection();
-      var view = new viewConfig.view({collection: collection});
+    getView: function(page){
+      var
+        viewConfig = config.views[page],
+        collection = new viewConfig.collection(),
+        view = new viewConfig.view({collection: collection})
+      ;
 
       collection.fetch();
 

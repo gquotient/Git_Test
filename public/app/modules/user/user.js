@@ -8,7 +8,7 @@ define([
 
   'hbs!user/templates/item',
   'hbs!user/templates/detail',
-  'hbs!user/templates/edit',
+  'hbs!user/templates/edit'
 ],
 function(
   $,
