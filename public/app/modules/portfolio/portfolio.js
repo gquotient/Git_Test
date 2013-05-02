@@ -37,6 +37,19 @@ define([
     },
 
     initialize: function(options){
+      this.createCollections();
+
+      this.listenTo(this.portfolios, 'add remove', function(model){
+        this.set('total_portfolios', this.portfolios.length);
+      });
+
+      this.listenTo(this.projects, 'add remove', function(model){
+        this.set('total_projects', this.projects.length);
+        this.set(this.aggregateKpis());
+      });
+    },
+
+    createCollections: function(){
       var root = this.collection.root;
 
       this.portfolios = new Portfolio.Collection([], {root: root});
@@ -63,15 +76,10 @@ define([
 
       this.listenTo(portfolio.portfolios, 'add', this.addPortfolio);
       this.listenTo(portfolio.projects, 'add', this.addProject);
-
-      this.set('total_portfolios', this.portfolios.length);
     },
 
     addProject: function(project){
       this.projects.add(project, {merge: true});
-
-      this.set('total_projects', this.projects.length);
-      this.set(this.aggregateKpis());
     },
 
     aggregateKpis: function(){
@@ -86,7 +94,7 @@ define([
   });
 
   Portfolio.Root = Portfolio.Model.extend({
-    initialize: function(options){
+    createCollections: function(){
       this.portfolios = new Portfolio.Collection([], {
         url: '/api/portfolios',
         root: this
@@ -94,15 +102,6 @@ define([
 
       this.projects = new Project.Collection([], {
         url: '/api/projects'
-      });
-
-      this.listenTo(this.portfolios, 'add', function(model){
-        this.set('total_portfolios', this.portfolios.length);
-      });
-
-      this.listenTo(this.projects, 'add', function(model){
-        this.set('total_projects', this.projects.length);
-        this.set(this.aggregateKpis());
       });
     }
   });
