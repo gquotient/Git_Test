@@ -26,17 +26,17 @@ define([
     views: {
       'users': {
         collection: User.Collection,
-        view: User.views.editTable,
+        view: User.views.EditTable,
         title: 'Users'
       },
       'organizations': {
         collection: Organization.collections.Organizations,
-        view: Organization.views.editTable,
+        view: Organization.views.EditTable,
         title: 'Organizations'
       },
       'teams': {
         collection: Team.collections.Teams,
-        view: Team.views.editTable,
+        view: Team.views.EditTable,
         title: 'Teams'
       },
     }

@@ -37,7 +37,7 @@ define(
     });
 
     // Table CompositeView extended from form
-    Team.views.editTable = Forms.views.table.extend({      
+    Team.views.EditTable = Forms.views.table.extend({      
       fields: ['name'],
       model: Team.models.Team
     });

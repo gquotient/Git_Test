@@ -45,13 +45,12 @@ function(
    * EDIT TABLE ROWS
    */
   Handlebars.registerHelper('edit_table_rows', function(){
-    var that = this;
     var row = '';
 
     _.each(this.fields, function(field){
-      var attr = that.schema.attributes[field]
-      row += formElements[ attr.type ]( field, that[field], that );
-    });
+      var attr = this.schema.attributes[field]
+      row += formElements[ attr.type ]( field, this[field], this );
+    }, this);
 
     return new Handlebars.SafeString(row);
   });

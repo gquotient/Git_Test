@@ -88,7 +88,7 @@ function(
   });
 
   // Table CompositeView extended from form
-  User.views.editTable = Forms.views.table.extend({
+  User.views.EditTable = Forms.views.table.extend({
     fields: ['name', 'email'],
     model: User.Model
   });

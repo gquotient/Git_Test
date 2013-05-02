@@ -13,9 +13,7 @@ define(
     Backbone,
     Marionette,
 
-    Forms,
-
-    editTableRowTemplate
+    Forms
   ){
 
     var Organization = { models: {}, collections: {}, views: {} };
@@ -44,20 +42,8 @@ define(
       url: '/api/organizations'
     });
 
-    // Table row edit ItemView extended from form ItemView
-    Organization.views.editTableRow = Forms.views.tableRow.extend({
-      attributes: {
-        id: 'form_editUser',
-        name: 'form_editUser'
-      },
-      template: {
-        type: 'handlebars',
-        template: editTableRowTemplate
-      }
-    });
-
     // Table CompositeView extended from form
-    Organization.views.editTable = Forms.views.table.extend({
+    Organization.views.EditTable = Forms.views.table.extend({
       fields: ['name', 'type'],
       model: Organization.models.Organization
     });

@@ -5,7 +5,7 @@ define(
   'backbone',
   'backbone.marionette',
 
-  './form-helpers',
+  'form/form-helpers',
 
   'hbs!form/templates/table',
   'hbs!form/templates/editTableRow',
@@ -73,7 +73,7 @@ function(
     disableForm: function(){
       this.$el.find(':input:not(button)').attr('disabled', true);
     },
-    edit: function(){
+    enableForm: function(){
       // Enable form elements
       this.$el.find(':input:not(button)').attr('disabled', false);
     },
@@ -93,7 +93,7 @@ function(
         this.disableForm();
       },
       'click button.edit': function(event){
-        this.edit();
+        this.enableForm();
       },
       'click button.cancel': function(event){
         event.preventDefault();
