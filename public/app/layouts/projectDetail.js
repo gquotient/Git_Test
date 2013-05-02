@@ -40,7 +40,7 @@ define([
     initialize: function(options){
       this.model = options.model;
 
-      this.mapView = new Project.views.map({
+      this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])
       });
 

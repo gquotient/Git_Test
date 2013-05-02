@@ -7,5 +7,10 @@
   "Portfolios": "Portfolios",
   "Projects": "Projects",
   "Status": "Status",
-  "Project Name": "Project Name"
+  "Project Name": "Project Name",
+  "Users": "Users",
+  "Teams": "Teams",
+  "Organizations": "Organizations",
+  "Type": "Type",
+  "Name": "Name"
 }

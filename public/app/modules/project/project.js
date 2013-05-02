@@ -189,7 +189,7 @@ define([
     }
   });
 
-  Project.views.map = Marionette.CollectionView.extend({
+  Project.views.Map = Marionette.CollectionView.extend({
     itemView: Project.views.MarkerView,
 
     itemViewOptions: function(){
@@ -201,68 +201,33 @@ define([
     },
 
     fitToBounds: function(bounds){
-      var
-        south,
-        west,
-        north,
-        east,
-        myBounds
-      ;
+      bounds = bounds || this.findBounds();
 
-      if (bounds) {
-        south = bounds.south;
-        west = bounds.west;
-        north = bounds.north;
-        west = bounds.west;
-      } else {
-
-        this.markers.eachLayer( function(marker){
-          var lat = marker._latlng.lat,
-              lng = marker._latlng.lng;
-
-          // This stuff is ugly but I couldn't think of a better way since it's 2 dimensional
-          if (south === undefined) {
-            south = lng;
-          } else {
-            if (lng < south) {
-              south = lng;
-            }
-          }
-
-          if (west === undefined) {
-            west = lat;
-          } else {
-            if (lat < west) {
-              west = lat;
-            }
-          }
-
-          if (north === undefined) {
-            north = lng;
-          } else {
-            if (lng > north) {
-              north = lng;
-            }
-          }
-
-          if (east === undefined) {
-            east = lat;
-          } else {
-            if (lat > east) {
-              east = lat;
-            }
-          }
-        });
-      }
-
-      myBounds = new L.LatLngBounds(
-        [west, south], // southwest
-        [east, north]  // northeast
+      bounds = new L.LatLngBounds(
+        [bounds.south, bounds.west], // southwest
+        [bounds.north, bounds.east]  // northeast
       );
 
       // Leaflet method to snap to bounds
       // NOTE: I've come to believe this pad method doesn't work properly. It seems to only have 3 settings. Off, on, and holy crap
-      this.map.fitBounds(myBounds.pad(0));
+      this.map.fitBounds(bounds.pad(0));
+    },
+
+    findBounds: function(){
+      var lats = [], lngs = [];
+
+      this.collection.each(function(model){
+        var latLng = model.get('latLng');
+        lats.push(latLng[0]);
+        lngs.push(latLng[1]);
+      });
+
+      return {
+        south: _.min(lats),
+        west: _.min(lngs),
+        north: _.max(lats),
+        east: _.max(lngs)
+      };
     },
 
     render: function(){
