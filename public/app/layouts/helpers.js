@@ -1,8 +1,10 @@
 define(
 [
+  'underscore',
   'handlebars'
 ],
 function(
+  _,
   Handlebars
 ){
   // Unit conversion
@@ -40,4 +42,14 @@ function(
     }
     return options.inverse(this);
   });
+
+  Handlebars.registerHelper('admin_navigation', function(){
+    var list = '';
+
+    _.each(this.views, function(view, key){
+      list += '<li class="'+ key +'"><a href="#'+ key +'">'+ view.title +'</a></li>'
+    })
+    return new Handlebars.SafeString(list);
+  })
+
 });
