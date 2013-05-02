@@ -48,7 +48,7 @@ function(
     var row = '';
 
     _.each(this.fields, function(field){
-      var attr = this.schema.attributes[field]
+      var attr = this.schema.attributes[field];
       row += formElements[ attr.type ]( field, this[field], this );
     }, this);
 
@@ -60,9 +60,9 @@ function(
    */
   Handlebars.registerHelper('edit_action_buttons', function(){
     return new Handlebars.SafeString([
-        '<button type="button" class="button save primary">Save</button>',
         '<button type="button" class="button edit">Edit</button>',
-        '<button type="reset" class="button cancel">Cancel</button>'
+        '<button type="reset" class="button cancel">Cancel</button>',
+        '<button type="button" class="button save primary">Save</button>'
       ].join('')
     );
   });
@@ -72,8 +72,8 @@ function(
    */
   Handlebars.registerHelper('new_action_buttons', function(){
     return new Handlebars.SafeString([
-        '<button type="button" class="button create primary">Create</button>',
-        '<button type="reset" class="button cancel">cancel</button>'
+        '<button type="reset" class="button cancel">Cancel</button>',
+        '<button type="button" class="button create primary">Create</button>'
       ].join('')
     );
   });
