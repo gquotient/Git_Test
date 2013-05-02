@@ -160,7 +160,7 @@ define([
     }
   });
 
-  Portfolio.views.detailKpis = Marionette.ItemView.extend({
+  Portfolio.views.DetailKpis = Marionette.ItemView.extend({
     tagName: 'ul',
     template: {
       type: 'handlebars',
