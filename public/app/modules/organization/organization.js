@@ -5,9 +5,7 @@ define(
     'backbone',
     'backbone.marionette',
 
-    'form',
-
-    'hbs!organization/templates/editTableRow'
+    'form'
   ],
   function(
     $,
@@ -15,14 +13,28 @@ define(
     Backbone,
     Marionette,
 
-    Forms,
-
-    editTableRowTemplate
+    Forms
   ){
 
     var Organization = { models: {}, collections: {}, views: {} };
 
-    Organization.models.Organization = Backbone.Model.extend({
+    Organization.models.Organization = Backbone.Model.extend({}, {
+      schema: {
+        attributes: {
+          'name': {
+            type: 'text',
+            title: 'Name'
+          },
+          'type': {
+            type: 'select',
+            title: 'Type',
+            options: {
+              'unspecified': 'unspecified',
+              'vendor': 'vendor'
+            }
+          }
+        }
+      }
     });
 
     Organization.collections.Organizations = Backbone.Collection.extend({
@@ -30,32 +42,10 @@ define(
       url: '/api/organizations'
     });
 
-    // Table row edit ItemView extended from form ItemView
-    Organization.views.editTableRow = Forms.views.tableRow.extend({
-      attributes: {
-        id: 'form_editUser',
-        name: 'form_editUser'
-      },
-      template: {
-        type: 'handlebars',
-        template: editTableRowTemplate
-      }
-    });
-
     // Table CompositeView extended from form
-    Organization.views.editTable = Forms.views.table.extend({
-      attributes: {
-        id: 'form_editUsers',
-        name: 'form_editUsers'
-      },
-      itemView: Organization.views.editTableRow,
-      onRender: function(){
-        // Add the table header cells
-        // NOTE: there's gotta be a smarter way to do this
-        this.$el.find('thead > tr').html(
-          '<th>Name</th><th>Type</th><th>Salesforce ID</th>'
-        );
-      }
+    Organization.views.EditTable = Forms.views.table.extend({
+      fields: ['name', 'type'],
+      model: Organization.models.Organization
     });
 
     return Organization;

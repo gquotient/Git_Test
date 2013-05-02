@@ -47,12 +47,12 @@ define([
           model: options.model
         });
         // Build KPIs
-      this.kpisView = new Portfolio.views.detailKpis({ model: options.model }),
+      this.kpisView = new Portfolio.views.DetailKpis({ model: options.model }),
 
       this.projectList = options.model.get('projects').clone(),
 
         // Extend map view for marker filtering
-      this.mapView = new Project.views.map({
+      this.mapView = new Project.views.Map({
           collection: this.projectList
         });
 
