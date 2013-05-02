@@ -21,10 +21,34 @@ define([
 
   adminTemplate
 ){
+
+  var config = {
+    views: {
+      'users': {
+        collection: User.Collection,
+        view: User.views.editTable,
+        title: 'Users'
+      },
+      'organizations': {
+        collection: Organization.collections.Organizations,
+        view: Organization.views.editTable,
+        title: 'Organizations'
+      },
+      'teams': {
+        collection: Team.collections.Teams,
+        view: Team.views.editTable,
+        title: 'Teams'
+      },
+    }
+  };
+
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',
       template: adminTemplate
+    },
+    templateHelpers: {
+      views: config.views
     },
     attributes: {
       id: 'page-admin'
@@ -39,47 +63,20 @@ define([
 
     initialView: 'users',
 
-    // Sub Views
-    users: function(){
-      var collection = new User.Collection(),
-          view = new User.views.editTable({ collection: collection });
-
-      // Fetch latest
-      collection.fetch();
-
-      // Update page title
-      this.$el.find('.pageTitle').text('Edit Users');
-
-      return view;
-    },
-    teams: function(){
-      // Buid teams edit view
-      var collection = new Team.collections.Teams(),
-          view = new Team.views.editTable({ collection: collection });
-
-      // Fetch latest
-      collection.fetch();
-
-      // Update page title
-      this.$el.find('.pageTitle').text('Edit Teams');
-
-      return view;
-    },
-    organizations: function(){
-      // Buid organizations edit view
-      var collection = new Organization.collections.Organizations(),
-          view = new Organization.views.editTable({ collection: collection });
+    getView: function(view){
+      var viewConfig = config.views[view];
+      var collection = new viewConfig.collection();
+      var view = new viewConfig.view({collection: collection});
 
       collection.fetch();
 
-      // Update page title
-      this.$el.find('.pageTitle').text('Edit Organizations');
+      this.$el.find('.pageTitle').text('Edit ' + viewConfig.title);
 
       return view;
     },
 
     renderView: function(view){
-      var myView = this[view]();
+      var myView = this.getView(view);
 
       // Set active nav element
       this.$el.find('.nav_content li').removeClass('active');
