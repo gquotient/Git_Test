@@ -60,6 +60,7 @@ app.configure('development', function(){
   app.set('callbackURL', 'http://127.0.0.1:' + app.get('port') + '/token');
   app.set('authPort', 8431);
   app.set('authUrl', '127.0.0.1');
+  app.set('modelUrl', 'http://model.stage.intelligentarray.com');
 });
 
 app.configure('development-remote', function(){
@@ -72,6 +73,7 @@ app.configure('development-remote', function(){
   app.set('tokenURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/token');
   app.set('authPort', 80);
   app.set('authUrl', 'auth.stage.intelligentarray.com');
+  app.set('modelUrl', 'http://model.stage.intelligentarray.com');
 });
 
 /**

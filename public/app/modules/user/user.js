@@ -8,9 +8,9 @@ define([
 
   'hbs!user/templates/item',
   'hbs!user/templates/detail',
-  'hbs!user/templates/edit',
-  'hbs!user/templates/editTableRow'
-], function(
+  'hbs!user/templates/edit'
+],
+function(
   $,
   _,
   Backbone,
@@ -20,19 +20,34 @@ define([
 
   itemTemplate,
   detailTemplate,
-  editTemplate,
-  editTableRowTemplate
+  editTemplate
 ){
   var User = { views: {} };
 
   User.Model = Backbone.Model.extend({
     url: '/api/users',
     idAttribute: 'email'
+  }, {
+    schema: {
+      attributes: {
+        'name': {
+          type: 'text',
+          title: 'Name'
+        },
+        'email': {
+          type: 'text',
+          title: 'Email'
+        },
+        'org_label': {
+          type: 'text',
+          title: 'Org Label'
+        }
+      }
+    }
   });
 
   User.Collection = Backbone.Collection.extend({
     url: '/api/users',
-
     model: User.Model
   });
 
@@ -72,30 +87,11 @@ define([
     }
   });
 
-  // Table row edit ItemView extended from form ItemView
-  User.views.editTableRow = Forms.views.tableRow.extend({
-    attributes: {
-      id: 'form_editUser',
-      name: 'form_editUser'
-    },
-    template: {
-      type: 'handlebars',
-      template: editTableRowTemplate
-    }
-  });
-
   // Table CompositeView extended from form
-  User.views.editTable = Forms.views.table.extend({
-    attributes: {
-      id: 'form_editUsers',
-      name: 'form_editUsers'
-    },
-    itemView: User.views.editTableRow,
-    onRender: function(){
-      // Add the table header cells
-      // NOTE: there's gotta be a smarter way to do this
-      this.$el.find('thead > tr').html('<th>Name</th><th>Email</th>');
-    }
+  User.views.EditTable = Forms.views.table.extend({
+    fields: ['name', 'email'],
+    model: User.Model,
+    actions: true
   });
 
   return User;

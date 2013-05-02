@@ -57,7 +57,7 @@ define([
 
       // Build detail view if not currently there
       // NOTE: this is a hack for better back/forward support
-      if (!$('.portfolioDetail').length) {
+      if (!$('#page-portfolioDetail').length) {
         Backbone.trigger('set:breadcrumbs', portfolio);
         this.mainLayout.mainContent.show(
           new PortfolioDetailLayout({model: portfolio})

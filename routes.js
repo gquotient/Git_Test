@@ -162,9 +162,30 @@ module.exports = function(app){
   );
 
 
-
+  /*
+   * API ROUTES
+   */ 
 
   app.all('/api/*', ensureAuthenticated);
+
+  // app.get('/api/portfolios', makeRequest({
+  //   host: app.get('modelUrl'),
+  //   path: '/res/portfolios',
+  //   method: 'GET'
+  // }))
+
+  // app.get('/api/portfolios/:label', makeRequest({
+  //   host: app.get('modelUrl'),
+  //   path: '/res/portfolios',
+  //   method: 'GET'
+  // }))
+
+
+  // app.get('/api/projects', makeRequest({
+  //   host: app.get('modelUrl'),
+  //   path: '/res/projects',
+  //   method: 'GET'
+  // }))
 
   app.get('/api/portfolios',
     function(req, res){
@@ -192,7 +213,7 @@ module.exports = function(app){
 
   app.get('/api/teams', ensureAuthorized('vendor_admin'), makeRequest(
     {
-      host: 'http://model.stage.intelligentarray.com',
+      host: app.get('modelUrl'),
       path: '/res/teams',
       method: 'GET'
     },
@@ -208,30 +229,35 @@ module.exports = function(app){
   // Get all users  
   app.get('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
     {
-      host: 'http://model.stage.intelligentarray.com',
+      host: app.get('modelUrl'),
       path: '/res/users',
       method: 'GET'
-    })
-  );
+    }
+  ));
 
   app.get('/api/users/:org_label', ensureAuthorized('vendor_admin'), makeRequest(
     {
-      host: 'http://model.stage.intelligentarray.com',
+      host: app.get('modelUrl'),
       path: '/res/users',
       method: 'GET'
-    })
-  );
+    }
+  ));
 
   app.put('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
     {
-      host: 'http://model.stage.intelligentarray.com',
+      host: app.get('modelUrl'),
       path: '/res/user',
       method: 'PUT'
-    }, function(data, next){
-      console.log('data', data);  
-      next(data);
-    })
-  );
+    }
+  ));
+
+  app.post('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/usermgt',
+      method: 'POST'
+    }
+  ));
 
   ////////
   // ORGANIZATIONS
@@ -239,21 +265,34 @@ module.exports = function(app){
 
   app.get('/api/organizations', ensureAuthorized('vendor_admin'), makeRequest(
     {
-      host: 'http://model.stage.intelligentarray.com',
+      host: app.get('modelUrl'),
       path: '/res/organizations',
       method: 'GET'
     })
   );
 
 
+  ////////
+  // makeRequest needs access to 'app', which is why it's in the routes function.
+  // Can move later.
+  ///////
+
   function makeRequest(options, translate){
     return function(req, res, next){
-      var formData = _.extend(req.body, {});
-      var requestOptions = _.extend(options, {
-        headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
-        uri: options.host + options.path,
-        // form: formData
-      });
+      console.log(options.method);
+      if(options.method === 'GET' || options.method === 'DELETE') {
+        var requestOptions = _.extend(options, {
+          headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
+          uri: options.host + options.path,
+          qs: _.extend(req.params, {})
+        });
+      } else {
+        var requestOptions = _.extend(options, {
+          headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
+          uri: options.host + options.path,
+          form: _.extend(req.body, {})
+        });
+      }
 
       request(requestOptions, function(error, response, body){
         if (error) {
