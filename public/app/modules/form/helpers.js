@@ -15,7 +15,7 @@ function(
     var header = '';
     var that = this;
     _.each(this.fields, function(field){
-      var attr = that.schema.attributes[field]
+      var attr = that.schema.attributes[field];
       header += '<th>' + attr.title + '</th>';
     });
     return new Handlebars.SafeString(header);
