@@ -5,7 +5,7 @@ define(
   'backbone',
   'backbone.marionette',
 
-  'form/form-helpers',
+  'form/helpers',
 
   'hbs!form/templates/table',
   'hbs!form/templates/editTableRow',
