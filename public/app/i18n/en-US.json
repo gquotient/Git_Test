@@ -10,5 +10,7 @@
   "Project Name": "Project Name",
   "Users": "Users",
   "Teams": "Teams",
-  "Organizations": "Organizations"
+  "Organizations": "Organizations",
+  "Type": "Type",
+  "Name": "Name"
 }
