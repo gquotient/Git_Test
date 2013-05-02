@@ -114,6 +114,19 @@ define([
       if (options.initialView) {
         this.initialView = options.initialView;
       }
+
+      /*
+      This works as long as you hit the root first, but doesn't
+      work properly if you hit root/subView and I don't feel like
+      figuring it out tonight
+
+      this.Router = new Backbone.Marionette.AppRouter.extend({
+        controller: this,
+        appRoutes: {
+          'admin/:page': 'renderView'
+        }
+      });
+      */
     }
   });
 });
