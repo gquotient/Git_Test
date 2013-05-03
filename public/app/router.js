@@ -38,15 +38,20 @@ define([
       var portfolio = ia.getPortfolio(id);
 
       if (this.contentLayout instanceof PortfolioDetailLayout) {
+        // If already on the portfolio view we just want to update
+        // the subviews
         Backbone.trigger('select:portfolio', portfolio);
       } else {
         // Special Breadcrumb handling
         if (this.contentLayout instanceof ProjectDetailLayout) {
+          // If we hit portfolio from project we don't want to reset
+          // breadcrumbs, just update them
           Backbone.trigger('set:breadcrumbs', portfolio);
         } else {
           Backbone.trigger('reset:breadcrumbs', portfolio);
         }
 
+        // Build portfolio view
         this.contentLayout = new PortfolioDetailLayout({model: portfolio});
         this.mainLayout.mainContent.show(this.contentLayout);
       }
