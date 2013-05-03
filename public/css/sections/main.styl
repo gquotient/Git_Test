@@ -40,8 +40,9 @@ primaryBorderStyle = borderBasicDark;
       padding: 0 15px 0 0;
       margin: 0 6px 0 0;
       cursor: pointer;
-      a:hover {
-        text-decoration: underline;
+      &:hover {
+        transition:.5s;
+        color: #fff;
       }
       &.active, &:last-child {
         color: #fff;
@@ -99,8 +100,15 @@ body > div {
         }
       }
       &.empty {
+        background: none;
+        border: none;
         padding: 6px;
         font-style: italic;
+        box-shadow: none;
+        cursor: default;
+        &:hover {
+          background: none;
+        }
       }
       &.portfolio {
         padding: 6px;
@@ -139,9 +147,6 @@ body > div {
       }
       &:hover {
         background: linear-gradient(#252627, #282828);
-      }
-      &:last-child {
-        box-shadow: 0 0 7px rgba(0, 0, 0, .15);
       }
       &:first-child {
         border-top: none;
