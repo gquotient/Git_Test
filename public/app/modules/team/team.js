@@ -19,7 +19,8 @@ define(
     var Team = { models: {}, collections: {}, views: {} };
 
     Team.models.Team = Backbone.Model.extend({
-      idAttribute: 'label'
+      idAttribute: 'label',
+      url: '/api/teams'
     }, {
       schema: {
         attributes: {

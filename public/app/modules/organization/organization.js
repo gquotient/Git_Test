@@ -18,7 +18,9 @@ define(
 
     var Organization = { models: {}, collections: {}, views: {} };
 
-    Organization.models.Organization = Backbone.Model.extend({}, {
+    Organization.models.Organization = Backbone.Model.extend({
+      url: '/api/organizations'
+    }, {
       schema: {
         attributes: {
           'name': {
