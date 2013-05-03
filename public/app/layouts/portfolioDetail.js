@@ -61,6 +61,7 @@ define([
       this.listenTo(Backbone, 'select:portfolio', function(model){
         // Update the collection.
         this.projectList.set(model.projects.models);
+        Backbone.trigger('set:breadcrumbs', model);
       });
 
       this.currentState = 'portfolioDetail';

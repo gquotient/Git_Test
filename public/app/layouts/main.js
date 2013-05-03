@@ -45,9 +45,6 @@ define([
 
       // Build navigation
       this.navigationView = new Navigation();
-
-      // Seed breadcrumbs
-      Backbone.trigger('reset:breadcrumbs', app.rootPortfolio);
     }
   });
 });

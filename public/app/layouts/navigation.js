@@ -33,12 +33,12 @@ define([
       var breadcrumbs = new Breadcrumb.Collection();
       this.breadcrumbsView = new Breadcrumb.views.Breadcrumbs({collection: breadcrumbs});
 
-      this.listenTo(Backbone, 'set:breadcrumbs select', function(model){
-        breadcrumbs.update(model);
-      });
-
       this.listenTo(Backbone, 'reset:breadcrumbs', function(model){
         breadcrumbs.reset(model);
+      });
+
+      this.listenTo(Backbone, 'set:breadcrumbs', function(model){
+        breadcrumbs.update(model);
       });
     }
   });
