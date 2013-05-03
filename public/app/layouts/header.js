@@ -20,24 +20,21 @@ define([
       type: 'handlebars',
       template: headerTemplate
     },
+    events: {
+      'click a': function(event){
+        event.preventDefault();
+
+        var route = event.target.hash.replace('#', '');
+
+        Backbone.history.navigate('/' + route, true);
+      }
+    },
     triggers: {
-      'click .logout': 'logout',
-      'click .profile': 'profile',
-      'click .admin': 'admin'
+      'click .logout': 'logout'
     },
     initialize: function(){
       this.listenTo(this, 'logout', function(){
         window.location = '/logout';
-      });
-
-      this.listenTo(this.model, 'change', this.render);
-
-      this.listenTo(this, 'profile', function(){
-        Backbone.history.navigate('/profile', true);
-      });
-
-      this.listenTo(this, 'admin', function(){
-        Backbone.history.navigate('/admin', true);
       });
     }
   });
