@@ -4,8 +4,19 @@ var fs = require('fs')
   , DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy
   , http = require('http')
   , _ = require('lodash')
-  , request = require('request');
+  , request = require('request')
+  , roles;
 
+
+
+fs.readFile('./roles.json', 'utf8', function (err, data) {
+    if (err) {
+      return console.log(err);
+    } else {
+      roles = JSON.parse(data);
+    }
+  }
+)
 
 // Route Middleware
 
@@ -60,7 +71,8 @@ module.exports = function(app){
             {
               user: JSON.stringify({
                 name: req.user.name,
-                email: req.user.email
+                email: req.user.email,
+                role: roles[req.user.role]
               }),
               portfolios: portfolios,
               projects: projects,
