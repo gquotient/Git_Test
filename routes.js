@@ -64,7 +64,10 @@ module.exports = function(app){
               }),
               portfolios: portfolios,
               projects: projects,
-              locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
+              locale: (req.user.locale) ?
+                req.user.locale
+              :
+                req.acceptedLanguages[0].split('_')[0].split('-')[0]
             }
           );
         });
@@ -164,7 +167,7 @@ module.exports = function(app){
 
   /*
    * API ROUTES
-   */ 
+   */
 
   app.all('/api/*', ensureAuthenticated);
 
@@ -226,7 +229,7 @@ module.exports = function(app){
   // USERS
   //////
 
-  // Get all users  
+  // Get all users
   app.get('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
     {
       host: app.get('modelUrl'),
