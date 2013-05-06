@@ -1,0 +1,19 @@
+{
+  "DC Capacity": "DC Capacity",
+  "AC Capacity": "AC Capacity",
+  "Irradiance Now": "Irradiance Now",
+  "Power Now": "Power Now",
+  "All Portfolios": "All Portfolios",
+  "Portfolios": "Portfolios",
+  "Projects": "Projects",
+  "Status": "Status",
+  "Project Name": "Project Name",
+  "Users": "Users",
+  "Teams": "Teams",
+  "Organizations": "Organizations",
+  "Type": "Type",
+  "Name": "Name",
+  "Nested": {
+    "Translation": "Nested Translation"
+  }
+}
