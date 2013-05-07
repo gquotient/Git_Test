@@ -64,7 +64,11 @@ function(
       template: editTableRowTemplate
     },
     templateHelpers: function(){
-      return { schema: this.options.schema, fields: this.options.fields };
+      return {
+        schema: this.options.schema,
+        fields: this.options.fields,
+        actions: this.options.actions
+      };
     },
     onShow: function(){
       // Disable form elements
@@ -99,6 +103,13 @@ function(
         event.preventDefault();
         this.render();
         this.disableForm();
+      },
+      'click button.reset_password': function(event){
+        event.preventDefault();
+        $.ajax('/api/reset_password', {
+          type: 'PUT',
+          data: { email: this.model.get('email') }
+        });
       }
     }
   });
@@ -110,7 +121,12 @@ function(
       template: newTableRowTemplate
     },
     templateHelpers: function(){
-      return { schema: this.options.schema, fields: this.options.fields };
+      console.log(this.options.actions);
+      return {
+        schema: this.options.schema,
+        fields: this.options.fields,
+        actions: this.options.actions
+      };
     },
     events:{
       'click button.create': function(event){
@@ -141,11 +157,12 @@ function(
     itemViewOptions: function(model, index){
       return {
         fields: this.fields,
+        actions: this.actions,
         schema: this.model.schema
       };
     },
     serializeData: function() {
-      return {fields: this.fields, schema: this.model.schema};
+      return { fields: this.fields, schema: this.model.schema };
     },
     itemView: Forms.views.tableRow,
     newRowView: Forms.views.newTableRow,
@@ -163,7 +180,7 @@ function(
       'click button.add': function(event){
         event.preventDefault();
         var newModel = new this.model();
-        var newModelView = new this.newRowView( { model: newModel, collection: this.collection, schema: this.model.schema, fields: this.fields } );
+        var newModelView = new this.newRowView( { model: newModel, collection: this.collection, schema: this.model.schema, fields: this.fields, actions: this.actions } );
         this.$el.find('tbody').append( newModelView.render().el );
       }
     }

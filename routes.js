@@ -222,6 +222,14 @@ module.exports = function(app){
     })
   );
 
+  app.post('/api/teams', ensureAuthorized('vendor_admin'), makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/teams',
+      method: 'POST'
+    })
+  );
+
   //////
   // USERS
   //////
@@ -256,6 +264,14 @@ module.exports = function(app){
       host: app.get('modelUrl'),
       path: '/res/usermgt',
       method: 'POST'
+    }
+  ));
+
+  app.put('/api/reset_password', ensureAuthorized('vendor_admin'), makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/usermgt',
+      method: 'PUT'
     }
   ));
 

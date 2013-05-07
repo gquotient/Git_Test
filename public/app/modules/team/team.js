@@ -19,7 +19,8 @@ define(
     var Team = { models: {}, collections: {}, views: {} };
 
     Team.models.Team = Backbone.Model.extend({
-      idAttribute: 'label'
+      idAttribute: 'team_id',
+      url: '/api/teams'
     }, {
       schema: {
         attributes: {
@@ -44,7 +45,7 @@ define(
     Team.views.EditTable = Forms.views.table.extend({
       fields: ['name', 'label'],
       model: Team.models.Team,
-      actions: true
+      actions: ['edit', 'cancel', 'save']
     });
 
     return Team;

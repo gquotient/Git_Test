@@ -46,7 +46,7 @@ define(
     Organization.views.EditTable = Forms.views.table.extend({
       fields: ['name', 'type'],
       model: Organization.models.Organization,
-      actions: true
+      actions: ['edit', 'cancel', 'save']
     });
 
     return Organization;
