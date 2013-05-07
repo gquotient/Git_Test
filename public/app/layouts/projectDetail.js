@@ -54,6 +54,10 @@ define([
         // Set address bar
         Backbone.history.navigate('/project/' + model.get('id'));
       });
+
+      this.listenTo(Backbone, 'edit', function(){
+        Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
+      });
     }
   });
 });

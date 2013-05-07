@@ -10,6 +10,7 @@ define([
   'app/layouts/main',
   'app/layouts/portfolioDetail',
   'app/layouts/projectDetail',
+  'app/layouts/projectEditor',
   'app/layouts/portfolioDashboard',
   'app/layouts/profile',
   'app/layouts/admin'
@@ -25,6 +26,7 @@ define([
   MainLayout,
   PortfolioDetailLayout,
   ProjectDetailLayout,
+  ProjectEditorLayout,
   PortfolioDashboardLayout,
   ProfileLayout,
   AdminLayout
@@ -75,6 +77,14 @@ define([
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
+    projectEdit: function(id){
+      var project = ia.getProject(id);
+
+      Backbone.trigger('set:breadcrumbs', {name: 'Edit'});
+      this.contentLayout = new ProjectEditorLayout({model: project});
+      this.mainLayout.mainContent.show(this.contentLayout);
+    },
+
     profile: function(){
       Backbone.trigger('reset:breadcrumbs', {name: 'Profile'});
 
@@ -104,6 +114,7 @@ define([
       'portfolio/dashboard': 'portfolioDashboard',
       'portfolio/dashboard/:id': 'portfolioDashboard',
       'project/:id': 'projectDetail',
+      'project/:id/edit': 'projectEdit',
       'profile': 'profile',
       'admin': 'admin',
       'admin/:page': 'admin'

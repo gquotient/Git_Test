@@ -25,8 +25,8 @@ define([
       crumbs: '#breadcrumbs'
     },
 
-    onShow: function(){
-      this.crumbs.show(this.breadcrumbsView);
+    triggers: {
+      'click #edit': 'edit'
     },
 
     initialize: function(){
@@ -40,6 +40,14 @@ define([
       this.listenTo(Backbone, 'set:breadcrumbs', function(model){
         breadcrumbs.update(model);
       });
+    },
+
+    onShow: function(){
+      this.crumbs.show(this.breadcrumbsView);
+    },
+
+    onEdit: function(){
+      Backbone.trigger('edit');
     }
   });
 });
