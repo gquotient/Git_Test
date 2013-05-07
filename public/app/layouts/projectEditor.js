@@ -4,6 +4,7 @@ define([
   'paper',
 
   'project',
+  'device',
 
   'hbs!layouts/templates/projectEditor'
 ], function(
@@ -12,6 +13,7 @@ define([
   paper,
 
   Project,
+  Device,
 
   projectEditorTemplate
 ){
@@ -31,7 +33,11 @@ define([
 
     onShow: function(){
       var scope = paper.setup(this.$('#projectCanvas')[0]);
-      this.overlay.show( new Project.views.Editor({model: this.model, paperScope: scope}) );
+
+      this.editorView = new Project.views.Editor({model: this.model, paper: scope});
+      this.overlay.show(this.editorView);
+
+      this.devicesView = new Device.views.PaperCollection({collection: this.model.devices, paper: scope});
     },
 
     initialize: function(options){

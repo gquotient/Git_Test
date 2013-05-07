@@ -74,7 +74,7 @@ define([
     },
 
     initialize: function(options){
-      this.paperScope = options.paperScope;
+      this.paper = options.paper;
     },
 
     onShow: function(){
