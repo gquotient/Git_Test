@@ -116,8 +116,6 @@ define([
       ct: function(center, size){
         var group, points;
 
-        size = size || defaultSize;
-
         points = [
           [[0, 0], [0, -size / 4]],
           [[0, 0], [-size / 4, size / 4], [-size / 2, 0]],
@@ -125,7 +123,7 @@ define([
         ];
 
         group = new paper.Group(_.map(points, function(pts){
-          if (pts.length == 3) {
+          if (pts.length === 3) {
             return new paper.Path.Arc(center.add(pts[0]),
                                       center.add(pts[1]),
                                       center.add(pts[2]));
@@ -160,7 +158,7 @@ define([
         ];
 
         group = new paper.Group(_.map(points, function(pts){
-          if (pts.length == 3) {
+          if (pts.length === 3) {
             return new paper.Path.Arc(center.add(pts[0]),
                                       center.add(pts[1]),
                                       center.add(pts[2]));
