@@ -36,6 +36,11 @@ require.config({
       location: 'app/modules/project'
     },
     {
+      name: 'device',
+      main: 'device',
+      location: 'app/modules/device'
+    },
+    {
       name: 'layouts',
       main: 'layouts',
       location: 'app/layouts'

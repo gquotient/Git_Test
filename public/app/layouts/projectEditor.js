@@ -37,6 +37,9 @@ define([
     initialize: function(options){
       this.model = options.model;
 
+      // Populating the devices collection here for lack of a better place.
+      this.model.devices.fetch();
+
       // Set up listeners
       this.listenTo(Backbone, 'select:portfolio', function(model){
         // Set address bar and force routing

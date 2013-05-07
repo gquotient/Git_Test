@@ -7,6 +7,7 @@ define([
   'leaflet',
   'css!components/leaflet/dist/leaflet.css',
 
+  'device',
   './editor',
 
   'hbs!project/templates/dataList',
@@ -21,6 +22,7 @@ define([
   L,
   leafletCSS,
 
+  Device,
   Editor,
 
   dataListTemplate,
@@ -32,6 +34,12 @@ define([
   Project.Model = Backbone.Model.extend({
     defaults: {
       type: 'project'
+    },
+
+    initialize: function(){
+      this.devices = new Device.Collection([], {
+        url: '/api/projects/' + this.id + '/devices'
+      });
     }
   });
 

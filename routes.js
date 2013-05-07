@@ -4,7 +4,8 @@ var fs = require('fs')
   , DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy
   , http = require('http')
   , _ = require('lodash')
-  , request = require('request');
+  , request = require('request')
+  , generateDevices = require('./data/devices');
 
 
 // Route Middleware
@@ -205,6 +206,11 @@ module.exports = function(app){
         }
         res.end(data);
       });
+    });
+
+  app.get('/api/projects/:label/devices',
+    function(req, res){
+      res.send(generateDevices());
     });
 
   //////
