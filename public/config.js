@@ -89,7 +89,8 @@ require.config({
     handlebars: 'components/handlebars/handlebars',
     modernizr: 'components/modernizr/modernizr',
     leaflet: 'components/leaflet/dist/leaflet',
-    messageformat: 'components/messageformat.js/messageformat'
+    messageformat: 'components/messageformat.js/messageformat',
+    paper: 'components/paper/dist/paper'
   },
   shim: {
     backbone: {
@@ -107,6 +108,9 @@ require.config({
     },
     leaflet: {
       exports: 'L'
+    },
+    paper: {
+      exports: 'paper'
     }
   },
   // hbs config

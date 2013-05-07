@@ -1,11 +1,13 @@
 define([
   'backbone',
   'backbone.marionette',
+  'paper',
 
   'hbs!layouts/templates/projectEditor'
 ], function(
   Backbone,
   Marionette,
+  paper,
 
   projectEditorTemplate
 ){
@@ -21,6 +23,10 @@ define([
 
     regions: {
       overlay: '#overlayContainer'
+    },
+
+    onShow: function(){
+      var scope = paper.setup(this.$('#projectCanvas')[0]);
     },
 
     initialize: function(options){

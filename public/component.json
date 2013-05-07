@@ -19,6 +19,7 @@
     "backbone.babysitter": "latest",
     "backbone.wreqr": "latest",
     "underscore": "latest",
-    "leaflet": "latest"
+    "leaflet": "latest",
+    "paper": "latest"
   }
 }
