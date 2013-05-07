@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
   'paper',
 
+  './editor_select',
+
   'hbs!project/templates/editorIndex',
   'hbs!project/templates/editorImport',
   'hbs!project/templates/editorMove',
@@ -17,6 +19,8 @@ define([
   Marionette,
   paper,
 
+  SelectView,
+
   editorIndexTemplate,
   editorImportTemplate,
   editorMoveTemplate,
@@ -24,21 +28,21 @@ define([
   editorPendingTemplate
 ){
   var
-    ImportView = Marionette.ItemView.extend({
+    ImportView = SelectView.extend({
       template: {
         type: 'handlebars',
         template: editorImportTemplate
       }
     }),
 
-    MoveView = Marionette.ItemView.extend({
+    MoveView = SelectView.extend({
       template: {
         type: 'handlebars',
         template: editorMoveTemplate
       }
     }),
 
-    AddView = Marionette.ItemView.extend({
+    AddView = SelectView.extend({
       template: {
         type: 'handlebars',
         template: editorAddTemplate
