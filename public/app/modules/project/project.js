@@ -7,6 +7,8 @@ define([
   'leaflet',
   'css!components/leaflet/dist/leaflet.css',
 
+  './editor',
+
   'hbs!project/templates/dataList',
   'hbs!project/templates/dataListItem',
   'hbs!project/templates/dashboardItem'
@@ -18,6 +20,8 @@ define([
 
   L,
   leafletCSS,
+
+  Editor,
 
   dataListTemplate,
   dataListItemTemplate,
@@ -257,6 +261,8 @@ define([
       this.listenTo(Backbone, 'window:resize', this.map.viewreset);
     }
   });
+
+  Project.views.Editor = Editor;
 
   return Project;
 });

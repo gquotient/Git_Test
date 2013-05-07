@@ -327,5 +327,40 @@ kpiHeight = 30px;
     background: colorBGDarkGrey;
     border-left: primaryBorderStyle;
     opacity: 0.8;
+
+    #overlay > div {
+      border-top: borderBasicMedium;
+      border-bottom: borderBasicDark;
+      padding: 12px;
+      padding-left: 24px;
+
+      &:first-child {
+        border-top: none;
+      }
+
+      h3 {
+        margin-left: -12px;
+        font-size: 1.25em;
+        text-shadow: 0 1px 0 #222;
+        color: colorDrakerOrange;
+      }
+
+      form {
+        input {
+          width: 275px;
+          padding-right: 5px;
+          border-radius: 3px;
+          color: grey;
+
+          &:focus {
+            color: black;
+          }
+        }
+
+        button {
+          width: 75px;
+        }
+      }
+    }
   }
 }
