@@ -28,7 +28,7 @@ define(
             type: 'text',
             title: 'Name'
           },
-          'label': {
+          'team_label': {
             type: 'text',
             title: 'Team Label'
           }
@@ -43,7 +43,7 @@ define(
 
     // Table CompositeView extended from form
     Team.views.EditTable = Forms.views.table.extend({
-      fields: ['name', 'label'],
+      fields: ['name', 'team_label'],
       model: Team.models.Team,
       actions: ['edit', 'cancel', 'save']
     });

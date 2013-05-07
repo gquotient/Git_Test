@@ -25,6 +25,10 @@ define(
             type: 'text',
             title: 'Name'
           },
+          'org_label': {
+            type: 'text',
+            title: 'Org Label'
+          },
           'type': {
             type: 'select',
             title: 'Type',
@@ -44,7 +48,7 @@ define(
 
     // Table CompositeView extended from form
     Organization.views.EditTable = Forms.views.table.extend({
-      fields: ['name', 'type'],
+      fields: ['name', 'org_label', 'type'],
       model: Organization.models.Organization,
       actions: ['edit', 'cancel', 'save']
     });

@@ -60,7 +60,7 @@ app.configure('development', function(){
   app.set('callbackURL', 'http://127.0.0.1:' + app.get('port') + '/token');
   app.set('authPort', 8431);
   app.set('authUrl', '127.0.0.1');
-  app.set('modelUrl', 'http://model.stage.intelligentarray.com');
+  app.set('modelUrl', 'http://127.0.0.1:8433');
 });
 
 app.configure('development-remote', function(){
