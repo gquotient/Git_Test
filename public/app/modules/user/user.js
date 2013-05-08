@@ -91,7 +91,7 @@ function(
   User.views.EditTable = Forms.views.table.extend({
     fields: ['name', 'email'],
     model: User.Model,
-    actions: true
+    actions: ['edit', 'cancel', 'save', 'resetPassword']
   });
 
   return User;

@@ -41,6 +41,13 @@ function(
     }
   };
 
+  var actionButtons = {
+    edit: '<button type="button" class="button edit">Edit</button>',
+    cancel: '<button type="reset" class="button cancel">Cancel</button>',
+    save: '<button type="button" class="button save primary">Save</button>',
+    resetPassword: '<button type=butotn class="button reset_password">Reset Password</button>'
+  };
+
   /*
    * EDIT TABLE ROWS
    */
@@ -59,12 +66,16 @@ function(
    * EDIT TABLE ROW ACTION BUTTONS
    */
   Handlebars.registerHelper('edit_action_buttons', function(){
-    return new Handlebars.SafeString([
-        '<button type="button" class="button edit">Edit</button>',
-        '<button type="reset" class="button cancel">Cancel</button>',
-        '<button type="button" class="button save primary">Save</button>'
-      ].join('')
-    );
+
+    var cell = '<td>';
+
+    _.each(this.actions, function(action){
+      cell += actionButtons[action];
+    });
+
+    cell += '</td>';
+
+    return new Handlebars.SafeString(cell);
   });
 
   /*
