@@ -6,13 +6,13 @@ define([
 
   'ia',
 
-  'app/layouts/helpers',
-  'app/layouts/main',
-  'app/layouts/portfolioDetail',
-  'app/layouts/projectDetail',
-  'app/layouts/portfolioDashboard',
-  'app/layouts/profile',
-  'app/layouts/admin'
+  'layouts/helpers',
+  'layouts/main',
+  'layouts/portfolioDetail',
+  'layouts/projectDetail',
+  'layouts/portfolioDashboard',
+  'layouts/profile',
+  'layouts/admin'
 ], function(
   $,
   _,

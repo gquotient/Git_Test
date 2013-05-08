@@ -13,7 +13,5 @@
   "Organizations": "Organizations",
   "Type": "Type",
   "Name": "Name",
-  "Nested": {
-    "Translation": "Nested Translation"
-  }
+  "Hi": "Hi"
 }

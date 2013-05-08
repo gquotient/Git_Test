@@ -79,7 +79,7 @@ module.exports = function(app){
               locale: (req.user.locale) ?
                 req.user.locale
               :
-                req.acceptedLanguages[0].split('_')[0].split('-')[0]
+                req.acceptedLanguages[0].toLowerCase()
             }
           );
         });
