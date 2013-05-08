@@ -3,15 +3,24 @@
   "AC Capacity": "AC Capacity",
   "Irradiance Now": "Irradiance Now",
   "Power Now": "Power Now",
+
   "All Portfolios": "All Portfolios",
   "Portfolios": "Portfolios",
   "Projects": "Projects",
-  "Status": "Status",
   "Project Name": "Project Name",
+  "Status": "Status",
+
   "Users": "Users",
   "Teams": "Teams",
   "Organizations": "Organizations",
+
+  "My Profile": "My Profile",
+  "Admin": "Admin",
+  "Login": "Login",
+  "Logout": "Logout",
+
   "Type": "Type",
   "Name": "Name",
+
   "Hi": "Hi"
 }
