@@ -5,8 +5,19 @@ var fs = require('fs')
   , http = require('http')
   , _ = require('lodash')
   , request = require('request')
-  , generateDevices = require('./data/devices');
+  , generateDevices = require('./data/devices')
+  , roles;
 
+
+
+fs.readFile('./roles.json', 'utf8', function (err, data) {
+    if (err) {
+      return console.log(err);
+    } else {
+      roles = JSON.parse(data);
+    }
+  }
+)
 
 // Route Middleware
 
@@ -61,7 +72,8 @@ module.exports = function(app){
             {
               user: JSON.stringify({
                 name: req.user.name,
-                email: req.user.email
+                email: req.user.email,
+                role: roles[req.user.role]
               }),
               portfolios: portfolios,
               projects: projects,

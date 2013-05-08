@@ -95,7 +95,7 @@ define([
     admin: function(page){
       Backbone.trigger('reset:breadcrumbs', {name: 'Admin'});
 
-      this.contentLayout = new AdminLayout({initialView: page});
+      this.contentLayout = new AdminLayout({initialView: page, app: ia});
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
