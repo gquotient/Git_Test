@@ -36,7 +36,7 @@ For now, install Bower package manager globally: `npm install -g bower`. We may 
 
 From your project root folder, install the server dependencies: `npm install`.
 
-Then, install browser dependencies: `cd public && bower install`.
+Then, install browser dependencies: `cd public/app && bower install`.
 
 
 To run
