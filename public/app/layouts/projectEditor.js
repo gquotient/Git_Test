@@ -1,4 +1,6 @@
 define([
+  'jquery',
+  'underscore',
   'backbone',
   'backbone.marionette',
   'paper',
@@ -8,6 +10,8 @@ define([
 
   'hbs!layouts/templates/projectEditor'
 ], function(
+  $,
+  _,
   Backbone,
   Marionette,
   paper,
@@ -31,6 +35,20 @@ define([
       overlay: '#overlayContainer'
     },
 
+    delegateEditorEvents: function(){
+      this.undelegateEditorEvents();
+
+      _.each(['keydown', 'keypress'], function(eventName){
+        this.$doc.on(eventName + '.editorEvent' + this.cid, function(e){
+          Backbone.trigger('editor:' + eventName, e);
+        });
+      }, this);
+    },
+
+    undelegateEditorEvents: function(){
+      this.$doc.off('.editorEvent' + this.cid);
+    },
+
     onShow: function(){
       var scope = paper.setup(this.$('#projectCanvas')[0]);
 
@@ -40,11 +58,19 @@ define([
       this.devicesView = new Device.views.PaperCollection({collection: this.model.devices, paper: scope});
     },
 
+    onClose: function(){
+      this.undelegateEditorEvents();
+    },
+
     initialize: function(options){
       this.model = options.model;
 
       // Populating the devices collection here for lack of a better place.
       this.model.devices.fetch();
+
+      // Set up events on document.
+      this.$doc = $(document);
+      this.delegateEditorEvents();
 
       // Set up listeners
       this.listenTo(Backbone, 'select:portfolio', function(model){

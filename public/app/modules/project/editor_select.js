@@ -35,6 +35,21 @@ define([
         this.collection = new Backbone.Collection();
       }
       this.dropdown = new Dropdown({collection: this.collection});
+
+      if (this.hotKey) {
+        this.listenTo(Backbone, 'editor:keypress', function(e){
+          // Focus the input field when the hotkey is pressed.
+          if (e.which === this.hotKey && e.target.nodeName !== 'INPUT') {
+            this.$input.focus();
+            e.preventDefault();
+          }
+        });
+
+        this.listenTo(Backbone, 'editor:keydown', function(e){
+          // Blur the input field when esc is pressed.
+          if (e.which === 27) { this.$input.blur(); }
+        });
+      }
     },
 
     triggers: {

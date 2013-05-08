@@ -29,6 +29,7 @@ define([
 ){
   var
     ImportView = SelectView.extend({
+      hotKey: 105, // the i key
       template: {
         type: 'handlebars',
         template: editorImportTemplate
@@ -36,6 +37,7 @@ define([
     }),
 
     MoveView = SelectView.extend({
+      hotKey: 109, // the m key
       template: {
         type: 'handlebars',
         template: editorMoveTemplate
@@ -43,6 +45,7 @@ define([
     }),
 
     AddView = SelectView.extend({
+      hotKey: 97, // the a key
       template: {
         type: 'handlebars',
         template: editorAddTemplate
