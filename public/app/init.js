@@ -5,7 +5,7 @@ define(
     'backbone',
 
     'ia',
-    'app/router'
+    'router'
   ],
   function ($, Backbone, ia, Router) {
     // Tell jQuery to watch for any 401 or 403 errors and handle them appropriately

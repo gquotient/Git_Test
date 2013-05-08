@@ -5,15 +5,11 @@
 
   {{> sharedHeader }}
 
-  <script type="text/javascript" data-main="/public/config.js" src="/public/components/requirejs/require.js"></script>
+  <script type="text/javascript" data-main="/public/app/config.js" src="/public/app/components/requirejs/require.js"></script>
 
   <script type="text/javascript">
-    require.config({
-      locale: '{{{ locale }}}'
-    });
-
     require(['config'], function(){
-      require(['app/init']);
+      require(['init']);
     });
   </script>
 
