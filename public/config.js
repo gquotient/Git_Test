@@ -95,7 +95,8 @@ require.config({
     modernizr: 'components/modernizr/modernizr',
     leaflet: 'components/leaflet/dist/leaflet',
     messageformat: 'components/messageformat.js/messageformat',
-    paper: 'components/paper/dist/paper'
+    paper: 'components/paper/dist/paper',
+    'jquery.mousewheel': 'components/jquery-mousewheel/jquery.mousewheel'
   },
   shim: {
     backbone: {

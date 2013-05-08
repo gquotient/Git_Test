@@ -20,6 +20,7 @@
     "backbone.wreqr": "latest",
     "underscore": "latest",
     "leaflet": "latest",
-    "paper": "latest"
+    "paper": "latest",
+    "jquery-mousewheel": "latest"
   }
 }
