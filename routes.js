@@ -237,6 +237,14 @@ module.exports = function(app){
     })
   );
 
+  app.put('/api/teams', ensureAuthorized('vendor_admin'), makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/teams',
+      method: 'PUT'
+    })
+  );
+
   app.post('/api/teams', ensureAuthorized('vendor_admin'), makeRequest(
     {
       host: app.get('modelUrl'),
