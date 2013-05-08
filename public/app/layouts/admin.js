@@ -1,4 +1,5 @@
 define([
+  'underscore',
   'jquery',
   'backbone',
   'backbone.marionette',
@@ -10,6 +11,7 @@ define([
 
   'hbs!layouts/templates/admin'
 ], function(
+  _,
   $,
   Backbone,
   Marionette,
@@ -38,6 +40,11 @@ define([
         collection: Team.collections.Teams,
         view: Team.views.EditTable,
         title: 'Teams'
+      },
+      'vendor_users': {
+        collection: User.Collection,
+        view: User.views.VendorEditTable,
+        title: 'Vendor Users'
       }
     }
   };
@@ -47,8 +54,12 @@ define([
       type: 'handlebars',
       template: adminTemplate
     },
-    templateHelpers: {
-      views: config.views
+    templateHelpers: function(){
+      var viewList = this.app.currentUser.get('role').admin.views;
+      var views = _.pick(config.views, viewList);
+      return {
+        views: views
+      };
     },
     attributes: {
       id: 'page-admin'
@@ -56,9 +67,6 @@ define([
     regions: {
       pageContent: '.pageContent',
       pageNav: '.column_left'
-      //editUsers: '#editUsers',
-      //editTeams: '#editTeams',
-      //editOrganizations: '#editOrganizations'
     },
 
     initialView: 'users',
@@ -108,6 +116,7 @@ define([
     },
 
     initialize: function(options){
+      this.app = this.options.app;
       // Update initial view if available
       // NOTE: there's probably a sexier way to do this
       if (options.initialView) {

@@ -94,5 +94,11 @@ function(
     actions: ['edit', 'cancel', 'save', 'resetPassword']
   });
 
+  User.views.VendorEditTable = Forms.views.table.extend({
+    fields: ['name', 'email', 'org_label'],
+    model: User.Model,
+    actions: true
+  });
+
   return User;
 });
