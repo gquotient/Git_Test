@@ -87,11 +87,20 @@ function(
     }
   });
 
+  User.views.EditRow = Forms.views.tableRow.extend({
+    events: function(){
+      return _.extend({}, Forms.views.tableRow.prototype.events, {
+
+      });
+    }
+  });
+
   // Table CompositeView extended from form
   User.views.EditTable = Forms.views.table.extend({
     fields: ['name', 'email'],
+    itemView: User.views.EditRow,
     model: User.Model,
-    actions: ['edit', 'cancel', 'save', 'resetPassword']
+    actions: ['edit', 'cancel', 'save']
   });
 
   return User;
