@@ -44,12 +44,12 @@ define([
             e.preventDefault();
           }
         });
-
-        this.listenTo(Backbone, 'editor:keydown', function(e){
-          // Blur the input field when esc is pressed.
-          if (e.which === 27) { this.$input.blur(); }
-        });
       }
+
+      this.listenTo(Backbone, 'editor:keydown', function(e){
+        // Blur the input field when esc is pressed.
+        if (e.which === 27) { this.$input.blur(); }
+      });
     },
 
     triggers: {
