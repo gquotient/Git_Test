@@ -1,4 +1,6 @@
 {
+  "Hi": "Bonjour",
+
   "DC Capacity": "DC Capacity",
   "AC Capacity": "AC Capacity",
   "Irradiance Now": "Irradiance Now",
@@ -21,6 +23,11 @@
 
   "Type": "Type",
   "Name": "Name",
+  "Email": "Email",
 
-  "Hi": "Bonjour"
+  "Add": "Add",
+  "Edit": "Edit",
+  "Cancel": "Cancel",
+  "Reset": "Reset",
+  "Save": "Save"
 }
