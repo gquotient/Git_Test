@@ -3,7 +3,6 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
-  'paper',
   'jquery.mousewheel',
 
   'project',
@@ -15,7 +14,6 @@ define([
   _,
   Backbone,
   Marionette,
-  paper,
   wheel,
 
   Project,
@@ -34,7 +32,8 @@ define([
     },
 
     regions: {
-      overlay: '#overlayContainer'
+      content: '.contentContainer',
+      overlay: '.overlayContainer'
     },
 
     delegateEditorEvents: function(){
@@ -54,12 +53,8 @@ define([
     },
 
     onShow: function(){
-      var scope = paper.setup(this.$('#projectCanvas')[0]);
-
-      this.editorView = new Project.views.Editor({model: this.model, paper: scope});
-      this.overlay.show(this.editorView);
-
-      this.devicesView = new Device.views.PaperCollection({collection: this.model.devices, paper: scope});
+      this.overlay.show( new Project.views.Editor({model: this.model}) );
+      this.content.show( new Device.views.Canvas({collection: this.model.devices}) );
     },
 
     onClose: function(){

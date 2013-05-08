@@ -3,7 +3,6 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
-  'paper',
 
   './editor_select',
 
@@ -17,7 +16,6 @@ define([
   _,
   Backbone,
   Marionette,
-  paper,
 
   SelectView,
 
@@ -74,20 +72,6 @@ define([
       move: '#move',
       add: '#add',
       pending: '#pending'
-    },
-
-    initialize: function(options){
-      this.paper = options.paper;
-
-      this.listenTo(Backbone, 'editor:keypress editor:mousewheel', function(e, delta){
-        if (!delta && e.which === 61) { // the = key
-          this.paper.view.zoom = 1;
-        } else if (!delta && e.which === 45 || delta < 0) { // the + key or scroll up
-          this.paper.view.zoom /= 1.1;
-        } else if (!delta && e.which === 43 || delta > 0) { // the - key or scroll down
-          this.paper.view.zoom *= 1.1;
-        }
-      });
     },
 
     onShow: function(){

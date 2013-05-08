@@ -316,76 +316,76 @@ kpiHeight = 30px;
 }
 
 #page-projectEditor {
-  #projectCanvas {
+  canvas {
     background: #bbb;
   }
 
-  #overlayContainer {
+  .overlayContainer {
     float: right;
     width: 400px;
     height: 100%;
     background: colorBGDarkGrey;
     border-left: primaryBorderStyle;
     opacity: 0.8;
+  }
 
-    #overlay > div {
-      border-top: borderBasicMedium;
-      border-bottom: borderBasicDark;
-      padding: 12px;
-      padding-left: 24px;
+  #overlay > div {
+    border-top: borderBasicMedium;
+    border-bottom: borderBasicDark;
+    padding: 12px;
+    padding-left: 24px;
 
-      &:first-child {
-        border-top: none;
-      }
+    &:first-child {
+      border-top: none;
+    }
 
-      h3 {
-        margin-left: -12px;
-        font-size: 1.25em;
-        text-shadow: 0 1px 0 #222;
-        color: colorDrakerOrange;
-      }
+    h3 {
+      margin-left: -12px;
+      font-size: 1.25em;
+      text-shadow: 0 1px 0 #222;
+      color: colorDrakerOrange;
+    }
 
-      form {
-        input {
-          width: 275px;
-          padding-right: 5px;
-          border-radius: 3px;
-          color: grey;
+    form {
+      input {
+        width: 275px;
+        padding-right: 5px;
+        border-radius: 3px;
+        color: grey;
 
-          &:focus {
-            color: black;
-          }
-        }
-
-        button {
-          width: 75px;
+        &:focus {
+          color: black;
         }
       }
 
-      ul {
-        list-style-type: none;
+      button {
+        width: 75px;
+      }
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+
+      position: absolute;
+      min-width: 275px;
+      border-radius: 3px;
+      background-color: white;
+
+      > li {
         padding: 0;
         margin: 0;
 
-        position: absolute;
-        min-width: 275px;
-        border-radius: 3px;
-        background-color: white;
+        a {
+          display: block;
+          padding: 6px;
+          border-radius: 3px;
+          text-decoration: none;
+          color: black;
 
-        > li {
-          padding: 0;
-          margin: 0;
-
-          a {
-            display: block;
-            padding: 6px;
-            border-radius: 3px;
-            text-decoration: none;
-            color: black;
-
-            &:hover {
-              background-color: colorDrakerOrange;
-            }
+          &:hover {
+            background-color: colorDrakerOrange;
           }
         }
       }

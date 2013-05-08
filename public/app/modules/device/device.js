@@ -81,13 +81,33 @@ define([
     }
   });
 
-  Device.views.PaperCollection = Marionette.CollectionView.extend({
+  Device.views.Canvas = Marionette.CollectionView.extend({
+    tagName: 'canvas',
     itemView: Device.views.PaperItem,
 
     itemViewOptions: function(){
-      return {paper: this.options.paper};
+      return {paper: this.paper};
     },
 
+    attributes: {
+      resize: true
+    },
+
+    initialize: function(options){
+      this.paper = paper.setup(this.el);
+
+      this.listenTo(Backbone, 'editor:keypress editor:mousewheel', function(e, delta){
+        if (!delta && e.which === 61) { // the = key
+          this.paper.view.zoom = 1;
+        } else if (!delta && e.which === 45 || delta < 0) { // the + key or scroll up
+          this.paper.view.zoom /= 1.1;
+        } else if (!delta && e.which === 43 || delta > 0) { // the - key or scroll down
+          this.paper.view.zoom *= 1.1;
+        }
+      });
+    },
+
+    // Overwrite this function so that item views aren't added to the dom.
     appendHtml: function(){}
   });
 
