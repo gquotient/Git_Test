@@ -10,10 +10,12 @@
       name: 'config',
       include: [
         'init'
+      ],
+      exclude: [
+        'components/requirejs/require'
       ]
     }
   ],
-
 
   //Use for debugging
   optimizeCss: 'none',
