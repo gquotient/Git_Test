@@ -36,6 +36,10 @@ define([
       this.listenTo(this, 'logout', function(){
         window.location = '/logout';
       });
+
+      this.listenTo(this.model, 'change', function(){
+        this.render();
+      });
     }
   });
 });

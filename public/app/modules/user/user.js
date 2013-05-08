@@ -46,6 +46,11 @@ function(
     }
   });
 
+  User.CurrentUser = User.Model.extend({
+    url: '/api/users/current',
+    idAttribute: 'email'
+  });
+
   User.Collection = Backbone.Collection.extend({
     url: '/api/users',
     model: User.Model
