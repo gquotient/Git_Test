@@ -274,7 +274,7 @@ module.exports = function(app){
     }
   ));
 
-  app.put('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
+  app.put('/api/users', ensureAuthenticated, makeRequest(
     {
       host: app.get('modelUrl'),
       path: '/res/user',
