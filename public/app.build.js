@@ -17,7 +17,6 @@
     }
   ],
 
-  //Use for debugging
-  optimizeCss: 'none',
-  optimize: 'none'
+  optimizeCss: 'none', //Stylus does this for us
+  optimize: 'none' //Use for debugging
 })
