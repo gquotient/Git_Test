@@ -85,7 +85,10 @@ module.exports = function(app){
               }),
               portfolios: portfolios,
               projects: projects,
-              locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
+              locale: (req.user.locale) ?
+                req.user.locale
+              :
+                req.acceptedLanguages[0].toLowerCase()
             }
           );
         });
@@ -185,7 +188,7 @@ module.exports = function(app){
 
   /*
    * API ROUTES
-   */ 
+   */
 
   app.all('/api/*', ensureAuthenticated);
 
