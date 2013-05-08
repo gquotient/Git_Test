@@ -90,7 +90,13 @@ function(
   User.views.EditRow = Forms.views.tableRow.extend({
     events: function(){
       return _.extend({}, Forms.views.tableRow.prototype.events, {
-
+        'click button.reset_password': function(event){
+          event.preventDefault();
+          $.ajax('/api/reset_password', {
+            type: 'PUT',
+            data: { email: this.model.get('email') }
+          });
+        }
       });
     }
   });
@@ -98,15 +104,15 @@ function(
   // Table CompositeView extended from form
   User.views.EditTable = Forms.views.table.extend({
     fields: ['name', 'email'],
-    itemView: User.views.EditRow,
     model: User.Model,
     actions: ['edit', 'cancel', 'save']
   });
 
   User.views.VendorEditTable = Forms.views.table.extend({
     fields: ['name', 'email', 'org_label'],
+    itemView: User.views.EditRow,
     model: User.Model,
-    actions: true
+    actions: ['edit', 'cancel', 'save', 'resetPassword']
   });
 
   return User;
