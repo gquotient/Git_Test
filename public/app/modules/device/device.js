@@ -23,6 +23,19 @@ define([
     defaults: {
       name: '',
       position: {x: 0, y: 0}
+    },
+
+    initialize: function(){
+      this.edgeDevices = new Device.Collection();
+
+      this.listenTo(this.collection, 'add', this.addEdgeDevice);
+      this.collection.each(this.addEdgeDevice);
+    },
+
+    addEdgeDevice: function(model){
+      if (_.findWhere(this.get('edges'), {device: model.id})) {
+        this.edgeDevices.add(model);
+      }
     }
   });
 

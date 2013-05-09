@@ -28,11 +28,20 @@ function generateDeviceSet(num){
     });
   });
 
-  set[1].collects = [set[0].id];
-  set[2].collects = [set[1].id];
-  set[2].feeds = [set[3].id];
-  set[3].feeds = [1000];
-  set[3].measuredBy = [set[4].id];
+  set[1].edges = [
+    {device: set[0].id, type: 'collects'}
+  ];
+
+  set[2].edges = [
+    {device: set[1].id, type: 'collects'},
+    {device: set[3].id, type: 'feeds'}
+  ];
+
+  set[3].edges = [
+    {device: set[4].id, type: 'measured_by'},
+    {device: 1000, type: 'feeds'}
+  ];
+
   set[4].position.y -= 100;
 
   return set;
@@ -54,7 +63,9 @@ function generateDevices(){
     name: 'ACB-' + (numberOfSets + 1),
     type: 'ac_bus',
     position: {x: 900, y: center},
-    feeds: [1001]
+    edges: [
+      {device: 1001, type: 'feeds'}
+    ]
   });
 
   devices.push({
