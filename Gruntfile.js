@@ -8,7 +8,7 @@ module.exports = function(grunt){
       options: {
         jshintrc: '.jshintrc'
       },
-      files: ['public/app/**/*.js']
+      files: ['public/app/**/*.js', '!public/app/components/**/*.js']
     },
 
     watch: {
