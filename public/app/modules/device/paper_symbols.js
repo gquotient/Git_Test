@@ -3,10 +3,8 @@ define([
   'paper'
 ], function(
   _,
-  paperDoNotUse
+  paper
 ){
-  var paper = window.paper;
-
   var symbols = _.reduce({
 
       circle: function(center, size){

@@ -12,12 +12,11 @@ define([
   _,
   Backbone,
   Marionette,
-  paperDoNotUse,
+  paper,
 
   paperSymbols,
   Selection
 ){
-  var paper = window.paper;
 
   var Device = { views: {} };
 
