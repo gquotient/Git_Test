@@ -41,12 +41,10 @@ function(
 
         _.each(this.$el.serializeArray(), function(obj){
           that.model.set(obj.name, obj.value);
-          console.log(that.model.get(obj.name) );
         });
 
         this.model.save();
 
-        console.log(this.model.attributes);
       },
       'reset': function(event){
         event.preventDefault();
@@ -103,13 +101,6 @@ function(
         event.preventDefault();
         this.render();
         this.disableForm();
-      },
-      'click button.reset_password': function(event){
-        event.preventDefault();
-        $.ajax('/api/reset_password', {
-          type: 'PUT',
-          data: { email: this.model.get('email') }
-        });
       }
     }
   });

@@ -7,3 +7,5 @@ dump.rdb
 .DS_Store
 
 bin/auth_service.sh
+
+*.build

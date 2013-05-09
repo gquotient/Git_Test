@@ -18,22 +18,22 @@
  */
 
 require.config({
-  baseUrl: '/public',
+  //baseUrl: '/public',
   packages: [
     {
       name: 'user',
       main: 'user',
-      location: 'app/modules/user'
+      location: 'modules/user'
     },
     {
       name: 'portfolio',
       main: 'portfolio',
-      location: 'app/modules/portfolio'
+      location: 'modules/portfolio'
     },
     {
       name: 'project',
       main: 'project',
-      location: 'app/modules/project'
+      location: 'modules/project'
     },
     {
       name: 'device',
@@ -43,37 +43,37 @@ require.config({
     {
       name: 'layouts',
       main: 'layouts',
-      location: 'app/layouts'
+      location: 'layouts'
     },
     {
       name: 'breadcrumb',
       main: 'breadcrumb',
-      location: 'app/modules/breadcrumb'
+      location: 'modules/breadcrumb'
     },
     {
       name: 'form',
       main: 'form',
-      location: 'app/modules/form'
+      location: 'modules/form'
     },
     {
       name: 'team',
       main: 'team',
-      location: 'app/modules/team'
+      location: 'modules/team'
     },
     {
       name: 'organization',
       main: 'organization',
-      location: 'app/modules/organization'
+      location: 'modules/organization'
     },
     {
       name: 'error',
       main: 'error',
-      location: 'app/modules/error'
+      location: 'modules/error'
     }
   ],
   paths: {
     // Main app
-    ia: 'app/ia',
+    ia: 'ia',
 
     // Require plugins
     text: 'components/requirejs-text/text',
@@ -122,7 +122,7 @@ require.config({
   // hbs config
   hbs: {
     disableI18n: false,        // This disables the i18n helper and
-    i18nDirectory: 'app/i18n/',
+    i18nDirectory: 'i18n/',
                               // doesn't require the json i18n files (e.g. en_us.json)
                               // (false by default)
 

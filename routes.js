@@ -17,7 +17,7 @@ fs.readFile('./roles.json', 'utf8', function (err, data) {
       roles = JSON.parse(data);
     }
   }
-)
+);
 
 // Route Middleware
 
@@ -29,15 +29,24 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
-function ensureAuthorized(role){
+function ensureAuthorized(roles){
   return function(req, res, next) {
-    if (req.user.role === role){
+    if ( _.contains(roles, req.user.role) ){
       next();
     } else {
       req.flash('error', 'Unauthorized');
       res.redirect('/ia');
     }
   };
+}
+
+function ensureCurrentUser(req, res, next) {
+  if(req.user.user_id === req.body.user_id) {
+    next();
+  } else {
+    req.flash('error', 'Unauthorized');
+    res.redirect('/ia');
+  }
 }
 
 /*
@@ -77,7 +86,10 @@ module.exports = function(app){
               }),
               portfolios: portfolios,
               projects: projects,
-              locale: (req.user.locale) ? req.user.locale : req.acceptedLanguages[0]
+              locale: (req.user.locale) ?
+                req.user.locale
+              :
+                req.acceptedLanguages[0].toLowerCase()
             }
           );
         });
@@ -177,7 +189,7 @@ module.exports = function(app){
 
   /*
    * API ROUTES
-   */ 
+   */
 
   app.all('/api/*', ensureAuthenticated);
 
@@ -229,7 +241,7 @@ module.exports = function(app){
   // TEAMS
   //////
 
-  app.get('/api/teams', ensureAuthorized('vendor_admin'), makeRequest(
+  app.get('/api/teams', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
     {
       host: app.get('modelUrl'),
       path: '/res/teams',
@@ -240,7 +252,15 @@ module.exports = function(app){
     })
   );
 
-  app.post('/api/teams', ensureAuthorized('vendor_admin'), makeRequest(
+  app.put('/api/teams', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/teams',
+      method: 'PUT'
+    })
+  );
+
+  app.post('/api/teams', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
     {
       host: app.get('modelUrl'),
       path: '/res/teams',
@@ -253,7 +273,7 @@ module.exports = function(app){
   //////
 
   // Get all users  
-  app.get('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
+  app.get('/api/users', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
     {
       host: app.get('modelUrl'),
       path: '/res/users',
@@ -261,15 +281,15 @@ module.exports = function(app){
     }
   ));
 
-  app.get('/api/users/:org_label', ensureAuthorized('vendor_admin'), makeRequest(
-    {
-      host: app.get('modelUrl'),
-      path: '/res/users',
-      method: 'GET'
-    }
-  ));
+  // app.get('/api/:org_label/users/', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
+  //   {
+  //     host: app.get('modelUrl'),
+  //     path: '/res/users',
+  //     method: 'GET'
+  //   }
+  // ));
 
-  app.put('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
+  app.put('/api/users', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
     {
       host: app.get('modelUrl'),
       path: '/res/user',
@@ -277,7 +297,15 @@ module.exports = function(app){
     }
   ));
 
-  app.post('/api/users', ensureAuthorized('vendor_admin'), makeRequest(
+  app.put('/api/users/current', ensureCurrentUser, makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/user',
+      method: 'PUT'
+    }
+  ));
+
+  app.post('/api/users', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
     {
       host: app.get('modelUrl'),
       path: '/res/usermgt',
@@ -285,7 +313,7 @@ module.exports = function(app){
     }
   ));
 
-  app.put('/api/reset_password', ensureAuthorized('vendor_admin'), makeRequest(
+  app.put('/api/reset_password', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
     {
       host: app.get('modelUrl'),
       path: '/res/usermgt',
@@ -297,7 +325,7 @@ module.exports = function(app){
   // ORGANIZATIONS
   ///////
 
-  app.get('/api/organizations', ensureAuthorized('vendor_admin'), makeRequest(
+  app.get('/api/organizations', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
     {
       host: app.get('modelUrl'),
       path: '/res/organizations',
