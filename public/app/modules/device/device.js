@@ -12,11 +12,13 @@ define([
   _,
   Backbone,
   Marionette,
-  paper,
+  paperDoNotUse,
 
   paperSymbols,
   Selection
 ){
+  var paper = window.paper;
+
   var Device = { views: {} };
 
   Device.Model = Backbone.Model.extend({
