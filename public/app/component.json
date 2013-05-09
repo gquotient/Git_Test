@@ -20,7 +20,7 @@
     "backbone.wreqr": "latest",
     "underscore": "latest",
     "leaflet": "latest",
-    "paper": "git@github.com:justinwinslow/paper.js.git#~v0.2.2",
+    "paper": "git@github.com:drakerlabs/paper.js.git#~v0.2.2",
     "jquery-mousewheel": "latest"
   }
 }
