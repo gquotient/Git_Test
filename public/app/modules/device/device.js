@@ -83,14 +83,32 @@ define([
     },
 
     modelEvents: {
+      'selected': 'select',
+      'deselected': 'deselect',
       'change:position': 'positionChanged'
     },
 
-    positionChanged: function(){
-      var delta = this.center.subtract(this.model.get('position'));
+    select: function(){
+      this.group.bringToFront();
 
-      this.group.translate(delta.negate());
-      this.center = this.center.subtract(delta);
+      this.highlight = new this.paper.Path.Rectangle(this.center.subtract(25), 50);
+      this.highlight.fillColor = 'red';
+      this.highlight.opacity = 0.2;
+    },
+
+    deselect: function(){
+      this.highlight.remove();
+      this.highlight = null;
+    },
+
+    positionChanged: function(){
+      var point = new this.paper.Point(this.model.get('position')),
+        delta = point.subtract(this.center);
+
+      this.group.translate(delta);
+      if (this.highlight) { this.highlight.translate(delta); }
+
+      this.center = point;
     },
 
     testHit: function(point){

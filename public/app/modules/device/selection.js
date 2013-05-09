@@ -9,6 +9,9 @@ define([
 ){
   var Selection = function(){
     this.models = new Backbone.Collection();
+
+    this.listenTo(this.models, 'add', function(model){ model.trigger('selected'); });
+    this.listenTo(this.models, 'remove', function(model){ model.trigger('deselected'); });
   };
 
   function getModelsFromItems(items){
@@ -18,7 +21,7 @@ define([
     return _.pluck(items, 'model');
   }
 
-  _.extend(Selection.prototype, {
+  _.extend(Selection.prototype, Backbone.Events, {
 
     contains: function(item){
       return this.models.contains(item.model);
