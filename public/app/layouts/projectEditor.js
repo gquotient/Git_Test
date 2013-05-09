@@ -39,7 +39,7 @@ define([
     delegateEditorEvents: function(){
       this.undelegateEditorEvents();
 
-      _.each(['keydown', 'keypress', 'mousewheel'], function(eventName){
+      _.each(['keydown', 'keypress', 'mousewheel', 'mousemove', 'mouseup'], function(eventName){
         this.$doc.on(eventName + '.editorEvent' + this.cid, function(){
           var args = Array.prototype.slice.apply(arguments);
           args.unshift('editor:' + eventName);
