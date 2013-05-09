@@ -30,7 +30,7 @@ define([
     model: Device.Model
   });
 
-  Device.views.PaperItem = Marionette.ItemView.extend({
+  Device.views.PaperNode = Marionette.ItemView.extend({
     initialize: function(options){
       this.paper = options.paper || paper;
       this.center = new this.paper.Point(this.model.get('position'));
@@ -53,32 +53,22 @@ define([
     draw: function(){
       this.erase();
 
-      this.group = new this.paper.Group();
-      this.drawSymbol();
-      this.drawLabel();
-
-      this.paper.view.draw();
-    },
-
-    drawSymbol: function(){
-      this.group.addChild(paperSymbols.factory(this.model.get('type'), this.center));
-    },
-
-    drawLabel: function(){
-      var label = new this.paper.PointText();
+      var symbol = paperSymbols.factory(this.model.get('type'), this.center),
+        label = new this.paper.PointText();
 
       label.fontSize = 14;
       label.fillColor = 'black';
       label.content = this.model.get('name');
-      label.position = this.center.subtract(0, this.group.bounds.height * 0.8);
+      label.position = this.center.subtract(0, symbol.bounds.height * 0.8);
 
-      this.group.addChild(label);
+      this.node = new this.paper.Group([symbol, label]);
+      this.paper.view.draw();
     },
 
     erase: function(){
-      if (this.group) {
-        this.group.remove();
-        this.group = null;
+      if (this.node) {
+        this.node.remove();
+        this.node = null;
       }
     },
 
@@ -89,7 +79,7 @@ define([
     },
 
     select: function(){
-      this.group.bringToFront();
+      this.node.bringToFront();
 
       this.highlight = new this.paper.Path.Rectangle(this.center.subtract(25), 50);
       this.highlight.fillColor = 'red';
@@ -105,14 +95,14 @@ define([
       var point = new this.paper.Point(this.model.get('position')),
         delta = point.subtract(this.center);
 
-      this.group.translate(delta);
+      if (this.node) { this.node.translate(delta); }
       if (this.highlight) { this.highlight.translate(delta); }
 
       this.center = point;
     },
 
     testHit: function(point){
-      return this.group.bounds.contains(point);
+      return this.node.bounds.contains(point);
     },
 
     testInside: function(rect){
@@ -122,7 +112,7 @@ define([
 
   Device.views.Canvas = Marionette.CollectionView.extend({
     tagName: 'canvas',
-    itemView: Device.views.PaperItem,
+    itemView: Device.views.PaperNode,
 
     itemViewOptions: function(){
       return {paper: this.paper};
@@ -150,7 +140,7 @@ define([
     },
 
     events: {
-      mousedown: 'handleMouseEvent'
+      'mousedown': 'handleMouseEvent'
     },
 
     handleMouseEvent: function(e){
@@ -215,13 +205,14 @@ define([
     },
 
     onMouseup: function(e){
-      var that = this;
+      var items;
 
       // Add any items within the select box if present.
       if (this.select) {
-        this.selection.add(this.children.filter(function(view){
-          return view.testInside(that.select);
-        }), {remove: !e.ctrlKey});
+        items = this.children.filter(function(view){
+          return view.testInside(this.select);
+        }, this);
+        this.selection.add(items, {remove: !e.ctrlKey});
         this.eraseSelect();
 
       // Otherwise snap any items that may have moved.
