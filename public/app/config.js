@@ -38,7 +38,7 @@ require.config({
     {
       name: 'device',
       main: 'device',
-      location: 'app/modules/device'
+      location: 'modules/device'
     },
     {
       name: 'layouts',
