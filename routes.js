@@ -75,23 +75,32 @@ module.exports = function(app){
           }
           projects = data;
 
-          // Render the response.
-          res.render(
-            'index',
-            {
-              user: JSON.stringify({
-                name: req.user.name,
-                email: req.user.email,
-                role: roles[req.user.role]
-              }),
-              portfolios: portfolios,
-              projects: projects,
-              locale: (req.user.locale) ?
-                req.user.locale
-              :
-                req.acceptedLanguages[0].toLowerCase()
+          // Load device libary.
+          fs.readFile('./data/json/device_library.json', 'utf8', function (err, data) {
+            if (err) {
+              return console.log(err);
             }
-          );
+            devices = data;
+
+            // Render the response.
+            res.render(
+              'index',
+              {
+                user: JSON.stringify({
+                  name: req.user.name,
+                  email: req.user.email,
+                  role: roles[req.user.role]
+                }),
+                portfolios: portfolios,
+                projects: projects,
+                devices: devices,
+                locale: (req.user.locale) ?
+                  req.user.locale
+                :
+                  req.acceptedLanguages[0].toLowerCase()
+              }
+            );
+          });
         });
       });
   });

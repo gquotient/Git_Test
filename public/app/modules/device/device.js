@@ -46,6 +46,16 @@ define([
     model: Device.Model
   });
 
+  Device.LibraryModel = Backbone.Model.extend({
+    initialize: function(attrs){
+      this.set('name', attrs.type.replace('_', ' '));
+    }
+  });
+
+  Device.LibraryCollection = Backbone.Collection.extend({
+    model: Device.LibraryModel
+  });
+
   Device.views.PaperEdge = Marionette.ItemView.extend({
     initialize: function(options){
       this.paper = options.paper || paper;
