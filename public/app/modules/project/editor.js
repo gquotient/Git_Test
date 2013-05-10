@@ -4,7 +4,7 @@ define([
   'backbone',
   'backbone.marionette',
 
-  './editor_select',
+  './editor_input',
 
   'hbs!project/templates/editorIndex',
   'hbs!project/templates/editorImport',
@@ -17,7 +17,7 @@ define([
   Backbone,
   Marionette,
 
-  SelectView,
+  InputView,
 
   editorIndexTemplate,
   editorImportTemplate,
@@ -26,7 +26,7 @@ define([
   editorPendingTemplate
 ){
   var
-    ImportView = SelectView.extend({
+    ImportView = InputView.extend({
       hotKey: 105, // the i key
       template: {
         type: 'handlebars',
@@ -34,7 +34,7 @@ define([
       }
     }),
 
-    MoveView = SelectView.extend({
+    MoveView = InputView.extend({
       hotKey: 109, // the m key
       template: {
         type: 'handlebars',
@@ -42,7 +42,7 @@ define([
       }
     }),
 
-    AddView = SelectView.extend({
+    AddView = InputView.extend({
       hotKey: 97, // the a key
       template: {
         type: 'handlebars',

@@ -29,14 +29,12 @@ define([
 
     add: function(items, options){
       this.models.add(getModelsFromItems(items), options);
+      Backbone.trigger('editor:selection', this.models);
     },
 
     remove: function(items, options){
       this.models.remove(getModelsFromItems(items), options);
-    },
-
-    clear: function(){
-      this.models.reset([], {silent: false});
+      Backbone.trigger('editor:selection', this.models);
     },
 
     moveAll: function(delta){
