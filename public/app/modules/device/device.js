@@ -43,10 +43,24 @@ define([
     model: Device.Model
   });
 
-  Device.views.PaperNode = Marionette.ItemView.extend({
+  Device.views.PaperEdge = Marionette.ItemView.extend({
     initialize: function(options){
       this.paper = options.paper || paper;
-      this.center = new this.paper.Point(this.model.get('position'));
+      this.device = options.device;
+
+      this.listenTo(this.device, 'change:position', function(model, position){
+        if (this.edge) {
+          this.edge.firstSegment.point = new this.paper.Point(position);
+        }
+      });
+
+      this.listenTo(this.model, 'change:position', function(model, position){
+        if (this.edge) {
+          this.edge.lastSegment.point = new this.paper.Point(position);
+        }
+      });
+
+      this.on('close', this.erase);
     },
 
     render: function(){
@@ -61,6 +75,51 @@ define([
       this.triggerMethod('item:rendered', this);
 
       return this;
+    },
+
+    draw: function(){
+      this.erase();
+
+      this.edge = new this.paper.Path.Line(
+        new this.paper.Point(this.device.get('position')),
+        new this.paper.Point(this.model.get('position'))
+      );
+
+      this.edge.sendToBack();
+      this.edge.strokeWidth = 2;
+      this.edge.strokeColor = 'red';
+
+      this.paper.view.draw();
+    },
+
+    erase: function(){
+      if (this.edge) {
+        this.edge.remove();
+        this.edge = null;
+      }
+    }
+  });
+
+  Device.views.PaperNode = Marionette.CollectionView.extend({
+    itemView: Device.views.PaperEdge,
+
+    itemViewOptions: function(){
+      return {paper: this.paper, device: this.model};
+    },
+
+    initialize: function(options){
+      this.paper = options.paper || paper;
+      this.center = new this.paper.Point(this.model.get('position'));
+      this.collection = this.model.edgeDevices;
+
+      this.on('render', this.draw);
+      this.on('close', this.erase);
+    },
+
+    modelEvents: {
+      'selected': 'select',
+      'deselected': 'deselect',
+      'change:position': 'positionChanged'
     },
 
     draw: function(){
@@ -83,12 +142,6 @@ define([
         this.node.remove();
         this.node = null;
       }
-    },
-
-    modelEvents: {
-      'selected': 'select',
-      'deselected': 'deselect',
-      'change:position': 'positionChanged'
     },
 
     select: function(){
@@ -120,7 +173,10 @@ define([
 
     testInside: function(rect){
       return this.center.isInside(rect);
-    }
+    },
+
+    // Overwrite this function so that item views aren't added to the dom.
+    appendHtml: function(){}
   });
 
   Device.views.Canvas = Marionette.CollectionView.extend({
