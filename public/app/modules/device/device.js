@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'jquery.mousewheel',
   'paper',
 
   './paper_symbols',
@@ -12,6 +13,7 @@ define([
   _,
   Backbone,
   Marionette,
+  wheel,
   paper,
 
   paperSymbols,
@@ -196,21 +198,13 @@ define([
       this.paper = paper.setup(this.el);
       this.selection = new Selection();
 
-      this.listenTo(Backbone, 'editor:keypress editor:mousewheel', function(e, delta){
-        if (!delta && e.which === 61) { // the = key
-          this.paper.view.zoom = 1;
-        } else if (!delta && e.which === 45 || delta < 0) { // the + key or scroll up
-          this.paper.view.zoom /= 1.1;
-        } else if (!delta && e.which === 43 || delta > 0) { // the - key or scroll down
-          this.paper.view.zoom *= 1.1;
-        }
-      });
-
       this.listenTo(Backbone, 'editor:mousemove editor:mouseup', this.handleMouseEvent);
+      this.listenTo(Backbone, 'editor:keypress', this.zoom);
     },
 
     events: {
-      'mousedown': 'handleMouseEvent'
+      'mousedown': 'handleMouseEvent',
+      'mousewheel': 'zoom'
     },
 
     handleMouseEvent: function(e){
@@ -306,6 +300,16 @@ define([
     eraseSelect: function(){
       this.select.remove();
       this.select = null;
+    },
+
+    zoom: function(e, delta){
+      if (!delta && e.which === 61) { // the = key
+        this.paper.view.zoom = 1;
+      } else if (!delta && e.which === 45 || delta < 0) { // the + key or scroll up
+        this.paper.view.zoom /= 1.1;
+      } else if (!delta && e.which === 43 || delta > 0) { // the - key or scroll down
+        this.paper.view.zoom *= 1.1;
+      }
     },
 
     // Overwrite this function so that item views aren't added to the dom.

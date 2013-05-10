@@ -3,7 +3,6 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
-  'jquery.mousewheel',
 
   'project',
   'device',
@@ -14,7 +13,6 @@ define([
   _,
   Backbone,
   Marionette,
-  wheel,
 
   Project,
   Device,
@@ -39,11 +37,9 @@ define([
     delegateEditorEvents: function(){
       this.undelegateEditorEvents();
 
-      _.each(['keydown', 'keypress', 'mousewheel', 'mousemove', 'mouseup'], function(eventName){
-        this.$doc.on(eventName + '.editorEvent' + this.cid, function(){
-          var args = Array.prototype.slice.apply(arguments);
-          args.unshift('editor:' + eventName);
-          Backbone.trigger.apply(Backbone, args);
+      _.each(['keydown', 'keypress', 'mousemove', 'mouseup'], function(eventName){
+        this.$doc.on(eventName + '.editorEvent' + this.cid, function(e){
+          Backbone.trigger('editor:' + eventName, e);
         });
       }, this);
     },
