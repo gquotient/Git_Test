@@ -17,6 +17,7 @@ define([
   paperSymbols,
   Selection
 ){
+
   var Device = { views: {} };
 
   Device.Model = Backbone.Model.extend({
