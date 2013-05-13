@@ -246,6 +246,17 @@ module.exports = function(app){
     })
   );
 
+  app.get('/api/:org_label/teams', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/teams',
+      method: 'GET'
+    },
+    function(data, next){
+      next(data.teams);
+    }
+  ));
+
   app.put('/api/teams', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
     {
       host: app.get('modelUrl'),
