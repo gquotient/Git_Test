@@ -262,6 +262,14 @@ module.exports = function(app){
     })
   );
 
+  app.get('/api/:org_label/:team_label', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/userteammgt',
+      method: 'GET'
+    }
+  ));
+
   //////
   // USERS
   //////

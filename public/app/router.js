@@ -82,10 +82,10 @@ define([
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
-    admin: function(page){
+    admin: function(page, id){
       Backbone.trigger('reset:breadcrumbs', {name: 'Admin'});
 
-      this.contentLayout = new AdminLayout({initialView: page, app: ia});
+      this.contentLayout = new AdminLayout({initialView: page, page_id: id, app: ia});
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
@@ -106,7 +106,8 @@ define([
       'project/:id': 'projectDetail',
       'profile': 'profile',
       'admin': 'admin',
-      'admin/:page': 'admin'
+      'admin/:page': 'admin',
+      'admin/:page/:id': 'admin'
     }
   });
 

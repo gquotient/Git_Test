@@ -85,8 +85,8 @@ define([
       return view;
     },
 
-    renderView: function(view){
-      var myView = this.getView(view);
+    renderView: function(view, page_id){
+      var myView = this.getView(view, page_id);
 
       // Set active nav element
       this.$el.find('.nav_content li').removeClass('active');
@@ -97,7 +97,7 @@ define([
     },
 
     onShow: function(){
-      this.renderView(this.initialView);
+      this.renderView(this.initialView, this.page_id);
     },
 
     events: {
@@ -117,6 +117,7 @@ define([
 
     initialize: function(options){
       this.app = this.options.app;
+      this.page_id = this.options.page_id;
       // Update initial view if available
       // NOTE: there's probably a sexier way to do this
       if (options.initialView) {
@@ -137,4 +138,5 @@ define([
       */
     }
   });
+
 });
