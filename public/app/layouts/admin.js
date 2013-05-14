@@ -39,7 +39,12 @@ define([
       'teams': {
         collection: Team.collections.Teams,
         view: Team.views.EditTable,
-        title: 'Teams'
+        title: 'Teams',
+        detail: function(options){
+          options.model.getUsers();
+          var view = new Team.views.TeamDetail({ model: options.model, collection: options.model.users });
+          return view;
+        }
       },
       'vendor_users': {
         collection: User.Collection,
@@ -85,8 +90,8 @@ define([
       return view;
     },
 
-    renderView: function(view, page_id){
-      var myView = this.getView(view, page_id);
+    renderView: function(view){
+      var myView = this.getView(view);
 
       // Set active nav element
       this.$el.find('.nav_content li').removeClass('active');
@@ -94,6 +99,12 @@ define([
 
       // Display view
       this.pageContent.show(myView);
+    },
+
+    renderDetailView: function(options){
+      console.log(options);
+      var viewConfig = config.views[options.page];
+      this.pageContent.show( viewConfig.detail(options) );
     },
 
     onShow: function(){
@@ -110,6 +121,9 @@ define([
         // Build view
         this.renderView(route);
 
+        // Keep track of current view.
+        this.view = route;
+
         // Update history
         Backbone.history.navigate('/admin/' + route);
       }
@@ -117,25 +131,19 @@ define([
 
     initialize: function(options){
       this.app = this.options.app;
-      this.page_id = this.options.page_id;
+      this.detail = this.options.detail;
       // Update initial view if available
       // NOTE: there's probably a sexier way to do this
       if (options.initialView) {
         this.initialView = options.initialView;
       }
 
-      /*
-      This works as long as you hit the root first, but doesn't
-      work properly if you hit root/subView and I don't feel like
-      figuring it out tonight
+      this.view = this.initialView;
 
-      this.Router = new Backbone.Marionette.AppRouter.extend({
-        controller: this,
-        appRoutes: {
-          'admin/:page': 'renderView'
-        }
-      });
-      */
+      this.listenTo(Backbone, 'detail', function(model){
+        this.renderDetailView({ model: model, page: this.view });
+        Backbone.history.navigate('/admin/'+ this.view + '/' + model.id);
+      }, this);
     }
   });
 

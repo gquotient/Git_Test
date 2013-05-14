@@ -57,8 +57,9 @@ function(
   });
 
   User.TeamUsers = Backbone.Collection.extend({
-    initialize: function(){
-      this.url = '/api/' + this.options.team.get('org_label') + '/' + this.options.team;
+    initialize: function(options){
+      console.log(options);
+      this.url = '/api/teams/' + options.team.id + '/users';
     },
     model: User.Model
   });

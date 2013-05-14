@@ -240,19 +240,32 @@ module.exports = function(app){
       host: app.get('modelUrl'),
       path: '/res/teams',
       method: 'GET',
+      setup: function(req, res, next){
+        if(req.user.role === 'vendor_admin'){
+          req.params.org_label = 'ALL';
+        }
+        next(req, res);
+      },
       translate: function(data, next){
         next(data.teams);
       }
     }
   ));
 
-  app.get('/api/:org_label/teams', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
+  app.get('/api/teams/:team_id/users', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
     {
       host: app.get('modelUrl'),
-      path: '/res/teams',
+      path: '/res/userteammgt',
       method: 'GET',
-      translate: function(data, next){
-        next(data.teams);
+      setup: function(req, res, next){
+        var teamId = req.params.team_id.split('_');
+        req.params.org_label = teamId[0];
+        req.params.team_label = teamId[1];
+        if(req.user.org_label === teamId[0] || req.user.role === 'vendor_admin'){
+          next(req, res);
+        } else {
+          console.log('You\'re not allowed to look at that team.');
+        }
       }
     }
   ));
@@ -273,13 +286,13 @@ module.exports = function(app){
     })
   );
 
-  app.get('/api/:org_label/:team_label', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
-    {
-      host: app.get('modelUrl'),
-      path: '/res/userteammgt',
-      method: 'GET'
-    }
-  ));
+  // app.get('/api/:org_label/:team_label', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
+  //   {
+  //     host: app.get('modelUrl'),
+  //     path: '/res/userteammgt',
+  //     method: 'GET'
+  //   }
+  // ));
 
   //////
   // USERS
@@ -338,7 +351,7 @@ module.exports = function(app){
   // ORGANIZATIONS
   ///////
 
-  app.get('/api/organizations', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
+  app.get('/api/organizations', ensureAuthorized(['vendor_admin']), makeRequest(
     {
       host: app.get('modelUrl'),
       path: '/res/organizations',
@@ -356,14 +369,15 @@ module.exports = function(app){
     return function(req, res, next){
 
       var _request = function(){
+        var requestOptions;
         if(options.method === 'GET' || options.method === 'DELETE') {
-          var requestOptions = _.extend(options, {
+          requestOptions = _.extend(options, {
             headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
             uri: options.host + options.path,
             qs: _.extend(req.params, {})
           });
         } else {
-          var requestOptions = _.extend(options, {
+          requestOptions = _.extend(options, {
             headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
             uri: options.host + options.path,
             form: _.extend(req.body, {})
@@ -376,24 +390,24 @@ module.exports = function(app){
             console.log('error!:', error);
             res.redirect('/ia');
           } else {
+            console.log(body);
+
             if (options.translate) {
               options.translate(JSON.parse(body), function(translatedData){
                 res.end(JSON.stringify(translatedData));
               });
             } else {
-              console.log(body);
               res.end(body);
             }
           }
-        });  
-      }
+        });
+      };
 
       if (options.setup) {
         options.setup(req, res, _request);
       } else {
         _request(req, res);
       }
-      
     };
   }
 
