@@ -33,6 +33,12 @@ define([
       alarms: '#alarms'
     },
 
+    events: {
+      'click .edit': function(){
+        Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
+      }
+    },
+
     onShow: function(){
       this.map.show(this.mapView);
     },
@@ -53,10 +59,6 @@ define([
       this.listenTo(Backbone, 'select:project', function(model){
         // Set address bar
         Backbone.history.navigate('/project/' + model.get('id'));
-      });
-
-      this.listenTo(Backbone, 'edit', function(){
-        Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
       });
     }
   });
