@@ -239,21 +239,21 @@ module.exports = function(app){
     {
       host: app.get('modelUrl'),
       path: '/res/teams',
-      method: 'GET'
-    },
-    function(data, next){
-      next(data.teams);
-    })
-  );
+      method: 'GET',
+      translate: function(data, next){
+        next(data.teams);
+      }
+    }
+  ));
 
   app.get('/api/:org_label/teams', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
     {
       host: app.get('modelUrl'),
       path: '/res/teams',
-      method: 'GET'
-    },
-    function(data, next){
-      next(data.teams);
+      method: 'GET',
+      translate: function(data, next){
+        next(data.teams);
+      }
     }
   ));
 
@@ -352,39 +352,48 @@ module.exports = function(app){
   // Can move later.
   ///////
 
-  function makeRequest(options, translate){
+  function makeRequest(options){
     return function(req, res, next){
-      console.log(options.method);
-      if(options.method === 'GET' || options.method === 'DELETE') {
-        var requestOptions = _.extend(options, {
-          headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
-          uri: options.host + options.path,
-          qs: _.extend(req.params, {})
-        });
-      } else {
-        var requestOptions = _.extend(options, {
-          headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
-          uri: options.host + options.path,
-          form: _.extend(req.body, {})
-        });
+
+      var _request = function(){
+        if(options.method === 'GET' || options.method === 'DELETE') {
+          var requestOptions = _.extend(options, {
+            headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
+            uri: options.host + options.path,
+            qs: _.extend(req.params, {})
+          });
+        } else {
+          var requestOptions = _.extend(options, {
+            headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
+            uri: options.host + options.path,
+            form: _.extend(req.body, {})
+          });
+        }
+
+        request(requestOptions, function(error, response, body){
+          if (error) {
+            req.flash('error', error.message);
+            console.log('error!:', error);
+            res.redirect('/ia');
+          } else {
+            if (options.translate) {
+              options.translate(JSON.parse(body), function(translatedData){
+                res.end(JSON.stringify(translatedData));
+              });
+            } else {
+              console.log(body);
+              res.end(body);
+            }
+          }
+        });  
       }
 
-      request(requestOptions, function(error, response, body){
-        if (error) {
-          req.flash('error', error.message);
-          console.log('error!:', error);
-          res.redirect('/ia');
-        } else {
-          if (translate) {
-            translate(JSON.parse(body), function(translatedData){
-              res.end(JSON.stringify(translatedData));
-            });
-          } else {
-            console.log(body);
-            res.end(body);
-          }
-        }
-      });
+      if (options.setup) {
+        options.setup(req, res, _request);
+      } else {
+        _request(req, res);
+      }
+      
     };
   }
 
