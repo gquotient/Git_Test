@@ -114,9 +114,6 @@ require.config({
     },
     leaflet: {
       exports: 'L'
-    },
-    paper: {
-      exports: 'paper'
     }
   },
   // hbs config
