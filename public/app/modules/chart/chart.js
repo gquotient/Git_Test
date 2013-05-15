@@ -15,32 +15,37 @@ function(
 
   Rickshaw
 ){
-  var Chart = { views: {} };
-
-  Chart.Model = Backbone.Model.extend({
-    data: []
+  var Chart = { models: {}, views: {} };
+  /*
+    Have multiple models for the different data types that have
+    a good parse method for getting the data formatted to work
+    with Rickshaw
+  */
+  Chart.models.timeSeries = Backbone.Model.extend({
+    //url: populated externally
+    data: [
+      {
+        color: 'steelblue',
+        data: [ { x: 0, y: 23}, { x: 1, y: 15 }, { x: 2, y: 79 } ]
+      },
+      {
+        color: 'lightblue',
+        data: [ { x: 0, y: 30}, { x: 1, y: 20 }, { x: 2, y: 64 } ]
+      }
+    ]
   });
 
   Chart.views.Line = Marionette.ItemView.extend({
-    model: new Chart.Model(),
-    chartOptions: {},
+    model: new Chart.models.timeSeries(),
     render: function(){
-      var graph = new Rickshaw.Graph( {
-        element: this.el,
-        series: [
-          {
-            color: 'steelblue',
-            data: [ { x: 0, y: 23}, { x: 1, y: 15 }, { x: 2, y: 79 } ]
-          }, {
-            color: 'lightblue',
-            data: [ { x: 0, y: 30}, { x: 1, y: 20 }, { x: 2, y: 64 } ]
-          }
-        ]
-      } );
-
-      graph.render();
+      this.chart.render();
     },
-    initialize: function(){}
+    initialize: function(){
+      this.chart = new Rickshaw.Graph( {
+        element: this.el,
+        series: this.model.data
+      } );
+    }
   });
 
   return Chart;
