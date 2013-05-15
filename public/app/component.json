@@ -22,6 +22,7 @@
     "leaflet": "latest",
     "paper": "git@github.com:justinwinslow/paper.js.git",
     "jquery-mousewheel": "latest",
-    "Chart.js": "latest"
+    "d3": "latest",
+    "rickshaw": "latest"
   }
 }

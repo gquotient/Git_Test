@@ -102,7 +102,8 @@ require.config({
     messageformat: 'components/messageformat.js/messageformat',
     paper: 'components/paper/dist/paper',
     'jquery.mousewheel': 'components/jquery-mousewheel/jquery.mousewheel',
-    'chartjs': 'components/Chart.js/Chart'
+    d3: 'components/d3/d3',
+    rickshaw: 'components/rickshaw/rickshaw'
   },
   shim: {
     backbone: {
@@ -121,8 +122,12 @@ require.config({
     leaflet: {
       exports: 'L'
     },
-    chartjs: {
-      exports: 'Chart'
+    d3: {
+      exports: 'd3'
+    },
+    rickshaw: {
+      exports: 'Rickshaw',
+      deps: ['d3']
     }
   },
   // hbs config
