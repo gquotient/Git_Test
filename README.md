@@ -46,6 +46,36 @@ From your project root folder, run `$ node server.js` to start the server. Defau
 
 To use the staging authentication server, run `$ export NODE_ENV=development-remote` before starting your node server. To switch back to using a local auth server, run `$ export NODE_ENV=development`.
 
+
+Getting started using local Auth & Model
+----------------------------------------
+
+Install [AuthService](https://github.com/drakerlabs/AuthService)
+
+Open a terminal and run:
+
+    cd AuthService/auth_service
+    python manage.py add_client_app IA6 0.1
+    python manage.py runserver
+
+Install [ModelService](https://github.com/drakerlabs/ModelService)
+
+Open a separate terminal and run:
+
+    cd ModelService/model_service
+    python manage.py create_org DRAKER Draker
+    python manage.py add_person DRAKER "your.email@drakerenergy.com" "Your Name"
+    python manage.py make_person_an_admin DRAKER "your.email@drakerenergy.com"
+    python manage.py push_persons
+    python manage.py runserver
+
+Open a third terminal and run:
+
+    node server.js
+
+Point your browser to [here](http://localhost:3005) and login using your email and password "Draker321"
+
+
 Testing (Optional)
 ------------------
 
