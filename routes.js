@@ -286,6 +286,18 @@ module.exports = function(app){
     })
   );
 
+
+  app.put('/api/user_team', ensureAuthorized(['vendor_admin', 'admin']), makeRequest({
+    host: app.get('modelUrl'),
+    path: '/res/userteammgt',
+    method: 'PUT'
+  }));
+
+  app.del('/api/user_team', ensureAuthorized(['vendor_admin', 'admin']), makeRequest({
+    host: app.get('modelUrl'),
+    path: '/res/userteammgt',
+    method: 'DELETE'
+  }));
   // app.get('/api/:org_label/:team_label', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
   //   {
   //     host: app.get('modelUrl'),
@@ -359,6 +371,22 @@ module.exports = function(app){
     })
   );
 
+  app.get('/api/organizations/:org_label/users', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/users',
+      method: 'GET',
+      setup: function(req, res, next){
+        console.log(req.user.role);
+        if(req.user.org_label === req.params.org_label || req.user.role === 'vendor_admin'){
+          next(req, res);
+        } else {
+          console.log('You\'re not allowed to look at that organization.');
+        }
+      }
+    }
+  ));
+
 
   ////////
   // makeRequest needs access to 'app', which is why it's in the routes function.
@@ -374,7 +402,7 @@ module.exports = function(app){
           requestOptions = _.extend(options, {
             headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
             uri: options.host + options.path,
-            qs: _.extend(req.params, {})
+            qs: _.extend(req.params, req.body, {})
           });
         } else {
           requestOptions = _.extend(options, {

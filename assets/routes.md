@@ -7,6 +7,7 @@
 /res/users GET (all users: gotta be va)
 /res/users {org_label: "DRAKER"} GET (gotta be admin)
 */res/user GET PUT (email, name)*
+
 /res/usermgt {org_label: "DRAKER", email: "useremail"} GET POST {name:'', email: ''} PUT // resets password // DELETE
 
 /res/userteammgt GET {"org\_label": xxxx, "team\_label": xxxx} POST { name: 'xxxx' } PUT // adding user to team { email: ' ' } DELETE // remove 

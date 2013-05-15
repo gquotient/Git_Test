@@ -5,9 +5,13 @@ define([
   'backbone.marionette',
   'handlebars',
 
+  'ia',
+
   'user',
   'team',
   'organization',
+
+  'layouts/teamManagement',
 
   'hbs!layouts/templates/admin'
 ], function(
@@ -17,9 +21,13 @@ define([
   Marionette,
   Handlebars,
 
+  ia,
+
   User,
   Team,
   Organization,
+
+  TeamManagementLayout,
 
   adminTemplate
 ){
@@ -41,9 +49,18 @@ define([
         view: Team.views.EditTable,
         title: 'Teams',
         detail: function(options){
-          options.model.getUsers();
-          var view = new Team.views.TeamDetail({ model: options.model, collection: options.model.users });
-          return view;
+          // Get the team's members.
+          // options.model.getUsers();
+
+          // Get a list of all users for that organization.
+          // var allUsers = new User.OrganizationUsers({ org_label: options.model.get('org_label') });
+          // allUsers.fetch();
+
+          // var view = new Team.views.TeamDetail({ model: options.model, collection: options.model.users });
+
+          var layout = new TeamManagementLayout({ team: options.model })
+
+          return layout;
         }
       },
       'vendor_users': {
@@ -102,7 +119,6 @@ define([
     },
 
     renderDetailView: function(options){
-      console.log(options);
       var viewConfig = config.views[options.page];
       this.pageContent.show( viewConfig.detail(options) );
     },

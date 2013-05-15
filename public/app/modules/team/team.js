@@ -30,8 +30,37 @@ define(
       idAttribute: 'team_id',
       url: '/api/teams',
       getUsers: function(){
-        this.users = new User.TeamUsers({team: this});
         this.users.fetch();
+      },
+      addUser: function(user){
+        if(!this.users.contains(user)){
+
+          this.users.add(user);
+
+          $.ajax('/api/user_team', {
+            type: 'PUT',
+            data: {
+              email: user.get('email'),
+              org_label: this.get('org_label'),
+              team_label: this.get('team_label')
+            }
+          });
+        }
+      },
+      removeUser: function(user){
+        this.users.remove(user);
+        console.log(user.get('email'));
+        $.ajax('/api/user_team', {
+          type: 'DELETE',
+          data: {
+            email: user.get('email'),
+            org_label: this.get('org_label'),
+            team_label: this.get('team_label')
+          }
+        });
+      },
+      initialize: function(){
+        this.users = new User.TeamUsers({team: this});
       }
     }, {
       schema: {
