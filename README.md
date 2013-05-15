@@ -73,7 +73,7 @@ Open a third terminal and run:
 
     node server.js
 
-Point your browser to (localhost:3005) and login using your email and password "Draker321"
+Point your browser to [here](http://localhost:3005) and login using your email and password "Draker321"
 
 
 Testing (Optional)
