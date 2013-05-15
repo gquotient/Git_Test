@@ -21,6 +21,7 @@
     "underscore": "latest",
     "leaflet": "latest",
     "paper": "git@github.com:justinwinslow/paper.js.git",
-    "jquery-mousewheel": "latest"
+    "jquery-mousewheel": "latest",
+    "Chart.js": "latest"
   }
 }

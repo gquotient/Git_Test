@@ -6,6 +6,8 @@ define([
   'portfolio',
   'project',
 
+  'chart',
+
   'hbs!layouts/templates/projectDetail'
 ], function(
   Backbone,
@@ -14,6 +16,8 @@ define([
 
   Portfolio,
   Project,
+
+  Chart,
 
   projectDetailTemplate
 ){
@@ -41,6 +45,8 @@ define([
 
     onShow: function(){
       this.map.show(this.mapView);
+
+      this.kpis.show(this.chartView);
     },
 
     initialize: function(options){
@@ -49,6 +55,8 @@ define([
       this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])
       });
+
+      this.chartView = new Chart.views.Line();
 
       // Set up listeners
       this.listenTo(Backbone, 'select:portfolio', function(model){
