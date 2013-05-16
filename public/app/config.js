@@ -86,6 +86,7 @@ require.config({
     hbs: 'components/require-handlebars-plugin/hbs',
 
     // Libraries
+    es5shim: 'components/es5-shim/es5-shim',
     json2: 'components/require-handlebars-plugin/hbs/json2',
     i18nprecompile: 'components/require-handlebars-plugin/hbs/i18nprecompile',
     jquery: 'components/jquery/jquery',
