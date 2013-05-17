@@ -100,9 +100,7 @@ define([
         root: this
       });
 
-      this.projects = new Project.Collection([], {
-        url: '/api/projects'
-      });
+      this.projects = new Project.Collection();
     }
   });
 

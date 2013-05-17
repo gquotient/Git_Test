@@ -32,14 +32,13 @@ define([
   var Project = { views: {} };
 
   Project.Model = Backbone.Model.extend({
+    url: '/api/projects',
     defaults: {
       type: 'project'
     },
 
     initialize: function(){
-      this.devices = new Device.Collection([], {
-        url: '/api/projects/' + this.id + '/devices'
-      });
+      this.devices = new Device.Collection();
     }
   });
 
@@ -95,21 +94,20 @@ define([
 
   Project.views.MarkerView = Marionette.ItemView.extend({
     initialize: function(options){
+      var that = this,
+        icon = this.markerStyles[this.model.get('status')];
 
-      var that = this;
-
-      var latLong = this.model.get('latLng');
-
-      if (latLong && latLong.length) {
-        this.marker = L.marker(
-          [latLong[0], latLong[1]],
-          {
-            icon: that.markerStyles[that.model.get('status')],
-            id: that.model.id,
-            opacity: 0
-          }
-        );
-      }
+      this.marker = L.marker(
+        [
+          this.model.get('latitude'),
+          this.model.get('longitude')
+        ],
+        {
+          id: this.model.id,
+          icon: icon || this.markerStyles.OK,
+          opacity: 0
+        }
+      );
 
       var highlight = function() {
         that.unmask();
@@ -213,6 +211,8 @@ define([
     },
 
     fitToBounds: function(bounds){
+      if (!bounds && this.collection.length === 0) { return; }
+
       bounds = bounds || this.findBounds();
 
       bounds = new L.LatLngBounds(
@@ -226,13 +226,8 @@ define([
     },
 
     findBounds: function(){
-      var lats = [], lngs = [];
-
-      this.collection.each(function(model){
-        var latLng = model.get('latLng');
-        lats.push(latLng[0]);
-        lngs.push(latLng[1]);
-      });
+      var lats = this.collection.pluck('latitude'),
+        lngs = this.collection.pluck('longitude');
 
       return {
         south: _.min(lats),

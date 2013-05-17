@@ -60,9 +60,6 @@ define([
     initialize: function(options){
       this.model = options.model;
 
-      // Populating the devices collection here for lack of a better place.
-      this.model.devices.fetch();
-
       // Set up events on document.
       this.$doc = $(document);
       this.delegateEditorEvents();
