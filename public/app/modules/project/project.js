@@ -46,7 +46,7 @@ define([
     validate: function(attrs){
       if (
         attrs.name === '' ||
-        attrs.label === '' ||
+        attrs.site_label === '' ||
         isNaN(attrs.latitude) ||
         isNaN(attrs.longitude) ||
         isNaN(attrs.elevation)
