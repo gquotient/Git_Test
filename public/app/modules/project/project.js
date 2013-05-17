@@ -55,7 +55,16 @@ define([
   });
 
   Project.Collection = Backbone.Collection.extend({
-    model: Project.Model
+    model: Project.Model,
+
+    findByProjectLabel: function(label){
+      return this.findWhere({project_label: label});
+    },
+
+    findBySiteLabel: function(label){
+      var projects = this.where({site_label: label});
+      return projects.length === 1 ? projects[0] : null;
+    }
   });
 
   Project.views.DataListItem = Marionette.ItemView.extend({

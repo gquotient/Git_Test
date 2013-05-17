@@ -38,8 +38,16 @@ define([
       Backbone.history.navigate('portfolio/all', true);
     },
 
+    findPortfolio: function(id){
+      if (!id || id === 'all') {
+        return ia.rootPortfolio;
+      } else {
+        return ia.rootPortfolio.portfolios.get(id);
+      }
+    },
+
     portfolioDashboard: function(id){
-      var portfolio = ia.getPortfolio(id);
+      var portfolio = this.findPortfolio(id);
 
       Backbone.trigger('reset:breadcrumbs', portfolio);
 
@@ -48,7 +56,7 @@ define([
     },
 
     portfolioDetail: function(id){
-      var portfolio = ia.getPortfolio(id);
+      var portfolio = this.findPortfolio(id);
 
       if (this.contentLayout instanceof PortfolioDetailLayout) {
         // If already on the portfolio view we just want to update
@@ -70,6 +78,14 @@ define([
       }
     },
 
+    findProject: function(id){
+      var projects = ia.rootPortfolio.projects
+
+      return projects.get(id) ||
+        projects.findByProjectLabel(id) ||
+        projects.findBySiteLabel(id);
+    },
+
     projectCreate: function(){
       Backbone.trigger('reset:breadcrumbs', {name: 'Project Creator'});
 
@@ -78,7 +94,7 @@ define([
     },
 
     projectEdit: function(id){
-      var project = ia.getProject(id);
+      var project = this.findProject(id);
 
       Backbone.trigger('set:breadcrumbs', {name: 'Edit'});
 
@@ -87,7 +103,7 @@ define([
     },
 
     projectDetail: function(id){
-      var project = ia.getProject(id);
+      var project = this.findProject(id);
 
       Backbone.trigger('set:breadcrumbs', project);
 
