@@ -219,23 +219,65 @@ module.exports = function(app){
       });
     });
 
+  function separateProperties(list){
+    return function(req, res, next){
+      if (req.body) {
+        req.body = _.reduce(req.body, function(memo, value, key){
+          if (_.contains(list, key)) {
+            memo[key] = value;
+          } else {
+            memo.properties[key] = value;
+          }
+          return memo;
+        }, { properties: {} });
+      }
+      next();
+    };
+  }
+
+  function mergeProperties(body, next){
+    if (body.properties) {
+      body = _.extend({},
+        body.properties,
+        _.omit(body, 'properties')
+      );
+    }
+    next(body);
+  }
+
   //////
   // PROJECTS
   //////
 
   app.all('/api/projects',
+    separateProperties([
+      'id',
+      'name',
+      'site_label',
+      'project_label',
+      'latitude',
+      'longitude',
+      'elevation'
+    ]),
     makeRequest({
       path: '/res/projects'
-    }));
+    },
+    mergeProperties));
 
   //////
   // DEVICES
   //////
 
   app.all('/api/devices',
+    separateProperties([
+      'id',
+      'project_label',
+      'relationship_label'
+    ]),
     makeRequest({
       path: '/res/devices'
-    }));
+    },
+    mergeProperties));
 
   //////
   // TEAMS
