@@ -79,7 +79,7 @@ define([
     },
 
     findProject: function(id){
-      var projects = ia.rootPortfolio.projects
+      var projects = ia.rootPortfolio.projects;
 
       return projects.get(id) ||
         projects.findByProjectLabel(id) ||
