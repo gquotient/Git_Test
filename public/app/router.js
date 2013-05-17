@@ -8,10 +8,11 @@ define([
 
   'layouts/helpers',
   'layouts/main',
-  'layouts/portfolioDetail',
-  'layouts/projectDetail',
-  'layouts/projectEditor',
   'layouts/portfolioDashboard',
+  'layouts/portfolioDetail',
+  'layouts/projectCreator',
+  'layouts/projectEditor',
+  'layouts/projectDetail',
   'layouts/profile',
   'layouts/admin'
 ], function(
@@ -24,16 +25,26 @@ define([
 
   Helpers,
   MainLayout,
-  PortfolioDetailLayout,
-  ProjectDetailLayout,
-  ProjectEditorLayout,
   PortfolioDashboardLayout,
+  PortfolioDetailLayout,
+  ProjectCreatorLayout,
+  ProjectEditorLayout,
+  ProjectDetailLayout,
   ProfileLayout,
   AdminLayout
 ){
   var RouteController = Backbone.Marionette.Controller.extend({
     index: function(){
       Backbone.history.navigate('portfolio/all', true);
+    },
+
+    portfolioDashboard: function(id){
+      var portfolio = ia.getPortfolio(id);
+
+      Backbone.trigger('reset:breadcrumbs', portfolio);
+
+      this.contentLayout = new PortfolioDashboardLayout({model: portfolio});
+      this.mainLayout.mainContent.show(this.contentLayout);
     },
 
     portfolioDetail: function(id){
@@ -59,12 +70,19 @@ define([
       }
     },
 
-    portfolioDashboard: function(id){
-      var portfolio = ia.getPortfolio(id);
+    projectCreate: function(){
+      Backbone.trigger('reset:breadcrumbs', {name: 'Project Creator'});
 
-      Backbone.trigger('reset:breadcrumbs', portfolio);
+      this.contentLayout = new ProjectCreatorLayout();
+      this.mainLayout.mainContent.show(this.contentLayout);
+    },
 
-      this.contentLayout = new PortfolioDashboardLayout({model: portfolio});
+    projectEdit: function(id){
+      var project = ia.getProject(id);
+
+      Backbone.trigger('set:breadcrumbs', {name: 'Edit'});
+
+      this.contentLayout = new ProjectEditorLayout({model: project});
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
@@ -74,14 +92,6 @@ define([
       Backbone.trigger('set:breadcrumbs', project);
 
       this.contentLayout = new ProjectDetailLayout({model: project});
-      this.mainLayout.mainContent.show(this.contentLayout);
-    },
-
-    projectEdit: function(id){
-      var project = ia.getProject(id);
-
-      Backbone.trigger('set:breadcrumbs', {name: 'Edit'});
-      this.contentLayout = new ProjectEditorLayout({model: project});
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
@@ -109,15 +119,19 @@ define([
     controller: new RouteController(),
     appRoutes: {
       '': 'index',
-      'portfolio': 'index',
-      'portfolio/:id': 'portfolioDetail',
-      'portfolio/dashboard': 'portfolioDashboard',
+
       'portfolio/dashboard/:id': 'portfolioDashboard',
-      'project/:id': 'projectDetail',
+      'portfolio/dashboard': 'portfolioDashboard',
+      'portfolio/:id': 'portfolioDetail',
+      'portfolio': 'index',
+
+      'project/create': 'projectCreate',
       'project/:id/edit': 'projectEdit',
+      'project/:id': 'projectDetail',
+
       'profile': 'profile',
-      'admin': 'admin',
-      'admin/:page': 'admin'
+      'admin/:page': 'admin',
+      'admin': 'admin'
     }
   });
 

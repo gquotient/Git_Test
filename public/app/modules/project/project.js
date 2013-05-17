@@ -12,7 +12,8 @@ define([
 
   'hbs!project/templates/dataList',
   'hbs!project/templates/dataListItem',
-  'hbs!project/templates/dashboardItem'
+  'hbs!project/templates/dashboardItem',
+  'hbs!project/templates/create'
 ], function(
   $,
   _,
@@ -27,7 +28,8 @@ define([
 
   dataListTemplate,
   dataListItemTemplate,
-  dashboardItemTemplate
+  dashboardItemTemplate,
+  createTemplate
 ){
   var Project = { views: {} };
 
@@ -39,6 +41,16 @@ define([
 
     initialize: function(){
       this.devices = new Device.Collection();
+    },
+
+    validate: function(attrs){
+      if (
+        attrs.name === '' ||
+        attrs.label === '' ||
+        isNaN(attrs.latitude) ||
+        isNaN(attrs.longitude) ||
+        isNaN(attrs.elevation)
+      ) { return 'error'; }
     }
   });
 
@@ -262,6 +274,45 @@ define([
       this.fitToBounds();
 
       this.listenTo(Backbone, 'window:resize', this.map.viewreset);
+    }
+  });
+
+  Project.views.Create = Marionette.ItemView.extend({
+    tagName: 'form',
+    template: {
+      type: 'handlebars',
+      template: createTemplate
+    },
+
+    ui: {
+      'name': '#name',
+      'label': '#site_label',
+      'latitude': '#latitude',
+      'longitude': '#longitude',
+      'elevation': '#elevation'
+    },
+
+    triggers: {
+      'submit': 'submit',
+      'reset': 'reset'
+    },
+
+    onSubmit: function(){
+      this.model.save({
+        name: this.ui.name.val().trim(),
+        site_label: this.ui.label.val().replace(/\W|_/g, ''),
+        latitude: parseFloat(this.ui.latitude.val()),
+        longitude: parseFloat(this.ui.longitude.val()),
+        elevation: parseFloat(this.ui.elevation.val()) || 0
+      }, {
+        success: function(model){
+          Backbone.trigger('create:project', model);
+        }
+      });
+    },
+
+    onReset: function(){
+      this.render();
     }
   });
 

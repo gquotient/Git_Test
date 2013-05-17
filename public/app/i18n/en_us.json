@@ -25,6 +25,11 @@
   "Name": "Name",
   "Email": "Email",
 
+  "Label": "Label",
+  "Latitude": "Latitude",
+  "Longitude": "Longitude",
+  "Elevation": "Elevation",
+
   "Add": "Add",
   "Edit": "Edit",
   "Cancel": "Cancel",
