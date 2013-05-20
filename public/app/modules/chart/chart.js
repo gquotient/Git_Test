@@ -80,6 +80,21 @@ function(
         backgroundColor: null,
         credit: false
       },
+      credits: {
+        enabled: false
+      },
+      plotOptions: {
+        series: {
+          marker: {
+            enabled: false,
+            states: {
+              hover: {
+                enabled: true
+              }
+            }
+          }
+        }
+      },
       xAxis: {
         type: 'datetime'
       }
@@ -99,21 +114,25 @@ function(
 
   Chart.views.Line = Chart.views.core.extend({
     model: new Chart.models.timeSeries({url: '/api/arrayPower'}),
-    initialize: function(){
+    options: {
+      title: 'Generic Chart'
+    },
+    initialize: function(options){
       var that = this;
+
+      this.options = _.extend(this.options, options);
 
       // Instantiate the chart
       this.chart = new Highcharts.Chart({
-        credits: {
-          enabled: false
-        },
+        credits: this.chartOptions.credits,
         chart: _.extend({
           type: 'line',
           renderTo: this.el
         }, this.chartOptions.chart),
+        plotOptions: this.chartOptions.plotOptions,
         xAxis: this.chartOptions.xAxis,
         title: {
-          text: 'Array Power'
+          text: this.options.title
         },
         series: [
           {

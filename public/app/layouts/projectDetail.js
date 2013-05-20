@@ -34,7 +34,8 @@ define([
     regions: {
       map: '#map',
       kpis: '#kpis',
-      alarms: '#alarms'
+      alarms: '#alarms',
+      chart: '#chart'
     },
 
     events: {
@@ -46,7 +47,7 @@ define([
     onShow: function(){
       this.map.show(this.mapView);
 
-      this.kpis.show(this.chartView);
+      this.chart.show(this.chartView);
     },
 
     initialize: function(options){
@@ -56,7 +57,7 @@ define([
         collection: new Project.Collection([options.model])
       });
 
-      this.chartView = new Chart.views.Line();
+      this.chartView = new Chart.views.Line({title: 'Array Power'});
 
       // Set up listeners
       this.listenTo(Backbone, 'select:portfolio', function(model){
