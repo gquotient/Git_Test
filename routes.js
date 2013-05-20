@@ -281,7 +281,7 @@ module.exports = function(app){
   // USERS
   //////
 
-  // Get all users  
+  // Get all users
   app.get('/api/users', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
     {
       host: app.get('modelUrl'),
@@ -341,6 +341,20 @@ module.exports = function(app){
       method: 'GET'
     })
   );
+
+  ///////
+  // Data
+  /////
+
+  app.get('/api/arrayPower',
+    function(req, res){
+      fs.readFile('./data/json/arrayPower.json', 'utf8', function (err, data) {
+        if (err) {
+          return console.log(err);
+        }
+        res.end(data);
+      });
+    });
 
 
   ////////
