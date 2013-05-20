@@ -109,6 +109,11 @@ function(
       // Fire resize so rendered charts conform to
       // visible div size
       $(window).resize();
+    },
+    onClose: function(){
+      if (this.chart) {
+        this.chart.destroy();
+      }
     }
   });
 
@@ -118,6 +123,7 @@ function(
       title: 'Generic Chart'
     },
     initialize: function(options){
+      console.log('init', this);
       var that = this;
 
       this.options = _.extend(this.options, options);
