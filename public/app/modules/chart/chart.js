@@ -20,7 +20,7 @@ function(
   Chart.models.timeSeries = Backbone.Model.extend({
     url: '/api/timeseries',
     parse: function(data){
-      console.log('parse');
+      //console.log('parse', data);
       var series = [];
 
       for(var device=0, devicesLength=data.data[0][1].length; device<devicesLength; device++){
@@ -118,12 +118,11 @@ function(
   });
 
   Chart.views.Line = Chart.views.core.extend({
-    model: new Chart.models.timeSeries({url: '/api/arrayPower'}),
     options: {
       title: 'Generic Chart'
     },
     initialize: function(options){
-      console.log('init', this);
+      //console.log('init', this);
       var that = this;
 
       this.options = _.extend(this.options, options);
@@ -153,15 +152,14 @@ function(
 
       // Update chart on data change
       this.model.on('change:series', function(){
-        console.log('series updated', arguments);
+        //console.log('series updated', arguments);
         var
           series = arguments[1],
           seriesData = that.model.get('series')
         ;
 
         _.each(that.chart.series, function(serie, index){
-          console.log('series', arguments);
-          console.log('series data', seriesData[index]);
+          // Update series data on new data fetch
           serie.setData(seriesData[index].data);
         });
       });

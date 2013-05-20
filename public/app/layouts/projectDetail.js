@@ -57,7 +57,10 @@ define([
         collection: new Project.Collection([options.model])
       });
 
-      this.chartView = new Chart.views.Line({title: 'Array Power'});
+      this.chartView = new Chart.views.Line({
+        title: 'Array Power',
+        model: new Chart.models.timeSeries({url: '/api/arrayPower'})
+      });
 
       // Set up listeners
       this.listenTo(Backbone, 'select:portfolio', function(model){
