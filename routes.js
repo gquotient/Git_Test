@@ -59,49 +59,55 @@ module.exports = function(app){
   });
 
   app.all('/ia', ensureAuthenticated, function(req, res){
-    var portfolios, projects;
-    // Load portfolios.
-    fs.readFile('./data/json/portfolios.json', 'utf8', function (err, data) {
+    var portfolios = '', projects = '', devices = '';
+
+    // Load projects.
+    request({
+      method: 'GET',
+      uri: app.get('modelUrl') + '/res/teamprojects',
+      headers: {
+        currentUser: req.user.email,
+        access_token: req.user.access_token,
+        clientSecret: app.get('clientSecret')
+      }
+    },
+    function(err, response, body){
+      if (err) {
+        return console.log(err);
+      }
+      body = JSON.parse(body);
+
+      if (body && body.projects) {
+        projects = JSON.stringify(
+          _.reduce(body.projects, function(memo, value){
+            return memo.concat(value);
+          }, []));
+      }
+
+      // Load device libary.
+      fs.readFile('./data/json/device_library.json', 'utf8', function (err, data) {
         if (err) {
           return console.log(err);
         }
-        portfolios = data;
+        devices = data;
 
-        // Load projects.
-        fs.readFile('./data/json/projects.json', 'utf8', function (err, data) {
-          if (err) {
-            return console.log(err);
-          }
-          projects = data;
-
-          // Load device libary.
-          fs.readFile('./data/json/device_library.json', 'utf8', function (err, data) {
-            if (err) {
-              return console.log(err);
-            }
-            devices = data;
-
-            // Render the response.
-            res.render(
-              'index',
-              {
-                user: JSON.stringify({
-                  name: req.user.name,
-                  email: req.user.email,
-                  role: roles[req.user.role]
-                }),
-                portfolios: portfolios,
-                projects: projects,
-                devices: devices,
-                locale: (req.user.locale) ?
-                  req.user.locale
-                :
-                  req.acceptedLanguages[0].toLowerCase()
-              }
-            );
-          });
+        // Render the response.
+        res.render('index', {
+          user: JSON.stringify({
+            name: req.user.name,
+            email: req.user.email,
+            role: roles[req.user.role]
+          }),
+          portfolios: portfolios,
+          projects: projects,
+          devices: devices,
+          locale: (req.user.locale) ?
+            req.user.locale
+          :
+            req.acceptedLanguages[0].toLowerCase()
         });
       });
+    });
   });
 
   app.all('/ia/*', ensureAuthenticated, function(req, res){
