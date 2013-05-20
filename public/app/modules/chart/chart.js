@@ -16,11 +16,7 @@ function(
   Highcharts
 ){
   var Chart = { models: {}, views: {} };
-  /*
-    Have multiple models for the different data types that have
-    a good parse method for getting the data formatted to work
-    with Rickshaw
-  */
+
   Chart.models.timeSeries = Backbone.Model.extend({
     url: '/api/timeseries',
     parse: function(data){
@@ -42,9 +38,10 @@ function(
           for(var day=0, dayLength=data.data.length; day<dayLength; day++){
             if(data.data[day][1][device]){
               for(var e=0, eLength=data.data[day][1][device][1].length;e<eLength;e++){//push it's data to the array
-                var myDate = data.data[day][0].split('-'),
-                  myTime = data.data[day][1][device][1][e][0].split(':');
-                //var newDate = new Date(+myDate[2], (+myDate[1]-1), +myDate[0], +myTime[0], +myTime[1]);
+                var
+                  myDate = data.data[day][0].split('-'),
+                  myTime = data.data[day][1][device][1][e][0].split(':')
+                ;
 
                 mySeries.data.push( [Date.UTC(+myDate[0], (+myDate[1]-1), +myDate[2], +myTime[0], +myTime[1]), data.data[day][1][device][1][e][col + 1]] );
               }
@@ -76,11 +73,19 @@ function(
 
   Chart.views.core = Marionette.ItemView.extend({
     chartOptions: {
-      animation: false,
-      width: null,
-      height: null,
-      backgroundColor: null,
-      credit: false
+      chart: {
+        animation: false,
+        width: null,
+        height: null,
+        backgroundColor: null,
+        credit: false
+      },
+      xAxis: {
+        type: 'datetime'
+      }
+    },
+    attributes: {
+      class: 'chart'
     },
     render: function(){
       // Overwrite existing render method
@@ -94,9 +99,6 @@ function(
 
   Chart.views.Line = Chart.views.core.extend({
     model: new Chart.models.timeSeries({url: '/api/arrayPower'}),
-    attributes: {
-      class: 'chart'
-    },
     initialize: function(){
       var that = this;
 
@@ -108,7 +110,8 @@ function(
         chart: _.extend({
           type: 'line',
           renderTo: this.el
-        }, this.chartOptions),
+        }, this.chartOptions.chart),
+        xAxis: this.chartOptions.xAxis,
         title: {
           text: 'Array Power'
         },
