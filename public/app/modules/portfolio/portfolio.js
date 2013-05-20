@@ -24,6 +24,7 @@ define([
   var Portfolio = { views: {} };
 
   Portfolio.Model = Backbone.Model.extend({
+    idAttribute: 'label',
     defaults: {
       type: 'portfolio',
 

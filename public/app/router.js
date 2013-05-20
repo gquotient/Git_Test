@@ -79,11 +79,7 @@ define([
     },
 
     findProject: function(id){
-      var projects = ia.rootPortfolio.projects;
-
-      return projects.get(id) ||
-        projects.findByProjectLabel(id) ||
-        projects.findBySiteLabel(id);
+      return ia.rootPortfolio.projects.get(id);
     },
 
     projectCreate: function(){

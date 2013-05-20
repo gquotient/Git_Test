@@ -34,6 +34,7 @@ define([
   var Project = { views: {} };
 
   Project.Model = Backbone.Model.extend({
+    idAttribute: 'label',
     url: '/api/projects',
     defaults: {
       type: 'project'
