@@ -373,7 +373,7 @@ module.exports = function(app){
       console.log(opts.method, opts.uri);
 
       if (req.params) {
-        opts.qs = _.clone(req.params);
+        opts.qs = _.clone(req.query);
       }
 
       if (req.body) {
