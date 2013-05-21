@@ -227,15 +227,19 @@ module.exports = function(app){
 
   function separateProperties(list){
     return function(req, res, next){
+      var properties = {};
+
       if (req.body) {
         req.body = _.reduce(req.body, function(memo, value, key){
           if (_.contains(list, key)) {
             memo[key] = value;
           } else {
-            memo.properties[key] = value;
+            properties[key] = value;
           }
           return memo;
-        }, { properties: {} });
+        }, {});
+
+        req.body.properties = JSON.stringify(properties);
       }
       next();
     };
@@ -278,6 +282,7 @@ module.exports = function(app){
     separateProperties([
       'id',
       'project_label',
+      'parent_id',
       'relationship_label'
     ]),
     makeRequest({
