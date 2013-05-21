@@ -252,6 +252,19 @@ module.exports = function(app){
         _.omit(body, 'properties')
       );
     }
+
+    if (body.children) {
+      body.children = _.map(body.children, function(child){
+        if (child.properties) {
+          child = _.extend({},
+            child.properties,
+            _.omit(child, 'properties')
+          );
+        }
+        return child;
+      });
+    }
+
     next(body);
   }
 
