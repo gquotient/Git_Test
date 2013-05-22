@@ -1,14 +1,36 @@
-define([
-  'underscore',
-  'paper'
-], function(
-  _,
-  paper
-){
-  var symbols = _.reduce({
+define(['underscore'], function(_){
 
-      circle: function(center, size){
-        var path = new paper.Path.Circle(center, size / 2);
+  return function(paper){
+
+    function pathsFromPoints(points, center){
+      var paths = [];
+
+      _.each(points, function(pts){
+
+        if (pts.length === 2) {
+          paths.push(new paper.Path.Line(
+            center.add(pts[0]),
+            center.add(pts[1])
+          ));
+
+        } else if (pts.length === 3) {
+          paths.push(new paper.Path.Arc(
+            center.add(pts[0]),
+            center.add(pts[1]),
+            center.add(pts[2])
+          ));
+        }
+      });
+
+      return paths;
+    }
+
+    var symbols = _.reduce({
+
+      CIRCLE: function(center, size){
+        var half = size / 2,
+
+          path = new paper.Path.Circle(center, half);
 
         path.strokeColor = 'black';
         path.fillColor = 'white';
@@ -16,8 +38,10 @@ define([
         return path;
       },
 
-      square: function(center, size){
-        var path = new paper.Path.Rectangle(center.subtract(size / 2), size);
+      SQUARE: function(center, size){
+        var half = size / 2,
+
+          path = new paper.Path.Rectangle(center.subtract(half), size);
 
         path.strokeColor = 'black';
         path.fillColor = 'white';
@@ -25,226 +49,223 @@ define([
         return path;
       },
 
-      divider: function(center, size){
-        var path, dx, dy;
+      DIVIDER: function(center, size){
+        var half = size / 2,
 
-        dx = dy = size / 2;
+          path = new paper.Path.Line(
+            center.add(-half, half),
+            center.add(half, -half)
+          );
 
-        path = new paper.Path.Line(center.add(-dx, dy), center.add(dx, -dy));
         path.strokeColor = 'black';
 
         return path;
       },
 
-      ac: function(center, size){
-        var path, dx, dy;
+      AC: function(center, size){
+        var half = size / 2,
+          quarter = size / 4,
 
-        dx = size / 4;
-        dy = size / 2;
+          path = new paper.Path(center.subtract(half, 0));
 
-        path = new paper.Path(center.subtract(size / 2, 0));
-        path.curveBy([dx, -dy], [dx * 2, 0]);
-        path.curveBy([dx, dy], [dx * 2, 0]);
+        path.curveBy([quarter, -half], [half, 0]);
+        path.curveBy([quarter, half], [half, 0]);
+
         path.strokeColor = 'black';
 
         return path;
       },
 
-      dc: function(center, size){
-        var group, dx, dy, points;
+      DC: function(center, size){
+        var half = size / 2,
+          quarter = size / 4,
+          eighth = size / 8,
 
-        dx = size / 2;
-        dy = size / 8;
+          group = new paper.Group(pathsFromPoints([
+            [[-half, -eighth], [half, -eighth]],
+            [[-half, eighth], [half, eighth]]
+          ], center));
 
-        points = [
-          [[-dx, -dy], [dx, -dy]],
-          [[-dx, dy], [dx, dy]]
-        ];
-
-        group = new paper.Group(_.map(points, function(pts){
-          return new paper.Path.Line(center.add(pts[0]), center.add(pts[1]));
-        }));
-        group.lastChild.dashArray = [size / 4, size / 8];
+        group.lastChild.dashArray = [quarter, eighth];
         group.strokeColor = 'black';
 
         return group;
       },
 
-      grid: function(center, size){
-        var group, dx, dy, points;
+      GRID: function(center, size){
+        var half = size / 2,
+          quarter = size / 4,
 
-        dx = dy = size / 4;
+          group = new paper.Group(pathsFromPoints([
+            [[-half, -quarter], [half, -quarter]],
+            [[-half, 0], [half, 0]],
+            [[-half, quarter], [half, quarter]],
 
-        points = [
-          [[-dx * 2, -dy], [dx * 2, -dy]],
-          [[-dx * 2, 0], [dx * 2, 0]],
-          [[-dx * 2, dy], [dx * 2, dy]],
-          [[-dx, -dy * 2], [-dx, dy * 2]],
-          [[0, -dy * 2], [0, dy * 2]],
-          [[dx, -dy * 2], [dx, dy * 2]]
-        ];
+            [[-quarter, -half], [-quarter, half]],
+            [[0, -half], [0, half]],
+            [[quarter, -half], [quarter, half]]
+          ], center));
 
-        group = new paper.Group(_.map(points, function(pts){
-          return new paper.Path.Line(center.add(pts[0]), center.add(pts[1]));
-        }));
         group.strokeColor = 'black';
 
         return group;
       },
 
-      m: function(center, size){
-        var group, dx, dy, points;
+      M: function(center, size){
+        var half = size / 2,
+          third = size / 3,
 
-        dx = size / 3;
-        dy = size / 2;
+          group = new paper.Group(pathsFromPoints([
+            [[-third, -half], [-third, half]],
+            [[third, -half], [third, half]],
+            [[-third, -half], [0, 0]],
+            [[third, -half], [0, 0]]
+          ], center));
 
-        points = [
-          [[-dx, -dy], [-dx, dy]],
-          [[dx, -dy], [dx, dy]],
-          [[-dx, -dy], [0, 0]],
-          [[dx, -dy], [0, 0]]
-        ];
-
-        group = new paper.Group(_.map(points, function(pts){
-          return new paper.Path.Line(center.add(pts[0]), center.add(pts[1]));
-        }));
         group.strokeColor = 'black';
 
         return group;
       },
 
-      ct: function(center, size){
-        var group, points;
+      CT: function(center, size){
+        var half = size / 2,
+          quarter = size / 4,
 
-        points = [
-          [[0, 0], [0, -size / 4]],
-          [[0, 0], [-size / 4, size / 4], [-size / 2, 0]],
-          [[0, 0], [size / 4, size / 4], [size / 2, 0]]
-        ];
+          group = new paper.Group(pathsFromPoints([
+            [[0, 0], [0, -quarter]],
+            [[0, 0], [-quarter, quarter], [-half, 0]],
+            [[0, 0], [quarter, quarter], [half, 0]]
+          ], center));
 
-        group = new paper.Group(_.map(points, function(pts){
-          if (pts.length === 3) {
-            return new paper.Path.Arc(center.add(pts[0]),
-                                      center.add(pts[1]),
-                                      center.add(pts[2]));
-          } else {
-            return new paper.Path.Line(center.add(pts[0]), center.add(pts[1]));
-          }
-        }));
         group.strokeColor = 'black';
 
         return group;
       },
 
-      coils: function(center, size){
-        var group, dx, dy, points;
+      COILS: function(center, size){
+        var half = size / 2,
+          quarter = size / 4,
+          eighth = size / 8,
 
-        dx = dy = size / 8;
+          group = new paper.Group(pathsFromPoints([
+            [[0, -half], [0, half]],
 
-        points = [
-          [[0, -dy * 4], [0, dy * 4]],
-          [[-dx * 3, -dy * 4], [-dx * 2, -dy * 4]],
-          [[dx * 3, -dy * 4], [dx * 2, -dy * 4]],
-          [[-dx * 2, -dy * 4], [-dx, -dy * 3], [-dx * 2, -dy * 2]],
-          [[dx * 2, -dy * 4], [dx, -dy * 3], [dx * 2, -dy * 2]],
-          [[-dx * 2, -dy * 2], [-dx, -dy], [-dx * 2, 0]],
-          [[dx * 2, -dy * 2], [dx, -dy], [dx * 2, 0]],
-          [[-dx * 2, 0], [-dx, dy], [-dx * 2, dy * 2]],
-          [[dx * 2, 0], [dx, dy], [dx * 2, dy * 2]],
-          [[-dx * 2, dy * 2], [-dx, dy * 3], [-dx * 2, dy * 4]],
-          [[dx * 2, dy * 2], [dx, dy * 3], [dx * 2, dy * 4]],
-          [[-dx * 3, dy * 4], [-dx * 2, dy * 4]],
-          [[dx * 3, dy * 4], [dx * 2, dy * 4]]
-        ];
+            [[-eighth * 3, -half], [-quarter, -half]],
+            [[eighth * 3, -half], [quarter, -half]],
+            [[-eighth * 3, half], [-quarter, half]],
+            [[eighth * 3, half], [quarter, half]],
 
-        group = new paper.Group(_.map(points, function(pts){
-          if (pts.length === 3) {
-            return new paper.Path.Arc(center.add(pts[0]),
-                                      center.add(pts[1]),
-                                      center.add(pts[2]));
-          } else {
-            return new paper.Path.Line(center.add(pts[0]), center.add(pts[1]));
-          }
-        }));
+            [[-quarter, -half], [-eighth, -eighth * 3], [-quarter, -quarter]],
+            [[quarter, -half], [eighth, -eighth * 3], [quarter, -quarter]],
+            [[-quarter, -quarter], [-eighth, -eighth], [-quarter, 0]],
+            [[quarter, -quarter], [eighth, -eighth], [quarter, 0]],
+            [[-quarter, 0], [-eighth, eighth], [-quarter, quarter]],
+            [[quarter, 0], [eighth, eighth], [quarter, quarter]],
+            [[-quarter, quarter], [-eighth, eighth * 3], [-quarter, half]],
+            [[quarter, quarter], [eighth, eighth * 3], [quarter, half]]
+          ], center));
+
         group.strokeColor = 'black';
 
         return group;
       },
 
-      wye: function(center, size){
-        var group, points;
+      WYE: function(center, size){
+        var half = size / 2,
+          third = size / 3,
+          sixth = size / 6,
 
-        points = [
-          [[-size / 3, -size / 2], [0, -size / 6]],
-          [[size / 3, -size / 2], [0, -size / 6]],
-          [[0, size / 2], [0, -size / 6]]
-        ];
+          group = new paper.Group(pathsFromPoints([
+            [[-third, -half], [0, -sixth]],
+            [[third, -half], [0, -sixth]],
+            [[0, half], [0, -sixth]]
+          ], center));
 
-        group = new paper.Group(_.map(points, function(pts){
-          return new paper.Path.Line(center.add(pts[0]), center.add(pts[1]));
-        }));
         group.strokeColor = 'black';
 
         return group;
       },
 
-      panel: function(center, size){
-        return new paper.Group([symbols.square(center), symbols.grid(center)]);
+      PANEL: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.GRID(center)
+        ]);
       },
 
-      dc_bus: function(center, size){
-        return new paper.Group([symbols.square(center), symbols.dc(center, 2 / 3)]);
+      DC_BUS: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.DC(center, 2 / 3)
+        ]);
       },
 
-      ac_bus: function(center, size){
-        return new paper.Group([symbols.square(center), symbols.ac(center, 2 / 3)]);
+      AC_BUS: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.AC(center, 2 / 3)
+        ]);
       },
 
-      inverter: function(center, size){
-        return new paper.Group([symbols.square(center), symbols.divider(center),
-                                symbols.dc(center.subtract(size / 4), 1 / 3),
-                                symbols.ac(center.add(size / 4), 1 / 3)]);
+      INVERTER: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.DIVIDER(center),
+          symbols.DC(center.subtract(size / 4), 1 / 3),
+          symbols.AC(center.add(size / 4), 1 / 3)
+        ]);
       },
 
-      meter: function(center, size){
-        return new paper.Group([symbols.square(center),
-                                symbols.circle(center.subtract(0, size / 9), 4 / 9),
-                                symbols.m(center.subtract(0, size / 9), 1 / 4),
-                                symbols.ct(center.add(0, size * 2 / 9), 4 / 9)]);
+      METER: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.CIRCLE(center.subtract(0, size / 9), 4 / 9),
+          symbols.M(center.subtract(0, size / 9), 1 / 4),
+          symbols.CT(center.add(0, size * 2 / 9), 4 / 9)
+        ]);
       },
 
-      transformer: function(center, size){
-        return new paper.Group([symbols.square(center), symbols.coils(center, 2 / 3)]);
+      TRANSFORMER: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.COILS(center, 2 / 3)
+        ]);
       },
 
-      interconnect: function(center, size){
-        return new paper.Group([symbols.square(center), symbols.wye(center, 2 / 3)]);
+      INTERCONNECT: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.WYE(center, 2 / 3)
+        ]);
       }
 
-    }, function(memo, func, name){
-      memo[name] = function(_center, _scale){
-        var item, symbol;
+    }, function(memo, draw, key){
+      memo[key] = function(_center, _scale){
+        var item = draw(new paper.Point(0, 0), 50),
+          symbol = new paper.Symbol(item),
 
-        item = func(new paper.Point(0, 0), 50);
-        symbol = new paper.Symbol(item);
+          func = symbols[key] = function(center, scale){
+            var placed = symbol.place(center);
+
+            if (scale) {
+              placed.scale(scale);
+            }
+
+            return placed;
+          };
+
         item.remove();
 
-        symbols[name] = function(center, scale){
-          var placed = symbol.place(center);
-
-          if (scale) {
-            placed.scale(scale);
-          }
-          return placed;
-        };
-        return symbols[name](_center, _scale);
+        return func(_center, _scale);
       };
       return memo;
     }, {});
 
-  return {
-    factory: function(type, center){
-      return symbols[symbols.hasOwnProperty(type) ? type : 'square'](center);
-    }
+    return function(type, center){
+      return (symbols.hasOwnProperty(type) ?
+        symbols[type] :
+        symbols.SQUARE
+      )(center);
+    };
   };
 });

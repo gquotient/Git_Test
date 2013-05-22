@@ -43,35 +43,6 @@ define([
       template: {
         type: 'handlebars',
         template: editorMoveTemplate
-      },
-
-      filterCollection: function(regexp){
-        var types, models = [];
-
-        if (this.selection) {
-          types = this.findValidEdgeTypes(this.selection.pluck('type'));
-
-          models = this.options.project.devices.filter(function(model){
-            if (this.selection.contains(model)) { return false; }
-            return _.contains(types, model.get('type'));
-          }, this);
-        }
-
-        if (regexp && models.length > 0) {
-          models = _.filter(models, function(model){
-            return regexp.test(model.get('name')) || regexp.test(model.get('type'));
-          });
-        }
-
-        this.collection.reset(models);
-      },
-
-      findValidEdgeTypes: function(types){
-        var models = deviceLibrary.filter(function(model){
-          return _.contains(types, model.get('type'));
-        });
-
-        return _.intersection.apply(this, _.invoke(models, 'get', 'validEdges'));
       }
     }),
 
@@ -86,10 +57,10 @@ define([
         var types, models = [];
 
         if (this.selection) {
-          types = _.uniq(this.selection.pluck('type'));
+          types = deviceLibrary.mapRelationshipTypes(this.selection.pluck('device_type'));
 
           models = deviceLibrary.filter(function(model){
-            return (_.difference(types, model.get('validEdges')).length === 0);
+            return _.contains(types, model.get('device_type'));
           });
         } else {
           models = deviceLibrary.where({root: true});

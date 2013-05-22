@@ -24,21 +24,11 @@ define([
 
   Device.Model = Backbone.Model.extend({
     defaults: {
-      name: '',
-      position: {x: 0, y: 0}
+      type: 'device'
     },
 
     initialize: function(){
-      this.edgeDevices = new Device.Collection();
-
-      this.listenTo(this.collection, 'add', this.addEdgeDevice);
-      this.collection.each(this.addEdgeDevice);
-    },
-
-    addEdgeDevice: function(model){
-      if (_.findWhere(this.get('edges'), {device: model.id})) {
-        this.edgeDevices.add(model);
-      }
+      this.devices = new Device.Collection();
     }
   });
 
@@ -47,13 +37,24 @@ define([
   });
 
   Device.LibraryModel = Backbone.Model.extend({
-    initialize: function(attrs){
-      this.set('name', attrs.type.replace('_', ' '));
+
+    filterRelationships: function(props, pluck){
+      var relationships = _.where(this.get('relationships'), props);
+      return pluck ? _.pluck(relationships, pluck) : relationships;
     }
   });
 
   Device.LibraryCollection = Backbone.Collection.extend({
-    model: Device.LibraryModel
+    model: Device.LibraryModel,
+
+    mapRelationshipTypes: function(types){
+      return _.intersection.apply(this, this.reduce(function(memo, model){
+        if (_.contains(types, model.get('device_type'))) {
+          memo.push(model.filterRelationships({direction: 'OUTGOING'}, 'device_type'));
+        }
+        return memo;
+      }, []));
+    }
   });
 
   Device.views.PaperEdge = Marionette.ItemView.extend({
@@ -121,9 +122,11 @@ define([
     },
 
     initialize: function(options){
+      this.collection = this.model.devices;
+
       this.paper = options.paper || paper;
-      this.center = new this.paper.Point(this.model.get('position'));
-      this.collection = this.model.edgeDevices;
+      this.factory = paperSymbols(this.paper);
+      this.setCenter();
 
       this.on('render', this.draw);
       this.on('close', this.erase);
@@ -132,13 +135,14 @@ define([
     modelEvents: {
       'selected': 'select',
       'deselected': 'deselect',
-      'change:position': 'positionChanged'
+      'change:positionX': 'setCenter',
+      'change:positionY': 'setCenter'
     },
 
     draw: function(){
       this.erase();
 
-      var symbol = paperSymbols.factory(this.model.get('type'), this.center),
+      var symbol = this.factory(this.model.get('device_type'), this.center),
         label = new this.paper.PointText();
 
       label.fontSize = 14;
@@ -170,14 +174,16 @@ define([
       this.highlight = null;
     },
 
-    positionChanged: function(){
-      var point = new this.paper.Point(this.model.get('position')),
-        delta = point.subtract(this.center);
+    setCenter: function(){
+      var orig = this.center,
+        point = this.center = new this.paper.Point(
+          this.model.get('positionX'),
+          this.model.get('positionY')
+        ),
+        delta = point.subtract(orig);
 
       if (this.node) { this.node.translate(delta); }
       if (this.highlight) { this.highlight.translate(delta); }
-
-      this.center = point;
     },
 
     testHit: function(point){
