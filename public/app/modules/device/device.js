@@ -58,21 +58,22 @@ define([
   });
 
   Device.views.PaperEdge = Marionette.ItemView.extend({
+
+    styles: {
+      DEFAULT: {color: 'grey'},
+      MEASURED_BY: {color: 'grey', offset: 2},
+      FLOWS: {color: 'red'},
+      COLLECTS: {color: 'red', left: true}
+    },
+
     initialize: function(options){
       this.paper = options.paper || paper;
       this.device = options.device;
 
-      this.listenTo(this.device, 'change:position', function(model, position){
-        if (this.edge) {
-          this.edge.firstSegment.point = new this.paper.Point(position);
-        }
-      });
+      this.style = this.styles[this.model.get('relationship_label')] || this.styles.DEFAULT;
 
-      this.listenTo(this.model, 'change:position', function(model, position){
-        if (this.edge) {
-          this.edge.lastSegment.point = new this.paper.Point(position);
-        }
-      });
+      this.listenTo(this.device, 'change:positionX change:positionY', this.move);
+      this.listenTo(this.model, 'change:positionX change:positionY', this.move);
 
       this.on('close', this.erase);
     },
@@ -94,14 +95,14 @@ define([
     draw: function(){
       this.erase();
 
-      this.edge = new this.paper.Path.Line(
-        new this.paper.Point(this.device.get('position')),
-        new this.paper.Point(this.model.get('position'))
-      );
+      this.edge = new this.paper.Path({
+        segments: [[], [], [], []],
+        strokeWidth: 2,
+        strokeColor: this.style.color
+      });
 
       this.edge.sendToBack();
-      this.edge.strokeWidth = 2;
-      this.edge.strokeColor = 'red';
+      this.move();
 
       this.paper.view.draw();
     },
@@ -110,6 +111,45 @@ define([
       if (this.edge) {
         this.edge.remove();
         this.edge = null;
+      }
+    },
+
+    startPoint: function(){
+      return new this.paper.Point(
+        this.device.get('positionX'),
+        this.device.get('positionY')
+      );
+    },
+
+    endPoint: function(){
+      return new this.paper.Point(
+        this.model.get('positionX'),
+        this.model.get('positionY')
+      );
+    },
+
+    move: function(){
+      var start = this.startPoint(),
+        end = this.endPoint(),
+        center = start.x + ((50 - (this.style.offset || 0)) * (this.style.left ? -1 : 1));
+
+      if (this.style.offset) {
+        if (start.y >= end.y) {
+          start.y -= this.style.offset;
+          end.y -= this.style.offset;
+        } else {
+          start.y += this.style.offset;
+          end.y += this.style.offset;
+        }
+      }
+
+      if (this.edge) {
+        this.edge.segments[0].point = start;
+        this.edge.segments[1].point.x = center;
+        this.edge.segments[1].point.y = start.y;
+        this.edge.segments[2].point.x = center;
+        this.edge.segments[2].point.y = end.y;
+        this.edge.segments[3].point = end;
       }
     }
   });
