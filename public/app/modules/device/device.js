@@ -23,6 +23,7 @@ define([
   var Device = { views: {} };
 
   Device.Model = Backbone.Model.extend({
+    url: '/api/devices',
     defaults: {
       type: 'device'
     },
@@ -41,6 +42,78 @@ define([
     filterRelationships: function(props, pluck){
       var relationships = _.where(this.get('relationships'), props);
       return pluck ? _.pluck(relationships, pluck) : relationships;
+    },
+
+    createDevice: function(project, parnt){
+      var index = this.nextIndex(project, 1),
+        parent_id = parnt.get('id'),
+
+        rel = _.findWhere(this.get('relationships'), {
+          direction: 'INCOMING',
+          device_type: parnt.get('device_type')
+        }, this),
+
+        position = {
+          x: parnt.get('positionX') || 700,
+          y: parnt.get('positionY') || 200
+        };
+
+      if (!parent_id) { return null; }
+
+      if (!rel || !rel.device_type || !rel.relationship_label) {
+        rel = {relationship_label: 'COMPRISES'};
+      }
+
+      position = this.adjustPosition(project, position);
+
+      return new Device.Model({
+        name: this.get('name') + ' ' + index,
+        did: this.get('prefix') + '-' + index,
+        device_type: this.get('device_type'),
+
+        project_label: project.get('label'),
+        parent_id: parent_id,
+        relationship_label: rel.relationship_label,
+
+        positionX: position.x,
+        positionY: position.y
+      });
+    },
+
+    nextIndex: function(project, index){
+      var num, type = this.get('device_type');
+
+      project.devices.each(function(model){
+        if (model.get('device_type') === type) {
+          num = parseInt(model.get('did').replace(/^.*-/, ''), 10);
+          if (num && num >= index) { index = num + 1; }
+        }
+      });
+
+      return index;
+    },
+
+    adjustPosition: function(project, position){
+      var type = this.get('device_type'),
+        offset = this.get('positionOffset');
+
+      if (this.get('root')) {
+        project.devices.each(function(model){
+          if (model.get('device_type') === type && model.get('positionY') >= position.y) {
+            position.x = model.get('positionX');
+            position.y = model.get('positionY') + 200;
+          }
+        });
+      } else if (offset) {
+        position.x += offset.x;
+        position.y += offset.y;
+      }
+
+      while (project.devices.findWhere({positionX: position.x, positionY: position.y})) {
+        position.y += 200;
+      }
+
+      return position;
     }
   });
 

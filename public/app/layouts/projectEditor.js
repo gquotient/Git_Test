@@ -60,6 +60,9 @@ define([
     initialize: function(options){
       this.model = options.model;
 
+      // Fetch additional project information for editing.
+      this.model.fetch({data: {project_label: this.model.get('label')}});
+
       // Set up events on document.
       this.$doc = $(document);
       this.delegateEditorEvents();

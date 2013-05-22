@@ -8,7 +8,8 @@
       {"device_type": "AC_BUS", "direction": "OUTGOING", "relationship_label": "FLOWS"},
       {"device_type": "TRANSFORMER", "direction": "OUTGOING", "relationship_label": "FLOWS"},
       {"device_type": "INTERCONNECT", "direction": "OUTGOING", "relationship_label": "FLOWS"},
-      {"device_type": "DC_BUS", "direction": "OUTGOING", "relationship_label": "COLLECTS"}
+      {"device_type": "DC_BUS", "direction": "OUTGOING", "relationship_label": "COLLECTS"},
+      {"device_type": "PANEL", "direction": "OUTGOING", "relationship_label": "COLLECTS"}
     ],
     "root": true
   },
@@ -16,50 +17,74 @@
     "name": "Meter",
     "device_type": "METER",
     "prefix": "RM",
-    "relationships": []
+    "relationships": [
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "MEASURED_BY"},
+      {"device_type": "AC_BUS", "direction": "INCOMING", "relationship_label": "MEASURED_BY"},
+      {"device_type": "INTERCONNECT", "direction": "INCOMING", "relationship_label": "MEASURED_BY"}
+    ],
+    "positionOffset": {"x": 100, "y": -100}
   },
   {
     "name": "AC Bus",
     "device_type": "AC_BUS",
     "prefix": "ACB",
     "relationships": [
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "FLOWS"},
       {"device_type": "METER", "direction": "OUTGOING", "relationship_label": "MEASURED_BY"},
+      {"device_type": "AC_BUS", "direction": "INCOMING", "relationship_label": "FLOWS"},
       {"device_type": "AC_BUS", "direction": "OUTGOING", "relationship_label": "FLOWS"},
+      {"device_type": "TRANSFORMER", "direction": "INCOMING", "relationship_label": "FLOWS"},
       {"device_type": "TRANSFORMER", "direction": "OUTGOING", "relationship_label": "FLOWS"},
       {"device_type": "INTERCONNECT", "direction": "OUTGOING", "relationship_label": "FLOWS"}
-    ]
+    ],
+    "positionOffset": {"x": 100, "y": 0}
   },
   {
     "name": "Transformer",
     "device_type": "TRANSFORMER",
     "prefix": "XFR",
     "relationships": [
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "FLOWS"},
+      {"device_type": "AC_BUS", "direction": "INCOMING", "relationship_label": "FLOWS"},
       {"device_type": "AC_BUS", "direction": "OUTGOING", "relationship_label": "FLOWS"},
+      {"device_type": "TRANSFORMER", "direction": "INCOMING", "relationship_label": "FLOWS"},
       {"device_type": "TRANSFORMER", "direction": "OUTGOING", "relationship_label": "FLOWS"},
       {"device_type": "INTERCONNECT", "direction": "OUTGOING", "relationship_label": "FLOWS"}
-    ]
+    ],
+    "positionOffset": {"x": 100, "y": 0}
   },
   {
-    "name": "Grid Interconnect",
+    "name": "Interconnect",
     "device_type": "INTERCONNECT",
     "prefix": "IC",
     "relationships": [
-      {"device_type": "METER", "direction": "OUTGOING", "relationship_label": "MEASURED_BY"}
-    ]
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "FLOWS"},
+      {"device_type": "METER", "direction": "OUTGOING", "relationship_label": "MEASURED_BY"},
+      {"device_type": "AC_BUS", "direction": "INCOMING", "relationship_label": "FLOWS"},
+      {"device_type": "TRANSFORMER", "direction": "INCOMING", "relationship_label": "FLOWS"}
+    ],
+    "positionOffset": {"x": 100, "y": 0}
   },
   {
     "name": "DC Bus",
     "device_type": "DC_BUS",
     "prefix": "DCB",
     "relationships": [
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "COLLECTS"},
+      {"device_type": "DC_BUS", "direction": "INCOMING", "relationship_label": "COLLECTS"},
       {"device_type": "DC_BUS", "direction": "OUTGOING", "relationship_label": "COLLECTS"},
       {"device_type": "PANEL", "direction": "OUTGOING", "relationship_label": "COLLECTS"}
-    ]
+    ],
+    "positionOffset": {"x": -100, "y": 0}
   },
   {
     "name": "PV Panels",
     "device_type": "PANEL",
     "prefix": "PV",
-    "relationships": []
+    "relationships": [
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "COLLECTS"},
+      {"device_type": "DC_BUS", "direction": "INCOMING", "relationship_label": "COLLECTS"}
+    ],
+    "positionOffset": {"x": -100, "y": 0}
   }
 ]

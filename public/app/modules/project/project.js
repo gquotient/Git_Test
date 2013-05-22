@@ -44,6 +44,14 @@ define([
       this.devices = new Device.Collection();
     },
 
+    parse: function(resp){
+      if (resp.children) {
+        this.devices.reset(resp.children);
+      }
+
+      return _.omit(resp, 'children');
+    },
+
     validate: function(attrs){
       if (
         attrs.name === '' ||

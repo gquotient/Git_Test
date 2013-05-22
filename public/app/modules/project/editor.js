@@ -73,6 +73,28 @@ define([
         }
 
         this.collection.reset(models);
+      },
+
+      onApply: function(){
+        var input = this.parseInput(),
+          model = this.collection.findWhere({name: input.name});
+
+        if (model) {
+          _.each(this.selection ? this.selection.models : [this.project], function(parnt){
+            _.times(input.times, function(){
+              var device = model.createDevice(this.project, parnt);
+
+              if (device) {
+                this.project.devices.add(device);
+                parnt.devices.add(device);
+
+                device.save();
+              }
+            }, this);
+          }, this);
+
+          this.ui.input.blur();
+        }
       }
     }),
 
