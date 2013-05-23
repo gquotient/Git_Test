@@ -8,18 +8,21 @@
 <body>
   <section class="login">
     <h1>Draker</h1>
-    <form action="/login" method="POST">
+    <form name="login" action="/login" method="POST">
       {{#if flash }}
       <div class="message flash">
         {{ flash }}
       </div>
       {{/if}}
       <ul>
-        <li><label for="username">Username:</label> <input name='username' type='text'></input></li>
-        <li><label for="password">Password:</label> <input name='password' type='password'></input></li>
+        <li><label for="username">Username:</label> <input id="username" name="username" type='text'></input></li>
+        <li><label for="password">Password:</label> <input id="password" name="password" type="password"></input></li>
         <li><button class="button primary" type="submit">Log In</button></li>
       </ul>
     </form>
   </section>
+  <script type="text/javascript">
+    document.login.username.focus();
+  </script>
 </body>
 </html>
