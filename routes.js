@@ -368,6 +368,20 @@ module.exports = function(app){
       path: '/res/organizations'
     }));
 
+  ///////
+  // Data
+  /////
+
+  app.get('/api/arrayPower',
+    function(req, res){
+      fs.readFile('./data/json/arrayPower.json', 'utf8', function (err, data) {
+        if (err) {
+          return console.log(err);
+        }
+        res.end(data);
+      });
+    });
+
 
   ////////
   // makeRequest needs access to 'app', which is why it's in the routes function.

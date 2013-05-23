@@ -6,6 +6,8 @@ define([
   'portfolio',
   'project',
 
+  'chart',
+
   'hbs!layouts/templates/projectDetail'
 ], function(
   Backbone,
@@ -14,6 +16,8 @@ define([
 
   Portfolio,
   Project,
+
+  Chart,
 
   projectDetailTemplate
 ){
@@ -30,7 +34,8 @@ define([
     regions: {
       map: '#map',
       kpis: '#kpis',
-      alarms: '#alarms'
+      alarms: '#alarms',
+      chart: '#chart'
     },
 
     events: {
@@ -41,6 +46,8 @@ define([
 
     onShow: function(){
       this.map.show(this.mapView);
+
+      this.chart.show(this.chartView);
     },
 
     initialize: function(options){
@@ -48,6 +55,11 @@ define([
 
       this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])
+      });
+
+      this.chartView = new Chart.views.Line({
+        title: 'Array Power',
+        model: new Chart.models.timeSeries({url: '/api/arrayPower'})
       });
 
       // Set up listeners

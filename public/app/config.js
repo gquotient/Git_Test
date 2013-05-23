@@ -69,6 +69,11 @@ require.config({
       name: 'error',
       main: 'error',
       location: 'modules/error'
+    },
+    {
+      name: 'chart',
+      main: 'chart',
+      location: 'modules/chart'
     }
   ],
   paths: {
@@ -97,7 +102,8 @@ require.config({
     leaflet: 'components/leaflet/dist/leaflet',
     messageformat: 'components/messageformat.js/messageformat',
     paper: 'components/paper/dist/paper',
-    'jquery.mousewheel': 'components/jquery-mousewheel/jquery.mousewheel'
+    'jquery.mousewheel': 'components/jquery-mousewheel/jquery.mousewheel',
+    highcharts: 'components/highcharts/highcharts'
   },
   shim: {
     backbone: {
@@ -115,6 +121,10 @@ require.config({
     },
     leaflet: {
       exports: 'L'
+    },
+    highcharts: {
+      deps: ['jquery'],
+      exports: 'Highcharts'
     }
   },
   // hbs config
