@@ -43,6 +43,13 @@ define([
 
       this.parent = other;
       this.parent.devices.add(this);
+    },
+
+    hasChild: function(child){
+      return this.devices.contains(child) ||
+        this.devices.any(function(device){
+          return device.hasChild(child);
+        });
     }
   });
 

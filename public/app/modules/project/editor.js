@@ -57,7 +57,9 @@ define([
           );
 
           targets = _.reject(targets, function(target){
-            return this.selection.contains(target);
+            return this.selection.any(function(model){
+              return model === target || model.hasChild(target);
+            });
           }, this);
         }
 
