@@ -46,24 +46,41 @@ define([
       },
 
       filterCollection: function(regexp){
-        var models = [];
+        var targets = [];
 
         if (this.selection) {
-          models = this.project.devices.filterByType(
+          targets = this.project.devices.filterByType(
             deviceLibrary.mapRelationshipTypes(
               this.selection.pluck('device_type'),
               {direction: 'INCOMING'}
             )
           );
+
+          targets = _.reject(targets, function(target){
+            return this.selection.contains(target);
+          }, this);
         }
 
-        if (regexp && models.length > 0) {
-          models = _.filter(models, function(model){
-            return regexp.test(model.get('name'));
+        if (regexp && targets.length > 0) {
+          targets = _.filter(targets, function(target){
+            return regexp.test(target.get('name'));
           });
         }
 
-        this.collection.reset(models);
+        this.collection.reset(targets);
+      },
+
+      onApply: function(){
+        var input = this.parseInput(),
+          target = this.collection.findWhere({name: input.name});
+
+        if (target) {
+          this.selection.each(function(model){
+            model.moveTo(target);
+          });
+
+          this.ui.input.blur();
+        }
       }
     }),
 
@@ -107,8 +124,8 @@ define([
               var device = model.createDevice(this.project, parnt);
 
               if (device) {
-                this.project.devices.add(device);
-                parnt.devices.add(device);
+                device.addTo(this.project);
+                device.moveTo(parnt);
 
                 device.save();
               }

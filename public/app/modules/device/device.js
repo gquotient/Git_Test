@@ -30,6 +30,19 @@ define([
 
     initialize: function(){
       this.devices = new Device.Collection();
+    },
+
+    addTo: function(other){
+      other.devices.add(this);
+    },
+
+    moveTo: function(other){
+      if (this.parent) {
+        this.parent.devices.remove(this);
+      }
+
+      this.parent = other;
+      this.parent.devices.add(this);
     }
   });
 
