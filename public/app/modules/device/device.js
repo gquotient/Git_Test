@@ -34,15 +34,20 @@ define([
   });
 
   Device.Collection = Backbone.Collection.extend({
-    model: Device.Model
+    model: Device.Model,
+
+    filterByType: function(type, first){
+      if (!_.isArray(type)) {
+        return this.where({device_type: type}, first);
+      } else {
+        return this[first ? 'find' : 'filter'](function(model){
+          return _.contains(type, model.get('device_type'));
+        });
+      }
+    }
   });
 
   Device.LibraryModel = Backbone.Model.extend({
-
-    filterRelationships: function(props, pluck){
-      var relationships = _.where(this.get('relationships'), props);
-      return pluck ? _.pluck(relationships, pluck) : relationships;
-    },
 
     createDevice: function(project, parnt){
       var index = this.nextIndex(project, 1),
@@ -120,13 +125,16 @@ define([
   Device.LibraryCollection = Backbone.Collection.extend({
     model: Device.LibraryModel,
 
-    mapRelationshipTypes: function(types){
-      return _.intersection.apply(this, this.reduce(function(memo, model){
-        if (_.contains(types, model.get('device_type'))) {
-          memo.push(model.filterRelationships({direction: 'OUTGOING'}, 'device_type'));
-        }
-        return memo;
-      }, []));
+    filterByType: Device.Collection.prototype.filterByType,
+
+    mapRelationshipTypes: function(types, props){
+      return _.intersection.apply(this, _.map(this.filterByType(types), function(model){
+        var relationships = model.get('relationships');
+
+        if (props) { relationships = _.where(relationships, props); }
+
+        return _.pluck(relationships, 'device_type');
+      }));
     }
   });
 

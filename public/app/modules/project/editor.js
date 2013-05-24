@@ -43,6 +43,27 @@ define([
       template: {
         type: 'handlebars',
         template: editorMoveTemplate
+      },
+
+      filterCollection: function(regexp){
+        var models = [];
+
+        if (this.selection) {
+          models = this.project.devices.filterByType(
+            deviceLibrary.mapRelationshipTypes(
+              this.selection.pluck('device_type'),
+              {direction: 'INCOMING'}
+            )
+          );
+        }
+
+        if (regexp && models.length > 0) {
+          models = _.filter(models, function(model){
+            return regexp.test(model.get('name'));
+          });
+        }
+
+        this.collection.reset(models);
       }
     }),
 
@@ -54,14 +75,15 @@ define([
       },
 
       filterCollection: function(regexp){
-        var types, models = [];
+        var models = [];
 
         if (this.selection) {
-          types = deviceLibrary.mapRelationshipTypes(this.selection.pluck('device_type'));
-
-          models = deviceLibrary.filter(function(model){
-            return _.contains(types, model.get('device_type'));
-          });
+          models = deviceLibrary.filterByType(
+            deviceLibrary.mapRelationshipTypes(
+              this.selection.pluck('device_type'),
+              {direction: 'OUTGOING'}
+            )
+          );
         } else {
           models = deviceLibrary.where({root: true});
         }
