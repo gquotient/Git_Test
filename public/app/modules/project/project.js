@@ -41,6 +41,7 @@ define([
     },
 
     initialize: function(){
+      this.allDevices = new Device.Collection();
       this.devices = new Device.Collection();
     },
 

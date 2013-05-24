@@ -50,7 +50,7 @@ define([
 
     onShow: function(){
       this.overlay.show( new Project.views.Editor({model: this.model}) );
-      this.content.show( new Device.views.Canvas({collection: this.model.devices}) );
+      this.content.show( new Device.views.Canvas({collection: this.model.allDevices}) );
     },
 
     onClose: function(){

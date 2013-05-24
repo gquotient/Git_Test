@@ -32,10 +32,6 @@ define([
       this.devices = new Device.Collection();
     },
 
-    addTo: function(other){
-      other.devices.add(this);
-    },
-
     moveTo: function(other){
       if (this.parent) {
         this.parent.devices.remove(this);
@@ -47,8 +43,8 @@ define([
 
     hasChild: function(child){
       return this.devices.contains(child) ||
-        this.devices.any(function(device){
-          return device.hasChild(child);
+        this.devices.any(function(model){
+          return model.hasChild(child);
         });
     }
   });
@@ -64,6 +60,16 @@ define([
           return _.contains(type, model.get('device_type'));
         });
       }
+    },
+
+    next: function(model){
+      var index = this.indexOf(model);
+      return (index !== -1 && this.at(index + 1)) || this.first();
+    },
+
+    previous: function(model){
+      var index = this.indexOf(model);
+      return this.at(index - 1) || this.last();
     }
   });
 
@@ -108,7 +114,7 @@ define([
     nextIndex: function(project, index){
       var num, type = this.get('device_type');
 
-      project.devices.each(function(model){
+      project.allDevices.each(function(model){
         if (model.get('device_type') === type) {
           num = parseInt(model.get('did').replace(/^.*-/, ''), 10);
           if (num && num >= index) { index = num + 1; }
@@ -123,7 +129,7 @@ define([
         offset = this.get('positionOffset');
 
       if (this.get('root')) {
-        project.devices.each(function(model){
+        project.allDevices.each(function(model){
           if (model.get('device_type') === type && model.get('positionY') >= position.y) {
             position.x = model.get('positionX');
             position.y = model.get('positionY') + 200;
@@ -134,7 +140,7 @@ define([
         position.y += offset.y;
       }
 
-      while (project.devices.findWhere({positionX: position.x, positionY: position.y})) {
+      while (project.allDevices.findWhere({positionX: position.x, positionY: position.y})) {
         position.y += 200;
       }
 
@@ -356,12 +362,26 @@ define([
       this.selection = new Selection();
 
       this.listenTo(Backbone, 'editor:mousemove editor:mouseup', this.handleMouseEvent);
-      this.listenTo(Backbone, 'editor:keypress', this.zoom);
+      this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
     },
 
     events: {
       'mousedown': 'handleMouseEvent',
-      'mousewheel': 'zoom'
+      'mousewheel': 'handleWheelEvent'
+    },
+
+    keydownEvents: {
+      9: 'key:tab',
+      37: 'key:left',
+      38: 'key:up',
+      39: 'key:right',
+      40: 'key:down',
+    },
+
+    keypressEvents: {
+      43: 'zoom:out',
+      45: 'zoom:in',
+      61: 'zoom:reset'
     },
 
     handleMouseEvent: function(e){
@@ -385,6 +405,23 @@ define([
       if (e.type === 'mouseup') { this.dragging = false; }
 
       this.paper.view.draw();
+    },
+
+    handleKeyEvent: function(e){
+      var value = (this[e.type + 'Events'] || {})[e.which];
+
+      if (value && e.target.nodeName !== 'INPUT') {
+        e.preventDefault();
+        this.triggerMethod(value, e);
+      }
+    },
+
+    handleWheelEvent: function(e, delta){
+      if (delta < 0) {
+        this.triggerMethod('zoom:in', e);
+      } else if (delta > 0) {
+        this.triggerMethod('zoom:out', e);
+      }
     },
 
     onMousedown: function(e){
@@ -442,6 +479,64 @@ define([
       }
     },
 
+    onKeyTab: function(e){
+      var model = this.selection.models.last();
+      this.selection.add({model: this.collection.next(model)}, {remove: !e.ctrlKey});
+      this.paper.view.draw();
+    },
+
+    onKeyLeft: function(e){
+      var model = this.selection.models.last() || this.collection.last(),
+        devices = model && model.parent && model.parent.devices;
+
+      if (devices && devices.length > 0) {
+        this.selection.add({model: devices.previous(model)}, {remove: !e.ctrlKey});
+        this.paper.view.draw();
+      }
+    },
+
+    onKeyRight: function(e){
+      var model = this.selection.models.last() || this.collection.last(),
+        devices = model && model.parent && model.parent.devices;
+
+      if (devices && devices.length > 0) {
+        this.selection.add({model: devices.next(model)}, {remove: !e.ctrlKey});
+        this.paper.view.draw();
+      }
+    },
+
+    onKeyUp: function(e){
+      var model = this.selection.models.last() || this.collection.last(),
+        parnt = model && model.parent;
+
+      if (parnt && parnt.has('device_type')) {
+        this.selection.add({model: parnt}, {remove: !e.ctrlKey});
+        this.paper.view.draw();
+      }
+    },
+
+    onKeyDown: function(e){
+      var model = this.selection.models.last() || this.collection.last(),
+        devices = model && model.devices;
+
+      if (devices && devices.length > 0) {
+        this.selection.add({model: devices.first()}, {remove: !e.ctrlKey});
+        this.paper.view.draw();
+      }
+    },
+
+    onZoomIn: function(e){
+      this.paper.view.zoom /= 1.1;
+    },
+
+    onZoomOut: function(e){
+      this.paper.view.zoom *= 1.1;
+    },
+
+    onZoomReset: function(e){
+      this.paper.view.zoom = 1;
+    },
+
     drawSelect: function(point){
       this.select = this.paper.Path.Rectangle(point, 1);
       this.select.strokeColor = 'black';
@@ -457,16 +552,6 @@ define([
     eraseSelect: function(){
       this.select.remove();
       this.select = null;
-    },
-
-    zoom: function(e, delta){
-      if (!delta && e.which === 61) { // the = key
-        this.paper.view.zoom = 1;
-      } else if (!delta && e.which === 45 || delta < 0) { // the + key or scroll up
-        this.paper.view.zoom /= 1.1;
-      } else if (!delta && e.which === 43 || delta > 0) { // the - key or scroll down
-        this.paper.view.zoom *= 1.1;
-      }
     },
 
     // Overwrite this function so that item views aren't added to the dom.

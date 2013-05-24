@@ -49,7 +49,7 @@ define([
         var targets = [];
 
         if (this.selection) {
-          targets = this.project.devices.filterByType(
+          targets = this.project.allDevices.filterByType(
             deviceLibrary.mapRelationshipTypes(
               this.selection.pluck('device_type'),
               {direction: 'INCOMING'}
@@ -126,7 +126,7 @@ define([
               var device = model.createDevice(this.project, parnt);
 
               if (device) {
-                device.addTo(this.project);
+                this.project.allDevices.add(device);
                 device.moveTo(parnt);
 
                 device.save();
