@@ -63,7 +63,7 @@ Install [ModelService](https://github.com/drakerlabs/ModelService)
 Open a separate terminal and run:
 
     cd ModelService/model_service
-    python manage.py create_org DRAKER Draker
+    python manage.py create_org DRAKER Draker -o vendor
     python manage.py add_person DRAKER "your.email@drakerenergy.com" "Your Name"
     python manage.py make_person_an_admin DRAKER "your.email@drakerenergy.com"
     python manage.py push_persons

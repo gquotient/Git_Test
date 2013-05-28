@@ -24,6 +24,7 @@ define([
   var Portfolio = { views: {} };
 
   Portfolio.Model = Backbone.Model.extend({
+    idAttribute: 'label',
     defaults: {
       type: 'portfolio',
 
@@ -100,9 +101,7 @@ define([
         root: this
       });
 
-      this.projects = new Project.Collection([], {
-        url: '/api/projects'
-      });
+      this.projects = new Project.Collection();
     }
   });
 

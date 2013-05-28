@@ -36,21 +36,9 @@ define([
   ia.users = new User.Collection();
   ia.rootPortfolio = new Portfolio.Root({id: 'all', name: 'All Portfolios'});
 
-  ia.getPortfolio = function(id){
-    if (!id || id === 'all') {
-      return this.rootPortfolio;
-    } else {
-      return this.rootPortfolio.portfolios.get(id);
-    }
-  };
-
-  ia.getProject = function(id){
-    return this.rootPortfolio.projects.get(id);
-  };
-
   // Bootstrap the root portfolios and projects
   ia.currentUser = ia.users.push( JSON.parse($('#currentUserData').html()) );
-  ia.rootPortfolio.portfolios.add( JSON.parse($('#bootstrapPortfolios').html()) );
+  //ia.rootPortfolio.portfolios.add( JSON.parse($('#bootstrapPortfolios').html()) );
   ia.rootPortfolio.projects.add( JSON.parse($('#bootstrapProjects').html()) );
 
   return ia;

@@ -8,10 +8,11 @@ define([
 
   'layouts/helpers',
   'layouts/main',
-  'layouts/portfolioDetail',
-  'layouts/projectDetail',
-  'layouts/projectEditor',
   'layouts/portfolioDashboard',
+  'layouts/portfolioDetail',
+  'layouts/projectCreator',
+  'layouts/projectEditor',
+  'layouts/projectDetail',
   'layouts/profile',
   'layouts/admin'
 ], function(
@@ -24,10 +25,11 @@ define([
 
   Helpers,
   MainLayout,
-  PortfolioDetailLayout,
-  ProjectDetailLayout,
-  ProjectEditorLayout,
   PortfolioDashboardLayout,
+  PortfolioDetailLayout,
+  ProjectCreatorLayout,
+  ProjectEditorLayout,
+  ProjectDetailLayout,
   ProfileLayout,
   AdminLayout
 ){
@@ -36,8 +38,25 @@ define([
       Backbone.history.navigate('portfolio/all', true);
     },
 
+    findPortfolio: function(id){
+      if (!id || id === 'all') {
+        return ia.rootPortfolio;
+      } else {
+        return ia.rootPortfolio.portfolios.get(id);
+      }
+    },
+
+    portfolioDashboard: function(id){
+      var portfolio = this.findPortfolio(id);
+
+      Backbone.trigger('reset:breadcrumbs', portfolio);
+
+      this.contentLayout = new PortfolioDashboardLayout({model: portfolio});
+      this.mainLayout.mainContent.show(this.contentLayout);
+    },
+
     portfolioDetail: function(id){
-      var portfolio = ia.getPortfolio(id);
+      var portfolio = this.findPortfolio(id);
 
       if (this.contentLayout instanceof PortfolioDetailLayout) {
         // If already on the portfolio view we just want to update
@@ -59,29 +78,32 @@ define([
       }
     },
 
-    portfolioDashboard: function(id){
-      var portfolio = ia.getPortfolio(id);
-
-      Backbone.trigger('reset:breadcrumbs', portfolio);
-
-      this.contentLayout = new PortfolioDashboardLayout({model: portfolio});
-      this.mainLayout.mainContent.show(this.contentLayout);
+    findProject: function(id){
+      return ia.rootPortfolio.projects.get(id);
     },
 
-    projectDetail: function(id){
-      var project = ia.getProject(id);
+    projectCreate: function(){
+      Backbone.trigger('reset:breadcrumbs', {name: 'Project Creator'});
 
-      Backbone.trigger('set:breadcrumbs', project);
-
-      this.contentLayout = new ProjectDetailLayout({model: project});
+      this.contentLayout = new ProjectCreatorLayout();
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
     projectEdit: function(id){
-      var project = ia.getProject(id);
+      var project = this.findProject(id);
 
       Backbone.trigger('set:breadcrumbs', {name: 'Edit'});
+
       this.contentLayout = new ProjectEditorLayout({model: project});
+      this.mainLayout.mainContent.show(this.contentLayout);
+    },
+
+    projectDetail: function(id){
+      var project = this.findProject(id);
+
+      Backbone.trigger('set:breadcrumbs', project);
+
+      this.contentLayout = new ProjectDetailLayout({model: project});
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
@@ -109,15 +131,19 @@ define([
     controller: new RouteController(),
     appRoutes: {
       '': 'index',
-      'portfolio': 'index',
-      'portfolio/:id': 'portfolioDetail',
-      'portfolio/dashboard': 'portfolioDashboard',
+
       'portfolio/dashboard/:id': 'portfolioDashboard',
-      'project/:id': 'projectDetail',
+      'portfolio/dashboard': 'portfolioDashboard',
+      'portfolio/:id': 'portfolioDetail',
+      'portfolio': 'index',
+
+      'project/create': 'projectCreate',
       'project/:id/edit': 'projectEdit',
+      'project/:id': 'projectDetail',
+
       'profile': 'profile',
-      'admin': 'admin',
-      'admin/:page': 'admin'
+      'admin/:page': 'admin',
+      'admin': 'admin'
     }
   });
 

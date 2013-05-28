@@ -50,7 +50,7 @@ define([
 
     onShow: function(){
       this.overlay.show( new Project.views.Editor({model: this.model}) );
-      this.content.show( new Device.views.Canvas({collection: this.model.devices}) );
+      this.content.show( new Device.views.Canvas({collection: this.model.allDevices}) );
     },
 
     onClose: function(){
@@ -60,8 +60,8 @@ define([
     initialize: function(options){
       this.model = options.model;
 
-      // Populating the devices collection here for lack of a better place.
-      this.model.devices.fetch();
+      // Fetch additional project information for editing.
+      this.model.fetch({data: {project_label: this.model.get('label')}});
 
       // Set up events on document.
       this.$doc = $(document);
@@ -70,12 +70,12 @@ define([
       // Set up listeners
       this.listenTo(Backbone, 'select:portfolio', function(model){
         // Set address bar and force routing
-        Backbone.history.navigate('/portfolio/' + model.get('id'), true);
+        Backbone.history.navigate('/portfolio/' + model.id, true);
       });
 
       this.listenTo(Backbone, 'select:project', function(model){
         // Set address bar and force routing
-        Backbone.history.navigate('/project/' + model.get('id'), true);
+        Backbone.history.navigate('/project/' + model.id, true);
       });
     }
   });

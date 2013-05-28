@@ -1,57 +1,90 @@
 [
   {
-    "type": "inverter",
+    "name": "Inverter",
+    "device_type": "INVERTER",
     "prefix": "INV",
-    "validEdges": [],
+    "relationships": [
+      {"device_type": "METER", "direction": "OUTGOING", "relationship_label": "MEASURED_BY"},
+      {"device_type": "AC_BUS", "direction": "OUTGOING", "relationship_label": "FLOWS"},
+      {"device_type": "TRANSFORMER", "direction": "OUTGOING", "relationship_label": "FLOWS"},
+      {"device_type": "INTERCONNECT", "direction": "OUTGOING", "relationship_label": "FLOWS"},
+      {"device_type": "DC_BUS", "direction": "OUTGOING", "relationship_label": "COLLECTS"},
+      {"device_type": "PANEL", "direction": "OUTGOING", "relationship_label": "COLLECTS"}
+    ],
     "root": true
   },
   {
-    "type": "meter",
+    "name": "Meter",
+    "device_type": "METER",
     "prefix": "RM",
-    "validEdges": [
-      "inverter",
-      "ac_bus"
-    ]
+    "relationships": [
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "MEASURED_BY"},
+      {"device_type": "AC_BUS", "direction": "INCOMING", "relationship_label": "MEASURED_BY"},
+      {"device_type": "INTERCONNECT", "direction": "INCOMING", "relationship_label": "MEASURED_BY"}
+    ],
+    "positionOffset": {"x": 100, "y": -100}
   },
   {
-    "type": "ac_bus",
+    "name": "AC Bus",
+    "device_type": "AC_BUS",
     "prefix": "ACB",
-    "validEdges": [
-      "inverter",
-      "ac_bus",
-      "transformer",
-      "interconnect"
-    ]
+    "relationships": [
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "FLOWS"},
+      {"device_type": "METER", "direction": "OUTGOING", "relationship_label": "MEASURED_BY"},
+      {"device_type": "AC_BUS", "direction": "INCOMING", "relationship_label": "FLOWS"},
+      {"device_type": "AC_BUS", "direction": "OUTGOING", "relationship_label": "FLOWS"},
+      {"device_type": "TRANSFORMER", "direction": "INCOMING", "relationship_label": "FLOWS"},
+      {"device_type": "TRANSFORMER", "direction": "OUTGOING", "relationship_label": "FLOWS"},
+      {"device_type": "INTERCONNECT", "direction": "OUTGOING", "relationship_label": "FLOWS"}
+    ],
+    "positionOffset": {"x": 100, "y": 0}
   },
   {
-    "type": "transformer",
+    "name": "Transformer",
+    "device_type": "TRANSFORMER",
     "prefix": "XFR",
-    "validEdges": [
-      "ac_bus",
-      "interconnect"
-    ]
+    "relationships": [
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "FLOWS"},
+      {"device_type": "AC_BUS", "direction": "INCOMING", "relationship_label": "FLOWS"},
+      {"device_type": "AC_BUS", "direction": "OUTGOING", "relationship_label": "FLOWS"},
+      {"device_type": "TRANSFORMER", "direction": "INCOMING", "relationship_label": "FLOWS"},
+      {"device_type": "TRANSFORMER", "direction": "OUTGOING", "relationship_label": "FLOWS"},
+      {"device_type": "INTERCONNECT", "direction": "OUTGOING", "relationship_label": "FLOWS"}
+    ],
+    "positionOffset": {"x": 100, "y": 0}
   },
   {
-    "type": "interconnect",
+    "name": "Interconnect",
+    "device_type": "INTERCONNECT",
     "prefix": "IC",
-    "validEdges": [
-      "ac_bus",
-      "transformer"
-    ]
+    "relationships": [
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "FLOWS"},
+      {"device_type": "METER", "direction": "OUTGOING", "relationship_label": "MEASURED_BY"},
+      {"device_type": "AC_BUS", "direction": "INCOMING", "relationship_label": "FLOWS"},
+      {"device_type": "TRANSFORMER", "direction": "INCOMING", "relationship_label": "FLOWS"}
+    ],
+    "positionOffset": {"x": 100, "y": 0}
   },
   {
-    "type": "dc_bus",
+    "name": "DC Bus",
+    "device_type": "DC_BUS",
     "prefix": "DCB",
-    "validEdges": [
-      "inverter",
-      "dc_bus"
-    ]
+    "relationships": [
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "COLLECTS"},
+      {"device_type": "DC_BUS", "direction": "INCOMING", "relationship_label": "COLLECTS"},
+      {"device_type": "DC_BUS", "direction": "OUTGOING", "relationship_label": "COLLECTS"},
+      {"device_type": "PANEL", "direction": "OUTGOING", "relationship_label": "COLLECTS"}
+    ],
+    "positionOffset": {"x": -100, "y": 0}
   },
   {
-    "type": "panel",
+    "name": "PV Panels",
+    "device_type": "PANEL",
     "prefix": "PV",
-    "validEdges": [
-      "dc_bus"
-    ]
+    "relationships": [
+      {"device_type": "INVERTER", "direction": "INCOMING", "relationship_label": "COLLECTS"},
+      {"device_type": "DC_BUS", "direction": "INCOMING", "relationship_label": "COLLECTS"}
+    ],
+    "positionOffset": {"x": -100, "y": 0}
   }
 ]
