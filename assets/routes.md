@@ -9,3 +9,8 @@
 /res/usermgt {org_label: "DRAKER", email: "useremail"} GET POST {name:'', email: ''} PUT // resets password // DELETE
 
 /res/userteammgt GET {"org_label": xxxx, "team_label": xxxx} POST { name: 'xxxx' } PUT // adding user to team { email: ' ' } DELETE // remove 
+
+
+index_name=StagedProjects
+
+GET /api/project/devices/:project_label 

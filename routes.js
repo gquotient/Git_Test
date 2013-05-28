@@ -61,48 +61,79 @@ module.exports = function(app){
 
   app.all('/ia', ensureAuthenticated, function(req, res){
     var portfolios, projects;
-    // Load portfolios.
-    fs.readFile('./data/json/portfolios.json', 'utf8', function (err, data) {
-        if (err) {
-          return console.log(err);
-        }
-        portfolios = data;
 
-        // Load projects.
-        fs.readFile('./data/json/projects.json', 'utf8', function (err, data) {
-          if (err) {
-            return console.log(err);
-          }
-          projects = data;
+    var requestOptions = {
+      method: 'GET',
+      headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
+      uri: app.get('modelUrl') + '/res/portfolios'
+    };
 
-          // Load device libary.
-          fs.readFile('./data/json/device_library.json', 'utf8', function (err, data) {
-            if (err) {
-              return console.log(err);
+    request(requestOptions, function(error, response, portfolios){
+      requestOptions.uri = app.get('modelUrl') + '/res/teamprojects';
+
+      request(requestOptions, function(error, response, projects){
+        res.render(
+          'index',
+          {
+            user: JSON.stringify({
+              name: req.user.name,
+              email: req.user.email,
+              role: roles[req.user.role]
             }
-            devices = data;
-
-            // Render the response.
-            res.render(
-              'index',
-              {
-                user: JSON.stringify({
-                  name: req.user.name,
-                  email: req.user.email,
-                  role: roles[req.user.role]
-                }),
-                portfolios: portfolios,
-                projects: projects,
-                devices: devices,
-                locale: (req.user.locale) ?
-                  req.user.locale
-                :
-                  req.acceptedLanguages[0].toLowerCase()
-              }
-            );
-          });
-        });
+          ),
+            portfolios: portfolios,
+            projects: JSON.stringify(JSON.parse(projects).projects),
+          // devices: devices,
+            locale: (req.user.locale) ?
+            req.user.locale
+          :
+            req.acceptedLanguages[0].toLowerCase()
+          }
+        );
       });
+    });
+    // Load portfolios.
+    // fs.readFile('./data/json/portfolios.json', 'utf8', function (err, data) {
+    //     if (err) {
+    //       return console.log(err);
+    //     }
+    //     portfolios = data;
+
+    //     // Load projects.
+    //     fs.readFile('./data/json/projects.json', 'utf8', function (err, data) {
+    //       if (err) {
+    //         return console.log(err);
+    //       }
+    //       projects = data;
+
+    //       // Load device libary.
+    //       fs.readFile('./data/json/device_library.json', 'utf8', function (err, data) {
+    //         if (err) {
+    //           return console.log(err);
+    //         }
+    //         devices = data;
+
+    //         // Render the response.
+    //         res.render(
+    //           'index',
+    //           {
+    //             user: JSON.stringify({
+    //               name: req.user.name,
+    //               email: req.user.email,
+    //               role: roles[req.user.role]
+    //             }),
+    //             portfolios: portfolios,
+    //             projects: projects,
+    //             devices: devices,
+    //             locale: (req.user.locale) ?
+    //               req.user.locale
+    //             :
+    //               req.acceptedLanguages[0].toLowerCase()
+    //           }
+    //         );
+    //       });
+    //     });
+    //   });
   });
 
   app.all('/ia/*', ensureAuthenticated, function(req, res){
@@ -202,44 +233,51 @@ module.exports = function(app){
 
   app.all('/api/*', ensureAuthenticated);
 
-  // app.get('/api/portfolios', makeRequest({
-  //   host: app.get('modelUrl'),
-  //   path: '/res/portfolios',
-  //   method: 'GET'
-  // }))
+  app.get('/api/portfolios', makeRequest({
+    host: app.get('modelUrl'),
+    path: '/res/portfolios',
+    method: 'GET'
+  }));
 
-  // app.get('/api/portfolios/:label', makeRequest({
-  //   host: app.get('modelUrl'),
-  //   path: '/res/portfolios',
-  //   method: 'GET'
-  // }))
+  app.get('/api/portfolios/', makeRequest({
+    host: app.get('modelUrl'),
+    path: '/res/portfolios',
+    method: 'GET'
+  }));
 
+  app.get('/api/projects/', makeRequest({
+    host: app.get('modelUrl'),
+    path: '/res/teamprojects',
+    method: 'GET'
+  }, function(data, next){
+    next(data.projects);
+  }));
 
-  // app.get('/api/projects', makeRequest({
-  //   host: app.get('modelUrl'),
-  //   path: '/res/projects',
-  //   method: 'GET'
-  // }))
+  app.get('/api/projects/:project_label', makeRequest({
+    host: app.get('modelUrl'),
+    path: '/res/projects',
+    method: 'GET'
+  }));
 
-  app.get('/api/portfolios',
-    function(req, res){
-      fs.readFile('./data/json/portfolios.json', 'utf8', function (err, data) {
-        if (err) {
-          return console.log(err);
-        }
-        res.end(data);
-      });
-    });
+  // app.get('/api/portfolios',
+  //   function(req, res){
+  //     fs.readFile('./data/json/portfolios.json', 'utf8', function (err, data) {
+  //       if (err) {
+  //         return console.log(err);
+  //       }
+  //       res.end(data);
+  //     });
+  //   });
 
-  app.get('/api/projects',
-    function(req, res){
-      fs.readFile('./data/json/projects.json', 'utf8', function (err, data){
-        if (err) {
-          return console.log(err);
-        }
-        res.end(data);
-      });
-    });
+  // app.get('/api/projects',
+  //   function(req, res){
+  //     fs.readFile('./data/json/projects.json', 'utf8', function (err, data){
+  //       if (err) {
+  //         return console.log(err);
+  //       }
+  //       res.end(data);
+  //     });
+  //   });
 
   app.get('/api/projects/:label/devices',
     function(req, res){
@@ -350,12 +388,12 @@ module.exports = function(app){
 
   function makeRequest(options, translate){
     return function(req, res, next){
-      console.log(options.method);
+      console.log(req.params);
       if(options.method === 'GET' || options.method === 'DELETE') {
         var requestOptions = _.extend(options, {
           headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
           uri: options.host + options.path,
-          qs: _.extend(req.params, {})
+          qs: _.extend(req.params, req.query, {})
         });
       } else {
         var requestOptions = _.extend(options, {
@@ -376,6 +414,7 @@ module.exports = function(app){
               res.end(JSON.stringify(translatedData));
             });
           } else {
+            console.log(response);
             console.log(body);
             res.end(body);
           }

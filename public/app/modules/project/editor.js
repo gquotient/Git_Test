@@ -28,7 +28,7 @@ define([
   editorPendingTemplate
 ){
   var
-    deviceLibrary = new Device.LibraryCollection( JSON.parse($('#bootstrapDeviceLibrary').html()) ),
+    // deviceLibrary = new Device.LibraryCollection( JSON.parse($('#bootstrapDeviceLibrary').html()) ),
 
     ImportView = InputView.extend({
       hotKey: 105, // the i key
