@@ -38,7 +38,7 @@ define([
 
   // Bootstrap the root portfolios and projects
   ia.currentUser = ia.users.push( JSON.parse($('#currentUserData').html()) );
-  //ia.rootPortfolio.portfolios.add( JSON.parse($('#bootstrapPortfolios').html()) );
+  ia.rootPortfolio.portfolios.add( JSON.parse($('#bootstrapPortfolios').html()) );
   ia.rootPortfolio.projects.add( JSON.parse($('#bootstrapProjects').html()) );
 
   return ia;

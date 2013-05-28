@@ -68,15 +68,15 @@ module.exports = function(app){
     };
 
     request(requestOptions, function(error, response, portfolios){
+      
       requestOptions.uri = app.get('modelUrl') + '/res/teamprojects';
 
       request(requestOptions, function(error, response, projects){
-        
         fs.readFile('./data/json/device_library.json', 'utf8', function (err, data) {
           if (err) {
             return console.log(err);
           }
-          devices = data;
+          var devices = data;
           res.render(
             'index',
             {
@@ -95,8 +95,7 @@ module.exports = function(app){
               req.acceptedLanguages[0].toLowerCase()
             }
           );
-        }):
-        
+        });
       });
     });
   });
