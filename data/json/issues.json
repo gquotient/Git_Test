@@ -12,7 +12,8 @@
     "graph_key": "A:TPW1.I:5.S:15",
     "created_at_epoch": "1369147730.0",
     "id": 10226,
-    "device_id": "S-17"
+    "device_id": "S-17",
+    "acknowledged": true
   },
   {
     "description": [
@@ -26,6 +27,7 @@
     "updated_at_epoch": "1369687612.0",
     "label": "Soiling",
     "created_at_epoch": "1369341797.0",
-    "id": 10240
+    "id": 10240,
+    "acknowledged": false
   }
 ]
