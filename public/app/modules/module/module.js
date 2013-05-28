@@ -15,4 +15,6 @@ function(
   Module.model = Backbone.Model.extend({});
 
   Module.views.floating = Marionette.itemView.extend({});
+
+  return Module;
 });

@@ -74,6 +74,11 @@ require.config({
       name: 'chart',
       main: 'chart',
       location: 'modules/chart'
+    },
+    {
+      name: 'issue',
+      main: 'issue',
+      location: 'modules/issue'
     }
   ],
   paths: {
