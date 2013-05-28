@@ -79,7 +79,7 @@ define([
     },
 
     findProject: function(id){
-      return ia.rootPortfolio.projectModels.get(id);
+      return ia.rootPortfolio.projects.get(id);
     },
 
     projectCreate: function(){
