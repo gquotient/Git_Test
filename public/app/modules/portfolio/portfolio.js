@@ -44,8 +44,8 @@ define([
         this.set('total_portfolios', this.portfolios.length);
       });
 
-      this.listenTo(this.projects, 'add remove', function(model){
-        this.set('total_projects', this.projects.length);
+      this.listenTo(this.projectModels, 'add remove', function(model){
+        this.set('total_projects', this.projectModels.length);
         this.set(this.aggregateKpis());
       });
     },
@@ -54,7 +54,7 @@ define([
       var root = this.collection.root;
 
       this.portfolios = new Portfolio.Collection([], {root: root});
-      this.projects = new Project.Collection();
+      this.projectModels = new Project.Collection();
 
       this.listenTo(root.portfolios, 'add', function(model){
         if (_.contains(this.get('subPortfolioIDs'), model.id)) {
@@ -62,8 +62,8 @@ define([
         }
       });
 
-      this.listenTo(root.projects, 'add', function(model){
-        if (_.contains(this.get('projectIDs'), model.id)) {
+      this.listenTo(root.projectModels, 'add', function(model){
+        if (_.contains(this.get('projects'), model.id)) {
           this.addProject(model);
         }
       });
@@ -73,18 +73,18 @@ define([
       this.portfolios.add(portfolio, {merge: true});
 
       this.portfolios.add(portfolio.portfolios.models, {merge: true});
-      this.projects.add(portfolio.projects.models, {merge: true});
+      this.projectModels.add(portfolio.projectModels.models, {merge: true});
 
       this.listenTo(portfolio.portfolios, 'add', this.addPortfolio);
-      this.listenTo(portfolio.projects, 'add', this.addProject);
+      this.listenTo(portfolio.projectModels, 'add', this.addProject);
     },
 
     addProject: function(project){
-      this.projects.add(project, {merge: true});
+      this.projectModels.add(project, {merge: true});
     },
 
     aggregateKpis: function(){
-      return this.projects.reduce(function(memo, project){
+      return this.projectModels.reduce(function(memo, project){
         _.each(project.get('kpis'), function(value, key){
           memo[key] = (memo[key] || 0) + value;
         });
@@ -101,7 +101,7 @@ define([
         root: this
       });
 
-      this.projects = new Project.Collection();
+      this.projectModels = new Project.Collection();
     }
   });
 

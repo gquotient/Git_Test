@@ -49,7 +49,7 @@ define([
       // Build KPIs
       this.kpisView = new Portfolio.views.DetailKpis({ model: options.model }),
 
-      this.projectList = options.model.projects.clone();
+      this.projectList = options.model.projectModels.clone();
 
       // Extend map view for marker filtering
       this.mapView = new Project.views.Map({ collection: this.projectList });
@@ -60,7 +60,7 @@ define([
 
       this.listenTo(Backbone, 'select:portfolio', function(model){
         // Update the collection.
-        this.projectList.set(model.projects.models);
+        this.projectList.set(model.projectModels.models);
         Backbone.trigger('set:breadcrumbs', model);
       });
 

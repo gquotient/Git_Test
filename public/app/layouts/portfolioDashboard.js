@@ -40,7 +40,7 @@ define([
 
       if (this.currentState !== 'portfolioDashboard') {
 
-        this.projectList = options.model.projects.clone();
+        this.projectList = options.model.projectModels.clone();
 
         // Build primary portfolio nav
         this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
