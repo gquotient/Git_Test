@@ -45,10 +45,7 @@ define([
     },
 
     toggleNotificationBanner: function(message){
-      var
-        that = this,
-        notification = new Message.views.notificationBanner()
-      ;
+      var notification = new Message.views.notificationBanner();
 
       this.notificationBanner.show(notification);
 
