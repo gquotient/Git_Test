@@ -41,16 +41,31 @@ define([
     },
 
     initialize: function(){
-      this.allDevices = new Device.Collection();
       this.devices = new Device.Collection();
+      this.outgoing = new Device.Collection();
     },
 
     parse: function(resp){
-      if (resp.children) {
-        this.devices.reset(resp.children);
+      if (resp.devices) {
+        this.devices.reset(_.filter(resp.devices, function(device){
+          return device.hasOwnProperty('device_type');
+        }));
+
+        if (resp.rels) {
+          _.each(resp.rels, function(rel) {
+            var from = rel[0] === this.id ? this : this.devices.get(rel[0]),
+              to = this.devices.get(rel[2]);
+
+            if (from && to) {
+              from.outgoing.add(to);
+              to.incoming.add(from);
+              to.set('relationship_label', rel[1]);
+            }
+          }, this);
+        }
       }
 
-      return _.omit(resp, 'children');
+      return _.omit(resp, 'devices', 'rels');
     },
 
     validate: function(attrs){

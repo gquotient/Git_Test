@@ -68,33 +68,20 @@ module.exports = function(app){
     };
 
     request(requestOptions, function(error, response, portfolios){
-      
+
       requestOptions.uri = app.get('modelUrl') + '/res/teamprojects';
 
       request(requestOptions, function(error, response, projects){
-        fs.readFile('./data/json/device_library.json', 'utf8', function (err, data) {
-          if (err) {
-            return console.log(err);
-          }
-          var devices = data;
-          res.render(
-            'index',
-            {
-              user: JSON.stringify({
-                name: req.user.name,
-                email: req.user.email,
-                role: roles[req.user.role]
-              }
-            ),
-              portfolios: portfolios,
-              projects: JSON.stringify(JSON.parse(projects).projects),
-              devices: devices,
-              locale: (req.user.locale) ?
-              req.user.locale
-            :
-              req.acceptedLanguages[0].toLowerCase()
-            }
-          );
+
+        res.render('index', {
+          user: JSON.stringify({
+            name: req.user.name,
+            email: req.user.email,
+            role: roles[req.user.role]
+          }),
+          portfolios: portfolios,
+          projects: JSON.stringify(JSON.parse(projects).projects),
+          locale: req.user.locale || req.acceptedLanguages[0].toLowerCase()
         });
       });
     });
@@ -191,159 +178,182 @@ module.exports = function(app){
 
   app.all('/api/*', ensureAuthenticated);
 
-  app.get('/api/portfolios', makeRequest({
-    host: app.get('modelUrl'),
-    path: '/res/portfolios',
-    method: 'GET'
-  }));
+  app.get('/api/portfolios',
+    makeRequest({
+      path: '/res/portfolios',
+    }));
 
-  app.get('/api/portfolios/', makeRequest({
-    host: app.get('modelUrl'),
-    path: '/res/portfolios',
-    method: 'GET'
-  }));
-
-  app.get('/api/projects/', makeRequest({
-    host: app.get('modelUrl'),
-    path: '/res/teamprojects',
-    method: 'GET',
-    translate: function(data, next){
-      next(data.projects);
-    }
-  }));
-
-  app.get('/api/projects/:project_label', makeRequest({
-    host: app.get('modelUrl'),
-    path: '/res/projects',
-    method: 'GET'
-  }));
-
-  function separateProperties(list){
-    return function(req, res, next){
-      var properties = {};
-
-      if (req.body) {
-        req.body = _.reduce(req.body, function(memo, value, key){
-          if (_.contains(list, key)) {
-            memo[key] = value;
-          } else {
-            properties[key] = value;
-          }
-          return memo;
-        }, {});
-
-        req.body.properties = JSON.stringify(properties);
-      }
-      next();
-    };
-  }
-
-  function mergeProperties(body, next){
-    if (body.properties) {
-      body = _.extend({},
-        body.properties,
-        _.omit(body, 'properties')
-      );
-    }
-
-    if (body.children) {
-      body.children = _.map(body.children, function(child){
-        if (child.properties) {
-          child = _.extend({},
-            child.properties,
-            _.omit(child, 'properties')
-          );
-        }
-        return child;
-      });
-    }
-
-    next(body);
-  }
+  app.get('/api/portfolios/',
+    makeRequest({
+      path: '/res/portfolios',
+    }));
 
   //////
   // PROJECTS
   //////
 
+  app.get('/api/projects',
+    function(req, res){
+      request({
+        method: 'GET',
+        uri: app.get('modelUrl') + '/res/projects',
+        headers: {
+          currentUser: req.user.email,
+          access_token: req.user.access_token,
+          clientSecret: app.get('clientSecret')
+        },
+        qs: req.query || {}
+      },
+      function(err, resp, body){
+        var project = {};
 
-  app.all('/api/projects',
-    separateProperties([
-      'id',
-      'name',
-      'site_label',
-      'project_label',
-      'latitude',
-      'longitude',
-      'elevation'
-    ]),
+        if (err) {
+          req.flash('error', err.message);
+          console.log('error!:', err);
+          res.redirect('/ia');
+
+        } else if (resp.statusCode === 200) {
+          body = JSON.parse(body);
+
+          project = _.extend({},
+            body.properties,
+            _.omit(body, 'properties', 'children')
+          );
+
+          request({
+            method: 'GET',
+            uri: [
+              app.get('modelUrl'),
+              'api/project/devices',
+              project.project_label,
+              'AlignedProjects'
+            ].join('/'),
+            headers: {
+              currentUser: req.user.email,
+              access_token: req.user.access_token,
+              clientSecret: app.get('clientSecret')
+            }
+          },
+          function(err, resp, body){
+            if (err) {
+              req.flash('error', err.message);
+              console.log('error!:', err);
+              res.redirect('/ia');
+
+            } else if (resp.statusCode === 200) {
+              body = JSON.parse(body);
+
+              project.devices = body.devices || [];
+              project.rels = body.rels || [];
+            }
+
+            res.send(project);
+          });
+        }
+      });
+    });
+
+  app.post('/api/projects',
     makeRequest({
       path: '/res/projects',
-      translate: mergeProperties
-    }));
-
-  app.get('/api/teams', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
-    {
-      host: app.get('modelUrl'),
-      path: '/res/teams',
-      method: 'GET',
       setup: function(req, res, next){
-        if(req.user.role === 'vendor_admin'){
-          req.params.org_label = 'ALL';
-        }
+        req.body = _.pick(req.body, [
+          'name',
+          'site_label',
+          'latitude',
+          'longitude',
+          'elevation',
+          'index_name'
+        ]);
+
         next(req, res);
       },
-      translate: function(data, next){
-        next(data.teams);
+      translate: function(body, next){
+        next(_.extend({},
+          body.properties,
+          _.omit(body, 'properties')
+        ));
       }
-    }
-  ));
+    }));
 
-  app.get('/api/teams/:team_id/users', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
-    {
-      host: app.get('modelUrl'),
-      path: '/res/userteammgt',
-      method: 'GET',
-      setup: function(req, res, next){
-        var teamId = req.params.team_id.split('_');
-        req.params.org_label = teamId[0];
-        req.params.team_label = teamId[1];
-        if(req.user.org_label === teamId[0] || req.user.role === 'vendor_admin'){
-          next(req, res);
-        } else {
-          console.log('You\'re not allowed to look at that team.');
+  function separateProperties(root, ignore){
+    return function(req, res, next){
+      req.body = _.reduce(req.body, function(memo, value, key){
+        if (_.contains(root, key)) {
+          memo[key] = value;
+        } else if (!_.contains(ignore, key)) {
+          memo.properties[key] = value;
         }
+        return memo;
+      }, {properties: {}});
+
+      req.body.properties = JSON.stringify(req.body.properties);
+
+      next(req, res);
+    };
+  }
+
+  app.put('/api/projects',
+    makeRequest({
+      path: '/res/projects',
+      setup: separateProperties([
+        'id',
+        'project_label'
+      ], [
+        'site_label',
+        'latitude',
+        'longitude',
+        'elevation',
+        'index_name'
+      ]),
+      translate: function(body, next){
+        next(_.extend({},
+          body.properties,
+          _.omit(body, 'properties')
+        ));
       }
-    }
-  ));
+    }));
 
   //////
   // DEVICES
   //////
 
-  app.all('/api/devices',
-    separateProperties([
-      'id',
-      'project_label',
-      'parent_id',
-      'relationship_label'
-    ]),
+  app.post('/api/devices',
     makeRequest({
-      path: '/res/devices'
-    },
-    mergeProperties));
+      path: '/res/devices',
+      setup: separateProperties([
+        'project_label',
+        'parent_id',
+        'relationship_label'
+      ], [
+        'id'
+      ]),
+      translate: function(body, next){
+        next(_.extend({},
+          body.properties,
+          _.omit(body, 'properties')
+        ));
+      }
+    }));
 
+  app.put('/api/devices',
+    makeRequest({
+      path: '/res/devices',
+      setup: separateProperties([
+        'id',
+        'project_label'
+      ], [
+        'parent_id',
+        'relationship_label'
+      ]),
+      translate: function(body, next){
+        next(_.extend({},
+          body.properties,
+          _.omit(body, 'properties')
+        ));
+      }
+    }));
 
-  app.put('/api/user_team', ensureAuthorized(['vendor_admin', 'admin']), makeRequest({
-    host: app.get('modelUrl'),
-    path: '/res/userteammgt',
-    method: 'PUT'
-  }));
-
-  app.del('/api/user_team', ensureAuthorized(['vendor_admin', 'admin']), makeRequest({
-    host: app.get('modelUrl'),
-    path: '/res/userteammgt',
-    method: 'DELETE'
-  }));
 
   //////
   // TEAMS
@@ -352,9 +362,35 @@ module.exports = function(app){
   app.get('/api/teams', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/teams',
+      setup: function(req, res, next){
+        if(req.user.role === 'vendor_admin'){
+          req.query.org_label = 'ALL';
+        }
+        next(req, res);
+      },
       translate: function(data, next){
         next(data.teams);
       }
+    }));
+
+  app.get('/api/teams/:team_id/users', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/userteammgt',
+      setup: function(req, res, next){
+        var teamId = req.params.team_id.split('_');
+        req.query.org_label = teamId[0];
+        req.query.team_label = teamId[1];
+        if(req.user.org_label === teamId[0] || req.user.role === 'vendor_admin'){
+          next(req, res);
+        } else {
+          console.log('You\'re not allowed to look at that team.');
+        }
+      }
+    }));
+
+  app.post('/api/teams', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/teams'
     }));
 
   app.put('/api/teams', ensureAuthorized(['vendor_admin', 'admin']),
@@ -362,10 +398,40 @@ module.exports = function(app){
       path: '/res/teams'
     }));
 
-  app.post('/api/teams', ensureAuthorized(['vendor_admin', 'admin']),
+
+  app.put('/api/user_team', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
-      path: '/res/teams'
+      path: '/res/userteammgt'
     }));
+
+  app.del('/api/user_team', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/userteammgt'
+    }));
+
+
+  ////////
+  // ORGANIZATIONS
+  ///////
+
+  app.get('/api/organizations', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/organizations'
+    }));
+
+  app.get('/api/organizations/:org_label/users', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/users',
+      setup: function(req, res, next){
+        console.log(req.user.role);
+        if(req.user.org_label === req.params.org_label || req.user.role === 'vendor_admin'){
+          next(req, res);
+        } else {
+          console.log('You\'re not allowed to look at that organization.');
+        }
+      }
+    }));
+
 
   //////
   // USERS
@@ -402,14 +468,6 @@ module.exports = function(app){
       path: '/res/usermgt'
     }));
 
-  ////////
-  // ORGANIZATIONS
-  ///////
-
-  app.get('/api/organizations', ensureAuthorized(['vendor_admin', 'admin']),
-    makeRequest({
-      path: '/res/organizations'
-    }));
 
   ///////
   // Data
@@ -426,78 +484,61 @@ module.exports = function(app){
     });
 
 
-  app.get('/api/organizations/:org_label/users', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
-    {
-      host: app.get('modelUrl'),
-      path: '/res/users',
-      method: 'GET',
-      setup: function(req, res, next){
-        console.log(req.user.role);
-        if(req.user.org_label === req.params.org_label || req.user.role === 'vendor_admin'){
-          next(req, res);
-        } else {
-          console.log('You\'re not allowed to look at that organization.');
-        }
-      }
-    }
-  ));
-
-
   ////////
   // makeRequest needs access to 'app', which is why it's in the routes function.
   // Can move later.
   ///////
 
   function makeRequest(options){
-    return function(req, res, next){
+    var _request = function(req, res){
 
-      var _request = function(){
-
-        var opts = _.extend({
-          method: req.method,
-          host: app.get('modelUrl'),
-          path: '',
-          headers: {
-            currentUser: req.user.email,
-            access_token: req.user.access_token,
-            clientSecret: app.get('clientSecret')
-          }
-        }, options);
-
-        opts.uri = opts.host + opts.path;
-
-        if (req.params) {
-          opts.qs = _.extend(req.params, req.query, {});
+      var opts = _.extend({
+        method: req.method,
+        host: app.get('modelUrl'),
+        path: '',
+        headers: {
+          currentUser: req.user.email,
+          access_token: req.user.access_token,
+          clientSecret: app.get('clientSecret')
         }
-        if (req.body) {
-          opts.form = _.extend(req.body, {});
-        }
+      }, options);
 
-        request(opts, function(error, response, body){
-          if (error) {
-            req.flash('error', error.message);
-            console.log('error!:', error);
-            res.redirect('/ia');
+      opts.uri = opts.host + opts.path;
+
+      if (req.query) {
+        opts.qs = _.extend({}, req.query);
+      }
+      if (req.body) {
+        opts.form = _.extend({}, req.body);
+      }
+
+      request(opts, function(error, response, body){
+        if (error) {
+          req.flash('error', error.message);
+          console.log('error!:', error);
+          res.redirect('/ia');
+        } else {
+          console.log(body);
+
+          if (opts.translate) {
+            opts.translate(JSON.parse(body), function(translatedData){
+              res.end(JSON.stringify(translatedData));
+            });
           } else {
-            console.log(body);
-
-            if (opts.translate) {
-              opts.translate(JSON.parse(body), function(translatedData){
-                res.end(JSON.stringify(translatedData));
-              });
-            } else {
-              res.end(body);
-            }
+            res.end(body);
           }
-        });
+        }
+      });
+    };
+
+    if (options.setup) {
+      return function(req, res){
+        options.setup(req, res, _request);
       };
 
-      if (options.setup) {
-        options.setup(req, res, _request);
-      } else {
-        _request(req, res);
-      }
-    };
+    } else {
+      return _request;
+    }
   }
 
 };

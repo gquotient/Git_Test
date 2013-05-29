@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
 
   'device',
+  'library',
+
   './editor_input',
 
   'hbs!project/templates/editorIndex',
@@ -19,6 +21,8 @@ define([
   Marionette,
 
   Device,
+  deviceLibrary,
+
   InputView,
 
   editorIndexTemplate,
@@ -28,7 +32,6 @@ define([
   editorPendingTemplate
 ){
   var
-    // deviceLibrary = new Device.LibraryCollection( JSON.parse($('#bootstrapDeviceLibrary').html()) ),
 
     ImportView = InputView.extend({
       hotKey: 105, // the i key
@@ -49,7 +52,7 @@ define([
         var targets = [];
 
         if (this.selection) {
-          targets = this.project.allDevices.filterByType(
+          targets = this.project.devices.filterByType(
             deviceLibrary.mapRelationshipTypes(
               this.selection.pluck('device_type'),
               {direction: 'INCOMING'}
@@ -78,7 +81,7 @@ define([
 
         if (target) {
           this.selection.each(function(model){
-            model.moveTo(target);
+            //model.moveTo(target);
           });
 
           this.ui.input.blur();
@@ -126,8 +129,10 @@ define([
               var device = model.createDevice(this.project, parnt);
 
               if (device) {
-                this.project.allDevices.add(device);
-                device.moveTo(parnt);
+                this.project.devices.add(device);
+
+                parnt.outgoing.add(device);
+                device.incoming.add(parnt);
 
                 device.save();
               }
