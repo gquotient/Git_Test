@@ -56,6 +56,11 @@ require.config({
       location: 'modules/form'
     },
     {
+      name: 'message',
+      main: 'message',
+      location: 'modules/message'
+    },
+    {
       name: 'team',
       main: 'team',
       location: 'modules/team'

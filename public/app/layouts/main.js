@@ -4,6 +4,8 @@ define([
   'backbone.marionette',
   'handlebars',
 
+  'message',
+
   'layouts/header',
   'layouts/navigation',
 
@@ -13,6 +15,8 @@ define([
   Backbone,
   Marionette,
   Handlebars,
+
+  Message,
 
   Header,
   Navigation,
@@ -28,6 +32,7 @@ define([
 
     regions: {
       header: '#header',
+      notificationBanner: '#notificationBanner',
       navigation: '#nav_page',
       mainContent: '#page'
     },
@@ -35,6 +40,18 @@ define([
     onShow: function(){
       this.header.show(this.headerView);
       this.navigation.show(this.navigationView);
+
+      this.toggleNotificationBanner();
+    },
+
+    toggleNotificationBanner: function(message){
+      var notification = new Message.views.notificationBanner();
+
+      console.log(notification);
+
+      this.notificationBanner.show(notification);
+
+      $('#page').addClass('withBanner');
     },
 
     initialize: function(app){

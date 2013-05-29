@@ -23,11 +23,7 @@ function(
   });
 
   Issue.Collection = Backbone.Collection.extend({
-    url: '/api/issues',
-    parse: function(data){
-      console.log(data);
-      return data;
-    }
+    url: '/api/issues'
   });
 
   Issue.views.TableRow = Marionette.ItemView.extend({

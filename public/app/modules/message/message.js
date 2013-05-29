@@ -59,5 +59,17 @@ function(
     }
   });
 
+  Message.views.notificationBanner = Marionette.ItemView.extend({
+    options: {
+      content: 'This is a notification'
+    },
+    attributes: {
+      class: 'notification'
+    },
+    render: function(){
+      this.$el.html(this.options.content);
+    }
+  });
+
   return Message;
 });

@@ -14,6 +14,16 @@ html, body {
 
 primaryBorderStyle = borderBasicDark;
 
+#notificationBanner {
+  .notification {
+    background: #DFD85C;
+    color: #111;
+    height: notificationBannerHeight;
+    line-height: notificationBannerHeight;
+    padding: 0 6px;
+  }
+}
+
 #nav_page {
   width: 100%;
   height: pageNavHeight;
@@ -71,6 +81,9 @@ body > div {
   height: 100%;
   width: 100%;
   padding-top: headerHeight + pageNavHeight + 4; // 4 is for body border-top
+  &.withBanner {
+    padding-top: notificationBannerHeight + headerHeight + pageNavHeight + 4;
+  }
 }
 
 .nav_content {
