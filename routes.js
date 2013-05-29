@@ -210,9 +210,10 @@ module.exports = function(app){
   app.get('/api/projects/', makeRequest({
     host: app.get('modelUrl'),
     path: '/res/teamprojects',
-    method: 'GET'
-  }, function(data, next){
-    next(data.projects);
+    method: 'GET',
+    translate: function(data, next){
+      next(data.projects);
+    }
   }));
 
   app.get('/api/projects/:project_label', makeRequest({
@@ -268,6 +269,7 @@ module.exports = function(app){
   // PROJECTS
   //////
 
+
   app.all('/api/projects',
     separateProperties([
       'id',
@@ -279,9 +281,44 @@ module.exports = function(app){
       'elevation'
     ]),
     makeRequest({
-      path: '/res/projects'
-    },
-    mergeProperties));
+      path: '/res/projects',
+      translate: mergeProperties
+    }));
+
+  app.get('/api/teams', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/teams',
+      method: 'GET',
+      setup: function(req, res, next){
+        if(req.user.role === 'vendor_admin'){
+          req.params.org_label = 'ALL';
+        }
+        next(req, res);
+      },
+      translate: function(data, next){
+        next(data.teams);
+      }
+    }
+  ));
+
+  app.get('/api/teams/:team_id/users', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/userteammgt',
+      method: 'GET',
+      setup: function(req, res, next){
+        var teamId = req.params.team_id.split('_');
+        req.params.org_label = teamId[0];
+        req.params.team_label = teamId[1];
+        if(req.user.org_label === teamId[0] || req.user.role === 'vendor_admin'){
+          next(req, res);
+        } else {
+          console.log('You\'re not allowed to look at that team.');
+        }
+      }
+    }
+  ));
 
   //////
   // DEVICES
@@ -299,15 +336,29 @@ module.exports = function(app){
     },
     mergeProperties));
 
+
+  app.put('/api/user_team', ensureAuthorized(['vendor_admin', 'admin']), makeRequest({
+    host: app.get('modelUrl'),
+    path: '/res/userteammgt',
+    method: 'PUT'
+  }));
+
+  app.del('/api/user_team', ensureAuthorized(['vendor_admin', 'admin']), makeRequest({
+    host: app.get('modelUrl'),
+    path: '/res/userteammgt',
+    method: 'DELETE'
+  }));
+
   //////
   // TEAMS
   //////
 
   app.get('/api/teams', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
-      path: '/res/teams'
-    }, function(data, next){
-      next(data.teams);
+      path: '/res/teams',
+      translate: function(data, next){
+        next(data.teams);
+      }
     }));
 
   app.put('/api/teams', ensureAuthorized(['vendor_admin', 'admin']),
@@ -379,66 +430,78 @@ module.exports = function(app){
     });
 
 
+  app.get('/api/organizations/:org_label/users', ensureAuthorized(['vendor_admin', 'admin']), makeRequest(
+    {
+      host: app.get('modelUrl'),
+      path: '/res/users',
+      method: 'GET',
+      setup: function(req, res, next){
+        console.log(req.user.role);
+        if(req.user.org_label === req.params.org_label || req.user.role === 'vendor_admin'){
+          next(req, res);
+        } else {
+          console.log('You\'re not allowed to look at that organization.');
+        }
+      }
+    }
+  ));
+
+
   ////////
   // makeRequest needs access to 'app', which is why it's in the routes function.
   // Can move later.
   ///////
 
-  function makeRequest(options, translate){
-    // return function(req, res, next){
-    //   console.log(req.params);
-    //   if(options.method === 'GET' || options.method === 'DELETE') {
-    //     var requestOptions = _.extend(options, {
-    //       headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
-    //       uri: options.host + options.path,
-    //       qs: _.extend(req.params, req.query, {})
-    //     });
-    //   } else {
-    //     var requestOptions = _.extend(options, {
-    //       headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
-    //       uri: options.host + options.path,
-    //       form: _.extend(req.body, {})
-    //     });
-    return function(req, res){
-      opts = _.extend({
-        method: req.method,
-        host: app.get('modelUrl'),
-        path: '',
-        headers: {
-          currentUser: req.user.email,
-          access_token: req.user.access_token,
-          clientSecret: app.get('clientSecret')
-        }
-      }, options);
+  function makeRequest(options){
+    return function(req, res, next){
 
-      opts.uri = opts.host + opts.path;
-      console.log(opts.method, opts.uri);
+      var _request = function(){
 
-      if (req.params) {
-        opts.qs = _.clone(req.query);
-      }
-
-      if (req.body) {
-        opts.form = _.clone(req.body);
-      }
-
-      request(opts, function(error, response, body){
-        if (error) {
-          req.flash('error', error.message);
-          console.log('error!:', error);
-          res.redirect('/ia');
-        } else {
-          if (translate) {
-            translate(JSON.parse(body), function(translatedData){
-              res.end(JSON.stringify(translatedData));
-            });
-          } else {
-            console.log(response);
-            console.log(body);
-            res.end(body);
+        var opts = _.extend({
+          method: req.method,
+          host: app.get('modelUrl'),
+          path: '',
+          headers: {
+            currentUser: req.user.email,
+            access_token: req.user.access_token,
+            clientSecret: app.get('clientSecret')
           }
+        }, options);
+
+        opts.uri = opts.host + opts.path;
+
+        if (req.params) {
+          opts.qs = _.clone(req.query);
         }
-      });
+
+        if (req.body) {
+          opts.form = _.clone(req.body);
+        }
+
+        request(opts, function(error, response, body){
+          if (error) {
+            req.flash('error', error.message);
+            console.log('error!:', error);
+            res.redirect('/ia');
+          } else {
+            console.log(body);
+
+            if (opts.translate) {
+              opts.translate(JSON.parse(body), function(translatedData){
+                res.end(JSON.stringify(translatedData));
+              });
+            } else {
+              res.end(body);
+            }
+          }
+        });
+      };
+
+      if (options.setup) {
+        options.setup(req, res, _request);
+      } else {
+        _request(req, res);
+      }
     };
   }
 

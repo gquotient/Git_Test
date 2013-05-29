@@ -56,6 +56,20 @@ function(
     model: User.Model
   });
 
+  User.TeamUsers = Backbone.Collection.extend({
+    initialize: function(options){
+      this.url = '/api/teams/' + options.team.id + '/users';
+    },
+    model: User.Model
+  });
+
+  User.OrganizationUsers = Backbone.Collection.extend({
+    model: User.Model,
+    initialize: function(options){
+      this.url = '/api/organizations/' + options.org_label + '/users';
+    }
+  });
+
   User.views.itemView = Backbone.Marionette.ItemView.extend({
     template: {
       type: 'handlebars',
