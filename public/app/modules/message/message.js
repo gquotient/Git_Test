@@ -72,7 +72,7 @@ function(
     events: {
       'click button.close': function(event){
         event.preventDefault();
-
+        this.close();
         this.trigger('close');
       }
     }

@@ -53,7 +53,6 @@ define([
       this.notificationBanner.show(notification);
 
       this.listenTo(notification, 'close', function(){
-        that.notificationBanner.close();
         $('#page').removeClass('withBanner');
       });
 
