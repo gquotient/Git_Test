@@ -141,12 +141,9 @@ module.exports = function(app){
   });
 
   app.post('/reset', function(req, res){
-    // console.log( 'passwords:' + req.body.password + ':' + req.body.password_new + ':' + req.body.password_check );
     if (req.body.password_new === req.body.password_check) {
       if (req.body.password_new.length > 5) {
-        console.log( 'post the password reset request' );
         DrakerIA6Strategy.reset(req, res, app, function(req, res, post_res) {
-          console.log( 'Back from reset:' + post_res.status );
           if ( post_res.status === 200 ) {
             res.redirect('/ia');
           } else {
@@ -181,7 +178,6 @@ module.exports = function(app){
   app.get('/logout',
     function(req, res){
       DrakerIA6Strategy.logout(req, res, app, function(req, res, post_res) {
-        // console.log( "Back from logout:" + post_res.status );
       });
       // req.logout();
       req.session.destroy();
@@ -471,11 +467,10 @@ module.exports = function(app){
         opts.uri = opts.host + opts.path;
 
         if (req.params) {
-          opts.qs = _.clone(req.query);
+          opts.qs = _.extend(req.params, req.query, {});
         }
-
         if (req.body) {
-          opts.form = _.clone(req.body);
+          opts.form = _.extend(req.body, {});
         }
 
         request(opts, function(error, response, body){
