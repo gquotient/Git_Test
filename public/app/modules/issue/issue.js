@@ -31,12 +31,10 @@ function(
   });
 
   Issue.views.TableRow = Marionette.ItemView.extend({
+    tagName: 'tr',
     template: {
       type: 'handlebars',
       template: tableRowTemplate
-    },
-    render: function(){
-      this.setElement(this.template.template(this.model.attributes));
     }
   });
 
@@ -46,10 +44,7 @@ function(
       template: tableTemplate
     },
     itemViewContainer: 'tbody',
-    itemView: Issue.views.TableRow,
-    initialize: function(){
-      console.log(this);
-    }
+    itemView: Issue.views.TableRow
   });
 
   return Issue;
