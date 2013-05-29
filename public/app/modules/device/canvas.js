@@ -22,21 +22,13 @@ define([
   var
     EdgeView = Marionette.ItemView.extend({
 
-      styles: {
-        DEFAULT: {color: 'grey'},
-        MEASURED_BY: {color: 'grey', offset: 2},
-        FLOWS: {color: 'red'},
-        COLLECTS: {color: 'red', left: true}
-      },
-
       initialize: function(options){
         this.paper = options.paper || paper;
         this.device = options.device;
 
-        this.style = this.styles[this.model.get('relationship_label')] || this.styles.DEFAULT;
-
         this.listenTo(this.device, 'change:positionX change:positionY', this.move);
         this.listenTo(this.model, 'change:positionX change:positionY', this.move);
+        this.listenTo(this.model, 'change:relationship_label', this.draw);
 
         this.on('close', this.erase);
       },
@@ -55,8 +47,17 @@ define([
         return this;
       },
 
+      styles: {
+        DEFAULT: {color: 'grey'},
+        MEASURED_BY: {color: 'grey', offset: 2},
+        FLOWS: {color: 'red'},
+        COLLECTS: {color: 'red', left: true}
+      },
+
       draw: function(){
         this.erase();
+
+        this.style = this.styles[this.model.get('relationship_label')] || this.styles.DEFAULT;
 
         this.edge = new this.paper.Path({
           segments: [[], [], [], []],

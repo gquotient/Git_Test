@@ -13,14 +13,10 @@ define([
 
   Canvas
 ){
-
   var Device = { views: {} };
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
-    defaults: {
-      type: 'device'
-    },
 
     initialize: function(){
       this.outgoing = new Device.Collection();
