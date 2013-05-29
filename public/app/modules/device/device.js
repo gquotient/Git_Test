@@ -23,21 +23,13 @@ define([
     },
 
     initialize: function(){
-      this.devices = new Device.Collection();
-    },
-
-    moveTo: function(other){
-      if (this.parent) {
-        this.parent.devices.remove(this);
-      }
-
-      this.parent = other;
-      this.parent.devices.add(this);
+      this.outgoing = new Device.Collection();
+      this.incoming = new Device.Collection();
     },
 
     hasChild: function(child){
-      return this.devices.contains(child) ||
-        this.devices.any(function(model){
+      return this.outgoing.contains(child) ||
+        this.outgoing.any(function(model){
           return model.hasChild(child);
         });
     }
@@ -108,7 +100,7 @@ define([
     nextIndex: function(project, index){
       var num, type = this.get('device_type');
 
-      project.allDevices.each(function(model){
+      project.devices.each(function(model){
         if (model.get('device_type') === type) {
           num = parseInt(model.get('did').replace(/^.*-/, ''), 10);
           if (num && num >= index) { index = num + 1; }
@@ -123,7 +115,7 @@ define([
         offset = this.get('positionOffset');
 
       if (this.get('root')) {
-        project.allDevices.each(function(model){
+        project.devices.each(function(model){
           if (model.get('device_type') === type && model.get('positionY') >= position.y) {
             position.x = model.get('positionX');
             position.y = model.get('positionY') + 200;
@@ -134,7 +126,7 @@ define([
         position.y += offset.y;
       }
 
-      while (project.allDevices.findWhere({positionX: position.x, positionY: position.y})) {
+      while (project.devices.findWhere({positionX: position.x, positionY: position.y})) {
         position.y += 200;
       }
 

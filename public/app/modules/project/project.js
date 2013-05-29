@@ -41,13 +41,13 @@ define([
     },
 
     initialize: function(){
-      this.allDevices = new Device.Collection();
       this.devices = new Device.Collection();
+      this.outgoing = new Device.Collection();
     },
 
     parse: function(resp){
       if (resp.children) {
-        this.devices.reset(resp.children);
+        //this.devices.reset(resp.children);
       }
 
       return _.omit(resp, 'children');

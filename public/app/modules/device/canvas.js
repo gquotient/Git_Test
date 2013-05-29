@@ -125,7 +125,7 @@ define([
       },
 
       initialize: function(options){
-        this.collection = this.model.devices;
+        this.collection = this.model.outgoing;
 
         this.paper = options.paper || paper;
         this.factory = symbolLibrary(this.paper);
@@ -343,27 +343,29 @@ define([
 
     onKeyLeft: function(e){
       var model = this.selection.models.last() || this.collection.last(),
-        devices = model && model.parent && model.parent.devices;
+        parnt = model && model.incoming && model.incoming.first(),
+        sibling = parnt && parnt.outgoing && parnt.outgoing.previous(model);
 
-      if (devices && devices.length > 0) {
-        this.selection.add({model: devices.previous(model)}, {remove: !e.ctrlKey});
+      if (sibling) {
+        this.selection.add({model: sibling}, {remove: !e.ctrlKey});
         this.paper.view.draw();
       }
     },
 
     onKeyRight: function(e){
       var model = this.selection.models.last() || this.collection.last(),
-        devices = model && model.parent && model.parent.devices;
+        parnt = model && model.incoming && model.incoming.last(),
+        sibling = parnt && parnt.outgoing && parnt.outgoing.next(model);
 
-      if (devices && devices.length > 0) {
-        this.selection.add({model: devices.next(model)}, {remove: !e.ctrlKey});
+      if (sibling) {
+        this.selection.add({model: sibling}, {remove: !e.ctrlKey});
         this.paper.view.draw();
       }
     },
 
     onKeyUp: function(e){
       var model = this.selection.models.last() || this.collection.last(),
-        parnt = model && model.parent;
+        parnt = model && model.incoming && model.incoming.first();
 
       if (parnt && parnt.has('device_type')) {
         this.selection.add({model: parnt}, {remove: !e.ctrlKey});
@@ -373,10 +375,10 @@ define([
 
     onKeyDown: function(e){
       var model = this.selection.models.last() || this.collection.last(),
-        devices = model && model.devices;
+        child = model && model.outgoing && model.outgoing.first();
 
-      if (devices && devices.length > 0) {
-        this.selection.add({model: devices.first()}, {remove: !e.ctrlKey});
+      if (child) {
+        this.selection.add({model: child}, {remove: !e.ctrlKey});
         this.paper.view.draw();
       }
     },
