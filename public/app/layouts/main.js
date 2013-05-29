@@ -45,11 +45,17 @@ define([
     },
 
     toggleNotificationBanner: function(message){
-      var notification = new Message.views.notificationBanner();
-
-      console.log(notification);
+      var
+        that = this,
+        notification = new Message.views.notificationBanner()
+      ;
 
       this.notificationBanner.show(notification);
+
+      this.listenTo(notification, 'close', function(){
+        that.notificationBanner.close();
+        $('#page').removeClass('withBanner');
+      });
 
       $('#page').addClass('withBanner');
     },

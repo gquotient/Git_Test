@@ -16,11 +16,17 @@ primaryBorderStyle = borderBasicDark;
 
 #notificationBanner {
   .notification {
-    background: #DFD85C;
-    color: #111;
+    background: linear-gradient(#f8f356, #DFD85C);
+    color: #555;
     height: notificationBannerHeight;
     line-height: notificationBannerHeight;
     padding: 0 6px;
+    text-shadow: 0 1px 0 #f8f356;
+    position: relative;
+    z-index: 100;
+    .actions {
+      float: right;
+    }
   }
 }
 
