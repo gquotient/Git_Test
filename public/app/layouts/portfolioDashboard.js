@@ -62,7 +62,7 @@ define([
 
       this.listenTo(Backbone, 'select:portfolio', function(model){
         // Set address bar
-        Backbone.history.navigate('/portfolio/dashboard/' + model.get('id'));
+        Backbone.history.navigate('/portfolio/dashboard/' + model.id);
       });
     }
   });

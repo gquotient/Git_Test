@@ -65,12 +65,12 @@ define([
       // Set up listeners
       this.listenTo(Backbone, 'select:portfolio', function(model){
         // Set address bar and force routing
-        Backbone.history.navigate('/portfolio/' + model.get('id'), true);
+        Backbone.history.navigate('/portfolio/' + model.id, true);
       });
 
       this.listenTo(Backbone, 'select:project', function(model){
         // Set address bar
-        Backbone.history.navigate('/project/' + model.get('id'));
+        Backbone.history.navigate('/project/' + model.id);
       });
     }
   });

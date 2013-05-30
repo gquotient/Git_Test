@@ -38,7 +38,9 @@ define([
       'click button': 'apply'
     },
 
-    constructor: function(){
+    constructor: function(options){
+      this.project = options.project;
+
       var args = Array.prototype.slice.apply(arguments);
       Marionette.ItemView.prototype.constructor.apply(this, args);
 
@@ -110,7 +112,7 @@ define([
     },
 
     onInput: function(){
-      var partial = this.ui.input.val();
+      var partial = this.parseInput().name;
       this.filterCollection( new RegExp('^' + partial, 'i') );
     },
 
@@ -125,6 +127,17 @@ define([
     },
 
     filterCollection: function(){},
+
+    parseInput: function(){
+      var input = this.ui.input.val(),
+        match = /^([^x]*)x(\d+)$/.exec(input);
+
+      return {
+        input: input,
+        name: match ? match[1] : input,
+        times: _.max([1, match && parseInt(match[2], 10)])
+      };
+    },
 
     renderDropdown: function(){
       this.dropdown.close();

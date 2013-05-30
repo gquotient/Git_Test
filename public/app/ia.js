@@ -34,19 +34,7 @@ define([
 
   // Create global collections and models
   ia.users = new User.Collection();
-  ia.rootPortfolio = new Portfolio.Root({id: 'all', name: 'All Portfolios'});
-
-  ia.getPortfolio = function(id){
-    if (!id || id === 'all') {
-      return this.rootPortfolio;
-    } else {
-      return this.rootPortfolio.portfolios.get(id);
-    }
-  };
-
-  ia.getProject = function(id){
-    return this.rootPortfolio.projects.get(id);
-  };
+  ia.rootPortfolio = new Portfolio.Root({label: 'all', name: 'All Portfolios'});
 
   // Bootstrap the root portfolios and projects
   ia.currentUser = ia.users.push( JSON.parse($('#currentUserData').html()) );
