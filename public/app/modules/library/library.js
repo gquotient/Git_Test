@@ -15,7 +15,8 @@ define([
     Model = Backbone.Model.extend({
 
       createDevice: function(project, parnt){
-        var index = this.nextIndex(project, 1),
+        var type = this.get('device_type'),
+          index = project.nextIndex(type),
           parent_id = parnt.get('id'),
 
           rel = _.findWhere(this.get('relationships'), {
@@ -39,7 +40,7 @@ define([
         return new Device.Model({
           name: this.get('name') + ' ' + index,
           did: this.get('prefix') + '-' + index,
-          device_type: this.get('device_type'),
+          device_type: type,
 
           project_label: project.get('label'),
           parent_id: parent_id,
@@ -48,19 +49,6 @@ define([
           positionX: position.x,
           positionY: position.y
         });
-      },
-
-      nextIndex: function(project, index){
-        var num, type = this.get('device_type');
-
-        project.devices.each(function(model){
-          if (model.get('device_type') === type) {
-            num = parseInt(model.get('did').replace(/^.*-/, ''), 10);
-            if (num && num >= index) { index = num + 1; }
-          }
-        });
-
-        return index;
       },
 
       adjustPosition: function(project, position){

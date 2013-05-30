@@ -76,6 +76,19 @@ define([
         isNaN(attrs.longitude) ||
         isNaN(attrs.elevation)
       ) { return 'error'; }
+    },
+
+    nextIndex: function(type, index){
+      index = index || 1;
+
+      this.devices.each(function(model){
+        if (model.get('device_type') === type) {
+          var num = parseInt(model.get('did').replace(/^.*-/, ''), 10);
+          if (num && num >= index) { index = num + 1; }
+        }
+      });
+
+      return index;
     }
   });
 
