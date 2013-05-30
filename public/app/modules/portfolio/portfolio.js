@@ -139,7 +139,7 @@ define([
   /* This composite view is the wrapper view for the list of portfolios.
      It handles nesting the list while allowing for the navigation header. */
   Portfolio.views.NavigationListView = Marionette.CompositeView.extend({
-    tagName: 'ul',
+    tagName: 'div',
     attributes: {
       class: 'portfolios'
     },
@@ -148,8 +148,23 @@ define([
       template: portfolioListTemplate
     },
 
+    itemViewContainer: '.portfolio-list',
+
     // Tell the composite view which view to use as for each portfolio.
     itemView: Portfolio.views.NavigationItemView,
+
+    events: {
+      'change #portfolio-sort': function(){
+
+        this.collection.reset(
+          this.collection.sortBy(
+            function(model){
+              return model.get( $('#portfolio-sort').val() );
+            }
+          )
+        );
+      }
+    },
 
     initialize: function(options){
       this.listenTo(Backbone, 'select:portfolio', this.setPortfolio);
