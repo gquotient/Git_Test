@@ -121,7 +121,7 @@ define([
       template: navigationItemViewTemplate
     },
     attributes: {
-      class: 'portfolio'
+      class: 'nav-item'
     },
     events: {
       'mouseover': function(){

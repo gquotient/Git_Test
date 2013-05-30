@@ -57,25 +57,7 @@ define([
 
     portfolioDetail: function(id){
       var portfolio = this.findPortfolio(id);
-
-      if (this.contentLayout instanceof PortfolioDetailLayout) {
-        // If already on the portfolio view we just want to update
-        // the subviews
-        Backbone.trigger('select:portfolio', portfolio);
-      } else {
-        // Special Breadcrumb handling
-        if (this.contentLayout instanceof ProjectDetailLayout) {
-          // If we hit portfolio from project we don't want to reset
-          // breadcrumbs, just update them
-          Backbone.trigger('set:breadcrumbs', portfolio);
-        } else {
-          Backbone.trigger('reset:breadcrumbs', portfolio);
-        }
-
-        // Build portfolio view
-        this.contentLayout = new PortfolioDetailLayout({model: portfolio});
-        this.mainLayout.mainContent.show(this.contentLayout);
-      }
+      this.mainLayout.showPortfolio(portfolio);
     },
 
     findProject: function(id){
@@ -101,10 +83,7 @@ define([
     projectDetail: function(id){
       var project = this.findProject(id);
 
-      Backbone.trigger('set:breadcrumbs', project);
-
-      this.contentLayout = new ProjectDetailLayout({model: project});
-      this.mainLayout.mainContent.show(this.contentLayout);
+      this.mainLayout.showProject(project);
     },
 
     profile: function(){

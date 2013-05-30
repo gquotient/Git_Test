@@ -35,7 +35,8 @@ define([
       map: '#map',
       kpis: '#kpis',
       alarms: '#alarms',
-      chart: '#chart'
+      chart: '#chart',
+      contentNavigation: '.column_left'
     },
 
     events: {
@@ -48,6 +49,8 @@ define([
       this.map.show(this.mapView);
 
       this.chart.show(this.chartView);
+
+      this.contentNavigation.show(this.projectNavigationListView);
     },
 
     initialize: function(options){
@@ -62,8 +65,19 @@ define([
         model: new Chart.models.timeSeries({url: '/api/arrayPower'})
       });
 
+      console.log(options);
+
+      this.projectNavigationListView = new Project.views.NavigationListView({
+        collection: options.model.collection
+      });
+
+      this.listenTo(Backbone, 'click:project', function(model){
+        this.mapView.collection.set(model);
+        this.mapView.fitToBounds();
+      });
+
       // Set up listeners
-      this.listenTo(Backbone, 'select:portfolio', function(model){
+      this.listenTo(Backbone, 'select:project', function(model){
         // Set address bar and force routing
         Backbone.history.navigate('/portfolio/' + model.id, true);
       });

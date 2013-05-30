@@ -65,16 +65,6 @@ define([
 
       this.currentState = 'portfolioDetail';
 
-      // Set up listeners
-      this.listenTo(Backbone, 'select:portfolio', function(model){
-        // Set address bar
-        Backbone.history.navigate('/portfolio/' + model.id);
-      });
-
-      this.listenTo(Backbone, 'select:project', function(model){
-        // Set address bar and force routing
-        Backbone.history.navigate('/project/' + model.id, true);
-      });
     }
   });
 });
