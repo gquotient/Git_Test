@@ -12,7 +12,8 @@ define([
 
   'hbs!project/templates/dataList',
   'hbs!project/templates/dataListItem',
-  'hbs!project/templates/dashboardItem'
+  'hbs!project/templates/dashboardItem',
+  'hbs!project/templates/create'
 ], function(
   $,
   _,
@@ -27,24 +28,64 @@ define([
 
   dataListTemplate,
   dataListItemTemplate,
-  dashboardItemTemplate
+  dashboardItemTemplate,
+  createTemplate
 ){
   var Project = { views: {} };
 
   Project.Model = Backbone.Model.extend({
+    idAttribute: 'label',
+    url: '/api/projects',
     defaults: {
       type: 'project'
     },
 
     initialize: function(){
-      this.devices = new Device.Collection([], {
-        url: '/api/projects/' + this.id + '/devices'
-      });
+      this.devices = new Device.Collection();
+      this.outgoing = new Device.Collection();
+    },
+
+    parse: function(resp){
+      if (resp.devices) {
+        this.devices.reset(_.filter(resp.devices, function(device){
+          return device.hasOwnProperty('device_type');
+        }));
+
+        if (resp.rels) {
+          _.each(resp.rels, function(rel) {
+            var from = rel[0] === this.id ? this : this.devices.get(rel[0]),
+              to = this.devices.get(rel[2]);
+
+            if (from && to) {
+              from.outgoing.add(to);
+              to.incoming.add(from);
+              to.set('relationship_label', rel[1]);
+            }
+          }, this);
+        }
+      }
+
+      return _.omit(resp, 'devices', 'rels');
+    },
+
+    validate: function(attrs){
+      if (
+        attrs.name === '' ||
+        attrs.site_label === '' ||
+        isNaN(attrs.latitude) ||
+        isNaN(attrs.longitude) ||
+        isNaN(attrs.elevation)
+      ) { return 'error'; }
     }
   });
 
   Project.Collection = Backbone.Collection.extend({
-    model: Project.Model
+    model: Project.Model,
+
+    findBySiteLabel: function(label){
+      var projects = this.where({site_label: label});
+      return projects.length === 1 ? projects[0] : null;
+    }
   });
 
   Project.views.DataListItem = Marionette.ItemView.extend({
@@ -95,21 +136,20 @@ define([
 
   Project.views.MarkerView = Marionette.ItemView.extend({
     initialize: function(options){
+      var that = this,
+        icon = this.markerStyles[this.model.get('status')];
 
-      var that = this;
-
-      var latLong = this.model.get('latLng');
-
-      if (latLong && latLong.length) {
-        this.marker = L.marker(
-          [latLong[0], latLong[1]],
-          {
-            icon: that.markerStyles[that.model.get('status')],
-            id: that.model.id,
-            opacity: 0
-          }
-        );
-      }
+      this.marker = L.marker(
+        [
+          this.model.get('latitude'),
+          this.model.get('longitude')
+        ],
+        {
+          id: this.model.id,
+          icon: icon || this.markerStyles.OK,
+          opacity: 0
+        }
+      );
 
       var highlight = function() {
         that.unmask();
@@ -213,6 +253,8 @@ define([
     },
 
     fitToBounds: function(bounds){
+      if (!bounds && this.collection.length === 0) { return; }
+
       bounds = bounds || this.findBounds();
 
       bounds = new L.LatLngBounds(
@@ -226,13 +268,8 @@ define([
     },
 
     findBounds: function(){
-      var lats = [], lngs = [];
-
-      this.collection.each(function(model){
-        var latLng = model.get('latLng');
-        lats.push(latLng[0]);
-        lngs.push(latLng[1]);
-      });
+      var lats = this.collection.pluck('latitude'),
+        lngs = this.collection.pluck('longitude');
 
       return {
         south: _.min(lats),
@@ -267,6 +304,45 @@ define([
       this.fitToBounds();
 
       this.listenTo(Backbone, 'window:resize', this.map.viewreset);
+    }
+  });
+
+  Project.views.Create = Marionette.ItemView.extend({
+    tagName: 'form',
+    template: {
+      type: 'handlebars',
+      template: createTemplate
+    },
+
+    ui: {
+      'name': '#name',
+      'label': '#site_label',
+      'latitude': '#latitude',
+      'longitude': '#longitude',
+      'elevation': '#elevation'
+    },
+
+    triggers: {
+      'submit': 'submit',
+      'reset': 'reset'
+    },
+
+    onSubmit: function(){
+      this.model.save({
+        name: this.ui.name.val().trim(),
+        site_label: this.ui.label.val().replace(/\W|_/g, ''),
+        latitude: parseFloat(this.ui.latitude.val()),
+        longitude: parseFloat(this.ui.longitude.val()),
+        elevation: parseFloat(this.ui.elevation.val()) || 0
+      }, {
+        success: function(model){
+          Backbone.trigger('create:project', model);
+        }
+      });
+    },
+
+    onReset: function(){
+      this.render();
     }
   });
 

@@ -21,7 +21,8 @@
     "backbone.wreqr": "latest",
     "underscore": "latest",
     "leaflet": "latest",
-    "paper": "git@github.com:justinwinslow/paper.js.git",
-    "jquery-mousewheel": "latest"
+    "paper": "git://github.com/justinwinslow/paper.js.git",
+    "jquery-mousewheel": "latest",
+    "highcharts": "latest"
   }
 }
