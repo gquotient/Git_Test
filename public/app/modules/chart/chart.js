@@ -137,14 +137,12 @@ function(
         plotOptions: this.chartOptions.plotOptions,
         xAxis: this.chartOptions.xAxis,
         title: {
-          text: this.options.title
-        },
-        series: [
-          {
-            color: '#369',
-            data: []
+          text: this.options.title,
+          style: {
+            color: '#ccc'
           }
-        ]
+        },
+        series: this.options.series
       });
 
       // Fetch data
