@@ -41,19 +41,21 @@ define([
       this.header.show(this.headerView);
       this.navigation.show(this.navigationView);
 
-      this.toggleNotificationBanner();
+      //this.toggleNotificationBanner();
     },
 
-    toggleNotificationBanner: function(message){
+    toggleNotificationBanner: function(){
       var notification = new Message.views.notificationBanner();
 
       this.notificationBanner.show(notification);
 
+      // This class affects the height of the main content container
+      $('#page').addClass('withBanner');
+
+      // This listener will have to be somewhere smarter
       this.listenTo(notification, 'close', function(){
         $('#page').removeClass('withBanner');
       });
-
-      $('#page').addClass('withBanner');
     },
 
     initialize: function(app){

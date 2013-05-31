@@ -61,13 +61,23 @@ function(
 
   Message.views.notificationBanner = Marionette.ItemView.extend({
     options: {
-      content: 'This is a notification! <div class="actions"><button class="button sml close">Dismiss</button></div>'
+      content: 'This is a notification!',
+      actions: {
+        dismiss: true
+      }
     },
     attributes: {
       class: 'notification'
     },
     render: function(){
+      var actions = $('<div class="actions" />');
+
+      if (this.options.actions.dismiss) {
+        actions.append('<button class="button sml close">Dismiss</button>');
+      }
+
       this.$el.html(this.options.content);
+      this.$el.append(actions);
     },
     events: {
       'click button.close': function(event){
