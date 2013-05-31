@@ -81,9 +81,9 @@ define(['backbone'], function(Backbone){
       positionOffset: {x: -100, y: 0}
     },
     {
-      device_type: "PANEL",
-      name: "PV Panels",
-      prefix: "PV",
+      device_type: 'PANEL',
+      name: 'PV Panels',
+      prefix: 'PV',
       relationships: [
         {relationship_label: 'COLLECTS', direction: 'INCOMING', device_type: 'INVERTER'},
         {relationship_label: 'COLLECTS', direction: 'INCOMING', device_type: 'DC_BUS'}

@@ -58,7 +58,7 @@ define([
 
           // var view = new Team.views.TeamDetail({ model: options.model, collection: options.model.users });
 
-          var layout = new TeamManagementLayout({ team: options.model })
+          var layout = new TeamManagementLayout({ team: options.model });
 
           return layout;
         }

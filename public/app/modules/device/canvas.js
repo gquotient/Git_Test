@@ -120,7 +120,7 @@ define([
           this.edge.segments[3].point = end;
         }
       }
-    });
+    }),
 
     NodeView = Marionette.CollectionView.extend({
       itemView: EdgeView,
@@ -240,7 +240,7 @@ define([
       37: 'key:left',
       38: 'key:up',
       39: 'key:right',
-      40: 'key:down',
+      40: 'key:down'
     },
 
     keypressEvents: {

@@ -102,10 +102,9 @@ define([
         x = lowest.get('positionX');
         y = lowest.get('positionY') + 200;
       }
-
     } else if (offset) {
-      x += offset.x,
-      y += offset.y
+      x += offset.x;
+      y += offset.y;
     }
 
     while (project.devices.findWhere({positionX: x, positionY: y})) {
@@ -181,7 +180,7 @@ define([
               memo.push(device.incoming.models);
             }
 
-            return memo
+            return memo;
           }, [])
 
           // Reduce the devices to a single common set
