@@ -61,7 +61,13 @@ define([
 
       this.chartView = new Chart.views.Line({
         title: 'Array Power',
-        model: new Chart.models.timeSeries({url: '/api/arrayPower'})
+        model: new Chart.models.timeSeries({url: '/api/arrayPower'}),
+        series: [
+          {
+            color: '#369',
+            data: []
+          }
+        ]
       });
 
       this.issueView = new Issue.views.Table({
@@ -73,12 +79,12 @@ define([
       // Set up listeners
       this.listenTo(Backbone, 'select:portfolio', function(model){
         // Set address bar and force routing
-        Backbone.history.navigate('/portfolio/' + model.get('id'), true);
+        Backbone.history.navigate('/portfolio/' + model.id, true);
       });
 
       this.listenTo(Backbone, 'select:project', function(model){
         // Set address bar
-        Backbone.history.navigate('/project/' + model.get('id'));
+        Backbone.history.navigate('/project/' + model.id);
       });
     }
   });

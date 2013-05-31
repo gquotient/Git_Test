@@ -5,9 +5,13 @@ define([
   'backbone.marionette',
   'handlebars',
 
+  'ia',
+
   'user',
   'team',
   'organization',
+
+  'layouts/teamManagement',
 
   'hbs!layouts/templates/admin'
 ], function(
@@ -17,9 +21,13 @@ define([
   Marionette,
   Handlebars,
 
+  ia,
+
   User,
   Team,
   Organization,
+
+  TeamManagementLayout,
 
   adminTemplate
 ){
@@ -39,7 +47,21 @@ define([
       'teams': {
         collection: Team.collections.Teams,
         view: Team.views.EditTable,
-        title: 'Teams'
+        title: 'Teams',
+        detail: function(options){
+          // Get the team's members.
+          // options.model.getUsers();
+
+          // Get a list of all users for that organization.
+          // var allUsers = new User.OrganizationUsers({ org_label: options.model.get('org_label') });
+          // allUsers.fetch();
+
+          // var view = new Team.views.TeamDetail({ model: options.model, collection: options.model.users });
+
+          var layout = new TeamManagementLayout({ team: options.model })
+
+          return layout;
+        }
       },
       'vendor_users': {
         collection: User.Collection,
@@ -96,8 +118,13 @@ define([
       this.pageContent.show(myView);
     },
 
+    renderDetailView: function(options){
+      var viewConfig = config.views[options.page];
+      this.pageContent.show( viewConfig.detail(options) );
+    },
+
     onShow: function(){
-      this.renderView(this.initialView);
+      this.renderView(this.initialView, this.page_id);
     },
 
     events: {
@@ -110,6 +137,9 @@ define([
         // Build view
         this.renderView(route);
 
+        // Keep track of current view.
+        this.view = route;
+
         // Update history
         Backbone.history.navigate('/admin/' + route);
       }
@@ -117,24 +147,20 @@ define([
 
     initialize: function(options){
       this.app = this.options.app;
+      this.detail = this.options.detail;
       // Update initial view if available
       // NOTE: there's probably a sexier way to do this
       if (options.initialView) {
         this.initialView = options.initialView;
       }
 
-      /*
-      This works as long as you hit the root first, but doesn't
-      work properly if you hit root/subView and I don't feel like
-      figuring it out tonight
+      this.view = this.initialView;
 
-      this.Router = new Backbone.Marionette.AppRouter.extend({
-        controller: this,
-        appRoutes: {
-          'admin/:page': 'renderView'
-        }
-      });
-      */
+      this.listenTo(Backbone, 'detail', function(model){
+        this.renderDetailView({ model: model, page: this.view });
+        Backbone.history.navigate('/admin/'+ this.view + '/' + model.id);
+      }, this);
     }
   });
+
 });

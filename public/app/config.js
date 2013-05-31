@@ -84,6 +84,11 @@ require.config({
       name: 'issue',
       main: 'issue',
       location: 'modules/issue'
+    },
+    {
+      name: 'library',
+      main: 'library',
+      location: 'modules/library'
     }
   ],
   paths: {

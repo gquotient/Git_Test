@@ -45,7 +45,8 @@ function(
     edit: '<button type="button" class="button edit">Edit</button>',
     cancel: '<button type="reset" class="button cancel">Cancel</button>',
     save: '<button type="button" class="button save primary">Save</button>',
-    resetPassword: '<button type=butotn class="button reset_password">Reset Password</button>'
+    resetPassword: '<button type=button class="button reset_password">Reset Password</button>',
+    detail: '<button type=button class="button detail">Detail</button>'
   };
 
   /*

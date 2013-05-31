@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
 
   'device',
+  'library',
+
   './editor_input',
 
   'hbs!project/templates/editorIndex',
@@ -19,6 +21,8 @@ define([
   Marionette,
 
   Device,
+  deviceLibrary,
+
   InputView,
 
   editorIndexTemplate,
@@ -28,7 +32,6 @@ define([
   editorPendingTemplate
 ){
   var
-    deviceLibrary = new Device.LibraryCollection( JSON.parse($('#bootstrapDeviceLibrary').html()) ),
 
     ImportView = InputView.extend({
       hotKey: 105, // the i key
@@ -46,32 +49,43 @@ define([
       },
 
       filterCollection: function(regexp){
-        var types, models = [];
+        var targets = [];
 
         if (this.selection) {
-          types = this.findValidEdgeTypes(this.selection.pluck('type'));
+          targets = this.project.devices.filterByType(
+            deviceLibrary.mapRelationshipTypes(
+              this.selection.pluck('device_type'),
+              {direction: 'INCOMING'}
+            )
+          );
 
-          models = this.options.project.devices.filter(function(model){
-            if (this.selection.contains(model)) { return false; }
-            return _.contains(types, model.get('type'));
+          targets = _.reject(targets, function(target){
+            return this.selection.any(function(model){
+              return model === target || model.hasChild(target);
+            });
           }, this);
         }
 
-        if (regexp && models.length > 0) {
-          models = _.filter(models, function(model){
-            return regexp.test(model.get('name')) || regexp.test(model.get('type'));
+        if (regexp && targets.length > 0) {
+          targets = _.filter(targets, function(target){
+            return regexp.test(target.get('name'));
           });
         }
 
-        this.collection.reset(models);
+        this.collection.reset(targets);
       },
 
-      findValidEdgeTypes: function(types){
-        var models = deviceLibrary.filter(function(model){
-          return _.contains(types, model.get('type'));
-        });
+      onApply: function(){
+        var input = this.parseInput(),
+          target = this.collection.findWhere({name: input.name});
 
-        return _.intersection.apply(this, _.invoke(models, 'get', 'validEdges'));
+        if (target) {
+          this.selection.each(function(model){
+            //model.moveTo(target);
+          });
+
+          this.ui.input.blur();
+        }
       }
     }),
 
@@ -83,14 +97,15 @@ define([
       },
 
       filterCollection: function(regexp){
-        var types, models = [];
+        var models = [];
 
         if (this.selection) {
-          types = _.uniq(this.selection.pluck('type'));
-
-          models = deviceLibrary.filter(function(model){
-            return (_.difference(types, model.get('validEdges')).length === 0);
-          });
+          models = deviceLibrary.filterByType(
+            deviceLibrary.mapRelationshipTypes(
+              this.selection.pluck('device_type'),
+              {direction: 'OUTGOING'}
+            )
+          );
         } else {
           models = deviceLibrary.where({root: true});
         }
@@ -102,6 +117,30 @@ define([
         }
 
         this.collection.reset(models);
+      },
+
+      onApply: function(){
+        var input = this.parseInput(),
+          model = this.collection.findWhere({name: input.name});
+
+        if (model) {
+          _.each(this.selection ? this.selection.models : [this.project], function(parnt){
+            _.times(input.times, function(){
+              var device = model.createDevice(this.project, parnt);
+
+              if (device) {
+                this.project.devices.add(device);
+
+                parnt.outgoing.add(device);
+                device.incoming.add(parnt);
+
+                device.save();
+              }
+            }, this);
+          }, this);
+
+          this.ui.input.blur();
+        }
       }
     }),
 
