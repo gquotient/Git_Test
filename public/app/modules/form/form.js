@@ -101,6 +101,10 @@ function(
         event.preventDefault();
         this.render();
         this.disableForm();
+      },
+      'click button.detail': function(event){
+        event.preventDefault();
+        Backbone.trigger('detail', this.model);
       }
     }
   });
