@@ -38,6 +38,10 @@ define([
       });
 
       this.listenTo(Backbone, 'set:breadcrumbs', function(model){
+        breadcrumbs.advance(model);
+      });
+
+      this.listenTo(Backbone, 'update:breadcrumbs', function(model){
         breadcrumbs.update(model);
       });
     },

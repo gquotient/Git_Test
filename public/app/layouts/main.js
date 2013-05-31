@@ -43,6 +43,8 @@ define([
     },
 
     showPortfolio: function(portfolio){
+      this.activePortfolio = portfolio;
+
       if (this.contentLayout instanceof PortfolioDetailLayout) {
         // If already on the portfolio view we just want to update
         // the subviews
@@ -63,10 +65,10 @@ define([
       }
     },
 
-    showProject: function(project){
+    showProject: function(project, otherProjects){
       Backbone.trigger('set:breadcrumbs', project);
 
-      var contentLayout = new ProjectDetailLayout({model: project});
+      var contentLayout = new ProjectDetailLayout({model: project, collection: otherProjects});
       this.mainContent.show(contentLayout);
     },
 
@@ -80,11 +82,16 @@ define([
       // Build navigation
       this.navigationView = new Navigation();
 
+      this.listenTo(Backbone, 'click:portfolio', function(model){
+        this.activePortfolio = model;
+        Backbone.trigger('update:breadcrumbs', model);
+      }, this);
+
       this.listenTo(Backbone, 'select:project', function(model){
         // Set address bar and force routing
         Backbone.history.navigate('/project/' + model.id);
-        that.showProject(model);
-      });
+        this.showProject(model, this.activePortfolio.projects);
+      }, this);
 
       // Set up listeners
       this.listenTo(Backbone, 'select:portfolio', function(model){

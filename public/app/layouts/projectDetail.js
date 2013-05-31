@@ -68,12 +68,13 @@ define([
       console.log(options);
 
       this.projectNavigationListView = new Project.views.NavigationListView({
-        collection: options.model.collection
+        collection: options.collection
       });
 
       this.listenTo(Backbone, 'click:project', function(model){
         this.mapView.collection.set(model);
         this.mapView.fitToBounds();
+        Backbone.trigger('update:breadcrumbs', model);
       });
 
       // Set up listeners
