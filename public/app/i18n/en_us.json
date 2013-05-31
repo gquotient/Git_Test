@@ -30,8 +30,18 @@
   "Longitude": "Longitude",
   "Elevation": "Elevation",
 
+  "Add Device": "Add Device",
+  "Connect To": "Connect To",
+  "Disconnect From": "Disconnect From",
+  "Import From": "Import From",
+
+  "Type": "Type",
+  "Target": "Target",
+  "Source": "Source",
+
   "Add": "Add",
   "Edit": "Edit",
+  "Apply": "Apply",
   "Cancel": "Cancel",
   "Reset": "Reset",
   "Save": "Save"

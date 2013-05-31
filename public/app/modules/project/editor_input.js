@@ -112,8 +112,7 @@ define([
     },
 
     onInput: function(){
-      var partial = this.parseInput().name;
-      this.filterCollection( new RegExp('^' + partial, 'i') );
+      this.filterCollection( new RegExp('^' + this.parseInput(), 'i') );
     },
 
     onChangeSelection: function(){
@@ -121,22 +120,23 @@ define([
     },
 
     onAutocomplete: function(){
-      if (this.collection.length > 0) {
-        this.ui.input.val(this.collection.first().get('name'));
+      var value = this.getAutocomplete();
+
+      if (value) {
+        this.ui.input.val(value);
       }
     },
 
     filterCollection: function(){},
 
     parseInput: function(){
-      var input = this.ui.input.val(),
-        match = /^([^x]*)x(\d+)$/.exec(input);
+      return this.ui.input.val();
+    },
 
-      return {
-        input: input,
-        name: match ? match[1] : input,
-        times: _.max([1, match && parseInt(match[2], 10)])
-      };
+    getAutocomplete: function(){
+      var model = this.collection.first();
+
+      return model && model.get('name');
     },
 
     renderDropdown: function(){

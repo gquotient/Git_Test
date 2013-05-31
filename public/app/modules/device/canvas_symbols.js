@@ -262,7 +262,7 @@ define(['underscore'], function(_){
     }, {});
 
     return function(type, center){
-      return (symbols.hasOwnProperty(type) ?
+      return (_.has(symbols, type) ?
         symbols[type] :
         symbols.SQUARE
       )(center);

@@ -55,9 +55,9 @@ define([
       },
 
       draw: function(){
-        this.erase();
+        this.erase(true);
 
-        this.style = this.styles[this.model.get('relationship_label')] || this.styles.DEFAULT;
+        this.style = this.styles[this.model.getRelationship(this.device)] || this.styles.DEFAULT;
 
         this.edge = new this.paper.Path({
           segments: [[], [], [], []],
@@ -71,10 +71,14 @@ define([
         this.paper.view.draw();
       },
 
-      erase: function(){
+      erase: function(skipDraw){
         if (this.edge) {
           this.edge.remove();
           this.edge = null;
+
+          if (!skipDraw) {
+            this.paper.view.draw();
+          }
         }
       },
 
@@ -144,7 +148,7 @@ define([
       },
 
       draw: function(){
-        this.erase();
+        this.erase(true);
 
         var symbol = this.factory(this.model.get('device_type'), this.center),
           label = new this.paper.PointText();
@@ -158,10 +162,14 @@ define([
         this.paper.view.draw();
       },
 
-      erase: function(){
+      erase: function(skipDraw){
         if (this.node) {
           this.node.remove();
           this.node = null;
+
+          if (!skipDraw) {
+            this.paper.view.draw();
+          }
         }
       },
 

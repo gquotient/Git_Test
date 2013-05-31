@@ -48,18 +48,16 @@ define([
     parse: function(resp){
       if (resp.devices) {
         this.devices.reset(_.filter(resp.devices, function(device){
-          return device.hasOwnProperty('device_type');
+          return _.has(device, 'device_type');
         }));
 
         if (resp.rels) {
           _.each(resp.rels, function(rel) {
-            var from = rel[0] === this.id ? this : this.devices.get(rel[0]),
-              to = this.devices.get(rel[2]);
+            var target = rel[0] === this.id ? this : this.devices.get(rel[0]),
+              device = this.devices.get(rel[2]);
 
-            if (from && to) {
-              from.outgoing.add(to);
-              to.incoming.add(from);
-              to.set('relationship_label', rel[1]);
+            if (device && target) {
+              device.connectTo(target, rel[1]);
             }
           }, this);
         }
@@ -76,19 +74,6 @@ define([
         isNaN(attrs.longitude) ||
         isNaN(attrs.elevation)
       ) { return 'error'; }
-    },
-
-    nextIndex: function(type, index){
-      index = index || 1;
-
-      this.devices.each(function(model){
-        if (model.get('device_type') === type) {
-          var num = parseInt(model.get('did').replace(/^.*-/, ''), 10);
-          if (num && num >= index) { index = num + 1; }
-        }
-      });
-
-      return index;
     }
   });
 
