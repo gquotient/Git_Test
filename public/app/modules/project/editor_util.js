@@ -136,65 +136,7 @@ define([
       }
     },
 
-    filterForConnect: function(selection, targets){
-      var types;
-
-      if (selection && targets) {
-        types = mapSelectionTypes(selection);
-
-        return targets.chain()
-
-          // Limit connections by device type
-          .filter(function(target){
-            return _.contains(types, target.get('device_type'));
-          })
-
-          // Prevent connections to self and children
-          .reject(function(target){
-            return selection.any(function(device){
-              return device === target || device.hasChild(target);
-            });
-          })
-
-          // Prevent connections that already exist
-          .reject(function(target){
-            return selection.all(function(device){
-              return target.outgoing.contains(device);
-            });
-          })
-
-          .value();
-      } else {
-        return [];
-      }
-    },
-
-    filterForDisconnect: function(selection){
-      if (selection) {
-        return selection.chain()
-
-          // Aggregate all incoming devices
-          .reduce(function(memo, device){
-
-            if (device.incoming.length > 1 && device.outgoing.length === 0) {
-              memo.push(device.incoming.models);
-            }
-
-            return memo;
-          }, [])
-
-          // Reduce the devices to a single common set
-          .take(function(arr){
-            return _.intersection.apply(this, arr);
-          })
-
-          .value();
-      } else {
-        return [];
-      }
-    },
-
-    createDevice: function(model, target, project){
+    addDevice: function(model, target, project){
       var relationship_label, rel,
         type = model.get('device_type'),
         index = findNextIndex(project, type),
@@ -227,37 +169,121 @@ define([
       }
 
       if (relationship_label && target.has('id')) {
+        project.devices.add(device);
+        device.connectTo(target, relationship_label);
+
         device.save({
           parent_id: target.get('id'),
           relationship_label: relationship_label
-        }, {
+        });
+      }
+    },
+
+    filterForConnect: function(selection, models){
+      var types;
+
+      if (selection && models) {
+        types = mapSelectionTypes(selection);
+
+        return models.chain()
+
+          // Prevent connections to self
+          .reject(function(model){
+            return selection.contains(model);
+          })
+
+          // Prevent connections to children
+          .reject(function(model){
+            return selection.any(function(device){
+              return device.hasChild(model);
+            });
+          })
+
+          // Filter connections by type
+          .filter(function(model){
+            return _.contains(types, model.get('device_type'));
+          })
+
+          // Filter connections by direction
+          .filter(function(model){
+            return selection.all(function(device){
+              var rels = findRelationships(model, device);
+
+              return _.findWhere(rels, {direction: 'INCOMING'});
+            });
+          })
+
+          .value();
+      } else {
+        return [];
+      }
+    },
+
+    connectDevice: function(device, target, project){
+      var rels = findRelationships(device, target),
+        rel = _.findWhere(rels, {direction: 'INCOMING'});
+
+      if (rel) {
+        $.ajax('/api/relationships', {
+          type: 'POST',
+
+          data: {
+            relationship_label: rel.relationship_label,
+            project_label: project.get('label'),
+            from_id: target.get('id'),
+            to_id: device.get('id')
+          },
+
           success: function(){
-            project.devices.add(device);
-            device.connectTo(target, relationship_label);
+            device.connectTo(target, rel.relationship_label);
           }
         });
       }
     },
 
-    connectDevice: function(device, target){
-      var rels = findRelationships(device, target),
-        rel = _.findWhere(rels, {direction: 'INCOMING'}) || _.first(rels);
+    filterForDisconnect: function(selection){
+      if (selection) {
+        return selection.chain()
 
-      switch (rel && rel.direction) {
-      case 'INCOMING':
-        device.connectTo(target, rel.relationship_label);
-        break;
-      case 'OUTGOING':
-        target.connectTo(device, rel.relationship_label);
-        break;
+          // Map the outgoing devices
+          .map(function(device){
+            return device.outgoing.models;
+          })
+
+          // Reduce the devices to a single common set
+          .take(function(arr){
+            return _.intersection.apply(this, arr);
+          })
+
+          // Prevent orphend nodes
+          .reject(function(device){
+            return device.incoming.length <= selection.length;
+          })
+
+          .value();
+      } else {
+        return [];
       }
     },
 
-    disconnectDevice: function(device, target){
-      if (target.hasChild(device)) {
-        device.disconnectFrom(target);
-      } else if (device.hasChild(target)) {
-        target.disconnectFrom(device);
+    disconnectDevice: function(device, target, project){
+      var relationship_label = device.getRelationship(target);
+
+      if (relationship_label) {
+        $.ajax('/api/relationships', {
+          type: 'DELETE',
+
+          data: {
+            relationship_label: relationship_label,
+            project_label: project.get('label'),
+            from_id: target.get('id'),
+            to_id: device.get('id')
+          },
+
+          success: function(){
+            device.disconnectFrom(target);
+          }
+        });
       }
     }
   };

@@ -354,6 +354,10 @@ module.exports = function(app){
       }
     }));
 
+  app.all('/api/relationships',
+    makeRequest({
+      path: '/res/relationships',
+    }));
 
   //////
   // TEAMS
@@ -508,8 +512,13 @@ module.exports = function(app){
       if (req.query) {
         opts.qs = _.extend({}, req.query);
       }
+
       if (req.body) {
-        opts.form = _.extend({}, req.body);
+        if (req.method === 'DELETE') {
+          opts.qs = _.extend({}, opts.qs, req.body);
+        } else {
+          opts.form = _.extend({}, req.body);
+        }
       }
 
       request(opts, function(error, response, body){
@@ -517,6 +526,9 @@ module.exports = function(app){
           req.flash('error', error.message);
           console.log('error!:', error);
           res.redirect('/ia');
+        } else if (response.statusCode !== 200) {
+          console.log('error!:', response.statusCode, body);
+          res.send(response.statusCode);
         } else {
           console.log(body);
 

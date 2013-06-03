@@ -80,7 +80,7 @@ define([
         if (model) {
           _.each(targets, function(target){
             _.times(this.times, function(){
-              util.createDevice(model, target, this.project);
+              util.addDevice(model, target, this.project);
             }, this);
           }, this);
 
@@ -97,25 +97,25 @@ define([
       },
 
       filterCollection: function(regexp){
-        var targets = util.filterForConnect(this.selection, this.project.devices);
+        var models = util.filterForConnect(this.selection, this.project.devices);
 
-        if (regexp && targets.length > 0) {
-          targets = _.filter(targets, function(target){
-            return regexp.test(target.get('name'));
+        if (regexp && models.length > 0) {
+          models = _.filter(models, function(model){
+            return regexp.test(model.get('name'));
           });
         }
 
-        this.collection.reset(targets);
+        this.collection.reset(models);
       },
 
       onApply: function(){
-        var target = this.collection.findWhere({name: this.parseInput()});
+        var model = this.collection.findWhere({name: this.parseInput()});
 
-        if (target) {
+        if (model) {
           if (this.selection) {
-            this.selection.each(function(device){
-              util.connectDevice(device, target);
-            });
+            this.selection.each(function(target){
+              util.connectDevice(model, target, this.project);
+            }, this);
           }
 
           this.ui.input.blur();
@@ -131,25 +131,25 @@ define([
       },
 
       filterCollection: function(regexp){
-        var targets = util.filterForDisconnect(this.selection);
+        var models = util.filterForDisconnect(this.selection);
 
-        if (regexp && targets.length > 0) {
-          targets = _.filter(targets, function(target){
-            return regexp.test(target.get('name'));
+        if (regexp && models.length > 0) {
+          models = _.filter(models, function(model){
+            return regexp.test(model.get('name'));
           });
         }
 
-        this.collection.reset(targets);
+        this.collection.reset(models);
       },
 
       onApply: function(){
-        var target = this.collection.findWhere({name: this.parseInput()});
+        var model = this.collection.findWhere({name: this.parseInput()});
 
-        if (target) {
+        if (model) {
           if (this.selection) {
-            this.selection.each(function(device){
-              util.disconnectDevice(device, target);
-            });
+            this.selection.each(function(target){
+              util.disconnectDevice(model, target, this.project);
+            }, this);
           }
 
           this.ui.input.blur();
