@@ -56,6 +56,11 @@ require.config({
       location: 'modules/form'
     },
     {
+      name: 'message',
+      main: 'message',
+      location: 'modules/message'
+    },
+    {
       name: 'team',
       main: 'team',
       location: 'modules/team'
@@ -74,6 +79,11 @@ require.config({
       name: 'chart',
       main: 'chart',
       location: 'modules/chart'
+    },
+    {
+      name: 'issue',
+      main: 'issue',
+      location: 'modules/issue'
     },
     {
       name: 'library',

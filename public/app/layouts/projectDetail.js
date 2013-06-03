@@ -5,8 +5,8 @@ define([
 
   'portfolio',
   'project',
-
   'chart',
+  'issue',
 
   'hbs!layouts/templates/projectDetail'
 ], function(
@@ -16,8 +16,8 @@ define([
 
   Portfolio,
   Project,
-
   Chart,
+  Issue,
 
   projectDetailTemplate
 ){
@@ -34,7 +34,7 @@ define([
     regions: {
       map: '#map',
       kpis: '#kpis',
-      alarms: '#alarms',
+      issues: '#issues',
       chart: '#chart'
     },
 
@@ -48,6 +48,8 @@ define([
       this.map.show(this.mapView);
 
       this.chart.show(this.chartView);
+
+      this.issues.show(this.issueView);
     },
 
     initialize: function(options){
@@ -67,6 +69,12 @@ define([
           }
         ]
       });
+
+      this.issueView = new Issue.views.Table({
+        collection: new Issue.Collection()
+      });
+
+      this.issueView.collection.fetch();
 
       // Set up listeners
       this.listenTo(Backbone, 'select:portfolio', function(model){
