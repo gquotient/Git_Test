@@ -83,7 +83,7 @@ define([
     projectDetail: function(id){
       var project = this.findProject(id);
 
-      this.mainLayout.showProject(project);
+      this.mainLayout.showProject(project, ia.rootPortfolio.projects);
     },
 
     profile: function(){

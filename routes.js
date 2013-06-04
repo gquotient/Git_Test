@@ -192,6 +192,10 @@ module.exports = function(app){
   // PROJECTS
   //////
 
+  app.get('/api/teamprojects', makeRequest({
+    path: '/res/teamprojects'
+  }))
+
   app.get('/api/projects',
     function(req, res){
       request({
@@ -317,6 +321,9 @@ module.exports = function(app){
   //////
   // DEVICES
   //////
+  app.get('/api/:project_label/devices', makeRequest({
+    path: '/api/project/devices/ROCKYFACE_01'
+  }));
 
   app.post('/api/devices',
     makeRequest({

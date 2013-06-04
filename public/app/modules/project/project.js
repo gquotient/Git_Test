@@ -405,13 +405,6 @@ define([
       this.listenTo(Backbone, 'select:project', this.setProject);
     },
 
-    onRender: function(){
-      // Handle if no sub portfolios exist
-      if (this.collection.length === 0) {
-        this.$el.append('<li class="empty">No sub portfolios</li>');
-      }
-    },
-
     // Setup the views for the current model.
     setPortfolio: function(model){
       // Set the current collection to be a new navigation list with the subPortfolios.
