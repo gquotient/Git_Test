@@ -61,7 +61,7 @@ define([
 
       this.chartView = new Chart.views.Line({
         title: 'Array Power',
-        model: new Chart.models.timeSeries({url: '/api/arrayPower'}),
+        model: new Chart.models.timeSeries(),
         series: [
           {
             color: '#369',

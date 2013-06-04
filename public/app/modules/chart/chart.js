@@ -18,56 +18,46 @@ function(
   var Chart = { models: {}, views: {} };
 
   Chart.models.timeSeries = Backbone.Model.extend({
-    url: '/api/timeseries',
+    url: '/api/timeline',
     parse: function(data){
-      //console.log('parse', data);
+      console.log('parse', data);
       var series = [];
 
-      for(var device=0, devicesLength=data.data[0][1].length; device<devicesLength; device++){
-        //newSeries[device] = []; //Array for lines generated from this data set
-        for(var col=0, colsLength=data.cols.length; col<colsLength; col++){
-
-          var mySeries = {
-            data : [],
-            dataType : data.cols[col],
-            deviceID : data.data[0][1][device][0],
-            xAxis : 0,
-            threshold : 0.00001
-          };
-
-          for(var day=0, dayLength=data.data.length; day<dayLength; day++){
-            if(data.data[day][1][device]){
-              for(var e=0, eLength=data.data[day][1][device][1].length;e<eLength;e++){//push it's data to the array
-                var
-                  myDate = data.data[day][0].split('-'),
-                  myTime = data.data[day][1][device][1][e][0].split(':')
-                ;
-
-                mySeries.data.push( [Date.UTC(+myDate[0], (+myDate[1]-1), +myDate[2], +myTime[0], +myTime[1]), data.data[day][1][device][1][e][col + 1]] );
-              }
-            }
-          }
-
-          series.push(mySeries);
-        }
-      }
+      series.push({
+        data: data.response[0].data
+      });
 
       this.set('series', series);
+    },
+    getData: function(){
+
+      console.log('data def', this.get('dataType'));
+      var that = this;
+
+      $.ajax({
+        url: '/api/timeline',
+        type: 'POST',
+        dataType: 'json',
+        data: { traces: that.get('dataType') }
+      })
+      .done(function(data){
+        that.parse(data);
+      });
     },
     initialize: function(options){
       var that = this;
 
-      this.url = options.url || this.url;
+      this.url = (options && options.url) ? options.url : this.url;
 
       var fetch = function(){
         that.fetch();
       };
 
       // Using set timeout for now so it only updates once
-      this.interval = setTimeout(fetch, 3000);
+      //this.interval = setTimeout(fetch, 3000);
 
       // Create series array
-      this.set('series', []);
+      //this.set('series', []);
     }
   });
 
@@ -146,7 +136,23 @@ function(
       });
 
       // Fetch data
-      this.model.fetch();
+      this.model.set({
+        dataType: [
+          {
+            'project_label': 'TPW1',
+            'ddl': 'env_900',
+            'dtstart': '-3h',
+            'dtstop': 'now',
+            'columns': ['freezetime', 'value_mean'],
+            'filters': [
+              {'column': 'attribute', 'in_set': ['irradiance']},
+              {'column': 'identifier', 'in_set': ['ENV-1']}
+            ]
+          }
+        ]
+      });
+
+      this.model.getData();
 
       // Update chart on data change
       this.model.on('change:series', function(){
@@ -156,10 +162,17 @@ function(
           seriesData = that.model.get('series')
         ;
 
-        _.each(that.chart.series, function(serie, index){
-          // Update series data on new data fetch
-          serie.setData(seriesData[index].data);
-        });
+        console.log(series);
+        if (series.length) {
+
+          _.each(that.chart.series, function(serie, index){
+            console.log(seriesData[index].data);
+            // Update series data on new data fetch
+            serie.setData(seriesData[index].data);
+          });
+        } else {
+          //throw no data
+        }
       });
     }
   });

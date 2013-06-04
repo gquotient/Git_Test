@@ -180,12 +180,12 @@ module.exports = function(app){
 
   app.get('/api/portfolios',
     makeRequest({
-      path: '/res/portfolios',
+      path: '/res/portfolios'
     }));
 
   app.get('/api/portfolios/',
     makeRequest({
-      path: '/res/portfolios',
+      path: '/res/portfolios'
     }));
 
   //////
@@ -481,6 +481,24 @@ module.exports = function(app){
         }
         res.end(data);
       });
+    });
+
+  app.post('/api/timeline',
+    function(req, res){
+      console.log(req.body);
+
+      request({
+        method: 'POST',
+        uri: app.get('dataUrl') + '/api/timeline',
+        body: JSON.stringify(req.body),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, function(err, response, body){
+        console.log(err);
+        res.end(body);
+      });
+
     });
 
   ///////
