@@ -34,12 +34,14 @@ define([
       header: '#header',
       notificationBanner: '#notificationBanner',
       navigation: '#nav_page',
+      breadcrumbs: '#breadcrumbs',
+      pageSettings: '#pageSettings',
       mainContent: '#page'
     },
 
     onShow: function(){
       this.header.show(this.headerView);
-      this.navigation.show(this.navigationView);
+      this.breadcrumbs.show(this.navigationView);
 
       //this.toggleNotificationBanner();
     },
