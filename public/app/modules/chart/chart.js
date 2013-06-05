@@ -40,6 +40,8 @@ function(
       var series = [];
 
       _.each(data.response, function(res, index){
+        var data = res.data;
+
         series.push({
           data: res.data
         });
@@ -93,6 +95,7 @@ function(
         series: {
           marker: {
             enabled: false,
+            radius: 1.5,
             states: {
               hover: {
                 enabled: true
@@ -100,6 +103,13 @@ function(
             }
           }
         }
+      },
+      tooltip: {
+        //formatter: function() {
+        //  return this.x + ' | ' + this.y;
+        //},
+        //shared: true,
+
       },
       xAxis: {
         type: 'datetime'
