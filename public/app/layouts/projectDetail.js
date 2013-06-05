@@ -35,7 +35,8 @@ define([
       map: '#map',
       kpis: '#kpis',
       issues: '#issues',
-      chart_powerHistory: '#chart_powerHistory'
+      chart_powerHistory: '#chart_powerHistory',
+      chart_healthAndSoiling: '#chart_healthAndSoiling'
     },
 
     events: {
@@ -47,7 +48,9 @@ define([
     onShow: function(){
       this.map.show(this.mapView);
 
-      this.chart_powerHistory.show(this.chartView);
+      this.chart_powerHistory.show(this.chartView_powerHistory);
+
+      this.chart_healthAndSoiling.show(this.chartView_healthAndSoiling);
 
       this.issues.show(this.issueView);
     },
@@ -59,8 +62,7 @@ define([
         collection: new Project.Collection([options.model])
       });
 
-      this.chartView = new Chart.views.Line({
-        title: 'Array Power',
+      this.chartView_powerHistory = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
           'timezone': this.model.get('timezone'),
           'dataType': [
@@ -92,6 +94,41 @@ define([
         series: [
           Chart.seriesDefaults.irradiance,
           Chart.seriesDefaults.power
+        ]
+      });
+
+      this.chartView_healthAndSoiling = new Chart.views.Line({
+        model: new Chart.models.timeSeries().set({
+          'timezone': this.model.get('timezone'),
+          'dataType': [
+            {
+              //This is a hack because the model service and data
+              //aren't quite the same
+              'project_label': this.model.id,
+              'ddl': 'env_300',
+              'dtstart': 'today',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'value_mean'],
+              'filters': [
+                {'column': 'attribute', 'in_set': ['irradiance']},
+                {'column': 'identifier', 'in_set': ['ENV-1']}
+              ]
+            },
+            {
+              'project_label': this.model.id,
+              'ddl': 'pgen-rm_300',
+              'dtstart': 'today',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'value_mean'],
+              'filters': [
+                {'column': 'attribute', 'in_set': ['ac_power']}
+              ]
+            }
+          ]
+        }),
+        series: [
+          Chart.seriesDefaults.health,
+          Chart.seriesDefaults.soiling
         ]
       });
 

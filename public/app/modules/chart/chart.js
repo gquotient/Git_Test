@@ -23,6 +23,14 @@ function(
   };
 
   Chart.seriesDefaults = {
+    health: $.extend(_.clone(basicSeries), {
+      name: 'Health',
+      color: 'purple'
+    }),
+    soiling: $.extend(_.clone(basicSeries), {
+      name: 'Soiling',
+      color: 'green'
+    }),
     irradiance: $.extend(_.clone(basicSeries), {
       name: 'Irradiance',
       color: '#DFD85C'
@@ -91,7 +99,16 @@ function(
         width: null,
         height: null,
         backgroundColor: null,
-        credit: false
+        borderWidth: 0,
+        spacingTop : 12,
+        spacingRight : 12,
+        spacingBottom : 12,
+        spacingLeft : 12,
+        plotBorderWidth : 1,
+        plotBorderColor : '#555'
+      },
+      title: {
+        text: null
       },
       credits: {
         enabled: false
@@ -117,6 +134,7 @@ function(
 
       },
       legend: {
+        borderWidth: 0,
         itemStyle: {
           color: '#ccc'
         },
@@ -125,12 +143,15 @@ function(
         }
       },
       xAxis: {
-        type: 'datetime'
+        type: 'datetime',
+        gridLineColor: '#444', //Lines inside plot
+        lineColor: '#555' //Bottom line of plot
       },
       yAxis: {
         title: {
           style: {
-            color: '#ccc'
+            color: '#ccc',
+            'font-weight': 'normal'
           }
         }
       }
@@ -172,12 +193,6 @@ function(
         chart: {
           type: 'line',
           renderTo: this.el
-        },
-        title: {
-          text: this.options.title,
-          style: {
-            color: '#ccc'
-          }
         },
         series: this.options.series
       }));
