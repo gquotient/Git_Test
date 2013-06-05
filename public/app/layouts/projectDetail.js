@@ -65,7 +65,9 @@ define([
           'timezone': this.model.get('timezone'),
           'dataType': [
             {
-              'project_label': 'TPW1',
+              //This is a hack because the model service and data
+              //aren't quite the same
+              'project_label': this.model.id.split('_')[0],
               'ddl': 'env_300',
               'dtstart': 'today',
               'dtstop': 'now',
@@ -76,13 +78,13 @@ define([
               ]
             },
             {
-              'project_label': 'TPW1',
+              'project_label': this.model.id.split('_')[0],
               'ddl': 'pgen-rm_300',
               'dtstart': 'today',
               'dtstop': 'now',
               'columns': ['freezetime', 'value_mean'],
               'filters': [
-                {'column': 'attribute', 'in_set': ['ac_power_mean']}
+                {'column': 'attribute', 'in_set': ['ac_power']}
               ]
             }
           ]
