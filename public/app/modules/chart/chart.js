@@ -137,20 +137,20 @@ function(
       }));
 
       // Update chart on data change
-      this.model.on('change:series', function(){
-        //console.log('series updated', arguments);
-        var
-          series = arguments[1],
-          seriesData = that.model.get('series')
-        ;
-
-        if (series.length) {
+      this.model.on('change:series', function(model, seriesData){
+        if (seriesData.length) {
           _.each(that.chart.series, function(serie, index){
-            // Update series data on new data fetch
-            serie.setData(seriesData[index].data);
+            // Update series data
+            if (seriesData[index].data.length) {
+              serie.setData(seriesData[index].data);
+            } else {
+              //throw no data error
+              console.warn('No data found on trace:', seriesData[index]);
+            }
           });
         } else {
           //throw no data error
+          console.warn('No data came back at all. Call Thadeus.');
         }
       });
     }
