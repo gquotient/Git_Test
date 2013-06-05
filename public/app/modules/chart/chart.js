@@ -113,6 +113,28 @@ function(
       credits: {
         enabled: false
       },
+      colors: [
+        '#8DD3C7',
+        '#4DAF4A',
+        '#FF7F00',
+        '#F781BF',
+        '#E41A1C',
+        '#FFFF33',
+        '#A65628',
+        '#377EB8',
+        '#BEBADA',
+        '#FB8072',
+        '#80B1D3',
+        '#B3DE69',
+        '#984EA3',
+        '#FCCDE5',
+        '#D9D9D9',
+        '#BC80BD',
+        '#FDB462',
+        '#CCEBC5',
+        '#FFED6F',
+        '#0066cc'
+      ],
       plotOptions: {
         series: {
           marker: {

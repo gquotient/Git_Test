@@ -473,16 +473,6 @@ module.exports = function(app){
   // Data
   /////
 
-  app.get('/api/arrayPower',
-    function(req, res){
-      fs.readFile('./data/json/arrayPower.json', 'utf8', function (err, data) {
-        if (err) {
-          return console.log(err);
-        }
-        res.end(data);
-      });
-    });
-
   app.post('/api/timeline',
     function(req, res){
       request({
@@ -493,7 +483,7 @@ module.exports = function(app){
           'Content-Type': 'application/json'
         }
       }, function(err, response, body){
-        console.log(err);
+        console.log(err, body);
         res.end(body);
       });
 

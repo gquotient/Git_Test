@@ -77,8 +77,6 @@ primaryBorderStyle = borderBasicDark;
   }
 }
 
-hoverNavBGColor = #444;
-
 .settingsList {
   width: 30px;
   height: pageNavHeight - 2px;;
@@ -87,7 +85,7 @@ hoverNavBGColor = #444;
   position: relative;
   &:hover {
     opacity: 1;
-    background-color: hoverNavBGColor;
+    background-color: colorDropDownBG;
     ul {
       display: inherit;
     }
@@ -104,7 +102,7 @@ hoverNavBGColor = #444;
     margin: 0;
     z-index: 301;
     white-space: nowrap;
-    background: hoverNavBGColor;
+    background: colorDropDownBG;
     text-shadow: none;
     li {
       font-size: .85em;
