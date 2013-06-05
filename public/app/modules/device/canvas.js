@@ -92,7 +92,13 @@ define([
       move: function(){
         var start = this.startPoint(),
           end = this.endPoint(),
-          center = start.x + ((50 - (this.style.offset || 0)) * (this.style.left ? -1 : 1));
+          center;
+
+        if (this.style.left) {
+          center = start.x - 50;
+        } else {
+          center = Math.max(start.x + 50, end.x - 50);
+        }
 
         if (this.style.offset) {
           if (start.y >= end.y) {
@@ -102,6 +108,7 @@ define([
             start.y += this.style.offset;
             end.y += this.style.offset;
           }
+          center -= this.style.offset;
         }
 
         if (this.edge) {
