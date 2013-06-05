@@ -186,11 +186,64 @@ define(['underscore'], function(_){
         return group;
       },
 
-      PANEL: function(center, size){
-        return new paper.Group([
-          symbols.SQUARE(center),
-          symbols.GRID(center)
-        ]);
+      DOWN: function(center, size){
+        var half = size / 2,
+          third = size / 3,
+          sixth = size / 6,
+
+          group = new paper.Group(pathsFromPoints([
+            [[0, -half], [0, sixth]],
+            [[-third, sixth], [third, sixth]],
+            [[-third, sixth], [0, half]],
+            [[third, sixth], [0, half]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      COMBINE: function(center, size){
+        var half = size / 2,
+          quarter = size / 4,
+          fourteenth = size / 14,
+
+          group = new paper.Group(pathsFromPoints([
+            [[-half, -half], [-quarter, -half]],
+            [[-half, -fourteenth * 5], [-quarter, -fourteenth * 5]],
+            [[-half, -fourteenth * 3], [-quarter, -fourteenth * 3]],
+            [[-half, -fourteenth], [-quarter, -fourteenth]],
+            [[-half, fourteenth], [-quarter, fourteenth]],
+            [[-half, fourteenth * 3], [-quarter, fourteenth * 3]],
+            [[-half, fourteenth * 5], [-quarter, fourteenth * 5]],
+            [[-half, half], [-quarter, half]],
+
+            [[-quarter, -half], [0, 0]],
+            [[-quarter, -fourteenth * 5], [0, 0]],
+            [[-quarter, -fourteenth * 3], [0, 0]],
+            [[-quarter, -fourteenth], [0, 0]],
+            [[-quarter, fourteenth], [0, 0]],
+            [[-quarter, fourteenth * 3], [0, 0]],
+            [[-quarter, fourteenth * 5], [0, 0]],
+            [[-quarter, half], [0, 0]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      V: function(center, size){
+        var half = size / 2,
+
+          group = new paper.Group(pathsFromPoints([
+            [[-half, -half], [0, 0]],
+            [[half, -half], [0, 0]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
       },
 
       DC_BUS: function(center, size){
@@ -237,18 +290,65 @@ define(['underscore'], function(_){
           symbols.SQUARE(center),
           symbols.WYE(center, 2 / 3)
         ]);
+      },
+
+      LOAD: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.DOWN(center, 2 / 3)
+        ]);
+      },
+
+      ARRAY: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.GRID(center)
+        ]);
+      },
+
+      RECOMBINER: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.COMBINE(center.subtract(size / 4, 0), 1, 2 / 3),
+          symbols.CIRCLE(center, 1 / 4)
+        ]);
+      },
+
+      COMBINER: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.COMBINE(center.subtract(size / 4, 0), 1, 2 / 3),
+          symbols.CIRCLE(center, 1 / 4)
+        ]);
+      },
+
+      STRING: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.V(center.subtract(0, size / 4)),
+          symbols.V(center.subtract(0, size / 8)),
+          symbols.V(center),
+          symbols.V(center.add(0, size / 8))
+        ]);
+      },
+
+      PANEL: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.V(center.subtract(0, size / 4))
+        ]);
       }
 
     }, function(memo, draw, key){
-      memo[key] = function(_center, _scale){
+      memo[key] = function(){
         var item = draw(new paper.Point(0, 0), 50),
           symbol = new paper.Symbol(item),
 
-          func = symbols[key] = function(center, scale){
+          func = symbols[key] = function(center){
             var placed = symbol.place(center);
 
-            if (scale) {
-              placed.scale(scale);
+            if (arguments.length > 1) {
+              placed.scale.apply(placed, Array.prototype.slice.call(arguments, 1));
             }
 
             return placed;
@@ -256,7 +356,7 @@ define(['underscore'], function(_){
 
         item.remove();
 
-        return func(_center, _scale);
+        return func.apply(this, arguments);
       };
       return memo;
     }, {});
