@@ -23,15 +23,15 @@ function(
       console.log('parse', data);
       var series = [];
 
-      series.push({
-        data: data.response[0].data
+      _.each(data.response, function(res, index){
+        series.push({
+          data: res.data
+        });
       });
 
       this.set('series', series);
     },
     getData: function(){
-
-      console.log('data def', this.get('dataType'));
       var that = this;
 
       $.ajax({
@@ -111,7 +111,8 @@ function(
     options: {
       title: 'Generic Chart'
     },
-    onShow: function(){
+    render: function(){
+      //Fetch data
       this.model.getData();
     },
     initialize: function(options){
@@ -135,23 +136,6 @@ function(
         series: this.options.series
       }));
 
-      // Fetch data
-      this.model.set({
-        dataType: [
-          {
-            'project_label': 'TPW1',
-            'ddl': 'env_900',
-            'dtstart': '-3h',
-            'dtstop': 'now',
-            'columns': ['freezetime', 'value_mean'],
-            'filters': [
-              {'column': 'attribute', 'in_set': ['irradiance']},
-              {'column': 'identifier', 'in_set': ['ENV-1']}
-            ]
-          }
-        ]
-      });
-
       // Update chart on data change
       this.model.on('change:series', function(){
         //console.log('series updated', arguments);
@@ -160,16 +144,13 @@ function(
           seriesData = that.model.get('series')
         ;
 
-        console.log(series);
         if (series.length) {
-
           _.each(that.chart.series, function(serie, index){
-            console.log(seriesData[index].data);
             // Update series data on new data fetch
             serie.setData(seriesData[index].data);
           });
         } else {
-          //throw no data
+          //throw no data error
         }
       });
     }

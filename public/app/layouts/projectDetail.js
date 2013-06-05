@@ -61,9 +61,39 @@ define([
 
       this.chartView = new Chart.views.Line({
         title: 'Array Power',
-        model: new Chart.models.timeSeries(),
+        model: new Chart.models.timeSeries().set({
+          'dataType': [
+            {
+              'project_label': 'TPW1',
+              'ddl': 'env_300',
+              'dtstart': '-24h',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'value_mean'],
+              'filters': [
+                {'column': 'attribute', 'in_set': ['irradiance']},
+                {'column': 'identifier', 'in_set': ['ENV-1']}
+              ]
+            },
+            {
+              'project_label': 'TPW1',
+              'ddl': 'pgen-acm_900',
+              'dtstart': '-24h',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'value_mean'],
+              'filters': [
+                {'column': 'attribute', 'in_set': ['ac_power_mean']}
+              ]
+            }
+          ]
+        }),
         series: [
           {
+            name: 'Irradiance',
+            color: '#DFD85C',
+            data: []
+          },
+          {
+            name: 'Power',
             color: '#369',
             data: []
           }
