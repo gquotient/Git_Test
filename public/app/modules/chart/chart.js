@@ -111,6 +111,9 @@ function(
     options: {
       title: 'Generic Chart'
     },
+    onShow: function(){
+      this.model.getData();
+    },
     initialize: function(options){
       //console.log('init', this);
       var that = this;
@@ -118,14 +121,11 @@ function(
       this.options = _.extend(this.options, options);
 
       // Instantiate the chart
-      this.chart = new Highcharts.Chart({
-        credits: this.chartOptions.credits,
-        chart: _.extend({
+      this.chart = new Highcharts.Chart($.extend(true, this.chartOptions, {
+        chart: {
           type: 'line',
           renderTo: this.el
-        }, this.chartOptions.chart),
-        plotOptions: this.chartOptions.plotOptions,
-        xAxis: this.chartOptions.xAxis,
+        },
         title: {
           text: this.options.title,
           style: {
@@ -133,7 +133,7 @@ function(
           }
         },
         series: this.options.series
-      });
+      }));
 
       // Fetch data
       this.model.set({
@@ -151,8 +151,6 @@ function(
           }
         ]
       });
-
-      this.model.getData();
 
       // Update chart on data change
       this.model.on('change:series', function(){
