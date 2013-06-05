@@ -35,7 +35,7 @@ define([
       map: '#map',
       kpis: '#kpis',
       issues: '#issues',
-      chart: '#chart'
+      chart_powerHistory: '#chart_powerHistory'
     },
 
     events: {
@@ -47,7 +47,7 @@ define([
     onShow: function(){
       this.map.show(this.mapView);
 
-      this.chart.show(this.chartView);
+      this.chart_powerHistory.show(this.chartView);
 
       this.issues.show(this.issueView);
     },
@@ -62,11 +62,12 @@ define([
       this.chartView = new Chart.views.Line({
         title: 'Array Power',
         model: new Chart.models.timeSeries().set({
+          'timezone': this.model.get('timezone'),
           'dataType': [
             {
               'project_label': 'TPW1',
               'ddl': 'env_300',
-              'dtstart': '-24h',
+              'dtstart': 'today',
               'dtstop': 'now',
               'columns': ['freezetime', 'value_mean'],
               'filters': [
@@ -77,7 +78,7 @@ define([
             {
               'project_label': 'TPW1',
               'ddl': 'pgen-rm_300',
-              'dtstart': '-24h',
+              'dtstart': 'today',
               'dtstop': 'now',
               'columns': ['freezetime', 'value_mean'],
               'filters': [

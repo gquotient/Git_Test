@@ -485,11 +485,9 @@ module.exports = function(app){
 
   app.post('/api/timeline',
     function(req, res){
-      console.log(req.body);
-
       request({
         method: 'POST',
-        uri: app.get('dataUrl') + '/api/timeline',
+        uri: app.get('dataUrl') + '/api/timeline?timezone=' + req.query.timezone,
         body: JSON.stringify(req.body),
         headers: {
           'Content-Type': 'application/json'

@@ -42,6 +42,11 @@ function(
       _.each(data.response, function(res, index){
         var data = res.data;
 
+        //Adjust time to milliseconds
+        _.each(data, function(point, index){
+          point[0] = point[0] * 1000;
+        });
+
         series.push({
           data: res.data
         });
@@ -53,7 +58,7 @@ function(
       var that = this;
 
       $.ajax({
-        url: '/api/timeline',
+        url: this.url + '?timezone=' + this.get('timezone'),
         type: 'POST',
         dataType: 'json',
         data: { traces: that.get('dataType') }
@@ -142,7 +147,7 @@ function(
       this.model.getData();
     },
     initialize: function(options){
-      //console.log('init', this);
+      console.log('init', this, this.model);
       var that = this;
 
       this.options = _.extend(this.options, options);

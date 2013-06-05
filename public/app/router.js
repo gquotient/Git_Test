@@ -142,7 +142,7 @@ define([
       'project/:id': 'projectDetail',
 
       'profile': 'profile',
-     
+
       //Admin Routes
       'admin': 'admin',
       'admin/:page': 'admin'
