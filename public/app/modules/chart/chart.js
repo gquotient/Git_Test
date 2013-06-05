@@ -26,7 +26,7 @@ function(
     irradiance: $.extend(_.clone(basicSeries), {
       name: 'Irradiance',
       color: '#DFD85C'
-    }, basicSeries),
+    }),
     power: $.extend(_.clone(basicSeries), {
       name: 'Power',
       color: '#369'
