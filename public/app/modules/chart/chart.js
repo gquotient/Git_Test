@@ -17,6 +17,22 @@ function(
 ){
   var Chart = { models: {}, views: {} };
 
+  var basicSeries = {
+    name: 'Series',
+    data: []
+  };
+
+  Chart.seriesDefaults = {
+    irradiance: $.extend(_.clone(basicSeries), {
+      name: 'Irradiance',
+      color: '#DFD85C'
+    }, basicSeries),
+    power: $.extend(_.clone(basicSeries), {
+      name: 'Power',
+      color: '#369'
+    })
+  };
+
   Chart.models.timeSeries = Backbone.Model.extend({
     url: '/api/timeline',
     parse: function(data){

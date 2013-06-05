@@ -76,7 +76,7 @@ define([
             },
             {
               'project_label': 'TPW1',
-              'ddl': 'pgen-acm_900',
+              'ddl': 'pgen-rm_300',
               'dtstart': '-24h',
               'dtstop': 'now',
               'columns': ['freezetime', 'value_mean'],
@@ -87,16 +87,8 @@ define([
           ]
         }),
         series: [
-          {
-            name: 'Irradiance',
-            color: '#DFD85C',
-            data: []
-          },
-          {
-            name: 'Power',
-            color: '#369',
-            data: []
-          }
+          Chart.seriesDefaults.irradiance,
+          Chart.seriesDefaults.power
         ]
       });
 
