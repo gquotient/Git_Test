@@ -39,15 +39,24 @@ define([
 
     moveAll: function(delta){
       this.models.each(function(model) {
-        model.set('positionX', model.get('positionX') + delta.x);
-        model.set('positionY', model.get('positionY') + delta.y);
+        var position = model.getPosition('ELECTRICAL');
+
+        model.setPosition('ELECTRICAL', {
+          x: position.x + delta.x,
+          y: position.y + delta.y
+        });
       });
     },
 
     snapAll: function(){
       this.models.each(function(model) {
-        model.set('positionX', Math.round(model.get('positionX') / 100) * 100);
-        model.set('positionY', Math.round(model.get('positionY') / 100) * 100);
+        var position = model.getPosition('ELECTRICAL');
+
+        model.setPosition('ELECTRICAL', {
+          x: Math.round(position.x / 100) * 100,
+          y: Math.round(position.y / 100) * 100
+        });
+        model.save();
       });
     }
   });

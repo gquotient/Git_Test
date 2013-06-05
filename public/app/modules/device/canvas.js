@@ -26,9 +26,8 @@ define([
         this.paper = options.paper || paper;
         this.device = options.device;
 
-        this.listenTo(this.device, 'change:positionX change:positionY', this.move);
-        this.listenTo(this.model, 'change:positionX change:positionY', this.move);
-        this.listenTo(this.model, 'change:relationship_label', this.draw);
+        this.listenTo(this.device, 'change:renderings', this.move);
+        this.listenTo(this.model, 'change:renderings', this.move);
 
         this.on('close', this.erase);
       },
@@ -83,17 +82,11 @@ define([
       },
 
       startPoint: function(){
-        return new this.paper.Point(
-          this.device.get('positionX'),
-          this.device.get('positionY')
-        );
+        return new this.paper.Point(this.device.getPosition('ELECTRICAL'));
       },
 
       endPoint: function(){
-        return new this.paper.Point(
-          this.model.get('positionX'),
-          this.model.get('positionY')
-        );
+        return new this.paper.Point(this.model.getPosition('ELECTRICAL'));
       },
 
       move: function(){
@@ -143,8 +136,7 @@ define([
       modelEvents: {
         'selected': 'select',
         'deselected': 'deselect',
-        'change:positionX': 'setCenter',
-        'change:positionY': 'setCenter'
+        'change:renderings': 'setCenter'
       },
 
       draw: function(){
@@ -188,10 +180,7 @@ define([
 
       setCenter: function(){
         var orig = this.center,
-          point = this.center = new this.paper.Point(
-            this.model.get('positionX'),
-            this.model.get('positionY')
-          ),
+          point = this.center = new this.paper.Point(this.model.getPosition('ELECTRICAL')),
           delta = point.subtract(orig);
 
         if (this.node) { this.node.translate(delta); }

@@ -50,14 +50,27 @@ define([
     var type = device.get('device_type');
 
     return library.chain()
+
+      // Find device type in library
       .find(function(model) {
         return model.get('device_type') === type;
       })
+
+      // Extract the relatinship array
       .take(function(model) {
         return model.get('relationships');
       })
+
+      // Filter the relationships by the target device type
       .where({device_type: target.get('device_type')})
+
       .value();
+  }
+
+  function findIncomingRelationshipLabel(device, target){
+    var rels = findRelationships(device, target);
+
+    return (_.findWhere(rels, {direction: 'INCOMING'}) || {}).label;
   }
 
   function findNextIndex(project, type, index){
@@ -78,40 +91,43 @@ define([
     return index;
   }
 
-  function findLowestPosition(devices){
-    devices = _.sortBy(devices, function(device){
-      return device.get('positionY');
-    });
+  function findNextPosition(rendering, project, target){
+    var position;
 
-    return _.last(devices);
-  }
+    if (target && target !== project && target.getPosition) {
+      position = target.getPosition(rendering.label);
 
-  function adjustPosition(device, project){
-    var x = device.get('positionX'),
-      y = device.get('positionY'),
-      type = device.get('device_type'),
-      model = library.findWhere({device_type: type}),
-      isRoot = model && model.get('root'),
-      offset = model && model.get('positionOffset'),
-      lowest;
-
-    if (isRoot) {
-      lowest = findLowestPosition(project.devices.where({device_type: type}));
-
-      if (lowest) {
-        x = lowest.get('positionX');
-        y = lowest.get('positionY') + 200;
+      if (position && rendering.offset) {
+        position.x += rendering.offset.x || 0;
+        position.y += rendering.offset.y || 0;
       }
-    } else if (offset) {
-      x += offset.x;
-      y += offset.y;
     }
 
-    while (project.devices.findWhere({positionX: x, positionY: y})) {
-      y += 100;
+    if (!position) {
+      position = _.clone(rendering.position);
+
+      if (rendering.root) {
+        project.devices.each(function(device){
+          var pos = device.getPosition(rendering.label);
+
+          if (pos && pos.y >= position.y) {
+            position.y = pos.y + 200;
+          }
+        });
+      }
     }
 
-    device.set({positionX: x, positionY: y});
+    function overlaps(device){
+      var pos = device.getPosition(rendering.label);
+
+      return pos.x === position.x && pos.y === position.y;
+    }
+
+    while (project.devices.any(overlaps)) {
+      position.y += 100;
+    }
+
+    return position;
   }
 
   return {
@@ -137,38 +153,27 @@ define([
     },
 
     addDevice: function(model, target, project){
-      var relationship_label, rel,
-        type = model.get('device_type'),
+      var type = model.get('device_type'),
         index = findNextIndex(project, type),
-        name = model.get('name') + ' ' + index,
-        did = model.get('prefix') + '-' + index,
 
         device = new Device.Model({
           project_label: project.get('label'),
-
           device_type: type,
-          name: name,
-          did: did,
+          name: model.get('name') + ' ' + index,
+          did: model.get('prefix') + '-' + index
+        }),
 
-          positionX: target.get('positionX') || 700,
-          positionY: target.get('positionY') || 200
-        });
-
-      adjustPosition(device, project);
-
-      if (target === project) {
-        relationship_label = 'COMPRISES';
-
-      } else if (target.has('device_type')) {
-        rel = _.findWhere(
-          findRelationships(device, target),
-          {direction: 'INCOMING'}
-        );
-
-        relationship_label = rel && rel.relationship_label;
-      }
+        relationship_label = (target === project) ? 'COMPRISES' :
+          findIncomingRelationshipLabel(device, target);
 
       if (relationship_label && target.has('id')) {
+
+        _.each(model.get('renderings'), function(rendering){
+          var position = findNextPosition(rendering, project, target);
+
+          device.setPosition(rendering.label, position);
+        });
+
         project.devices.add(device);
         device.connectTo(target, relationship_label);
 
@@ -207,9 +212,7 @@ define([
           // Filter connections by direction
           .filter(function(model){
             return selection.all(function(device){
-              var rels = findRelationships(model, device);
-
-              return _.findWhere(rels, {direction: 'INCOMING'});
+              return findIncomingRelationshipLabel(model, device);
             });
           })
 
@@ -220,22 +223,21 @@ define([
     },
 
     connectDevice: function(device, target, project){
-      var rels = findRelationships(device, target),
-        rel = _.findWhere(rels, {direction: 'INCOMING'});
+      var relationship_label = findIncomingRelationshipLabel(device, target);
 
-      if (rel) {
+      if (relationship_label) {
         $.ajax('/api/relationships', {
           type: 'POST',
 
           data: {
-            relationship_label: rel.relationship_label,
+            relationship_label: relationship_label,
             project_label: project.get('label'),
             from_id: target.get('id'),
             to_id: device.get('id')
           },
 
           success: function(){
-            device.connectTo(target, rel.relationship_label);
+            device.connectTo(target, relationship_label);
           }
         });
       }

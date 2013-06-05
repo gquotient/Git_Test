@@ -47,9 +47,7 @@ define([
 
     parse: function(resp){
       if (resp.devices) {
-        this.devices.reset(_.filter(resp.devices, function(device){
-          return _.has(device, 'device_type');
-        }));
+        this.devices.reset(resp.devices);
 
         if (resp.rels) {
           _.each(resp.rels, function(rel) {

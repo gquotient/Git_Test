@@ -17,6 +17,9 @@ define([
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
+    defaults: {
+      renderings: {}
+    },
 
     initialize: function(){
       this.relationships = {};
@@ -27,6 +30,19 @@ define([
 
     getRelationship: function(target){
       return this.relationships[target.id];
+    },
+
+    getPosition: function(view){
+      var renderings = this.get('renderings');
+
+      return _.clone(renderings[view]);
+    },
+
+    setPosition: function(view, position){
+      var renderings = _.clone(this.get('renderings'));
+
+      renderings[view] = position;
+      this.set({renderings: renderings});
     },
 
     connectTo: function(target, label){

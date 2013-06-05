@@ -243,6 +243,20 @@ module.exports = function(app){
             } else if (resp.statusCode === 200) {
               body = JSON.parse(body);
 
+              body.devices = _.reduce(body.devices, function(memo, device){
+                if (_.has(device, 'device_type')) {
+                  device.project_label = project.project_label;
+
+                  if (device.renderings) {
+                    device.renderings = JSON.parse(device.renderings);
+                  }
+
+                  memo.push(device);
+                }
+
+                return memo;
+              }, []);
+
               project.devices = body.devices || [];
               project.rels = body.rels || [];
             }
@@ -281,7 +295,12 @@ module.exports = function(app){
       req.body = _.reduce(req.body, function(memo, value, key){
         if (_.contains(root, key)) {
           memo[key] = value;
+
         } else if (!_.contains(ignore, key)) {
+          if (_.isPlainObject(value)) {
+            value = JSON.stringify(value);
+          }
+
           memo.properties[key] = value;
         }
         return memo;
@@ -329,10 +348,16 @@ module.exports = function(app){
         'id'
       ]),
       translate: function(body, next){
-        next(_.extend({},
+        body = _.extend({},
           body.properties,
           _.omit(body, 'properties')
-        ));
+        );
+
+        if (body.renderings) {
+          body.renderings = JSON.parse(body.renderings);
+        }
+
+        next(body);
       }
     }));
 
@@ -347,10 +372,16 @@ module.exports = function(app){
         'relationship_label'
       ]),
       translate: function(body, next){
-        next(_.extend({},
+        body = _.extend({},
           body.properties,
           _.omit(body, 'properties')
-        ));
+        );
+
+        if (body.renderings) {
+          body.renderings = JSON.parse(body.renderings);
+        }
+
+        next(body);
       }
     }));
 
