@@ -116,8 +116,23 @@ function(
         //shared: true,
 
       },
+      legend: {
+        itemStyle: {
+          color: '#ccc'
+        },
+        itemHoverStyle: {
+          color: '#fff'
+        }
+      },
       xAxis: {
         type: 'datetime'
+      },
+      yAxis: {
+        title: {
+          style: {
+            color: '#ccc'
+          }
+        }
       }
     },
     attributes: {
