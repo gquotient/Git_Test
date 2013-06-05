@@ -34,7 +34,6 @@ primaryBorderStyle = borderBasicDark;
   width: 100%;
   height: pageNavHeight;
   line-height: pageNavHeight;
-  overflow: hidden;
   position: relative;
   z-index: 201;
   padding: 0 6px;
@@ -78,16 +77,51 @@ primaryBorderStyle = borderBasicDark;
   }
 }
 
+hoverNavBGColor = #444;
+
 .settingsList {
   width: 30px;
   height: pageNavHeight - 2px;;
   background: url(../img/icon_settings.png) center center no-repeat;
   opacity: .25;
+  position: relative;
   &:hover {
-    opacity: .75;
+    opacity: 1;
+    background-color: hoverNavBGColor;
+    ul {
+      display: inherit;
+    }
   }
   &#pageSettings {
     float:right;
+  }
+  ul {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 28px;
+    padding: 0;
+    margin: 0;
+    z-index: 301;
+    white-space: nowrap;
+    background: hoverNavBGColor;
+    text-shadow: none;
+    li {
+      font-size: .85em;
+      line-height: 24px;
+      padding: 0 6px;
+      border-bottom: 1px solid #404040;
+      a {
+        display: inline-block;
+        width: 100%;
+        line-height: 24px;
+        color: #ccc;
+        text-decoration: none;
+        &:hover {
+          color: #fff;
+        }
+      }
+    }
   }
 }
 
