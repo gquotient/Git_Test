@@ -61,7 +61,7 @@ define([
       this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])
       });
-
+      console.log(this.model.id);
       this.chartView_powerHistory = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
           'timezone': this.model.get('timezone'),
@@ -69,7 +69,7 @@ define([
             {
               //This is a hack because the model service and data
               //aren't quite the same
-              'project_label': this.model.id.split('_')[0],
+              'project_label': this.model.id,
               'ddl': 'env_300',
               'dtstart': 'today',
               'dtstop': 'now',
@@ -80,14 +80,11 @@ define([
               ]
             },
             {
-              'project_label': this.model.id.split('_')[0],
+              'project_label': this.model.id,
               'ddl': 'pgen-rm_300',
               'dtstart': 'today',
               'dtstop': 'now',
-              'columns': ['freezetime', 'value_mean'],
-              'filters': [
-                {'column': 'attribute', 'in_set': ['ac_power']}
-              ]
+              'columns': ['freezetime', 'ac_power']
             }
           ]
         }),
