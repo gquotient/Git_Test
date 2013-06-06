@@ -40,8 +40,7 @@ define([
       kpis: '#kpis',
       issues: '#issues',
       chart_powerHistory: '#chart_powerHistory',
-      chart_healthAndSoiling: '#chart_healthAndSoiling',
-      pageSettings: '#pageSettings'
+      chart_healthAndSoiling: '#chart_healthAndSoiling'
     },
 
     onShow: function(){
