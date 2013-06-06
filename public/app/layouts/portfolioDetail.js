@@ -41,9 +41,11 @@ define([
       },
 
     initialize: function(options){
+
+      console.log(options.portfolios);
       // Build primary portfolio nav
       this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
-        collection: options.model.portfolios
+        collection: options.portfolios
       });
 
       // Build KPIs

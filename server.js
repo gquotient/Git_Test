@@ -14,6 +14,7 @@ var express = require('express')
   , DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy
   , fs = require('fs')
   , hbs = require('hbs')
+  , net = require('net')
   , routes = require('./routes');
 
 /*

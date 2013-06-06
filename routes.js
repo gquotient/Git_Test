@@ -192,10 +192,6 @@ module.exports = function(app){
   // PROJECTS
   //////
 
-  app.get('/api/teamprojects', makeRequest({
-    path: '/res/teamprojects'
-  }))
-
   app.get('/api/projects',
     function(req, res){
       request({
@@ -321,9 +317,6 @@ module.exports = function(app){
   //////
   // DEVICES
   //////
-  app.get('/api/:project_label/devices', makeRequest({
-    path: '/api/project/devices/ROCKYFACE_01'
-  }));
 
   app.post('/api/devices',
     makeRequest({
@@ -475,7 +468,6 @@ module.exports = function(app){
       path: '/res/usermgt'
     }));
 
-
   ///////
   // Data
   /////
@@ -483,6 +475,20 @@ module.exports = function(app){
   app.get('/api/arrayPower',
     function(req, res){
       fs.readFile('./data/json/arrayPower.json', 'utf8', function (err, data) {
+        if (err) {
+          return console.log(err);
+        }
+        res.end(data);
+      });
+    });
+
+  ///////
+  // Alarms
+  /////
+
+  app.get('/api/issues',
+    function(req, res){
+      fs.readFile('./data/json/issues.json', 'utf8', function (err, data) {
         if (err) {
           return console.log(err);
         }

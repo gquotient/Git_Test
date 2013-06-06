@@ -60,7 +60,7 @@ define([
         }
 
         // Build portfolio view
-        var contentLayout = new PortfolioDetailLayout({model: portfolio});
+        var contentLayout = new PortfolioDetailLayout({model: portfolio, portfolios: this.app.rootPortfolio.portfolios});
         this.mainContent.show(contentLayout);
       }
     },
@@ -85,20 +85,19 @@ define([
       this.listenTo(Backbone, 'click:portfolio', function(model){
         this.activePortfolio = model;
         Backbone.trigger('update:breadcrumbs', model);
+        Backbone.history.navigate('/portfolio/' + model.id);
       }, this);
 
       this.listenTo(Backbone, 'select:project', function(model){
-        // Set address bar and force routing
         Backbone.history.navigate('/project/' + model.id);
         this.showProject(model, this.activePortfolio.projects);
       }, this);
 
-      // Set up listeners
-      this.listenTo(Backbone, 'select:portfolio', function(model){
+      this.listenTo(Backbone, 'click:project', function(model){
         // Set address bar
-        Backbone.history.navigate('/portfolio/' + model.id);
-        that.showPortfolio(model);
+        Backbone.history.navigate('/project/' + model.id);
       });
+
     }
   });
 });
