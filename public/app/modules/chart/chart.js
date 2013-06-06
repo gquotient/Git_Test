@@ -1,3 +1,14 @@
+/*
+
+  TODO:
+
+  [ ] Smart axis selection
+  [ ] Smart axis labels
+  [ ] Revert to normal colors when same data type is displayed
+  [ ] Area chart (health and soiling)
+
+*/
+
 define(
 [
   'jquery',
@@ -25,19 +36,23 @@ function(
   Chart.seriesDefaults = {
     health: $.extend(_.clone(basicSeries), {
       name: 'Health',
-      color: 'purple'
+      color: 'purple',
+      unit: '%'
     }),
     soiling: $.extend(_.clone(basicSeries), {
       name: 'Soiling',
-      color: 'green'
+      color: 'green',
+      unit: '%'
     }),
     irradiance: $.extend(_.clone(basicSeries), {
       name: 'Irradiance',
-      color: '#DFD85C'
+      color: '#DFD85C',
+      unit: 'W/M2'
     }),
     power: $.extend(_.clone(basicSeries), {
       name: 'Power',
-      color: '#369'
+      color: '#369',
+      unit: 'W'
     })
   };
 
@@ -166,17 +181,21 @@ function(
       },
       xAxis: {
         type: 'datetime',
+        tickColor: '#555',
         gridLineColor: '#444', //Lines inside plot
         lineColor: '#555' //Bottom line of plot
       },
-      yAxis: {
-        title: {
-          style: {
-            color: '#ccc',
-            'font-weight': 'normal'
+      yAxis: [
+        {
+          gridLineColor: '#444', //Lines inside plot
+          title: {
+            style: {
+              color: '#ccc',
+              'font-weight': 'normal'
+            }
           }
         }
-      }
+      ]
     },
     attributes: {
       class: 'chart'
@@ -214,6 +233,13 @@ function(
           type: 'line',
           renderTo: this.el
         },
+        yAxis: [
+          {
+            title: {
+              text: this.options.series[0].unit
+            }
+          }
+        ],
         series: this.options.series
       }));
 
