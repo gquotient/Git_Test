@@ -483,7 +483,6 @@ module.exports = function(app){
           'Content-Type': 'application/json'
         }
       }, function(err, response, body){
-        console.log(err, body);
         res.end(body);
       });
 
