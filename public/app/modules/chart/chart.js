@@ -50,12 +50,22 @@ function(
     irradiance: $.extend(_.clone(basicSeries), {
       name: 'Irradiance',
       color: '#DFD85C',
-      unit: 'W/M2'
+      unit: 'W/m²'
     }),
     power: $.extend(_.clone(basicSeries), {
       name: 'Power',
       color: '#369',
       unit: 'W'
+    }),
+    voltage: $.extend(_.clone(basicSeries), {
+      name: 'Voltage',
+      color: '#f16eaa',
+      unit: 'V'
+    }),
+    current: $.extend(_.clone(basicSeries), {
+      name: 'Current',
+      color: '#acd473',
+      unit: 'I'
     })
   };
 
