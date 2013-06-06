@@ -103,7 +103,11 @@ define([
 
       Backbone.trigger('set:breadcrumbs', project);
 
-      this.contentLayout = new ProjectDetailLayout({model: project});
+      this.contentLayout = new ProjectDetailLayout({
+        model: project,
+        settingsRegion: this.mainLayout.pageSettings
+      });
+
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
@@ -122,7 +126,7 @@ define([
     },
 
     initialize: function(){
-      this.mainLayout = new MainLayout(ia);
+      this.mainLayout = new MainLayout({currentUser: ia.currentUser});
       ia.main.show(this.mainLayout);
     }
   });

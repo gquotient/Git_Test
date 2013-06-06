@@ -205,10 +205,8 @@ function(
       this.model.getData();
     },
     initialize: function(options){
-      console.log('init', this, this.model);
+      //console.log('init', this, this.model);
       var that = this;
-
-      this.options = _.extend(this.options, options);
 
       // Instantiate the chart
       this.chart = new Highcharts.Chart($.extend(true, this.chartOptions, {

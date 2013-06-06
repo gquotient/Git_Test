@@ -32,7 +32,7 @@ define([
 
     regions: {
       header: '#header',
-      notificationBanner: '#notificationBanner',
+      banner: '#banner',
       navigation: '#nav_page',
       breadcrumbs: '#breadcrumbs',
       pageSettings: '#pageSettings',
@@ -49,25 +49,33 @@ define([
     toggleNotificationBanner: function(){
       var notification = new Message.views.notificationBanner();
 
-      this.notificationBanner.show(notification);
+      this.banner.show(notification);
 
-      // This class affects the height of the main content container
-      $('#page').addClass('withBanner');
-
-      // This listener will have to be somewhere smarter
-      this.listenTo(notification, 'close', function(){
+      notification.on('close', function(){
         $('#page').removeClass('withBanner');
       });
     },
 
-    initialize: function(app){
-      this.app = app;
-
+    initialize: function(options){
       // Build header
-      this.headerView = new Header({model: app.currentUser});
+      this.headerView = new Header({model: options.currentUser});
 
       // Build navigation
       this.navigationView = new Navigation();
+
+      // Special page settings handling
+      this.pageSettings.on('show', function(){
+        this.$el.addClass('active');
+      });
+
+      this.pageSettings.on('close', function(){
+        this.$el.removeClass('active');
+      });
+
+      // Special notification banner handling
+      this.banner.on('show', function(){
+        $('#page').addClass('withBanner');
+      });
     }
   });
 });

@@ -1,5 +1,6 @@
 define([
   'jquery',
+  'underscore',
   'backbone',
   'backbone.marionette',
   'handlebars',
@@ -12,6 +13,7 @@ define([
   'hbs!layouts/templates/projectDetail'
 ], function(
   $,
+  _,
   Backbone,
   Marionette,
   Handlebars,
@@ -38,13 +40,8 @@ define([
       kpis: '#kpis',
       issues: '#issues',
       chart_powerHistory: '#chart_powerHistory',
-      chart_healthAndSoiling: '#chart_healthAndSoiling'
-    },
-
-    events: {
-      'click .edit': function(){
-        Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
-      }
+      chart_healthAndSoiling: '#chart_healthAndSoiling',
+      pageSettings: '#pageSettings'
     },
 
     onShow: function(){
@@ -58,19 +55,34 @@ define([
     },
 
     buildSettings: function(){
-      this.settings = $('<ul><li><a href="/ia/project/' + this.model.id + '/edit" class="edit">Edit Project</a></li></ul>');
+      var that = this;
 
-      var $pageSettings = $('#pageSettings');
+      //Create settings view
+      this.settings = new Marionette.ItemView({
+        tagName: 'ul',
+        template: _.template('<li><a href="#" class="edit">Edit Project</a></li>')
+      });
 
-      $pageSettings.append(this.settings);
-      $pageSettings.addClass('active');
+      //Show ItemView in cached region
+      this.options.settingsRegion.show(this.settings);
+
+      //Add active class to show settings dropdown
+      this.options.settingsRegion.$el.addClass('active');
+
+      //Define listeners
+      this.options.settingsRegion.$el.find('.edit').on('click', function(event){
+        event.preventDefault();
+
+        //Navigate to edit view
+        Backbone.history.navigate('/project/' + that.model.id + '/edit', true);
+      });
     },
 
     onClose: function(){
-      var $pageSettings = $('#pageSettings');
-
-      $pageSettings.empty();
-      $pageSettings.removeClass('active');
+      // Clean up contextual settings
+      this.options.settingsRegion.close();
+      this.options.settingsRegion.$el.removeClass('active');
+      this.options.settingsRegion.$el.find('.edit').off();
     },
 
     initialize: function(options){
@@ -81,7 +93,7 @@ define([
       this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])
       });
-      console.log(this.model.id);
+
       this.chartView_powerHistory = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
           'timezone': this.model.get('timezone'),
