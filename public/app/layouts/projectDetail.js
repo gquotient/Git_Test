@@ -93,8 +93,6 @@ define([
           'timezone': this.model.get('timezone'),
           'dataType': [
             {
-              //This is a hack because the model service and data
-              //aren't quite the same
               'project_label': this.model.id,
               'ddl': 'env_300',
               'dtstart': 'today',
@@ -125,8 +123,6 @@ define([
           'timezone': this.model.get('timezone'),
           'dataType': [
             {
-              //This is a hack because the model service and data
-              //aren't quite the same
               'project_label': this.model.id,
               'ddl': 'env_300',
               'dtstart': 'today',
