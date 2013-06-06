@@ -24,8 +24,6 @@ define(['backbone'], function(Backbone){
       name: 'Load',
       prefix: 'LD',
       relationships: [
-        {label: 'MEASURED_BY', direction: 'OUTGOING', device_type: 'METER'},
-
         {label: 'FLOWS', direction: 'OUTGOING', device_type: 'AC_BUS'},
         {label: 'FLOWS', direction: 'OUTGOING', device_type: 'TRANSFORMER'},
         {label: 'FLOWS', direction: 'OUTGOING', device_type: 'INTERCONNECT'}
@@ -61,7 +59,6 @@ define(['backbone'], function(Backbone){
       prefix: 'RM',
       relationships: [
         {label: 'MEASURED_BY', direction: 'INCOMING', device_type: 'INVERTER'},
-        {label: 'MEASURED_BY', direction: 'INCOMING', device_type: 'LOAD'},
         {label: 'MEASURED_BY', direction: 'INCOMING', device_type: 'AC_BUS'}
       ],
       renderings: [
