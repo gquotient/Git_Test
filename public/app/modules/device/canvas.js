@@ -6,8 +6,7 @@ define([
   'jquery.mousewheel',
   'paper',
 
-  './canvas_symbols',
-  './canvas_selection'
+  './canvas_symbols'
 ], function(
   $,
   _,
@@ -16,8 +15,7 @@ define([
   wheel,
   paper,
 
-  symbolLibrary,
-  Selection
+  symbolLibrary
 ){
   var
     EdgeView = Marionette.ItemView.extend({
@@ -220,7 +218,17 @@ define([
 
     initialize: function(options){
       this.paper = paper.setup(this.el);
-      this.selection = new Selection();
+      this.selection = new Backbone.Collection();
+
+      this.listenTo(this.selection, 'add', function(model){
+        Backbone.trigger('editor:selection', this.selection);
+        model.trigger('selected');
+      });
+
+      this.listenTo(this.selection, 'remove', function(model){
+        Backbone.trigger('editor:selection', this.selection);
+        model.trigger('deselected');
+      });
 
       this.listenTo(Backbone, 'editor:mousemove editor:mouseup', this.handleMouseEvent);
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
@@ -286,24 +294,29 @@ define([
     },
 
     onMousedown: function(e){
-      var item = this.children.find(function(view){
-        return view.testHit(e.projectPoint);
+      var model;
+
+      this.children.any(function(view){
+        if (view.testHit(e.projectPoint)) {
+          model = view.model;
+          return true;
+        }
       });
 
       // Make sure any lingering select boxes are removed.
       if (this.select) { this.eraseSelect(); }
 
-      // Create a select box if not on an item.
-      if (!item) {
+      // Create a select box if not on a device.
+      if (!model) {
         this.drawSelect(e.projectPoint);
 
-      // Otherwise add the item if not already included.
-      } else if (!this.selection.contains(item)) {
-        this.selection.add(item, {remove: !e.ctrlKey});
+      // Otherwise add the model if not already included.
+      } else if (!this.selection.contains(model)) {
+        this.selection.add(model, {remove: !e.ctrlKey});
 
-      // Otherwise remove the item if ctrl is being pressed.
+      // Or remove the model if present and ctrl is being pressed.
       } else if (e.ctrlKey) {
-        this.selection.remove(item);
+        this.selection.remove(model);
       }
     },
 
@@ -317,73 +330,77 @@ define([
       } else if (this.select) {
         this.moveSelect(e.projectPoint);
 
-      // Otherwise move any items currently selected.
+      // Otherwise move any models currently selected.
       } else {
-        this.selection.moveAll(e.projectDelta);
+        this.moveSelection(e.projectDelta);
       }
     },
 
     onMouseup: function(e){
-      var items;
+      var models = [];
 
-      // Add any items within the select box if present.
+      // Add any models within the select box if present.
       if (this.select) {
-        items = this.children.filter(function(view){
-          return view.testInside(this.select);
+        this.children.each(function(view){
+          if (view.testInside(this.select)) {
+            models.push(view.model);
+          }
         }, this);
-        this.selection.add(items, {remove: !e.ctrlKey});
+
+        this.selection.add(models, {remove: !e.ctrlKey});
         this.eraseSelect();
 
-      // Otherwise snap any items that may have moved.
+      // Otherwise snap any models that may have moved.
       } else {
-        this.selection.snapAll();
+        this.snapSelection();
       }
     },
 
     onKeyTab: function(e){
-      var model = this.selection.models.last();
-      this.selection.add({model: this.collection.next(model)}, {remove: !e.ctrlKey});
+      var model = this.selection.last();
+
+      this.selection.add(this.collection.next(model), {remove: !e.ctrlKey});
       this.paper.view.draw();
     },
 
     onKeyLeft: function(e){
-      var model = this.selection.models.last() || this.collection.last(),
+      var model = this.selection.last() || this.collection.last(),
         parnt = model && model.incoming && model.incoming.first(),
         sibling = parnt && parnt.outgoing && parnt.outgoing.previous(model);
 
       if (sibling) {
-        this.selection.add({model: sibling}, {remove: !e.ctrlKey});
+        this.selection.add(sibling, {remove: !e.ctrlKey});
         this.paper.view.draw();
       }
     },
 
     onKeyRight: function(e){
-      var model = this.selection.models.last() || this.collection.last(),
+      var model = this.selection.last() || this.collection.last(),
         parnt = model && model.incoming && model.incoming.last(),
         sibling = parnt && parnt.outgoing && parnt.outgoing.next(model);
 
       if (sibling) {
-        this.selection.add({model: sibling}, {remove: !e.ctrlKey});
+        this.selection.add(sibling, {remove: !e.ctrlKey});
         this.paper.view.draw();
       }
     },
 
     onKeyUp: function(e){
-      var model = this.selection.models.last() || this.collection.last(),
+      var model = this.selection.last() || this.collection.last(),
         parnt = model && model.incoming && model.incoming.first();
 
       if (parnt && parnt.has('device_type')) {
-        this.selection.add({model: parnt}, {remove: !e.ctrlKey});
+        this.selection.add(parnt, {remove: !e.ctrlKey});
         this.paper.view.draw();
       }
     },
 
     onKeyDown: function(e){
-      var model = this.selection.models.last() || this.collection.last(),
+      var model = this.selection.last() || this.collection.last(),
         child = model && model.outgoing && model.outgoing.first();
 
       if (child) {
-        this.selection.add({model: child}, {remove: !e.ctrlKey});
+        this.selection.add(child, {remove: !e.ctrlKey});
         this.paper.view.draw();
       }
     },
@@ -415,6 +432,30 @@ define([
     eraseSelect: function(){
       this.select.remove();
       this.select = null;
+    },
+
+    moveSelection: function(delta){
+      this.selection.each(function(model) {
+        var position = model.getPosition('ELECTRICAL');
+
+        model.setPosition('ELECTRICAL', {
+          x: position.x + delta.x,
+          y: position.y + delta.y
+        });
+      }, this);
+    },
+
+    snapSelection: function(){
+      this.selection.each(function(model) {
+        var position = model.getPosition('ELECTRICAL');
+
+        model.setPosition('ELECTRICAL', {
+          x: Math.round(position.x / 100) * 100,
+          y: Math.round(position.y / 100) * 100
+        });
+
+        model.save();
+      }, this);
     },
 
     // Overwrite this function so that item views aren't added to the dom.
