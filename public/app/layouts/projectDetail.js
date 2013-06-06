@@ -66,9 +66,6 @@ define([
       //Show ItemView in cached region
       this.options.settingsRegion.show(this.settings);
 
-      //Add active class to show settings dropdown
-      this.options.settingsRegion.$el.addClass('active');
-
       //Define listeners
       this.options.settingsRegion.$el.find('.edit').on('click', function(event){
         event.preventDefault();
@@ -81,8 +78,6 @@ define([
     onClose: function(){
       // Clean up contextual settings
       this.options.settingsRegion.close();
-      this.options.settingsRegion.$el.removeClass('active');
-      this.options.settingsRegion.$el.find('.edit').off();
     },
 
     initialize: function(options){
