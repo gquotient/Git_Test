@@ -28,11 +28,14 @@ function(
 ){
   var Chart = { models: {}, views: {} };
 
+  // NOTE: This isn't particularly useful at the moment
+  // but may be helpful if series share multiple properties
   var basicSeries = {
     name: 'Series',
     data: []
   };
 
+  // Set up default colors, labels, etc. for data types
   Chart.seriesDefaults = {
     health: $.extend(_.clone(basicSeries), {
       name: 'Health',
@@ -268,8 +271,6 @@ function(
 
       // Run series through axis selector
       this.options.series = this.smartAxesSelector(this.options.series);
-
-      console.log(this.options.series);
 
       // Instantiate the chart
       this.chart = new Highcharts.Chart($.extend(true, this.chartOptions, {
