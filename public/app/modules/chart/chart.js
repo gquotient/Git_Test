@@ -2,8 +2,8 @@
 
   TODO:
 
-  [ ] Smart axis selection
-  [ ] Smart axis labels
+  [x] Smart axis selection
+  [x] Smart axis labels
   [ ] Revert to normal colors when same data type is displayed
   [ ] Area chart (health and soiling)
 
@@ -194,6 +194,16 @@ function(
               'font-weight': 'normal'
             }
           }
+        },
+        {
+          opposite: true,
+          gridLineColor: '#444', //Lines inside plot
+          title: {
+            style: {
+              color: '#ccc',
+              'font-weight': 'normal'
+            }
+          }
         }
       ]
     },
@@ -212,6 +222,35 @@ function(
       if (this.chart) {
         this.chart.destroy();
       }
+    },
+    smartAxesSelector: function(series){
+      var axes = [];
+
+      _.each(series, function(serie, index){
+        if (axes.indexOf(serie.unit) < 0) {
+          axes.push(serie.unit);
+        }
+        serie.yAxis = axes.indexOf(serie.unit);
+      });
+
+      return series;
+    },
+    smartAxesTitles: function(series){
+      var titles = [];
+
+      _.each(series, function(serie, index){
+        if (!titles[serie.yAxis]) {
+          var title = {
+            title: {
+              text: serie.unit
+            }
+          };
+
+          titles[serie.yAxis] = title;
+        }
+      });
+
+      return titles;
     }
   });
 
@@ -227,19 +266,18 @@ function(
       //console.log('init', this, this.model);
       var that = this;
 
+      // Run series through axis selector
+      this.options.series = this.smartAxesSelector(this.options.series);
+
+      console.log(this.options.series);
+
       // Instantiate the chart
       this.chart = new Highcharts.Chart($.extend(true, this.chartOptions, {
         chart: {
           type: 'line',
           renderTo: this.el
         },
-        yAxis: [
-          {
-            title: {
-              text: this.options.series[0].unit
-            }
-          }
-        ],
+        yAxis: this.smartAxesTitles(this.options.series),
         series: this.options.series
       }));
 
