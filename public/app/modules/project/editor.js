@@ -8,6 +8,7 @@ define([
   './editor_util',
 
   'hbs!project/templates/editorIndex',
+  'hbs!project/templates/editorView',
   'hbs!project/templates/editorAdd',
   'hbs!project/templates/editorConnect',
   'hbs!project/templates/editorDisconnect',
@@ -22,12 +23,59 @@ define([
   util,
 
   editorIndexTemplate,
+  editorViewTemplate,
   editorAddTemplate,
   editorConnectTemplate,
   editorDisconnectTemplate,
   editorImportTemplate
 ){
   var
+
+    ViewView = InputView.extend({
+      hotKey: 118, // the v key
+      template: {
+        type: 'handlebars',
+        template: editorViewTemplate
+      },
+
+      initialize: function(){
+        this.views = new Backbone.Collection(util.filterForView());
+      },
+
+      onRender: function(){
+        var model = this.views.first();
+
+        if (model) {
+          Backbone.trigger('editor:rendering', model.get('label'));
+          this.placeholder = model.get('name');
+
+          this.ui.input.val(this.placeholder);
+        }
+      },
+
+      filterCollection: function(regexp){
+        var models = this.views.models;
+
+        if (regexp && models.length > 0) {
+          models = _.filter(models, function(model){
+            return regexp.test(model.get('name'));
+          });
+        }
+
+        this.collection.reset(models);
+      },
+
+      onApply: function(){
+        var model = this.views.findWhere({name: this.parseInput()});
+
+        if (model) {
+          Backbone.trigger('editor:rendering', model.get('label'));
+          this.placeholder = model.get('name');
+
+          this.ui.input.blur();
+        }
+      }
+    }),
 
     AddView = InputView.extend({
       hotKey: 97, // the a key
@@ -176,6 +224,7 @@ define([
     },
 
     regions: {
+      view: '#view',
       add: '#add',
       connect: '#connect',
       disconnect: '#disconnect',
@@ -183,6 +232,7 @@ define([
     },
 
     onShow: function(){
+      this.view.show( new ViewView({project: this.model}) );
       this.add.show( new AddView({project: this.model}) );
       this.connect.show( new ConnectView({project: this.model}) );
       this.disconnect.show( new DisconnectView({project: this.model}) );

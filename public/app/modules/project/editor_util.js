@@ -131,6 +131,36 @@ define([
   }
 
   return {
+
+    filterForView: function(){
+      return library.chain()
+
+        // Convert library to a list of uniq rendering labels
+        .reduce(function(memo, model){
+          var renderings = model.get('renderings');
+
+          _.each(renderings, function(rendering){
+            var label = rendering.label;
+
+            if (label && !_.contains(memo, label)) {
+              memo.push(label);
+            }
+          });
+
+          return memo;
+        }, [])
+
+        // Add a name field to each with the label capitalized
+        .map(function(label){
+          return {
+            name: label[0].toUpperCase() + label.slice(1).toLowerCase(),
+            label: label
+          };
+        })
+
+        .value();
+    },
+
     filterForAdd: function(selection){
       var types;
 
