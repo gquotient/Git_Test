@@ -1,4 +1,5 @@
 define([
+  'jquery',
   'backbone',
   'backbone.marionette',
   'handlebars',
@@ -10,6 +11,7 @@ define([
 
   'hbs!layouts/templates/projectDetail'
 ], function(
+  $,
   Backbone,
   Marionette,
   Handlebars,
@@ -55,8 +57,26 @@ define([
       this.issues.show(this.issueView);
     },
 
+    buildSettings: function(){
+      this.settings = $('<ul><li><a href="/ia/project/' + this.model.id + '/edit" class="edit">Edit Project</a></li></ul>');
+
+      var $pageSettings = $('#pageSettings');
+
+      $pageSettings.append(this.settings);
+      $pageSettings.addClass('active');
+    },
+
+    onClose: function(){
+      var $pageSettings = $('#pageSettings');
+
+      $pageSettings.empty();
+      $pageSettings.removeClass('active');
+    },
+
     initialize: function(options){
       this.model = options.model;
+
+      this.buildSettings();
 
       this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])
