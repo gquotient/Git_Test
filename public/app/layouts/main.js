@@ -47,7 +47,10 @@ define([
     },
 
     toggleNotificationBanner: function(){
-      var notification = new Message.views.notificationBanner();
+      var
+        that = this,
+        notification = new Message.views.notificationBanner({parentRegion: this.banner})
+      ;
 
       this.banner.show(notification);
 
@@ -75,6 +78,10 @@ define([
       // Special notification banner handling
       this.banner.on('show', function(){
         $('#page').addClass('withBanner');
+      });
+
+      this.banner.on('close', function(){
+        $('#page').removeClass('withBanner');
       });
     }
   });
