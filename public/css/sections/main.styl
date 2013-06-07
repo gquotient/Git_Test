@@ -178,26 +178,21 @@ primaryBorderStyle = borderBasicDark;
 /* Detail View */
 
 #page {
-  //border: 1px solid #f00;
+  // Force overflow hidden to prevent any chance of doubled scroll bars
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  padding-top: 0;
   height: 100%;
-  overflow: auto;
+  width: 100%;
+  padding-top: headerHeight + pageNavHeight + 4; // 4 is for body border-top
+  &.withBanner {
+    padding-top: bannerHeight + headerHeight + pageNavHeight + 4;
+  }
   > div { // This is an artifact of how Backbone/Marionette views work
     height: 100%;
     max-height: 100%;
     overflow: hidden;
-  }
-  .contentContainer {
-    // Force overflow hidden to prevent any chance of doubled scroll bars
-    position: absolute;
-    top: 0;
-    overflow: hidden;
-    padding-top: 0;
-    height: 100%;
-    width: 100%;
-    padding-top: headerHeight + pageNavHeight + 4; // 4 is for body border-top
-    &.withBanner {
-      padding-top: bannerHeight + headerHeight + pageNavHeight + 4;
-    }
   }
   .basicView {
     padding: 15px;
