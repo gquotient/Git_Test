@@ -25,10 +25,6 @@ define([
       crumbs: '#breadcrumbs'
     },
 
-    triggers: {
-      'click #edit': 'edit'
-    },
-
     initialize: function(){
       var breadcrumbs = new Breadcrumb.Collection();
       this.breadcrumbsView = new Breadcrumb.views.Breadcrumbs({collection: breadcrumbs});
@@ -44,10 +40,6 @@ define([
 
     onShow: function(){
       this.crumbs.show(this.breadcrumbsView);
-    },
-
-    onEdit: function(){
-      Backbone.trigger('edit');
     }
   });
 });
