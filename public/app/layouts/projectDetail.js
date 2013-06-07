@@ -51,6 +51,8 @@ define([
       this.chart_healthAndSoiling.show(this.chartView_healthAndSoiling);
 
       this.issues.show(this.issueView);
+
+      this.buildSettings();
     },
 
     buildSettings: function(){
@@ -81,8 +83,6 @@ define([
 
     initialize: function(options){
       this.model = options.model;
-
-      this.buildSettings();
 
       this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])

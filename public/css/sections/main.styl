@@ -6,7 +6,7 @@
    Portfolio Styles
    ========================================================================== */
 
-html, body {
+html, body, body > div {
   height: 100%;
 }
 
@@ -70,79 +70,19 @@ primaryBorderStyle = borderBasicDark;
       }
     }
   }
-  #edit {
-    color: colorDrakerOrange;
-    float: right;
-    cursor: pointer;
-  }
-}
-
-.settingsList {
-  width: 30px;
-  height: pageNavHeight - 2px;;
-  background: url(../img/icon_settings.png) center center no-repeat;
-  opacity: .25;
-  position: relative;
-  display: none;
-  &.active {
-    display: inherit;
-  }
-  &:hover {
-    opacity: 1;
-    background-color: colorDropDownBG;
-    ul {
+  .dropdown.settings {
+    width: 30px;
+    height: pageNavHeight - 2px;;
+    background: url(../img/icon_settings.png) center center no-repeat;
+    opacity: .25;
+    display: none;
+    &.active {
       display: inherit;
     }
-  }
-  &#pageSettings {
-    float:right;
-  }
-  ul {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 28px;
-    padding: 0;
-    margin: 0;
-    z-index: 301;
-    white-space: nowrap;
-    background: colorDropDownBG;
-    text-shadow: none;
-    list-style-type: none;
-    li {
-      font-size: .85em;
-      line-height: 24px;
-      padding: 0 6px;
-      border-bottom: 1px solid #404040;
-      a {
-        display: inline-block;
-        width: 100%;
-        line-height: 24px;
-        color: #ccc;
-        text-decoration: none;
-        &:hover {
-          color: #fff;
-        }
-      }
+    &:hover {
+      background-color: colorDropDownBG;
+      opacity: 1;
     }
-  }
-}
-
-body > div {
-  height: 100%;
-}
-
-.contentContainer {
-  // Force overflow hidden to prevent any chance of doubled scroll bars
-  position: absolute;
-  top: 0;
-  overflow: hidden;
-  padding-top: 0;
-  height: 100%;
-  width: 100%;
-  padding-top: headerHeight + pageNavHeight + 4; // 4 is for body border-top
-  &.withBanner {
-    padding-top: bannerHeight + headerHeight + pageNavHeight + 4;
   }
 }
 
@@ -233,23 +173,31 @@ body > div {
       }
     }
   }
-
 }
 
 /* Detail View */
-
-projectTableHeaderHeight = 24px;
-kpiHeight = 30px;
 
 #page {
   //border: 1px solid #f00;
   height: 100%;
   overflow: auto;
-
   > div { // This is an artifact of how Backbone/Marionette views work
     height: 100%;
     max-height: 100%;
     overflow: hidden;
+  }
+  .contentContainer {
+    // Force overflow hidden to prevent any chance of doubled scroll bars
+    position: absolute;
+    top: 0;
+    overflow: hidden;
+    padding-top: 0;
+    height: 100%;
+    width: 100%;
+    padding-top: headerHeight + pageNavHeight + 4; // 4 is for body border-top
+    &.withBanner {
+      padding-top: bannerHeight + headerHeight + pageNavHeight + 4;
+    }
   }
   .basicView {
     padding: 15px;
