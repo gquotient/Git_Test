@@ -34,7 +34,7 @@ define([
 
   // Create global collections and models
   ia.users = new User.Collection();
-  ia.rootPortfolio = new Portfolio.Root({label: 'all', name: 'All Portfolios'});
+  ia.rootPortfolio = new Portfolio.Root({label: 'all', display_name: 'All Portfolios'});
 
   // Bootstrap the root portfolios and projects
   ia.currentUser = ia.users.push( JSON.parse($('#currentUserData').html()) );

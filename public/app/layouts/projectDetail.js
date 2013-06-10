@@ -1,4 +1,6 @@
 define([
+  'jquery',
+  'underscore',
   'backbone',
   'backbone.marionette',
   'handlebars',
@@ -10,6 +12,8 @@ define([
 
   'hbs!layouts/templates/projectDetail'
 ], function(
+  $,
+  _,
   Backbone,
   Marionette,
   Handlebars,
@@ -35,38 +39,119 @@ define([
       map: '#map',
       kpis: '#kpis',
       issues: '#issues',
-      chart: '#chart'
-    },
-
-    events: {
-      'click .edit': function(){
-        Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
-      }
+      chart_powerHistory: '#chart_powerHistory',
+      chart_healthAndSoiling: '#chart_healthAndSoiling'
     },
 
     onShow: function(){
       this.map.show(this.mapView);
 
-      this.chart.show(this.chartView);
+      this.chart_powerHistory.show(this.chartView_powerHistory);
+
+      this.chart_healthAndSoiling.show(this.chartView_healthAndSoiling);
 
       this.issues.show(this.issueView);
+    },
+
+    buildSettings: function(){
+      var that = this;
+
+      //Create settings view
+      this.settings = new Marionette.ItemView({
+        tagName: 'ul',
+        template: _.template('<li><a href="#" class="edit">Edit Project</a></li>')
+      });
+
+      //Show ItemView in cached region
+      this.options.settingsRegion.show(this.settings);
+
+      //Define listeners
+      this.options.settingsRegion.$el.find('.edit').on('click', function(event){
+        event.preventDefault();
+
+        //Navigate to edit view
+        Backbone.history.navigate('/project/' + that.model.id + '/edit', true);
+      });
+    },
+
+    onClose: function(){
+      // Clean up contextual settings
+      this.options.settingsRegion.close();
     },
 
     initialize: function(options){
       this.model = options.model;
 
+      this.buildSettings();
+
       this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])
       });
 
-      this.chartView = new Chart.views.Line({
-        title: 'Array Power',
-        model: new Chart.models.timeSeries({url: '/api/arrayPower'}),
+      this.chartView_powerHistory = new Chart.views.Line({
+        model: new Chart.models.timeSeries().set({
+          'timezone': this.model.get('timezone'),
+          'dataType': [
+            {
+              //This is a hack because the model service and data
+              //aren't quite the same
+              'project_label': this.model.id,
+              'ddl': 'env_300',
+              'dtstart': 'today',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'value_mean'],
+              'filters': [
+                {'column': 'attribute', 'in_set': ['irradiance']},
+                {'column': 'identifier', 'in_set': ['ENV-1']}
+              ]
+            },
+            {
+              'project_label': this.model.id,
+              'ddl': 'pgen-rm_300',
+              'dtstart': 'today',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'ac_power']
+            }
+          ]
+        }),
         series: [
-          {
-            color: '#369',
-            data: []
-          }
+          Chart.seriesDefaults.irradiance,
+          Chart.seriesDefaults.power
+        ]
+      });
+
+      this.chartView_healthAndSoiling = new Chart.views.Line({
+        model: new Chart.models.timeSeries().set({
+          'timezone': this.model.get('timezone'),
+          'dataType': [
+            {
+              //This is a hack because the model service and data
+              //aren't quite the same
+              'project_label': this.model.id,
+              'ddl': 'env_300',
+              'dtstart': 'today',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'value_mean'],
+              'filters': [
+                {'column': 'attribute', 'in_set': ['irradiance']},
+                {'column': 'identifier', 'in_set': ['IRR-1']}
+              ]
+            },
+            {
+              'project_label': this.model.id,
+              'ddl': 'pgen-rm_300',
+              'dtstart': 'today',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'value_mean'],
+              'filters': [
+                {'column': 'attribute', 'in_set': ['ac_power']}
+              ]
+            }
+          ]
+        }),
+        series: [
+          Chart.seriesDefaults.health,
+          Chart.seriesDefaults.soiling
         ]
       });
 

@@ -180,12 +180,12 @@ module.exports = function(app){
 
   app.get('/api/portfolios',
     makeRequest({
-      path: '/res/portfolios',
+      path: '/res/portfolios'
     }));
 
   app.get('/api/portfolios/',
     makeRequest({
-      path: '/res/portfolios',
+      path: '/res/portfolios'
     }));
 
   //////
@@ -508,14 +508,19 @@ module.exports = function(app){
   // Data
   /////
 
-  app.get('/api/arrayPower',
+  app.post('/api/timeline',
     function(req, res){
-      fs.readFile('./data/json/arrayPower.json', 'utf8', function (err, data) {
-        if (err) {
-          return console.log(err);
+      request({
+        method: 'POST',
+        uri: app.get('dataUrl') + '/api/timeline?timezone=' + req.query.timezone,
+        body: JSON.stringify(req.body),
+        headers: {
+          'Content-Type': 'application/json'
         }
-        res.end(data);
+      }, function(err, response, body){
+        res.end(body);
       });
+
     });
 
   ///////

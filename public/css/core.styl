@@ -409,13 +409,21 @@ leftColumnWidth = 240px;
 
 .container {
   overflow: hidden;
-  .left {
-    width: 50%;
+}
+
+.moduleContainer {
+  overflow: hidden;
+  padding:6px;
+  height: 300px;
+  &.half {
     float: left;
-  }
-  .right {
     width: 50%;
-    float: right;
+  }
+  @media screen and (max-width: 1000px) {
+    &.half {
+      float: none;
+      width: 100%;
+    }
   }
 }
 
