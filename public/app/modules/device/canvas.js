@@ -21,8 +21,10 @@ define([
     EdgeView = Marionette.ItemView.extend({
 
       initialize: function(options){
-        this.paper = options.paper || paper;
         this.device = options.device;
+
+        this.paper = options.paper || paper;
+        this.rendering = options.rendering;
 
         this.listenTo(this.device, 'change:renderings', this.move);
         this.listenTo(this.model, 'change:renderings', this.move);
@@ -80,11 +82,11 @@ define([
       },
 
       startPoint: function(){
-        return new this.paper.Point(this.device.getPosition('ELECTRICAL'));
+        return new this.paper.Point(this.device.getPosition(this.rendering));
       },
 
       endPoint: function(){
-        return new this.paper.Point(this.model.getPosition('ELECTRICAL'));
+        return new this.paper.Point(this.model.getPosition(this.rendering));
       },
 
       move: function(){
@@ -124,19 +126,35 @@ define([
       itemView: EdgeView,
 
       itemViewOptions: function(){
-        return {paper: this.paper, device: this.model};
+        return {
+          device: this.model,
+          paper: this.paper,
+          rendering: this.rendering
+        };
       },
 
       initialize: function(options){
         this.collection = this.model.outgoing;
 
         this.paper = options.paper || paper;
+        this.rendering = options.rendering;
+
         this.factory = symbolLibrary(this.paper);
         this.setCenter();
 
         this.on('render', this.draw);
         this.on('close', this.erase);
       },
+
+      // Overwrite this function to prevent rendering of children without position
+      addItemView: function(model){
+        if (model.getPosition(this.rendering)){
+          Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
+        }
+      },
+
+      // Overwrite this function so that item views aren't added to the dom.
+      appendHtml: function(){},
 
       modelEvents: {
         'selected': 'select',
@@ -185,7 +203,7 @@ define([
 
       setCenter: function(){
         var orig = this.center,
-          point = this.center = new this.paper.Point(this.model.getPosition('ELECTRICAL')),
+          point = this.center = new this.paper.Point(this.model.getPosition(this.rendering)),
           delta = point.subtract(orig);
 
         if (this.node) { this.node.translate(delta); }
@@ -198,10 +216,7 @@ define([
 
       testInside: function(rect){
         return this.center.isInside(rect);
-      },
-
-      // Overwrite this function so that item views aren't added to the dom.
-      appendHtml: function(){}
+      }
     });
 
   return Marionette.CollectionView.extend({
@@ -209,7 +224,10 @@ define([
     itemView: NodeView,
 
     itemViewOptions: function(){
-      return {paper: this.paper};
+      return {
+        paper: this.paper,
+        rendering: this.rendering
+      };
     },
 
     attributes: {
@@ -218,6 +236,8 @@ define([
 
     initialize: function(options){
       this.paper = paper.setup(this.el);
+      this.rendering = options.rendering;
+
       this.selection = new Backbone.Collection();
 
       this.listenTo(this.selection, 'add', function(model){
@@ -233,6 +253,16 @@ define([
       this.listenTo(Backbone, 'editor:mousemove editor:mouseup', this.handleMouseEvent);
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
     },
+
+    // Overwrite this function to prevent rendering of children without position
+    addItemView: function(model){
+      if (model.getPosition(this.rendering)){
+        Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
+      }
+    },
+
+    // Overwrite this function so that item views aren't added to the dom.
+    appendHtml: function(){},
 
     events: {
       'mousedown': 'handleMouseEvent',
@@ -436,9 +466,9 @@ define([
 
     moveSelection: function(delta){
       this.selection.each(function(model) {
-        var position = model.getPosition('ELECTRICAL');
+        var position = model.getPosition(this.rendering);
 
-        model.setPosition('ELECTRICAL', {
+        model.setPosition(this.rendering, {
           x: position.x + delta.x,
           y: position.y + delta.y
         });
@@ -447,18 +477,15 @@ define([
 
     snapSelection: function(){
       this.selection.each(function(model) {
-        var position = model.getPosition('ELECTRICAL');
+        var position = model.getPosition(this.rendering);
 
-        model.setPosition('ELECTRICAL', {
+        model.setPosition(this.rendering, {
           x: Math.round(position.x / 100) * 100,
           y: Math.round(position.y / 100) * 100
         });
 
         model.save();
       }, this);
-    },
-
-    // Overwrite this function so that item views aren't added to the dom.
-    appendHtml: function(){}
+    }
   });
 });
