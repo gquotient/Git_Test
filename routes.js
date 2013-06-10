@@ -80,7 +80,7 @@ module.exports = function(app){
             role: roles[req.user.role]
           }),
           portfolios: portfolios,
-          projects: JSON.stringify(JSON.parse(projects).projects),
+          projects: JSON.stringify(JSON.parse(projects).projects || []),
           locale: req.user.locale || req.acceptedLanguages[0].toLowerCase()
         });
       });

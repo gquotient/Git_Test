@@ -92,19 +92,23 @@ define([
     projectEdit: function(id){
       var project = this.findProject(id);
 
-      Backbone.trigger('set:breadcrumbs', {name: 'Edit'});
+      if (project) {
+        Backbone.trigger('set:breadcrumbs', {name: 'Edit'});
 
-      this.contentLayout = new ProjectEditorLayout({model: project});
-      this.mainLayout.mainContent.show(this.contentLayout);
+        this.contentLayout = new ProjectEditorLayout({model: project});
+        this.mainLayout.mainContent.show(this.contentLayout);
+      }
     },
 
     projectDetail: function(id){
       var project = this.findProject(id);
 
-      Backbone.trigger('set:breadcrumbs', project);
+      if (project) {
+        Backbone.trigger('set:breadcrumbs', project);
 
-      this.contentLayout = new ProjectDetailLayout({model: project});
-      this.mainLayout.mainContent.show(this.contentLayout);
+        this.contentLayout = new ProjectDetailLayout({model: project});
+        this.mainLayout.mainContent.show(this.contentLayout);
+      }
     },
 
     profile: function(){
