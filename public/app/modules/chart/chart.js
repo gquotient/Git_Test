@@ -1,3 +1,14 @@
+/*
+
+  TODO:
+
+  [x] Smart axis selection
+  [x] Smart axis labels
+  [ ] Revert to normal colors when same data type is displayed
+  [ ] Area chart (health and soiling)
+
+*/
+
 define(
 [
   'jquery',
@@ -17,27 +28,44 @@ function(
 ){
   var Chart = { models: {}, views: {} };
 
+  // NOTE: This isn't particularly useful at the moment
+  // but may be helpful if series share multiple properties
   var basicSeries = {
     name: 'Series',
     data: []
   };
 
+  // Set up default colors, labels, etc. for data types
   Chart.seriesDefaults = {
     health: $.extend(_.clone(basicSeries), {
       name: 'Health',
-      color: 'purple'
+      color: 'purple',
+      unit: '%'
     }),
     soiling: $.extend(_.clone(basicSeries), {
       name: 'Soiling',
-      color: 'green'
+      color: 'green',
+      unit: '%'
     }),
     irradiance: $.extend(_.clone(basicSeries), {
       name: 'Irradiance',
-      color: '#DFD85C'
+      color: '#DFD85C',
+      unit: 'W/m²'
     }),
     power: $.extend(_.clone(basicSeries), {
       name: 'Power',
-      color: '#369'
+      color: '#369',
+      unit: 'W'
+    }),
+    voltage: $.extend(_.clone(basicSeries), {
+      name: 'Voltage',
+      color: '#f16eaa',
+      unit: 'V'
+    }),
+    current: $.extend(_.clone(basicSeries), {
+      name: 'Current',
+      color: '#acd473',
+      unit: 'I'
     })
   };
 
@@ -166,17 +194,31 @@ function(
       },
       xAxis: {
         type: 'datetime',
+        tickColor: '#555',
         gridLineColor: '#444', //Lines inside plot
         lineColor: '#555' //Bottom line of plot
       },
-      yAxis: {
-        title: {
-          style: {
-            color: '#ccc',
-            'font-weight': 'normal'
+      yAxis: [
+        {
+          gridLineColor: '#444', //Lines inside plot
+          title: {
+            style: {
+              color: '#ccc',
+              'font-weight': 'normal'
+            }
+          }
+        },
+        {
+          opposite: true,
+          gridLineColor: '#444', //Lines inside plot
+          title: {
+            style: {
+              color: '#ccc',
+              'font-weight': 'normal'
+            }
           }
         }
-      }
+      ]
     },
     attributes: {
       class: 'chart'
@@ -193,6 +235,35 @@ function(
       if (this.chart) {
         this.chart.destroy();
       }
+    },
+    smartAxesSelector: function(series){
+      var axes = [];
+
+      _.each(series, function(serie, index){
+        if (axes.indexOf(serie.unit) < 0) {
+          axes.push(serie.unit);
+        }
+        serie.yAxis = axes.indexOf(serie.unit);
+      });
+
+      return series;
+    },
+    smartAxesTitles: function(series){
+      var titles = [];
+
+      _.each(series, function(serie, index){
+        if (!titles[serie.yAxis]) {
+          var title = {
+            title: {
+              text: serie.unit
+            }
+          };
+
+          titles[serie.yAxis] = title;
+        }
+      });
+
+      return titles;
     }
   });
 
@@ -208,12 +279,16 @@ function(
       //console.log('init', this, this.model);
       var that = this;
 
+      // Run series through axis selector
+      this.options.series = this.smartAxesSelector(this.options.series);
+
       // Instantiate the chart
       this.chart = new Highcharts.Chart($.extend(true, this.chartOptions, {
         chart: {
           type: 'line',
           renderTo: this.el
         },
+        yAxis: this.smartAxesTitles(this.options.series),
         series: this.options.series
       }));
 
