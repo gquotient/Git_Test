@@ -130,7 +130,7 @@ define([
         ]
       });
 
-      console.log(options);
+      // console.log(options);
 
       this.projectNavigationListView = new Project.views.NavigationListView({
         collection: options.collection

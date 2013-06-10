@@ -29,7 +29,9 @@ define([
       'click #edit': 'edit'
     },
 
-    initialize: function(){
+    initialize: function(options){
+      this.app = options.app;
+
       var breadcrumbs = new Breadcrumb.Collection();
       this.breadcrumbsView = new Breadcrumb.views.Breadcrumbs({collection: breadcrumbs});
 
@@ -38,8 +40,13 @@ define([
       });
 
       this.listenTo(Backbone, 'set:breadcrumbs', function(model){
-        breadcrumbs.advance(model);
-      });
+        console.log(this.app.state, model.get('type'));
+        if(this.app.state !== model.get('type')){
+          breadcrumbs.advance(model);
+        } else {
+          breadcrumbs.update(model);
+        }
+      }, this);
 
       this.listenTo(Backbone, 'update:breadcrumbs', function(model){
         breadcrumbs.update(model);
