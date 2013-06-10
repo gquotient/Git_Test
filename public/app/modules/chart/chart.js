@@ -17,57 +17,78 @@ function(
 ){
   var Chart = { models: {}, views: {} };
 
+  var basicSeries = {
+    name: 'Series',
+    data: []
+  };
+
+  Chart.seriesDefaults = {
+    health: $.extend(_.clone(basicSeries), {
+      name: 'Health',
+      color: 'purple'
+    }),
+    soiling: $.extend(_.clone(basicSeries), {
+      name: 'Soiling',
+      color: 'green'
+    }),
+    irradiance: $.extend(_.clone(basicSeries), {
+      name: 'Irradiance',
+      color: '#DFD85C'
+    }),
+    power: $.extend(_.clone(basicSeries), {
+      name: 'Power',
+      color: '#369'
+    })
+  };
+
   Chart.models.timeSeries = Backbone.Model.extend({
-    url: '/api/timeseries',
+    url: '/api/timeline',
     parse: function(data){
-      //console.log('parse', data);
+      console.log('parse', data);
       var series = [];
 
-      for(var device=0, devicesLength=data.data[0][1].length; device<devicesLength; device++){
-        //newSeries[device] = []; //Array for lines generated from this data set
-        for(var col=0, colsLength=data.cols.length; col<colsLength; col++){
+      _.each(data.response, function(res, index){
+        var data = res.data;
 
-          var mySeries = {
-            data : [],
-            dataType : data.cols[col],
-            deviceID : data.data[0][1][device][0],
-            xAxis : 0,
-            threshold : 0.00001
-          };
+        //Adjust time to milliseconds
+        _.each(data, function(point, index){
+          point[0] = point[0] * 1000;
+        });
 
-          for(var day=0, dayLength=data.data.length; day<dayLength; day++){
-            if(data.data[day][1][device]){
-              for(var e=0, eLength=data.data[day][1][device][1].length;e<eLength;e++){//push it's data to the array
-                var
-                  myDate = data.data[day][0].split('-'),
-                  myTime = data.data[day][1][device][1][e][0].split(':')
-                ;
-
-                mySeries.data.push( [Date.UTC(+myDate[0], (+myDate[1]-1), +myDate[2], +myTime[0], +myTime[1]), data.data[day][1][device][1][e][col + 1]] );
-              }
-            }
-          }
-
-          series.push(mySeries);
-        }
-      }
+        series.push({
+          data: res.data
+        });
+      });
 
       this.set('series', series);
+    },
+    getData: function(){
+      var that = this;
+
+      $.ajax({
+        url: this.url + '?timezone=' + this.get('timezone'),
+        type: 'POST',
+        dataType: 'json',
+        data: { traces: that.get('dataType') }
+      })
+      .done(function(data){
+        that.parse(data);
+      });
     },
     initialize: function(options){
       var that = this;
 
-      this.url = options.url || this.url;
+      this.url = (options && options.url) ? options.url : this.url;
 
       var fetch = function(){
         that.fetch();
       };
 
       // Using set timeout for now so it only updates once
-      this.interval = setTimeout(fetch, 3000);
+      //this.interval = setTimeout(fetch, 3000);
 
       // Create series array
-      this.set('series', []);
+      //this.set('series', []);
     }
   });
 
@@ -78,15 +99,47 @@ function(
         width: null,
         height: null,
         backgroundColor: null,
-        credit: false
+        borderWidth: 0,
+        spacingTop : 12,
+        spacingRight : 12,
+        spacingBottom : 12,
+        spacingLeft : 12,
+        plotBorderWidth : 1,
+        plotBorderColor : '#555'
+      },
+      title: {
+        text: null
       },
       credits: {
         enabled: false
       },
+      colors: [
+        '#8DD3C7',
+        '#4DAF4A',
+        '#FF7F00',
+        '#F781BF',
+        '#E41A1C',
+        '#FFFF33',
+        '#A65628',
+        '#377EB8',
+        '#BEBADA',
+        '#FB8072',
+        '#80B1D3',
+        '#B3DE69',
+        '#984EA3',
+        '#FCCDE5',
+        '#D9D9D9',
+        '#BC80BD',
+        '#FDB462',
+        '#CCEBC5',
+        '#FFED6F',
+        '#0066cc'
+      ],
       plotOptions: {
         series: {
           marker: {
             enabled: false,
+            radius: 1.5,
             states: {
               hover: {
                 enabled: true
@@ -95,8 +148,34 @@ function(
           }
         }
       },
+      tooltip: {
+        //formatter: function() {
+        //  return this.x + ' | ' + this.y;
+        //},
+        //shared: true,
+
+      },
+      legend: {
+        borderWidth: 0,
+        itemStyle: {
+          color: '#ccc'
+        },
+        itemHoverStyle: {
+          color: '#fff'
+        }
+      },
       xAxis: {
-        type: 'datetime'
+        type: 'datetime',
+        gridLineColor: '#444', //Lines inside plot
+        lineColor: '#555' //Bottom line of plot
+      },
+      yAxis: {
+        title: {
+          style: {
+            color: '#ccc',
+            'font-weight': 'normal'
+          }
+        }
       }
     },
     attributes: {
@@ -121,47 +200,39 @@ function(
     options: {
       title: 'Generic Chart'
     },
+    render: function(){
+      //Fetch data
+      this.model.getData();
+    },
     initialize: function(options){
-      //console.log('init', this);
+      //console.log('init', this, this.model);
       var that = this;
 
-      this.options = _.extend(this.options, options);
-
       // Instantiate the chart
-      this.chart = new Highcharts.Chart({
-        credits: this.chartOptions.credits,
-        chart: _.extend({
+      this.chart = new Highcharts.Chart($.extend(true, this.chartOptions, {
+        chart: {
           type: 'line',
           renderTo: this.el
-        }, this.chartOptions.chart),
-        plotOptions: this.chartOptions.plotOptions,
-        xAxis: this.chartOptions.xAxis,
-        title: {
-          text: this.options.title
         },
-        series: [
-          {
-            color: '#369',
-            data: []
-          }
-        ]
-      });
-
-      // Fetch data
-      this.model.fetch();
+        series: this.options.series
+      }));
 
       // Update chart on data change
-      this.model.on('change:series', function(){
-        //console.log('series updated', arguments);
-        var
-          series = arguments[1],
-          seriesData = that.model.get('series')
-        ;
-
-        _.each(that.chart.series, function(serie, index){
-          // Update series data on new data fetch
-          serie.setData(seriesData[index].data);
-        });
+      this.model.on('change:series', function(model, seriesData){
+        if (seriesData.length) {
+          _.each(that.chart.series, function(serie, index){
+            // Update series data
+            if (seriesData[index].data && seriesData[index].data.length) {
+              serie.setData(seriesData[index].data);
+            } else {
+              //throw no data error
+              console.warn('No data found on trace:', seriesData[index]);
+            }
+          });
+        } else {
+          //throw no data error
+          console.warn('No data came back at all. Call Thadeus.');
+        }
       });
     }
   });

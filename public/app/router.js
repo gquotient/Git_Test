@@ -82,7 +82,6 @@ define([
 
     projectDetail: function(id){
       var project = this.findProject(id);
-
       this.mainLayout.showProject(project, ia.rootPortfolio.projects);
     },
 
@@ -101,7 +100,7 @@ define([
     },
 
     initialize: function(){
-      this.mainLayout = new MainLayout(ia);
+      this.mainLayout = new MainLayout({currentUser: ia.currentUser, app: ia});
       ia.main.show(this.mainLayout);
     }
   });
@@ -121,7 +120,7 @@ define([
       'project/:id': 'projectDetail',
 
       'profile': 'profile',
-     
+
       //Admin Routes
       'admin': 'admin',
       'admin/:page': 'admin'

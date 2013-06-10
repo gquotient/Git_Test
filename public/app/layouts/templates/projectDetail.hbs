@@ -1,36 +1,18 @@
 <div class="column_right_wrapper">
   <section class="column_right">
     <div id="map" class="map"></div>
-    <div class="container">
+    <div class="moduleContainer half">
       <div id="kpis" class="left">KPIs</div>
-      <div id="alarms" class="right">
-        <table class="basic">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="statusIndicator Alert">Alert</span></td>
-              <td>Inverter Offline</td>
-              <td>Some description</td>
-            </tr>
-            <tr>
-              <td><span class="statusIndicator Warning">Alert</span></td>
-              <td>Soiling Warning</td>
-              <td>Some description</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
     </div>
-    <div class="container">
-      <div id="chart">Chart</div>
+    <div class="moduleContainer half">
+      <div id="issues" class="right">Issues</div>
     </div>
-    <div class="btnContainer"><button class="button edit">Edit</button></div>
+    <div class="moduleContainer half">
+      <div id="chart_powerHistory">Chart</div>
+    </div>
+    <div class="moduleContainer half">
+      <div id="chart_healthAndSoiling">Chart</div>
+    </div>
   </section>
 </div>
 

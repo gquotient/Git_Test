@@ -41,8 +41,6 @@ define([
       },
 
     initialize: function(options){
-
-      console.log(options.portfolios);
       // Build primary portfolio nav
       this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
         collection: options.portfolios
@@ -63,10 +61,9 @@ define([
       this.listenTo(Backbone, 'click:portfolio', function(model){
         // Update the collection.
         this.projectList.set(model.projects.models);
+        Backbone.trigger('update:breadcrumbs', model);
+        Backbone.history.navigate('/portfolio/' + model.id);
       });
-
-      this.currentState = 'portfolioDetail';
-
     }
   });
 });
