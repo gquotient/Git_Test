@@ -3,7 +3,6 @@ module.exports = function(app){
   var helpers = require('./helpers')(app)
     , makeRequest = helpers.makeRequest;
 
-
   //////
   // USERS
   //////
@@ -17,11 +16,6 @@ module.exports = function(app){
   app.get('/api/users/current', helpers.makeRequest({
     path: '/res/user'
   }));
-
-  // app.get('/api/:org_label/users/', ensureAuthorized(['vendor_admin', 'admin']),
-  //   makeRequest({
-  //     path: '/res/users'
-  //   }));
 
   app.put('/api/users', helpers.ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
@@ -42,4 +36,5 @@ module.exports = function(app){
     makeRequest({
       path: '/res/usermgt'
     }));
+
 };

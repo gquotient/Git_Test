@@ -16,7 +16,7 @@ fs.readFile('./roles.json', 'utf8', function (err, data) {
 );
 
 module.exports = function(app){
-  
+
   var helpers = require('./helpers')(app),
       ensureAuthenticated = helpers.ensureAuthenticated;
 
@@ -29,43 +29,65 @@ module.exports = function(app){
     var requestOptions = {
       method: 'GET',
       headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
-      uri: app.get('modelUrl') + '/res/portfolios'
+      uri: app.get('modelUrl') + '/res/user'
     };
 
+
+    // Don't judge me for this. I'll fix it later.
+    var myTeams,
+        myProjects,
+        myPortfolios;
+
     Q.
-    fcall( function(){
-      var myPortfolios = Q.defer();
+      fcall( function(){
+        var myUserDef = Q.defer();
+        // console.log('user')
+        request(requestOptions, function(error, response, user){
+          myTeams = JSON.stringify(JSON.parse(user).teams);
+          console.log(myTeams);
+          myUserDef.resolve(user);
+        });
 
-      request(requestOptions, function(error, response, portfolios){
-        myPortfolios.resolve(portfolios);
+        return myUserDef.promise;
+      })
+      .then( function(){
+        var myPortfoliosDef = Q.defer();
+        // console.log('portfolios');
+        requestOptions.uri = app.get('modelUrl') + '/res/portfolios';
+        request(requestOptions, function(error, response, portfolios){
+          myPortfolios = portfolios;
+          myPortfoliosDef.resolve(portfolios);
+        });
+
+        return myPortfoliosDef.promise;
+
+      })
+      .then( function(myPortfolios){
+        var myProjectsDef = Q.defer();
+        // console.log('projects');
+        requestOptions.uri = app.get('modelUrl') + '/res/teamprojects';
+        request(requestOptions, function(error, response, projects){
+          myProjects = projects;
+          console.log('projects')
+          myProjectsDef.resolve(projects);
+        });
+
+        return myProjectsDef.promise;
+      })
+      .then( function(obj){
+        console.log('render');
+        res.render('index', {
+          user: JSON.stringify({
+            name: req.user.name,
+            email: req.user.email,
+            teams: myTeams,
+            role: roles[req.user.role]
+          }),
+          portfolios: myPortfolios,
+          projects: JSON.stringify(JSON.parse(myProjects).projects),
+          locale: req.user.locale || req.acceptedLanguages[0].toLowerCase()
+        });
       });
-
-      return myPortfolios.promise;
-
-    })
-    .then( function(myPortfolios){
-      var myProjects = Q.defer();
-
-      requestOptions.uri = app.get('modelUrl') + '/res/teamprojects';
-      request(requestOptions, function(error, response, projects){
-        myProjects.resolve({projects: projects, portfolios: myPortfolios});
-      });
-
-      return myProjects.promise;
-    })
-    .then( function(obj){
-
-      res.render('index', {
-        user: JSON.stringify({
-          name: req.user.name,
-          email: req.user.email,
-          role: roles[req.user.role]
-        }),
-        portfolios: obj.portfolios,
-        projects: JSON.stringify(JSON.parse(obj.projects).projects),
-        locale: req.user.locale || req.acceptedLanguages[0].toLowerCase()
-      });
-    });
 
   });
 
@@ -79,13 +101,5 @@ module.exports = function(app){
    */
 
   app.all('/api/*', ensureAuthenticated);
-
-
-
-
-
-
-
-
 
 };

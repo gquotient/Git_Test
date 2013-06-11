@@ -63,9 +63,21 @@ module.exports = function(app){
         if (req.query) {
           opts.qs = _.extend({}, req.query);
         }
+
         if (req.body) {
-          opts.form = _.extend({}, req.body);
+          if (req.method === 'DELETE') {
+            opts.qs = _.extend({}, opts.qs, req.body);
+          } else {
+            opts.form = _.extend({}, req.body);
+          }
         }
+
+        // if (req.query) {
+        //   opts.qs = _.extend({}, req.query);
+        // }
+        // if (req.body) {
+        //   opts.form = _.extend({}, req.body);
+        // }
 
         request(opts, function(error, response, body){
           if (error) {

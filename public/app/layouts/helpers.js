@@ -52,4 +52,17 @@ function(
     return new Handlebars.SafeString(list);
   });
 
+  Handlebars.registerHelper('team_select', function(teamsJSON){
+    var teams = JSON.parse(teamsJSON);
+    if (teams.length === 1){ return teams[0][2]; }
+    var retSelect = '<select>';
+    _.each(teams, function(team){
+      retSelect += '<option value='+team[0]+'>'+team[2]+'</option>';
+    });
+
+    retSelect+='</select>';
+
+    return retSelect;
+  });
+
 });
