@@ -121,7 +121,7 @@ define([
       template: navigationItemViewTemplate
     },
     attributes: {
-      class: 'portfolio'
+      class: 'nav-item'
     },
     events: {
       'mouseover': function(){
@@ -131,6 +131,9 @@ define([
         Backbone.trigger('mouseout:portfolio', this.model);
       },
       'click': function(){
+        Backbone.trigger('click:portfolio', this.model);
+      },
+      'dblclick': function(){
         Backbone.trigger('select:portfolio', this.model);
       }
     }
