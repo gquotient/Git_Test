@@ -72,7 +72,7 @@ function(
   Chart.models.timeSeries = Backbone.Model.extend({
     url: '/api/timeline',
     parse: function(data){
-      console.log('parse', data);
+      // console.log('parse', data);
       var series = [];
 
       _.each(data.response, function(res, index){
@@ -301,12 +301,12 @@ function(
               serie.setData(seriesData[index].data);
             } else {
               //throw no data error
-              console.warn('No data found on trace:', seriesData[index]);
+              // console.warn('No data found on trace:', seriesData[index]);
             }
           });
         } else {
           //throw no data error
-          console.warn('No data came back at all. Call Thadeus.');
+          // console.warn('No data came back at all. Call Thadeus.');
         }
       });
     }
