@@ -33,8 +33,8 @@ define([
 
     triggers: {
       'focus input': 'focus',
-      'input input': 'input',
       'blur input': 'blur',
+      'input input': 'input',
       'click button': 'apply'
     },
 
@@ -47,25 +47,6 @@ define([
       if (!this.collection) { this.collection = new Backbone.Collection(); }
       this.collection.comparator = 'name';
       this.dropdown = new Dropdown({collection: this.collection});
-
-      // Store the placeholder text when the template is rendered.
-      this.listenTo(this, 'render', function(){
-        this.placeholder = this.ui.input.val();
-      });
-
-      // Show the dropdown when the input box has focus.
-      this.listenTo(this, 'focus', function(){
-        this.focused = true;
-        this.ui.input.val('');
-        this.renderDropdown();
-      });
-
-      // Hide the dropdown when the input box loses focus.
-      this.listenTo(this, 'blur', function(){
-        this.focused = false;
-        this.ui.input.val(this.placeholder);
-        this.dropdown.close();
-      });
 
       // Update the dropdown when the collection changes.
       this.listenTo(this.collection, 'add remove reset', this.renderDropdown);
@@ -107,13 +88,26 @@ define([
       });
     },
 
+    onRender: function(){
+      this.placeholder = this.ui.input.val();
+    },
+
     onFocus: function(){
+      this.focused = true;
+      this.ui.input.val('');
+      this.renderDropdown();
+
       this.filterCollection();
     },
 
+    onBlur: function(){
+      this.focused = false;
+      this.ui.input.val(this.placeholder);
+      this.dropdown.close();
+    },
+
     onInput: function(){
-      var partial = this.parseInput().name;
-      this.filterCollection( new RegExp('^' + partial, 'i') );
+      this.filterCollection( new RegExp('^' + this.parseInput(), 'i') );
     },
 
     onChangeSelection: function(){
@@ -121,22 +115,23 @@ define([
     },
 
     onAutocomplete: function(){
-      if (this.collection.length > 0) {
-        this.ui.input.val(this.collection.first().get('name'));
+      var value = this.getAutocomplete();
+
+      if (value) {
+        this.ui.input.val(value);
       }
     },
 
     filterCollection: function(){},
 
     parseInput: function(){
-      var input = this.ui.input.val(),
-        match = /^([^x]*)x(\d+)$/.exec(input);
+      return this.ui.input.val();
+    },
 
-      return {
-        input: input,
-        name: match ? match[1] : input,
-        times: _.max([1, match && parseInt(match[2], 10)])
-      };
+    getAutocomplete: function(){
+      var model = this.collection.first();
+
+      return model && model.get('name');
     },
 
     renderDropdown: function(){

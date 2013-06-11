@@ -17,10 +17,50 @@ define([
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
+    defaults: {
+      renderings: {}
+    },
 
     initialize: function(){
+      this.relationships = {};
+
       this.outgoing = new Device.Collection();
       this.incoming = new Device.Collection();
+    },
+
+    getRelationship: function(target){
+      return this.relationships[target.id];
+    },
+
+    getPosition: function(view){
+      var renderings = this.get('renderings');
+
+      return _.clone(renderings[view]);
+    },
+
+    setPosition: function(view, position){
+      var renderings = _.clone(this.get('renderings'));
+
+      renderings[view] = position;
+      this.set({renderings: renderings});
+    },
+
+    connectTo: function(target, label){
+      if (!_.has(this.relationships, target.id)) {
+        this.relationships[target.id] = label;
+
+        this.incoming.add(target);
+        target.outgoing.add(this);
+      }
+    },
+
+    disconnectFrom: function(target){
+      if (_.has(this.relationships, target.id) && _.size(this.relationships) > 1) {
+        delete this.relationships[target.id];
+
+        this.incoming.remove(target);
+        target.outgoing.remove(this);
+      }
     },
 
     hasChild: function(child){
@@ -33,16 +73,6 @@ define([
 
   Device.Collection = Backbone.Collection.extend({
     model: Device.Model,
-
-    filterByType: function(type, first){
-      if (!_.isArray(type)) {
-        return this.where({device_type: type}, first);
-      } else {
-        return this[first ? 'find' : 'filter'](function(model){
-          return _.contains(type, model.get('device_type'));
-        });
-      }
-    },
 
     next: function(model){
       var index = this.indexOf(model);

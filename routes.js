@@ -80,7 +80,7 @@ module.exports = function(app){
             role: roles[req.user.role]
           }),
           portfolios: portfolios,
-          projects: JSON.stringify(JSON.parse(projects).projects),
+          projects: JSON.stringify(JSON.parse(projects).projects || []),
           locale: req.user.locale || req.acceptedLanguages[0].toLowerCase()
         });
       });
@@ -243,6 +243,20 @@ module.exports = function(app){
             } else if (resp.statusCode === 200) {
               body = JSON.parse(body);
 
+              body.devices = _.reduce(body.devices, function(memo, device){
+                if (_.has(device, 'device_type')) {
+                  device.project_label = project.project_label;
+
+                  if (device.renderings) {
+                    device.renderings = JSON.parse(device.renderings);
+                  }
+
+                  memo.push(device);
+                }
+
+                return memo;
+              }, []);
+
               project.devices = body.devices || [];
               project.rels = body.rels || [];
             }
@@ -281,7 +295,12 @@ module.exports = function(app){
       req.body = _.reduce(req.body, function(memo, value, key){
         if (_.contains(root, key)) {
           memo[key] = value;
+
         } else if (!_.contains(ignore, key)) {
+          if (_.isPlainObject(value)) {
+            value = JSON.stringify(value);
+          }
+
           memo.properties[key] = value;
         }
         return memo;
@@ -329,10 +348,16 @@ module.exports = function(app){
         'id'
       ]),
       translate: function(body, next){
-        next(_.extend({},
+        body = _.extend({},
           body.properties,
           _.omit(body, 'properties')
-        ));
+        );
+
+        if (body.renderings) {
+          body.renderings = JSON.parse(body.renderings);
+        }
+
+        next(body);
       }
     }));
 
@@ -347,13 +372,23 @@ module.exports = function(app){
         'relationship_label'
       ]),
       translate: function(body, next){
-        next(_.extend({},
+        body = _.extend({},
           body.properties,
           _.omit(body, 'properties')
-        ));
+        );
+
+        if (body.renderings) {
+          body.renderings = JSON.parse(body.renderings);
+        }
+
+        next(body);
       }
     }));
 
+  app.all('/api/relationships',
+    makeRequest({
+      path: '/res/relationships',
+    }));
 
   //////
   // TEAMS
@@ -540,8 +575,13 @@ module.exports = function(app){
       if (req.query) {
         opts.qs = _.extend({}, req.query);
       }
+
       if (req.body) {
-        opts.form = _.extend({}, req.body);
+        if (req.method === 'DELETE') {
+          opts.qs = _.extend({}, opts.qs, req.body);
+        } else {
+          opts.form = _.extend({}, req.body);
+        }
       }
 
       request(opts, function(error, response, body){
@@ -549,6 +589,9 @@ module.exports = function(app){
           req.flash('error', error.message);
           console.log('error!:', error);
           res.redirect('/ia');
+        } else if (response.statusCode !== 200) {
+          console.log('error!:', response.statusCode, body);
+          res.send(response.statusCode);
         } else {
           console.log(body);
 

@@ -52,4 +52,10 @@ function(
     return new Handlebars.SafeString(list);
   });
 
+  _.mixin({
+    take: function(obj, interceptor){
+      return interceptor(obj);
+    }
+  });
+
 });

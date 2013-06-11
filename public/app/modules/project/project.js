@@ -52,19 +52,15 @@ define([
 
     parse: function(resp){
       if (resp.devices) {
-        this.devices.reset(_.filter(resp.devices, function(device){
-          return device.hasOwnProperty('device_type');
-        }));
+        this.devices.reset(resp.devices);
 
         if (resp.rels) {
           _.each(resp.rels, function(rel) {
-            var from = rel[0] === this.id ? this : this.devices.get(rel[0]),
-              to = this.devices.get(rel[2]);
+            var target = rel[0] === this.id ? this : this.devices.get(rel[0]),
+              device = this.devices.get(rel[2]);
 
-            if (from && to) {
-              from.outgoing.add(to);
-              to.incoming.add(from);
-              to.set('relationship_label', rel[1]);
+            if (device && target) {
+              device.connectTo(target, rel[1]);
             }
           }, this);
         }
