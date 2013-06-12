@@ -80,17 +80,7 @@ define([
 
     projectDetail: function(id){
       var project = this.findProject(id);
-
-      if (project) {
-        Backbone.trigger('set:breadcrumbs', project);
-
-        this.contentLayout = new ProjectDetailLayout({
-          model: project,
-          settingsRegion: this.mainLayout.pageSettings
-        });
-
-        this.mainLayout.showProject(project, ia.rootPortfolio.projects);
-      }
+      this.mainLayout.showProject(project, ia.rootPortfolio.projects);
     },
 
     profile: function(){
