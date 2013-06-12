@@ -6,6 +6,7 @@ define([
   'handlebars',
 
   'project',
+  'device',
 
   'hbs!layouts/templates/projectDevices'
 ], function(
@@ -16,6 +17,7 @@ define([
   Handlebars,
 
   Project,
+  Device,
 
   projectDevicesTemplate
 ){
@@ -43,6 +45,14 @@ define([
 
     initialize: function(options){
       console.log('initialize project devices', options, this);
+
+      this.model = options.model;
+
+      this.devices = new Device.Model();
+
+      this.model.fetch({data: {project_label: this.model.get('label')}}).done(function(){
+        console.log('devices done', arguments, this);
+      });
     }
   });
 });
