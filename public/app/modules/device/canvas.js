@@ -482,9 +482,7 @@ define([
         model.setPosition(this.rendering_label, {
           x: Math.round(position.x / 100) * 100,
           y: Math.round(position.y / 100) * 100
-        });
-
-        model.save();
+        }, true);
       }, this);
     }
   });

@@ -38,11 +38,13 @@ define([
       return _.clone(renderings[view]);
     },
 
-    setPosition: function(view, position){
+    setPosition: function(view, position, save){
       var renderings = _.clone(this.get('renderings'));
 
-      renderings[view] = position;
-      this.set({renderings: renderings});
+      if (!_.isEqual(renderings[view], position)) {
+        renderings[view] = position;
+        this[save ? 'save' : 'set']({renderings: renderings});
+      }
     },
 
     connectTo: function(target, label){
