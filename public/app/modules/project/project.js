@@ -13,7 +13,10 @@ define([
   'hbs!project/templates/dataList',
   'hbs!project/templates/dataListItem',
   'hbs!project/templates/dashboardItem',
-  'hbs!project/templates/create'
+  'hbs!project/templates/create',
+  'hbs!project/templates/navigationItemView',
+  'hbs!project/templates/projectList'
+
 ], function(
   $,
   _,
@@ -29,7 +32,9 @@ define([
   dataListTemplate,
   dataListItemTemplate,
   dashboardItemTemplate,
-  createTemplate
+  createTemplate,
+  navigationItemViewTemplate,
+  navigationListTemplate
 ){
   var Project = { views: {} };
 
@@ -341,6 +346,71 @@ define([
       this.render();
     }
   });
+
+   /* The item view is the view for the individual portfolios in the navigation. */
+  Project.views.NavigationItemView = Marionette.ItemView.extend({
+    tagName: 'li',
+    template: {
+      type: 'handlebars',
+      template: navigationItemViewTemplate
+    },
+    attributes: {
+      class: 'nav-item'
+    },
+    events: {
+      'click': function(){
+        Backbone.trigger('click:project', this.model);
+      },
+      // 'dblclick': function(){
+      //   Backbone.trigger('select:project', this.model);
+      // }
+    }
+  });
+
+  /* This composite view is the wrapper view for the list of portfolios.
+     It handles nesting the list while allowing for the navigation header. */
+  Project.views.NavigationListView = Marionette.CompositeView.extend({
+    tagName: 'div',
+    attributes: {
+      class: 'projects'
+    },
+    template: {
+      type: 'handlebars',
+      template: navigationListTemplate
+    },
+
+    itemViewContainer: '.project-list',
+
+    // Tell the composite view which view to use as for each portfolio.
+    itemView: Project.views.NavigationItemView,
+
+    events: {
+      'change #project-sort': function(){
+
+        this.collection.reset(
+          this.collection.sortBy(
+            function(model){
+              return model.get( $('#portfolio-sort').val() );
+            }
+          )
+        );
+      }
+    },
+
+    initialize: function(options){
+      this.listenTo(Backbone, 'select:project', this.setProject);
+    },
+
+    // Setup the views for the current model.
+    setPortfolio: function(model){
+      // Set the current collection to be a new navigation list with the subPortfolios.
+      this.collection = model.portfolios;
+
+      // Trigger a render. This forces the nav header to update, too.
+      this.render();
+    }
+  });
+
 
   Project.views.Editor = Editor;
 

@@ -8,6 +8,9 @@ define([
 
   'layouts/header',
   'layouts/navigation',
+  'layouts/portfolioDetail',
+  'layouts/projectDetail',
+
 
   'hbs!layouts/templates/index'
 ], function(
@@ -20,6 +23,8 @@ define([
 
   Header,
   Navigation,
+  PortfolioDetailLayout,
+  ProjectDetailLayout,
 
   indexTemplate
 ){
@@ -43,7 +48,26 @@ define([
       this.header.show(this.headerView);
       this.breadcrumbs.show(this.navigationView);
 
-      //this.toggleNotificationBanner();
+      Backbone.trigger('set:breadcrumbs', this.app.rootPortfolio);
+    },
+
+    showPortfolio: function(portfolio){
+      this.activePortfolio = portfolio;
+      // Build portfolio view
+      var contentLayout = new PortfolioDetailLayout({model: portfolio, portfolios: this.app.rootPortfolio.portfolios});
+      this.mainContent.show(contentLayout);
+
+      Backbone.trigger('set:breadcrumbs', portfolio);
+      this.app.state = 'portfolio';
+    },
+
+    showProject: function(project){
+      // Build project view
+      var contentLayout = new ProjectDetailLayout({model: project, collection: this.activePortfolio.projects, settingsRegion: this.pageSettings});
+      this.mainContent.show(contentLayout);
+
+      Backbone.trigger('set:breadcrumbs', project);
+      this.app.state = 'project';
     },
 
     toggleNotificationBanner: function(){
@@ -60,11 +84,29 @@ define([
     },
 
     initialize: function(options){
+      var that = this;
+      this.app = options.app;
+      this.app.state = 'portfolio';
+      this.activePortfolio = this.app.rootPortfolio;
       // Build header
       this.headerView = new Header({model: options.currentUser});
 
       // Build navigation
-      this.navigationView = new Navigation();
+      this.navigationView = new Navigation({app: this.app});
+
+      this.listenTo(Backbone, 'click:portfolio', function(model){
+        this.activePortfolio = model;
+      });
+
+      this.listenTo(Backbone, 'select:portfolio', function(model){
+        Backbone.history.navigate('/portfolio/' + model.id);
+        this.showPortfolio(model);
+      }, this);
+
+      this.listenTo(Backbone, 'select:project', function(model){
+        Backbone.history.navigate('/project/' + model.id);
+        this.showProject(model, this.activePortfolio.projects);
+      }, this);
 
       // Special page settings handling
       this.pageSettings.on('show', function(){

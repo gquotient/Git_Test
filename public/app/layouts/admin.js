@@ -77,7 +77,7 @@ define([
       template: adminTemplate
     },
     templateHelpers: function(){
-      var viewList = this.app.currentUser.get('role').admin.views;
+      var viewList = this.options.currentUser.get('role').admin.views;
       var views = _.pick(config.views, viewList);
       return {
         views: views
@@ -90,8 +90,6 @@ define([
       pageContent: '.pageContent',
       pageNav: '.column_left'
     },
-
-    initialView: 'users',
 
     getView: function(page){
       var
@@ -116,6 +114,9 @@ define([
 
       // Display view
       this.pageContent.show(myView);
+
+      // Update history
+      Backbone.history.navigate('/admin/' + view);
     },
 
     renderDetailView: function(options){
@@ -139,20 +140,13 @@ define([
 
         // Keep track of current view.
         this.view = route;
-
-        // Update history
-        Backbone.history.navigate('/admin/' + route);
       }
     },
 
     initialize: function(options){
-      this.app = this.options.app;
       this.detail = this.options.detail;
-      // Update initial view if available
-      // NOTE: there's probably a sexier way to do this
-      if (options.initialView) {
-        this.initialView = options.initialView;
-      }
+
+      this.initialView = options.initialView || 'users';
 
       this.view = this.initialView;
 

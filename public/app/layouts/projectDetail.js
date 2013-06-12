@@ -38,19 +38,31 @@ define([
     regions: {
       map: '#map',
       kpis: '#kpis',
+      alarms: '#alarms',
+      contentNavigation: '.column_left',
       issues: '#issues',
       chart_powerHistory: '#chart_powerHistory',
       chart_healthAndSoiling: '#chart_healthAndSoiling'
     },
 
+    events: {
+      'click .edit': function(){
+        Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
+      }
+    },
+
     onShow: function(){
       this.map.show(this.mapView);
+
+      this.contentNavigation.show(this.projectNavigationListView);
 
       this.chart_powerHistory.show(this.chartView_powerHistory);
 
       this.chart_healthAndSoiling.show(this.chartView_healthAndSoiling);
 
       this.issues.show(this.issueView);
+
+      this.buildSettings();
     },
 
     buildSettings: function(){
@@ -82,8 +94,6 @@ define([
     initialize: function(options){
       this.model = options.model;
 
-      this.buildSettings();
-
       this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])
       });
@@ -93,8 +103,6 @@ define([
           'timezone': this.model.get('timezone'),
           'dataType': [
             {
-              //This is a hack because the model service and data
-              //aren't quite the same
               'project_label': this.model.id,
               'ddl': 'env_300',
               'dtstart': 'today',
@@ -120,13 +128,17 @@ define([
         ]
       });
 
+      // console.log(options);
+
+      this.projectNavigationListView = new Project.views.NavigationListView({
+        collection: options.collection
+      });
+
       this.chartView_healthAndSoiling = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
           'timezone': this.model.get('timezone'),
           'dataType': [
             {
-              //This is a hack because the model service and data
-              //aren't quite the same
               'project_label': this.model.id,
               'ddl': 'env_300',
               'dtstart': 'today',
@@ -161,16 +173,13 @@ define([
 
       this.issueView.collection.fetch();
 
-      // Set up listeners
-      this.listenTo(Backbone, 'select:portfolio', function(model){
-        // Set address bar and force routing
-        Backbone.history.navigate('/portfolio/' + model.id, true);
-      });
-
-      this.listenTo(Backbone, 'select:project', function(model){
-        // Set address bar
+      this.listenTo(Backbone, 'click:project', function(model){
+        this.mapView.collection.set(model);
+        this.mapView.fitToBounds();
+        Backbone.trigger('update:breadcrumbs', model);
         Backbone.history.navigate('/project/' + model.id);
       });
+
     }
   });
 });

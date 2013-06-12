@@ -24,11 +24,16 @@ define([
     },
 
     update: function(model){
+      this.pop();
+      this.push(model);
+    },
+
+    advance: function(model){
       if (this.contains(model)) {
         this.prune(model);
       } else {
         this.add(model);
-      }
+      }      
     }
   });
 

@@ -57,25 +57,7 @@ define([
 
     portfolioDetail: function(id){
       var portfolio = this.findPortfolio(id);
-
-      if (this.contentLayout instanceof PortfolioDetailLayout) {
-        // If already on the portfolio view we just want to update
-        // the subviews
-        Backbone.trigger('select:portfolio', portfolio);
-      } else {
-        // Special Breadcrumb handling
-        if (this.contentLayout instanceof ProjectDetailLayout) {
-          // If we hit portfolio from project we don't want to reset
-          // breadcrumbs, just update them
-          Backbone.trigger('set:breadcrumbs', portfolio);
-        } else {
-          Backbone.trigger('reset:breadcrumbs', portfolio);
-        }
-
-        // Build portfolio view
-        this.contentLayout = new PortfolioDetailLayout({model: portfolio});
-        this.mainLayout.mainContent.show(this.contentLayout);
-      }
+      this.mainLayout.showPortfolio(portfolio);
     },
 
     findProject: function(id){
@@ -111,7 +93,7 @@ define([
           settingsRegion: this.mainLayout.pageSettings
         });
 
-        this.mainLayout.mainContent.show(this.contentLayout);
+        this.mainLayout.showProject(project, ia.rootPortfolio.projects);
       }
     },
 
@@ -125,12 +107,12 @@ define([
     admin: function(page, detail){
       Backbone.trigger('reset:breadcrumbs', {name: 'Admin'});
 
-      this.contentLayout = new AdminLayout({ initialView: page, app: ia });
+      this.contentLayout = new AdminLayout({ initialView: page, currentUser: ia.currentUser });
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
     initialize: function(){
-      this.mainLayout = new MainLayout({currentUser: ia.currentUser});
+      this.mainLayout = new MainLayout({currentUser: ia.currentUser, app: ia});
       ia.main.show(this.mainLayout);
     }
   });
