@@ -56,7 +56,7 @@ define([
 
         if (resp.rels) {
           _.each(resp.rels, function(rel) {
-            var target = rel[0] === this.id ? this : this.devices.get(rel[0]),
+            var target = rel[0] === resp.id ? this : this.devices.get(rel[0]),
               device = this.devices.get(rel[2]);
 
             if (device && target) {

@@ -65,7 +65,10 @@ define([
       this.model = options.model;
 
       // Fetch additional project information for editing.
-      this.model.fetch({data: {project_label: this.model.get('label')}});
+      this.model.fetch({data: {
+        project_label: this.model.get('label'),
+        index: 'AlignedProjects'
+      }});
 
       // Set up events on document.
       this.$doc = $(document);

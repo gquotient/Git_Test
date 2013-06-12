@@ -194,77 +194,57 @@ module.exports = function(app){
 
   app.get('/api/projects',
     function(req, res){
-      request({
-        method: 'GET',
-        uri: app.get('modelUrl') + '/res/projects',
-        headers: {
-          currentUser: req.user.email,
-          access_token: req.user.access_token,
-          clientSecret: app.get('clientSecret')
+      var project_label = req.query.project_label,
+        project = {devices: [], rels: []};
+
+      if (project_label) {
+        request({
+          method: 'GET',
+          uri: [
+            app.get('modelUrl'),
+            'api/project/devices',
+            project_label,
+            req.query.index || 'StagedProjects'
+          ].join('/'),
+          headers: {
+            currentUser: req.user.email,
+            access_token: req.user.access_token,
+            clientSecret: app.get('clientSecret')
+          }
         },
-        qs: req.query || {}
-      },
-      function(err, resp, body){
-        var project = {};
+        function(err, resp, body){
+          if (err) {
+            req.flash('error', err.message);
+            console.log('error!:', err);
+            res.redirect('/ia');
 
-        if (err) {
-          req.flash('error', err.message);
-          console.log('error!:', err);
-          res.redirect('/ia');
+          } else if (resp.statusCode === 200) {
+            body = JSON.parse(body);
 
-        } else if (resp.statusCode === 200) {
-          body = JSON.parse(body);
+            _.each(body.devices, function(device){
 
-          project = _.extend({},
-            body.properties,
-            _.omit(body, 'properties', 'children')
-          );
+              if (/^PVA/.test(device.did)) {
+                _.extend(project, _.omit(device, 'devices'));
 
-          request({
-            method: 'GET',
-            uri: [
-              app.get('modelUrl'),
-              'api/project/devices',
-              project.project_label,
-              'AlignedProjects'
-            ].join('/'),
-            headers: {
-              currentUser: req.user.email,
-              access_token: req.user.access_token,
-              clientSecret: app.get('clientSecret')
-            }
-          },
-          function(err, resp, body){
-            if (err) {
-              req.flash('error', err.message);
-              console.log('error!:', err);
-              res.redirect('/ia');
+              } else {
+                device.project_label = project_label;
 
-            } else if (resp.statusCode === 200) {
-              body = JSON.parse(body);
-
-              body.devices = _.reduce(body.devices, function(memo, device){
-                if (_.has(device, 'device_type')) {
-                  device.project_label = project.project_label;
-
-                  if (device.renderings) {
-                    device.renderings = JSON.parse(device.renderings);
-                  }
-
-                  memo.push(device);
+                if (device.renderings) {
+                  device.renderings = JSON.parse(device.renderings);
                 }
 
-                return memo;
-              }, []);
+                project.devices.push(device);
+              }
+            });
 
-              project.devices = body.devices || [];
-              project.rels = body.rels || [];
+            if (body.rels) {
+              project.rels = body.rels;
             }
 
             res.send(project);
-          });
-        }
-      });
+          }
+        });
+      }
     });
 
   app.post('/api/projects',
