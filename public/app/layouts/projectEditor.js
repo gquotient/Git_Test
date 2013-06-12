@@ -30,8 +30,8 @@ define([
     },
 
     regions: {
-      content: '.contentContainer',
-      overlay: '.overlayContainer'
+      content: '#content',
+      overlay: '#overlay'
     },
 
     delegateEditorEvents: function(){

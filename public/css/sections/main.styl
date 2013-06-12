@@ -336,12 +336,16 @@ primaryBorderStyle = borderBasicDark;
 }
 
 #page-projectEditor {
+  position: relative;
+
   canvas {
     background: #bbb;
   }
 
-  .overlayContainer {
-    float: right;
+  #overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
     width: 400px;
     height: 100%;
     background: colorBGDarkGrey;

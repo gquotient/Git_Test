@@ -65,8 +65,6 @@ define([
     },
 
     projectCreate: function(){
-      Backbone.trigger('reset:breadcrumbs', {name: 'Project Creator'});
-
       this.contentLayout = new ProjectCreatorLayout();
       this.mainLayout.mainContent.show(this.contentLayout);
     },
@@ -75,8 +73,6 @@ define([
       var project = this.findProject(id);
 
       if (project) {
-        Backbone.trigger('set:breadcrumbs', {name: 'Edit'});
-
         this.contentLayout = new ProjectEditorLayout({model: project});
         this.mainLayout.mainContent.show(this.contentLayout);
       }
