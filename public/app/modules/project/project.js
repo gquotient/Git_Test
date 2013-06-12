@@ -51,12 +51,15 @@ define([
     },
 
     parse: function(resp){
+      console.log('project parse', resp);
       if (resp.devices) {
         this.devices.reset(resp.devices);
 
         if (resp.rels) {
           _.each(resp.rels, function(rel) {
-            var target = rel[0] === this.id ? this : this.devices.get(rel[0]),
+            // Changed to .get id but the id is different when coming from project
+            // API and devices API
+            var target = rel[0] === this.get('id') ? this : this.devices.get(rel[0]),
               device = this.devices.get(rel[2]);
 
             if (device && target) {

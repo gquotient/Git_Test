@@ -45,13 +45,13 @@ define([
 
     initialize: function(options){
       console.log('initialize project devices', options, this);
+      var that = this;
 
       this.model = options.model;
 
-      this.devices = new Device.Model();
-
       this.model.fetch({data: {project_label: this.model.get('label')}}).done(function(){
-        console.log('devices done', arguments, this);
+        console.log('devices done');
+        console.log(arguments, that.model);
       });
     }
   });

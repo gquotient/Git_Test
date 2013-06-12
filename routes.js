@@ -194,6 +194,7 @@ module.exports = function(app){
 
   app.get('/api/projects',
     function(req, res){
+      console.log('preject route', _.extend(req.query, {index_name: 'StageProjects'}));
       request({
         method: 'GET',
         uri: app.get('modelUrl') + '/res/projects',
@@ -202,7 +203,7 @@ module.exports = function(app){
           access_token: req.user.access_token,
           clientSecret: app.get('clientSecret')
         },
-        qs: req.query || {}
+        qs: _.extend(req.query, {index_name: 'StagedProjects'}) // Changed to StagedProjects to point at a reliable data source
       },
       function(err, resp, body){
         var project = {};
@@ -226,7 +227,7 @@ module.exports = function(app){
               app.get('modelUrl'),
               'api/project/devices',
               project.project_label,
-              'AlignedProjects'
+              'StagedProjects' // Changed to StagedProjects to point at a reliable data source
             ].join('/'),
             headers: {
               currentUser: req.user.email,
@@ -235,7 +236,6 @@ module.exports = function(app){
             }
           },
           function(err, resp, body){
-            console.log('devices', body);
             if (err) {
               req.flash('error', err.message);
               console.log('error!:', err);
@@ -245,7 +245,8 @@ module.exports = function(app){
               body = JSON.parse(body);
 
               body.devices = _.reduce(body.devices, function(memo, device){
-                if (_.has(device, 'device_type')) {
+                // Changed to devtype to match model service
+                if (_.has(device, 'devtype')) {
                   device.project_label = project.project_label;
 
                   if (device.renderings) {
