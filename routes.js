@@ -223,7 +223,7 @@ module.exports = function(app){
 
             _.each(body.devices, function(device){
 
-              if (/^PVA/.test(device.did)) {
+              if (/^PV[ASC]/.test(device.did)) {
                 _.extend(project, _.omit(device, 'devices'));
 
               } else {
