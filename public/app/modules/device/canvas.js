@@ -24,7 +24,7 @@ define([
         this.device = options.device;
 
         this.paper = options.paper || paper;
-        this.rendering = options.rendering;
+        this.rendering_label = options.rendering_label;
 
         this.listenTo(this.device, 'change:renderings', this.move);
         this.listenTo(this.model, 'change:renderings', this.move);
@@ -82,11 +82,11 @@ define([
       },
 
       startPoint: function(){
-        return new this.paper.Point(this.device.getPosition(this.rendering));
+        return new this.paper.Point(this.device.getPosition(this.rendering_label));
       },
 
       endPoint: function(){
-        return new this.paper.Point(this.model.getPosition(this.rendering));
+        return new this.paper.Point(this.model.getPosition(this.rendering_label));
       },
 
       move: function(){
@@ -129,7 +129,7 @@ define([
         return {
           device: this.model,
           paper: this.paper,
-          rendering: this.rendering
+          rendering_label: this.rendering_label
         };
       },
 
@@ -137,7 +137,7 @@ define([
         this.collection = this.model.outgoing;
 
         this.paper = options.paper || paper;
-        this.rendering = options.rendering;
+        this.rendering_label = options.rendering_label;
 
         this.factory = symbolLibrary(this.paper);
         this.setCenter();
@@ -148,7 +148,7 @@ define([
 
       // Overwrite this function to prevent rendering of children without position
       addItemView: function(model){
-        if (model.getPosition(this.rendering)){
+        if (model.getPosition(this.rendering_label)){
           Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
         }
       },
@@ -203,7 +203,7 @@ define([
 
       setCenter: function(){
         var orig = this.center,
-          point = this.center = new this.paper.Point(this.model.getPosition(this.rendering)),
+          point = this.center = new this.paper.Point(this.model.getPosition(this.rendering_label)),
           delta = point.subtract(orig);
 
         if (this.node) { this.node.translate(delta); }
@@ -226,7 +226,7 @@ define([
     itemViewOptions: function(){
       return {
         paper: this.paper,
-        rendering: this.rendering
+        rendering_label: this.rendering_label
       };
     },
 
@@ -236,7 +236,7 @@ define([
 
     initialize: function(options){
       this.paper = paper.setup(this.el);
-      this.rendering = options.rendering;
+      this.rendering_label = options.rendering_label;
 
       this.selection = new Backbone.Collection();
 
@@ -256,7 +256,7 @@ define([
 
     // Overwrite this function to prevent rendering of children without position
     addItemView: function(model){
-      if (model.getPosition(this.rendering)){
+      if (model.getPosition(this.rendering_label)){
         Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
       }
     },
@@ -466,9 +466,9 @@ define([
 
     moveSelection: function(delta){
       this.selection.each(function(model) {
-        var position = model.getPosition(this.rendering);
+        var position = model.getPosition(this.rendering_label);
 
-        model.setPosition(this.rendering, {
+        model.setPosition(this.rendering_label, {
           x: position.x + delta.x,
           y: position.y + delta.y
         });
@@ -477,9 +477,9 @@ define([
 
     snapSelection: function(){
       this.selection.each(function(model) {
-        var position = model.getPosition(this.rendering);
+        var position = model.getPosition(this.rendering_label);
 
-        model.setPosition(this.rendering, {
+        model.setPosition(this.rendering_label, {
           x: Math.round(position.x / 100) * 100,
           y: Math.round(position.y / 100) * 100
         });

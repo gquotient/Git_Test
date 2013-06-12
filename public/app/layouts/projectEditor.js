@@ -53,7 +53,7 @@ define([
 
       this.content.show( new Device.views.Canvas({
         collection: this.model.devices,
-        rendering: 'ELECTRICAL'
+        rendering_label: 'ELECTRICAL'
       }));
     },
 
