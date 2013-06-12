@@ -13,6 +13,7 @@ define([
   'layouts/projectCreator',
   'layouts/projectEditor',
   'layouts/projectDetail',
+  'layouts/projectDevices',
   'layouts/profile',
   'layouts/admin'
 ], function(
@@ -30,6 +31,7 @@ define([
   ProjectCreatorLayout,
   ProjectEditorLayout,
   ProjectDetailLayout,
+  ProjectDevicesLayout,
   ProfileLayout,
   AdminLayout
 ){
@@ -65,7 +67,7 @@ define([
     },
 
     projectCreate: function(){
-      Backbone.trigger('reset:breadcrumbs', {name: 'Project Creator'});
+      // Backbone.trigger('reset:breadcrumbs', {name: 'Project Creator'});
 
       this.contentLayout = new ProjectCreatorLayout();
       this.mainLayout.mainContent.show(this.contentLayout);
@@ -75,7 +77,7 @@ define([
       var project = this.findProject(id);
 
       if (project) {
-        Backbone.trigger('set:breadcrumbs', {name: 'Edit'});
+       // Backbone.trigger('set:breadcrumbs', {name: 'Edit'});
 
         this.contentLayout = new ProjectEditorLayout({model: project});
         this.mainLayout.mainContent.show(this.contentLayout);
@@ -86,6 +88,18 @@ define([
       var project = this.findProject(id);
 
       this.mainLayout.showProject(project, ia.rootPortfolio.projects);
+    },
+
+    projectDevices: function(id, deviceId){
+      console.log(arguments);
+      var project = this.findProject(id);
+
+      this.contentLayout = new ProjectDevicesLayout({model: project});
+      this.mainLayout.mainContent.show(this.contentLayout);
+
+      if (deviceId) {
+        this.contentLayout.selectDevice(deviceId);
+      }
     },
 
     profile: function(){
@@ -121,6 +135,8 @@ define([
       'project/create': 'projectCreate',
       'project/:id/edit': 'projectEdit',
       'project/:id': 'projectDetail',
+      'project/:id/devices': 'projectDevices',
+      'project/:id/devices/:deviceId': 'projectDevices',
 
       'profile': 'profile',
 

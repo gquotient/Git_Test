@@ -235,6 +235,7 @@ module.exports = function(app){
             }
           },
           function(err, resp, body){
+            console.log('devices', body);
             if (err) {
               req.flash('error', err.message);
               console.log('error!:', err);
