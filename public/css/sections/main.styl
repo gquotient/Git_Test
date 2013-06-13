@@ -94,8 +94,7 @@ primaryBorderStyle = borderBasicDark;
   background: colorBGDarkGrey;
   border-right: primaryBorderStyle;
   color: #aaa;
-  > div {
-    > ul {
+    ul {
       padding: 0;
       margin: 0;
       list-style-type: none;
@@ -140,6 +139,8 @@ primaryBorderStyle = borderBasicDark;
             color: #eee;
           }
           ul {
+            background: none;
+            border: none;
             padding: 0;
             margin: 0;
             overflow: hidden;
@@ -147,6 +148,7 @@ primaryBorderStyle = borderBasicDark;
             li {
               background-position: left center;
               background-repeat: no-repeat;
+              border: none;
               padding: 0 0 0 12px;
               margin: 0 12px 0 0;
               float: left;
@@ -172,7 +174,7 @@ primaryBorderStyle = borderBasicDark;
         }
       }
     }
-  }
+
 }
 
 /* Detail View */

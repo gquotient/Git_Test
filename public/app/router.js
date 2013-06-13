@@ -13,6 +13,7 @@ define([
   'layouts/projectCreator',
   'layouts/projectEditor',
   'layouts/projectDetail',
+  'layouts/projectDevices',
   'layouts/profile',
   'layouts/admin'
 ], function(
@@ -30,6 +31,7 @@ define([
   ProjectCreatorLayout,
   ProjectEditorLayout,
   ProjectDetailLayout,
+  ProjectDevicesLayout,
   ProfileLayout,
   AdminLayout
 ){
@@ -80,7 +82,20 @@ define([
 
     projectDetail: function(id){
       var project = this.findProject(id);
+
       this.mainLayout.showProject(project, ia.rootPortfolio.projects);
+    },
+
+    projectDevices: function(id, deviceId){
+      console.log(arguments);
+      var project = this.findProject(id);
+
+      this.contentLayout = new ProjectDevicesLayout({model: project});
+      this.mainLayout.mainContent.show(this.contentLayout);
+
+      if (deviceId) {
+        this.contentLayout.selectDevice(deviceId);
+      }
     },
 
     profile: function(){
@@ -116,6 +131,8 @@ define([
       'project/create': 'projectCreate',
       'project/:id/edit': 'projectEdit',
       'project/:id': 'projectDetail',
+      'project/:id/devices': 'projectDevices',
+      'project/:id/devices/:deviceId': 'projectDevices',
 
       'profile': 'profile',
 

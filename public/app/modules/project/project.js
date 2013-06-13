@@ -51,6 +51,7 @@ define([
     },
 
     parse: function(resp){
+      console.log('project parse', resp);
       if (resp.devices) {
         this.devices.reset(resp.devices);
 
