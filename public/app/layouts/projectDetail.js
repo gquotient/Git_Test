@@ -36,13 +36,12 @@ define([
     },
 
     regions: {
-      map: '#map',
-      kpis: '#kpis',
-      alarms: '#alarms',
-      contentNavigation: '.column_left',
-      issues: '#issues',
-      chart_powerHistory: '#chart_powerHistory',
-      chart_healthAndSoiling: '#chart_healthAndSoiling'
+      map: '.map',
+      kpis: '.kpis',
+      contentNavigation: '.nav_content',
+      issues: '.issues',
+      chart_powerHistory: '.chart#powerHistory',
+      chart_healthAndSoiling: '.chart#healthAndSoiling'
     },
 
     events: {
@@ -52,6 +51,7 @@ define([
     },
 
     onShow: function(){
+      console.log(this.map);
       this.map.show(this.mapView);
 
       this.contentNavigation.show(this.projectNavigationListView);
