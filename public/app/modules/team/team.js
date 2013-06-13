@@ -49,7 +49,6 @@ define(
       },
       removeUser: function(user){
         this.users.remove(user);
-        console.log(user.get('email'));
         $.ajax('/api/user_team', {
           type: 'DELETE',
           data: {
