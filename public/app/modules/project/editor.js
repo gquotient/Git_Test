@@ -279,33 +279,25 @@ define([
       var devices = [];
 
       if (this.selection && this.selection.length > 0) {
-        devices = this.model.devices.chain()
+        devices = this.model.devices.filter(function(device){
 
-          // Prevent connections to self
-          .reject(function(device){
-            return this.selection.contains(device);
-          }, this)
+          // Don't show selected devices
+          if (this.selection.contains(device)) {
+            return false;
+          }
 
-          // Prevent connections to children
-          .reject(function(device){
-            return this.selection.any(function(select){
-              return select.hasChild(device);
-            });
-          }, this)
+          // Don't show devices that can't be rendered
+          if (!findRendering(device.get('device_type'), this.rendering_label)) {
+            return false;
+          }
 
-          // Filter devices by rendering
-          .filter(function(device){
-            return findRendering(device.get('device_type'), this.rendering_label);
-          }, this)
+          // Only show devices that have a relationship and aren't already children
+          return this.selection.all(function(select){
+            var relationship = findIncomingRelationshipLabel(device, select);
 
-          // Filter devices by relationship
-          .filter(function(device){
-            return this.selection.all(function(select){
-              return findIncomingRelationshipLabel(device, select);
-            });
-          }, this)
-
-          .value();
+            return relationship && !select.hasChild(device, relationship);
+          });
+        }, this);
       }
 
       this.connectCollection.reset(devices);

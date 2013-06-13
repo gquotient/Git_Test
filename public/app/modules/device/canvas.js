@@ -146,14 +146,14 @@ define([
         this.on('close', this.erase);
       },
 
-      // Overwrite this function to prevent rendering of children without position
+      // Prevent rendering of children that don't have position.
       addItemView: function(model){
         if (model.getPosition(this.rendering_label)){
           Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
         }
       },
 
-      // Overwrite this function so that item views aren't added to the dom.
+      // Prevent item views from being added to the DOM.
       appendHtml: function(){},
 
       modelEvents: {
@@ -254,14 +254,27 @@ define([
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
     },
 
-    // Overwrite this function to prevent rendering of children without position
+    // Listen for rendering additions.
+    _initialEvents: function(){
+      Marionette.CollectionView.prototype._initialEvents.call(this);
+
+      if (this.collection) {
+        this.listenTo(this.collection, 'add:rendering', function(model){
+          if (!this.children.findByModel(model)) {
+            this.addChildView(model);
+          }
+        });
+      }
+    },
+
+    // Prevent rendering of children that don't have position.
     addItemView: function(model){
       if (model.getPosition(this.rendering_label)){
         Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
       }
     },
 
-    // Overwrite this function so that item views aren't added to the dom.
+    // Prevent item views from being added to the DOM.
     appendHtml: function(){},
 
     events: {
