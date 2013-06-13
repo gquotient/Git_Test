@@ -94,87 +94,86 @@ primaryBorderStyle = borderBasicDark;
   background: colorBGDarkGrey;
   border-right: primaryBorderStyle;
   color: #aaa;
-    ul {
-      padding: 0;
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    > li {
+      padding: 0px;
+      text-shadow: 0 1px 0 #222;
       margin: 0;
-      list-style-type: none;
-      > li {
-        padding: 0px;
-        text-shadow: 0 1px 0 #222;
-        margin: 0;
-        border-top: borderBasicMedium;
-        border-bottom: borderBasicDark;
-        background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-        cursor: pointer;
+      border-top: borderBasicMedium;
+      border-bottom: borderBasicDark;
+      background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+      cursor: pointer;
+      a {
+        display: block;
+        padding: 6px;
+        text-decoration: none;
+      }
+      &.active {
         a {
-          display: block;
-          padding: 6px;
-          text-decoration: none;
+          border-right: 3px solid colorDrakerOrange;
+          color: colorPrimaryText;
         }
-        &.active {
-          a {
-            border-right: 3px solid colorDrakerOrange;
-            color: colorPrimaryText;
-          }
+      }
+      &.empty {
+        background: none;
+        border: none;
+        padding: 6px;
+        font-style: italic;
+        box-shadow: none;
+        cursor: default;
+        &:hover {
+          background: none;
         }
-        &.empty {
+      }
+      &.nav-item {
+        padding: 6px;
+        h3 {
+          margin: 0 0 6px;
+          white-space: nowrap;
+          overflow: ellipsis;
+          font-size: 1.25em;
+          font-weight: 100;
+          color: #eee;
+        }
+        ul {
           background: none;
           border: none;
-          padding: 6px;
-          font-style: italic;
-          box-shadow: none;
-          cursor: default;
-          &:hover {
-            background: none;
-          }
-        }
-        &.nav-item {
-          padding: 6px;
-          h3 {
-            margin: 0 0 6px;
-            white-space: nowrap;
-            overflow: ellipsis;
-            font-size: 1.25em;
-            font-weight: 100;
-            color: #eee;
-          }
-          ul {
-            background: none;
+          padding: 0;
+          margin: 0;
+          overflow: hidden;
+          list-style-type: none;
+          li {
+            background-position: left center;
+            background-repeat: no-repeat;
             border: none;
-            padding: 0;
-            margin: 0;
-            overflow: hidden;
-            list-style-type: none;
-            li {
-              background-position: left center;
-              background-repeat: no-repeat;
-              border: none;
-              padding: 0 0 0 12px;
-              margin: 0 12px 0 0;
-              float: left;
-              &.projects {
-                background-image: url(../../img/icon_project_9x12.png);
-              }
-              &.subPortfolios {
-                background-image: url(../../img/icon_portfolio_12x9.png);
-                padding: 0 0 0 15px;
-              }
-              &.DCCapacity {
-                background-image: url(../../img/icon_energy_12x12.png);
-                padding: 0 0 0 15px;
-              }
+            padding: 0 0 0 12px;
+            margin: 0 12px 0 0;
+            float: left;
+            &.projects {
+              background-image: url(../../img/icon_project_9x12.png);
+            }
+            &.subPortfolios {
+              background-image: url(../../img/icon_portfolio_12x9.png);
+              padding: 0 0 0 15px;
+            }
+            &.DCCapacity {
+              background-image: url(../../img/icon_energy_12x12.png);
+              padding: 0 0 0 15px;
             }
           }
         }
-        &:hover {
-          background: linear-gradient(#252627, #282828);
-        }
-        &:first-child {
-          border-top: none;
-        }
+      }
+      &:hover {
+        background: linear-gradient(#252627, #282828);
+      }
+      &:first-child {
+        border-top: none;
       }
     }
-
+  }
 }
 
 /* Detail View */
