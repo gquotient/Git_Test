@@ -40,7 +40,7 @@ define([
     },
 
     onShow: function(){
-
+      this.contentNavigation.show(this.navView);
     },
 
     initialize: function(options){
@@ -49,9 +49,13 @@ define([
 
       this.model = options.model;
 
+      this.navView = new Device.views.NavigationListView({collection: new Device.Collection()});
+
       this.model.fetch({data: {project_label: this.model.get('label')}}).done(function(){
         console.log('devices done');
         console.log(arguments, that.model);
+
+        that.navView.collection.reset(that.model.devices.where({devtype: 'Inverter'}));
       });
     }
   });

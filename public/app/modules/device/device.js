@@ -4,14 +4,20 @@ define([
   'backbone',
   'backbone.marionette',
 
-  './canvas'
+  './canvas',
+
+  'hbs!device/templates/li',
+  'hbs!device/templates/ul'
 ], function(
   $,
   _,
   Backbone,
   Marionette,
 
-  Canvas
+  Canvas,
+
+  deviceListItemViewTemplate,
+  deviceListViewTemplate
 ){
   var Device = { views: {} };
 
@@ -86,6 +92,31 @@ define([
   });
 
   Device.views.Canvas = Canvas;
+
+  Device.views.DeviceListItemView = Marionette.ItemView.extend({
+    tagName: 'li',
+    template: {
+      type: 'handlebars',
+      template: deviceListItemViewTemplate
+    },
+    attributes: {
+      class: 'device'
+    }
+  });
+
+  Device.views.NavigationListView = Marionette.CompositeView.extend({
+    template: {
+      type: 'handlebars',
+      template: deviceListViewTemplate
+    },
+    attributes: {
+      class: 'devices nav-item'
+    },
+    itemViewContainer: 'ul',
+    itemView: Device.views.DeviceListItemView,
+    initialize: function(options) {
+    }
+  });
 
   return Device;
 });
