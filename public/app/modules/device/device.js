@@ -44,11 +44,18 @@ define([
       return _.clone(renderings[view]);
     },
 
-    setPosition: function(view, position){
-      var renderings = _.clone(this.get('renderings'));
+    setPosition: function(view, position, save){
+      var renderings = _.clone(this.get('renderings')),
+        isNew = !_.has(renderings, view);
 
-      renderings[view] = position;
-      this.set({renderings: renderings});
+      if (isNew || !_.isEqual(renderings[view], position)) {
+        renderings[view] = position;
+        this[save ? 'save' : 'set']({renderings: renderings});
+      }
+
+      if (isNew) {
+        this.trigger('add:rendering', this);
+      }
     },
 
     connectTo: function(target, label){
@@ -69,11 +76,16 @@ define([
       }
     },
 
-    hasChild: function(child){
-      return this.outgoing.contains(child) ||
-        this.outgoing.any(function(model){
-          return model.hasChild(child);
+    hasChild: function(child, relationship){
+      var rel = child.relationships[this.id];
+
+      if (rel && (!relationship || relationship === rel)) {
+        return true;
+      } else {
+        return this.outgoing.any(function(model){
+          return model.hasChild(child, relationship);
         });
+      }
     }
   });
 

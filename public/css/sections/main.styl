@@ -337,12 +337,16 @@ primaryBorderStyle = borderBasicDark;
 }
 
 #page-projectEditor {
+  position: relative;
+
   canvas {
     background: #bbb;
   }
 
-  .overlayContainer {
-    float: right;
+  #overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
     width: 400px;
     height: 100%;
     background: colorBGDarkGrey;
@@ -350,7 +354,7 @@ primaryBorderStyle = borderBasicDark;
     opacity: 0.8;
   }
 
-  #overlay > div {
+  #editor > div {
     border-top: borderBasicMedium;
     border-bottom: borderBasicDark;
     padding: 12px;
@@ -367,21 +371,19 @@ primaryBorderStyle = borderBasicDark;
       color: colorDrakerOrange;
     }
 
-    form {
-      input {
-        width: 275px;
-        padding-right: 5px;
-        border-radius: 3px;
-        color: grey;
+    input {
+      width: 275px;
+      padding-right: 5px;
+      border-radius: 3px;
+      color: grey;
 
-        &:focus {
-          color: black;
-        }
+      &:focus {
+        color: black;
       }
+    }
 
-      button {
-        width: 75px;
-      }
+    button {
+      width: 75px;
     }
 
     ul {

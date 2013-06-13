@@ -51,15 +51,12 @@ define([
     },
 
     parse: function(resp){
-      console.log('project parse', resp);
       if (resp.devices) {
         this.devices.reset(resp.devices);
 
         if (resp.rels) {
           _.each(resp.rels, function(rel) {
-            // Changed to .get id but the id is different when coming from project
-            // API and devices API
-            var target = rel[0] === this.get('id') ? this : this.devices.get(rel[0]),
+            var target = rel[0] === resp.id ? this : this.devices.get(rel[0]),
               device = this.devices.get(rel[2]);
 
             if (device && target) {
@@ -363,10 +360,7 @@ define([
     events: {
       'click': function(){
         Backbone.trigger('click:project', this.model);
-      }//,
-      // 'dblclick': function(){
-      //   Backbone.trigger('select:project', this.model);
-      // }
+      }
     }
   });
 

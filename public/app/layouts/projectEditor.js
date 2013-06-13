@@ -30,8 +30,8 @@ define([
     },
 
     regions: {
-      content: '.contentContainer',
-      overlay: '.overlayContainer'
+      content: '#content',
+      overlay: '#overlay'
     },
 
     delegateEditorEvents: function(){
@@ -50,7 +50,6 @@ define([
 
     onShow: function(){
       this.overlay.show( new Project.views.Editor({model: this.model}) );
-      this.content.show( new Device.views.Canvas({collection: this.model.devices}) );
     },
 
     onClose: function(){
@@ -61,21 +60,21 @@ define([
       this.model = options.model;
 
       // Fetch additional project information for editing.
-      this.model.fetch({data: {project_label: this.model.get('label')}});
+      this.model.fetch({data: {
+        project_label: this.model.get('label'),
+        index: 'AlignedProjects'
+      }});
 
       // Set up events on document.
       this.$doc = $(document);
       this.delegateEditorEvents();
 
       // Set up listeners
-      this.listenTo(Backbone, 'select:portfolio', function(model){
-        // Set address bar and force routing
-        Backbone.history.navigate('/portfolio/' + model.id, true);
-      });
-
-      this.listenTo(Backbone, 'select:project', function(model){
-        // Set address bar and force routing
-        Backbone.history.navigate('/project/' + model.id, true);
+      this.listenTo(Backbone, 'editor:rendering', function(label){
+        this.content.show( new Device.views.Canvas({
+          collection: this.model.devices,
+          rendering_label: label
+        }));
       });
     }
   });

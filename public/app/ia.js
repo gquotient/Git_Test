@@ -40,6 +40,6 @@ define([
   ia.currentUser = ia.users.push( JSON.parse($('#currentUserData').html()) );
   ia.rootPortfolio.portfolios.add( JSON.parse($('#bootstrapPortfolios').html()) );
   ia.rootPortfolio.projects.add( JSON.parse($('#bootstrapProjects').html()) );
-
+  ia.currentTeam = JSON.parse(ia.currentUser.get('teams'))[0][0];
   return ia;
 });

@@ -21,8 +21,10 @@ define([
     EdgeView = Marionette.ItemView.extend({
 
       initialize: function(options){
-        this.paper = options.paper || paper;
         this.device = options.device;
+
+        this.paper = options.paper || paper;
+        this.rendering_label = options.rendering_label;
 
         this.listenTo(this.device, 'change:renderings', this.move);
         this.listenTo(this.model, 'change:renderings', this.move);
@@ -80,11 +82,11 @@ define([
       },
 
       startPoint: function(){
-        return new this.paper.Point(this.device.getPosition('ELECTRICAL'));
+        return new this.paper.Point(this.device.getPosition(this.rendering_label));
       },
 
       endPoint: function(){
-        return new this.paper.Point(this.model.getPosition('ELECTRICAL'));
+        return new this.paper.Point(this.model.getPosition(this.rendering_label));
       },
 
       move: function(){
@@ -124,19 +126,35 @@ define([
       itemView: EdgeView,
 
       itemViewOptions: function(){
-        return {paper: this.paper, device: this.model};
+        return {
+          device: this.model,
+          paper: this.paper,
+          rendering_label: this.rendering_label
+        };
       },
 
       initialize: function(options){
         this.collection = this.model.outgoing;
 
         this.paper = options.paper || paper;
+        this.rendering_label = options.rendering_label;
+
         this.factory = symbolLibrary(this.paper);
         this.setCenter();
 
         this.on('render', this.draw);
         this.on('close', this.erase);
       },
+
+      // Prevent rendering of children that don't have position.
+      addItemView: function(model){
+        if (model.getPosition(this.rendering_label)){
+          Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
+        }
+      },
+
+      // Prevent item views from being added to the DOM.
+      appendHtml: function(){},
 
       modelEvents: {
         'selected': 'select',
@@ -185,7 +203,7 @@ define([
 
       setCenter: function(){
         var orig = this.center,
-          point = this.center = new this.paper.Point(this.model.getPosition('ELECTRICAL')),
+          point = this.center = new this.paper.Point(this.model.getPosition(this.rendering_label)),
           delta = point.subtract(orig);
 
         if (this.node) { this.node.translate(delta); }
@@ -198,10 +216,7 @@ define([
 
       testInside: function(rect){
         return this.center.isInside(rect);
-      },
-
-      // Overwrite this function so that item views aren't added to the dom.
-      appendHtml: function(){}
+      }
     });
 
   return Marionette.CollectionView.extend({
@@ -209,7 +224,10 @@ define([
     itemView: NodeView,
 
     itemViewOptions: function(){
-      return {paper: this.paper};
+      return {
+        paper: this.paper,
+        rendering_label: this.rendering_label
+      };
     },
 
     attributes: {
@@ -218,6 +236,8 @@ define([
 
     initialize: function(options){
       this.paper = paper.setup(this.el);
+      this.rendering_label = options.rendering_label;
+
       this.selection = new Backbone.Collection();
 
       this.listenTo(this.selection, 'add', function(model){
@@ -233,6 +253,29 @@ define([
       this.listenTo(Backbone, 'editor:mousemove editor:mouseup', this.handleMouseEvent);
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
     },
+
+    // Listen for rendering additions.
+    _initialEvents: function(){
+      Marionette.CollectionView.prototype._initialEvents.call(this);
+
+      if (this.collection) {
+        this.listenTo(this.collection, 'add:rendering', function(model){
+          if (!this.children.findByModel(model)) {
+            this.addChildView(model);
+          }
+        });
+      }
+    },
+
+    // Prevent rendering of children that don't have position.
+    addItemView: function(model){
+      if (model.getPosition(this.rendering_label)){
+        Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
+      }
+    },
+
+    // Prevent item views from being added to the DOM.
+    appendHtml: function(){},
 
     events: {
       'mousedown': 'handleMouseEvent',
@@ -436,9 +479,9 @@ define([
 
     moveSelection: function(delta){
       this.selection.each(function(model) {
-        var position = model.getPosition('ELECTRICAL');
+        var position = model.getPosition(this.rendering_label);
 
-        model.setPosition('ELECTRICAL', {
+        model.setPosition(this.rendering_label, {
           x: position.x + delta.x,
           y: position.y + delta.y
         });
@@ -447,18 +490,13 @@ define([
 
     snapSelection: function(){
       this.selection.each(function(model) {
-        var position = model.getPosition('ELECTRICAL');
+        var position = model.getPosition(this.rendering_label);
 
-        model.setPosition('ELECTRICAL', {
+        model.setPosition(this.rendering_label, {
           x: Math.round(position.x / 100) * 100,
           y: Math.round(position.y / 100) * 100
-        });
-
-        model.save();
+        }, true);
       }, this);
-    },
-
-    // Overwrite this function so that item views aren't added to the dom.
-    appendHtml: function(){}
+    }
   });
 });
