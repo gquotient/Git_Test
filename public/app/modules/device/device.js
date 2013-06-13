@@ -117,14 +117,9 @@ define([
 
   Device.views.NavigationList = Marionette.CollectionView.extend({
     tagName: 'ul',
-    template: {
-      type: 'handlebars',
-      template: deviceListViewTemplate
-    },
     attributes: {
       class: 'devices'
     },
-
     itemView: Device.views.DeviceListItem,
     initialize: function(options) {
 
