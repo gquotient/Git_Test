@@ -65,4 +65,10 @@ function(
     return retSelect;
   });
 
+  _.mixin({
+    take: function(obj, interceptor){
+      return interceptor(obj);
+    }
+  });
+
 });

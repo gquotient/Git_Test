@@ -13,6 +13,7 @@ define([
   'layouts/projectCreator',
   'layouts/projectEditor',
   'layouts/projectDetail',
+  'layouts/projectDevices',
   'layouts/profile',
   'layouts/admin'
 ], function(
@@ -30,6 +31,7 @@ define([
   ProjectCreatorLayout,
   ProjectEditorLayout,
   ProjectDetailLayout,
+  ProjectDevicesLayout,
   ProfileLayout,
   AdminLayout
 ){
@@ -65,8 +67,6 @@ define([
     },
 
     projectCreate: function(){
-      Backbone.trigger('reset:breadcrumbs', {name: 'Project Creator'});
-
       this.contentLayout = new ProjectCreatorLayout();
       this.mainLayout.mainContent.show(this.contentLayout);
     },
@@ -74,15 +74,28 @@ define([
     projectEdit: function(id){
       var project = this.findProject(id);
 
-      Backbone.trigger('set:breadcrumbs', {name: 'Edit'});
-
-      this.contentLayout = new ProjectEditorLayout({model: project});
-      this.mainLayout.mainContent.show(this.contentLayout);
+      if (project) {
+        this.contentLayout = new ProjectEditorLayout({model: project});
+        this.mainLayout.mainContent.show(this.contentLayout);
+      }
     },
 
     projectDetail: function(id){
       var project = this.findProject(id);
       this.mainLayout.showProject(project);
+      this.mainLayout.showProject(project, ia.rootPortfolio.projects);
+    },
+
+    projectDevices: function(id, deviceId){
+      console.log(arguments);
+      var project = this.findProject(id);
+
+      this.contentLayout = new ProjectDevicesLayout({model: project});
+      this.mainLayout.mainContent.show(this.contentLayout);
+
+      if (deviceId) {
+        this.contentLayout.selectDevice(deviceId);
+      }
     },
 
     profile: function(){
@@ -95,7 +108,7 @@ define([
     admin: function(page, detail){
       Backbone.trigger('reset:breadcrumbs', {name: 'Admin'});
 
-      this.contentLayout = new AdminLayout({ initialView: page, app: ia });
+      this.contentLayout = new AdminLayout({ initialView: page, currentUser: ia.currentUser });
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
@@ -118,13 +131,14 @@ define([
       'project/create': 'projectCreate',
       'project/:id/edit': 'projectEdit',
       'project/:id': 'projectDetail',
+      'project/:id/devices': 'projectDevices',
+      'project/:id/devices/:deviceId': 'projectDevices',
 
       'profile': 'profile',
 
       //Admin Routes
       'admin': 'admin',
       'admin/:page': 'admin'
-
     }
   });
 

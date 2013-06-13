@@ -430,6 +430,48 @@ leftColumnWidth = 240px;
   }
 }
 
+.dropdown {
+  position: relative;
+  &:hover {
+    background-color: colorDropDownBG;
+    ul {
+      display: inherit;
+    }
+  }
+  &#pageSettings {
+    float:right;
+  }
+  ul {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 28px;
+    padding: 0;
+    margin: 0;
+    z-index: 301;
+    white-space: nowrap;
+    background: colorDropDownBG;
+    text-shadow: none;
+    list-style-type: none;
+    li {
+      font-size: .85em;
+      line-height: 24px;
+      padding: 0 6px;
+      border-bottom: 1px solid #404040;
+      a {
+        display: inline-block;
+        width: 100%;
+        line-height: 24px;
+        color: #ccc;
+        text-decoration: none;
+        &:hover {
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+
 /* Baseline leaflet styles */
 
 #leafletContainer {

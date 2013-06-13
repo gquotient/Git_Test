@@ -5,7 +5,7 @@ define([
   'backbone.marionette',
 
   'hbs!module/templates/table',
-  'hbs!module/templates/tableRow',
+  'hbs!module/templates/tableRow'
 ],
 function(
   $,

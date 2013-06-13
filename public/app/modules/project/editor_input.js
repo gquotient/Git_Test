@@ -14,6 +14,7 @@ define([
   inputItemTemplate
 ){
   var
+
     Dropdown = Marionette.CollectionView.extend({
       tagName: 'ul',
 
@@ -23,128 +24,102 @@ define([
           type: 'handlebars',
           template: inputItemTemplate
         }
-      })
+      }),
+
+      renderPartial: function(regex){
+        this.regex = regex;
+        return this.render();
+      },
+
+      addItemView: function(model){
+        if (!this.regex || this.regex.test(model.get('name'))) {
+          Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
+        }
+      }
     });
 
-  return Marionette.ItemView.extend({
-    ui: {
-      'input': 'input'
+  return Marionette.View.extend({
+
+    constructor: function(options){
+      var args = Array.prototype.slice.apply(arguments);
+      Marionette.View.prototype.constructor.apply(this, args);
+
+      this.ui = {input: this.$('input')};
+      this.placeholder = this.ui.input.val();
+
+      this.dropdown = new Dropdown({collection: this.collection});
+
+      this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
     },
 
     triggers: {
       'focus input': 'focus',
-      'input input': 'input',
       'blur input': 'blur',
+      'input input': 'input',
       'click button': 'apply'
     },
 
-    constructor: function(options){
-      this.project = options.project;
+    keydownEvents: {
+      9: 'key:tab',
+      27: 'key:esc',
+      38: 'key:up',
+      40: 'key:down',
+      13: 'apply'
+    },
 
-      var args = Array.prototype.slice.apply(arguments);
-      Marionette.ItemView.prototype.constructor.apply(this, args);
+    handleKeyEvent: function(e){
+      var value = (this[e.type + 'Events'] || {})[e.which];
 
-      if (!this.collection) { this.collection = new Backbone.Collection(); }
-      this.collection.comparator = 'name';
-      this.dropdown = new Dropdown({collection: this.collection});
+      if (value && this.focused) {
+        e.preventDefault();
+        this.triggerMethod(value, e);
 
-      // Store the placeholder text when the template is rendered.
-      this.listenTo(this, 'render', function(){
-        this.placeholder = this.ui.input.val();
-      });
-
-      // Show the dropdown when the input box has focus.
-      this.listenTo(this, 'focus', function(){
-        this.focused = true;
-        this.ui.input.val('');
-        this.renderDropdown();
-      });
-
-      // Hide the dropdown when the input box loses focus.
-      this.listenTo(this, 'blur', function(){
-        this.focused = false;
-        this.ui.input.val(this.placeholder);
-        this.dropdown.close();
-      });
-
-      // Update the dropdown when the collection changes.
-      this.listenTo(this.collection, 'add remove reset', this.renderDropdown);
-
-      // Listen for device selection events and store locally.
-      this.listenTo(Backbone, 'editor:selection', function(selection){
-        this.selection = selection.length > 0 ? selection : null;
-        this.triggerMethod('change:selection', selection);
-      });
-
-      if (this.hotKey) {
-        this.listenTo(Backbone, 'editor:keypress', function(e){
-
-          // Focus the input field on hotkey.
-          if (e.which === this.hotKey && e.target.nodeName !== 'INPUT') {
-            e.preventDefault();
-            this.ui.input.focus();
-          }
-        });
+      } else if (this.hotKey && e.which === this.hotKey && e.target.nodeName !== 'INPUT') {
+        e.preventDefault();
+        this.triggerMethod('hotkey', e);
       }
-
-      this.listenTo(Backbone, 'editor:keydown', function(e){
-        if (!this.focused) { return; }
-
-        // Trigger autocomplete on tab key.
-        if (e.which === 9) {
-          e.preventDefault();
-          this.triggerMethod('autocomplete', this.ui.input.val());
-
-        // Trigger apply on enter key.
-        } else if (e.which === 13) {
-          e.preventDefault();
-          this.triggerMethod('apply', this.ui.input.val());
-
-        // Blur the input field on esc key.
-        } else if (e.which === 27) {
-          this.ui.input.blur();
-        }
-      });
     },
 
     onFocus: function(){
-      this.filterCollection();
+      this.ui.input.val('');
+      this.$el.append(this.dropdown.renderPartial().el);
+      this.focused = true;
+    },
+
+    onBlur: function(){
+      this.ui.input.val(this.placeholder);
+      this.dropdown.close();
+      this.focused = false;
+    },
+
+    parseInput: function(){
+      return this.ui.input.val();
     },
 
     onInput: function(){
-      var partial = this.parseInput().name;
-      this.filterCollection( new RegExp('^' + partial, 'i') );
+      this.dropdown.renderPartial( new RegExp('^' + this.parseInput(), 'i') );
     },
 
-    onChangeSelection: function(){
-      this.filterCollection();
+    getAutocomplete: function(){
+      var view = this.dropdown.children.first();
+
+      return view && view.model.get('name');
     },
 
-    onAutocomplete: function(){
-      if (this.collection.length > 0) {
-        this.ui.input.val(this.collection.first().get('name'));
+    onKeyTab: function(){
+      var value = this.getAutocomplete();
+
+      if (value) {
+        this.ui.input.val(value);
       }
     },
 
-    filterCollection: function(){},
-
-    parseInput: function(){
-      var input = this.ui.input.val(),
-        match = /^([^x]*)x(\d+)$/.exec(input);
-
-      return {
-        input: input,
-        name: match ? match[1] : input,
-        times: _.max([1, match && parseInt(match[2], 10)])
-      };
+    onHotkey: function(e){
+      this.ui.input.focus();
     },
 
-    renderDropdown: function(){
-      this.dropdown.close();
-
-      if (this.focused && this.collection.length > 0) {
-        this.$el.append(this.dropdown.render().el);
-      }
+    onKeyEsc: function(e){
+      this.ui.input.blur();
     }
   });
 });

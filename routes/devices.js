@@ -21,10 +21,16 @@ module.exports = function(app){
         'id'
       ]),
       translate: function(body, next){
-        next(_.extend({},
+        body = _.extend({},
           body.properties,
           _.omit(body, 'properties')
-        ));
+        );
+
+        if (body.renderings) {
+          body.renderings = JSON.parse(body.renderings);
+        }
+
+        next(body);
       }
     }));
 
@@ -39,11 +45,22 @@ module.exports = function(app){
         'relationship_label'
       ]),
       translate: function(body, next){
-        next(_.extend({},
+        body = _.extend({},
           body.properties,
           _.omit(body, 'properties')
-        ));
+        );
+
+        if (body.renderings) {
+          body.renderings = JSON.parse(body.renderings);
+        }
+
+        next(body);
       }
+    }));
+
+  app.all('/api/relationships',
+    makeRequest({
+      path: '/res/relationships'
     }));
 
 };

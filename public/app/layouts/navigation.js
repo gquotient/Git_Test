@@ -25,10 +25,6 @@ define([
       crumbs: '#breadcrumbs'
     },
 
-    triggers: {
-      'click #edit': 'edit'
-    },
-
     initialize: function(options){
       this.app = options.app;
 
@@ -55,10 +51,6 @@ define([
 
     onShow: function(){
       this.crumbs.show(this.breadcrumbsView);
-    },
-
-    onEdit: function(){
-      Backbone.trigger('edit');
     }
   });
 });

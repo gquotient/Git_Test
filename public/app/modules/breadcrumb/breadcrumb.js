@@ -33,7 +33,7 @@ define([
         this.prune(model);
       } else {
         this.add(model);
-      }      
+      }
     }
   });
 

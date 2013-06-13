@@ -61,6 +61,8 @@ define([
       this.chart_healthAndSoiling.show(this.chartView_healthAndSoiling);
 
       this.issues.show(this.issueView);
+
+      this.buildSettings();
     },
 
     buildSettings: function(){
@@ -92,8 +94,6 @@ define([
     initialize: function(options){
       this.model = options.model;
 
-      this.buildSettings();
-
       this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])
       });
@@ -103,8 +103,6 @@ define([
           'timezone': this.model.get('timezone'),
           'dataType': [
             {
-              //This is a hack because the model service and data
-              //aren't quite the same
               'project_label': this.model.id,
               'ddl': 'env_300',
               'dtstart': 'today',
@@ -141,8 +139,6 @@ define([
           'timezone': this.model.get('timezone'),
           'dataType': [
             {
-              //This is a hack because the model service and data
-              //aren't quite the same
               'project_label': this.model.id,
               'ddl': 'env_300',
               'dtstart': 'today',

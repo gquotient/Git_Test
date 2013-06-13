@@ -77,6 +77,9 @@ module.exports = function(app){
             req.flash('error', error.message);
             console.log('error!:', error);
             res.redirect('/ia');
+          } else if (response.statusCode !== 200) {
+            console.log('error!:', response.statusCode, body);
+            res.send(response.statusCode);
           } else {
             console.log(body);
 
