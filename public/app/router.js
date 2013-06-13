@@ -90,12 +90,8 @@ define([
       console.log(arguments);
       var project = this.findProject(id);
 
-      this.contentLayout = new ProjectDevicesLayout({model: project});
+      this.contentLayout = new ProjectDevicesLayout({model: project, currentDevice: deviceId});
       this.mainLayout.mainContent.show(this.contentLayout);
-
-      if (deviceId) {
-        this.contentLayout.selectDevice(deviceId);
-      }
     },
 
     profile: function(){

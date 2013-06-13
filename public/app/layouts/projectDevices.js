@@ -32,11 +32,19 @@ define([
     },
 
     regions: {
-      contentNavigation: '.nav_content'
+      contentNavigation: '.nav_content',
+      deviceInfo: '.deviceInfo'
     },
 
     selectDevice: function(id){
       console.log('select device', arguments);
+      var myDevice = this.model.devices.findWhere({id: id});
+
+      console.log('my device', myDevice);
+
+      Backbone.history.navigate('/project/' + this.model.id + '/devices/' + id);
+
+      this.deviceInfo.show(new Marionette.Layout({template: _.template('Device: <%= id %> <br> Graphkey: <%= graph_key %>'), model: myDevice}));
     },
 
     onShow: function(){
@@ -47,6 +55,7 @@ define([
       'click .device a': function(event){
         event.preventDefault();
         console.log(event, this);
+        this.selectDevice(event.toElement.id);
       }
     },
 
@@ -63,6 +72,10 @@ define([
       this.model.fetch({data: {project_label: this.model.get('label')}}).done(function(){
         // Update collection once data is retrieved
         that.devicesTree.collection.reset(that.model.devices.where({devtype: 'Inverter'}));
+
+        if (options.currentDevice) {
+          that.selectDevice(options.currentDevice);
+        }
       });
     }
   });
