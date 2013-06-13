@@ -104,14 +104,19 @@ define([
     },
     onRender: function(){
       if (this.model.outgoing.length) {
-        var subListView = new Device.views.NavigationList({collection: this.model.outgoing});
+        // Create a new collection view with this device's chidren
+        this.children = new Device.views.NavigationList({collection: this.model.outgoing});
 
-        subListView.render();
-        this.$el.append(subListView.$el);
+        // Render the view so the element is available
+        this.children.render();
+
+        // Append the child element to this view
+        this.$el.append(this.children.$el);
       }
     },
-    initialize: function(options) {
-
+    onClose: function(){
+      // Close children view
+      this.children.close();
     }
   });
 
@@ -120,10 +125,7 @@ define([
     attributes: {
       class: 'devices'
     },
-    itemView: Device.views.DeviceListItem,
-    initialize: function(options) {
-
-    }
+    itemView: Device.views.DeviceListItem
   });
 
   return Device;
