@@ -93,7 +93,7 @@ define([
 
   Device.views.Canvas = Canvas;
 
-  Device.views.DeviceListItemView = Marionette.ItemView.extend({
+  Device.views.DeviceListItem = Marionette.ItemView.extend({
     tagName: 'li',
     template: {
       type: 'handlebars',
@@ -115,7 +115,7 @@ define([
     }
   });
 
-  Device.views.NavigationListView = Marionette.CollectionView.extend({
+  Device.views.NavigationList = Marionette.CollectionView.extend({
     tagName: 'ul',
     template: {
       type: 'handlebars',
@@ -125,7 +125,7 @@ define([
       class: 'devices'
     },
 
-    itemView: Device.views.DeviceListItemView,
+    itemView: Device.views.DeviceListItem,
     initialize: function(options) {
 
     }

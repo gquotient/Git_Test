@@ -49,7 +49,7 @@ define([
 
       this.model = options.model;
 
-      this.navView = new Device.views.NavigationListView({collection: new Device.Collection()});
+      this.navView = new Device.views.NavigationList({collection: new Device.Collection()});
 
       this.model.fetch({data: {project_label: this.model.get('label')}}).done(function(){
         console.log('devices done');
