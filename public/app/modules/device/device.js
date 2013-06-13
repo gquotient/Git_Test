@@ -116,8 +116,18 @@ define([
     },
     onRender: function(){
       if (this.model.outgoing.length) {
+        // Create new collection
+        var devices = new Device.Collection();
+
+        // Make sure models have a devtype and push them to devices
+        devices.reset(this.model.outgoing.filter(function(device){
+          var devtype = device.get('devtype');
+
+          return devtype && devtype !== 'Draker Panel Monitor' && devtype !== 'AC Bus';
+        }));
+
         // Create a new collection view with this device's chidren
-        this.children = new Device.views.NavigationList({collection: this.model.outgoing});
+        this.children = new Device.views.NavigationList({collection: devices});
 
         // Render the view so the element is available
         this.children.render();
@@ -129,6 +139,10 @@ define([
     onClose: function(){
       // Close children view
       this.children.close();
+    },
+    initialize: function(options){
+      // Add the dev type for targeted styles
+      this.$el.addClass(options.model.get('devtype'));
     }
   });
 
