@@ -62,7 +62,7 @@ define([
       // Fetch project to get devices
       this.model.fetch({data: {project_label: this.model.get('label')}}).done(function(){
         // Update collection once data is retrieved
-        that.navView.collection.reset(that.model.devices.where({devtype: 'Inverter'}));
+        that.devicesTree.collection.reset(that.model.devices.where({devtype: 'Inverter'}));
       });
     }
   });

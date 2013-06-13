@@ -51,7 +51,6 @@ define([
     },
 
     onShow: function(){
-      console.log(this.map);
       this.map.show(this.mapView);
 
       this.contentNavigation.show(this.projectNavigationListView);
@@ -62,10 +61,10 @@ define([
 
       this.issues.show(this.issueView);
 
-      this.buildSettings();
+      this.buildSettingsDropdown();
     },
 
-    buildSettings: function(){
+    buildSettingsDropdown: function(){
       var that = this;
 
       //Create settings view
@@ -93,8 +92,6 @@ define([
 
     initialize: function(options){
       this.model = options.model;
-
-      console.log(this.model);
 
       this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])
@@ -181,7 +178,6 @@ define([
         Backbone.trigger('update:breadcrumbs', model);
         Backbone.history.navigate('/project/' + model.id);
       });
-
     }
   });
 });
