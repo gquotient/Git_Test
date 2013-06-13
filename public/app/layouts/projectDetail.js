@@ -94,8 +94,6 @@ define([
     initialize: function(options){
       this.model = options.model;
 
-      console.log(this.model);
-
       this.mapView = new Project.views.Map({
         collection: new Project.Collection([options.model])
       });
