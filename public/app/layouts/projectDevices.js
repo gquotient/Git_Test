@@ -40,7 +40,7 @@ define([
     },
 
     onShow: function(){
-      this.contentNavigation.show(this.navView);
+      this.contentNavigation.show(this.devicesTree);
     },
 
     events: {
@@ -51,17 +51,17 @@ define([
     },
 
     initialize: function(options){
-      console.log('initialize project devices', options, this);
       var that = this;
 
+      // Set the project model to this layout's model
       this.model = options.model;
 
-      this.navView = new Device.views.NavigationList({collection: new Device.Collection()});
+      // Instantiate devices collection view
+      this.devicesTree = new Device.views.NavigationList({collection: new Device.Collection()});
 
+      // Fetch project to get devices
       this.model.fetch({data: {project_label: this.model.get('label')}}).done(function(){
-        console.log('devices done');
-        console.log(arguments, that.model);
-
+        // Update collection once data is retrieved
         that.navView.collection.reset(that.model.devices.where({devtype: 'Inverter'}));
       });
     }
