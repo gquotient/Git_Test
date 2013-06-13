@@ -2,7 +2,7 @@ var _ = require('lodash')
   , request = require('request');
 
 module.exports = function(app){
-  
+
   var helpers = require('./helpers')(app)
   , makeRequest = helpers.makeRequest
   , ensureAuthorized = helpers.ensureAuthorized
@@ -89,7 +89,7 @@ module.exports = function(app){
         ));
       }
     }));
-  
+
   app.put('/api/projects',
     makeRequest({
       path: '/res/projects',
