@@ -43,6 +43,13 @@ define([
       this.contentNavigation.show(this.navView);
     },
 
+    events: {
+      'click .device a': function(event){
+        event.preventDefault();
+        console.log(event, this);
+      }
+    },
+
     initialize: function(options){
       console.log('initialize project devices', options, this);
       var that = this;

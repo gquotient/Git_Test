@@ -104,7 +104,7 @@ define([
     },
     onRender: function(){
       if (this.model.outgoing.length) {
-        var subListView = new Device.views.NavigationListView({collection: this.model.outgoing});
+        var subListView = new Device.views.NavigationList({collection: this.model.outgoing});
 
         subListView.render();
         this.$el.append(subListView.$el);
