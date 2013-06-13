@@ -72,13 +72,6 @@ module.exports = function(app){
           }
         }
 
-        // if (req.query) {
-        //   opts.qs = _.extend({}, req.query);
-        // }
-        // if (req.body) {
-        //   opts.form = _.extend({}, req.body);
-        // }
-
         request(opts, function(error, response, body){
           if (error) {
             req.flash('error', error.message);
