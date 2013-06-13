@@ -344,8 +344,10 @@ define([
         label = rendering && rendering.get('label');
 
       if (label) {
-        Backbone.trigger('editor:rendering', label);
-        this.rendering_label = label;
+        if (this.rendering_label !== label) {
+          this.rendering_label = label;
+          Backbone.trigger('editor:rendering', label);
+        }
 
         this.viewView.placeholder = name;
         this.viewView.ui.input.blur();

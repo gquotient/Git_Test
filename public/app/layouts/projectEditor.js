@@ -50,11 +50,6 @@ define([
 
     onShow: function(){
       this.overlay.show( new Project.views.Editor({model: this.model}) );
-
-      this.content.show( new Device.views.Canvas({
-        collection: this.model.devices,
-        rendering_label: 'ELECTRICAL'
-      }));
     },
 
     onClose: function(){
@@ -75,14 +70,11 @@ define([
       this.delegateEditorEvents();
 
       // Set up listeners
-      this.listenTo(Backbone, 'select:portfolio', function(model){
-        // Set address bar and force routing
-        Backbone.history.navigate('/portfolio/' + model.id, true);
-      });
-
-      this.listenTo(Backbone, 'select:project', function(model){
-        // Set address bar and force routing
-        Backbone.history.navigate('/project/' + model.id, true);
+      this.listenTo(Backbone, 'editor:rendering', function(label){
+        this.content.show( new Device.views.Canvas({
+          collection: this.model.devices,
+          rendering_label: label
+        }));
       });
     }
   });
