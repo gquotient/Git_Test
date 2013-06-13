@@ -101,20 +101,34 @@ define([
     },
     attributes: {
       class: 'device'
+    },
+    onRender: function(){
+      console.log('outgoing', this.model.get('devtype'), this.model.outgoing);
+      if (this.model.outgoing.length && this.model.outgoing.models[0].get('devtype') === 'DC Bus') {
+        var subListView = new Device.views.NavigationListView({collection: this.model.outgoing});
+        console.log('has children', subListView, this.$el);
+        subListView.render();
+        this.$el.append(subListView.$el);
+      }
+    },
+    initialize: function(options) {
+
     }
   });
 
-  Device.views.NavigationListView = Marionette.CompositeView.extend({
+  Device.views.NavigationListView = Marionette.CollectionView.extend({
+    tagName: 'ul',
     template: {
       type: 'handlebars',
       template: deviceListViewTemplate
     },
     attributes: {
-      class: 'devices nav-item'
+      class: 'devices'
     },
-    itemViewContainer: 'ul',
+
     itemView: Device.views.DeviceListItemView,
     initialize: function(options) {
+
     }
   });
 
