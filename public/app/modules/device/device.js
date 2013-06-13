@@ -103,10 +103,9 @@ define([
       class: 'device'
     },
     onRender: function(){
-      console.log('outgoing', this.model.get('devtype'), this.model.outgoing);
-      if (this.model.outgoing.length && this.model.outgoing.models[0].get('devtype') === 'DC Bus') {
+      if (this.model.outgoing.length) {
         var subListView = new Device.views.NavigationListView({collection: this.model.outgoing});
-        console.log('has children', subListView, this.$el);
+
         subListView.render();
         this.$el.append(subListView.$el);
       }
