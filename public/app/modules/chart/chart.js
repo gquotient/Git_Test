@@ -78,8 +78,8 @@ function(
       },
       column = {
         power: 'dc_power_output',
-        current: 'dc_current_output',
-        voltage: 'dc_voltage_output'
+        current: 'dc_current_output_mean',
+        voltage: 'dc_voltage_output_mean'
       },
       dataDefinition
     ;
@@ -101,6 +101,7 @@ function(
         'project_label': project.id,
         'ddl': ddl[device.get('devtype')],
         'dtstart': 'today',
+        'dtstop': 'now',
         'columns': ['freezetime', column[dataType]],
         'filters': [
           {
@@ -251,7 +252,8 @@ function(
               color: '#ccc',
               'font-weight': 'normal'
             }
-          }
+          },
+          min: 0
         },
         {
           opposite: true,
@@ -261,7 +263,8 @@ function(
               color: '#ccc',
               'font-weight': 'normal'
             }
-          }
+          },
+          min: 0
         }
       ]
     },
