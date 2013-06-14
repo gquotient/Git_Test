@@ -55,7 +55,7 @@ define([
           '<div class="chart_powerAndIrradiance"></div>',
           '<div class="chart_currentAndVoltage"></div>'
         ].join(''),
-        chartsLayout = new Marionette.Layout({template: _.template(template)});
+        chartsLayout = new Marionette.Layout({template: _.template(template)}),
         ddl = {
           'Panel': 'pnl',
           'String': 'str-pnl-calc',
