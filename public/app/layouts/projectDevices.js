@@ -152,7 +152,7 @@ define([
     events: {
       'click .device a': function(event){
         event.preventDefault();
-        console.log(event, this);
+
         this.selectDevice(event.toElement.id);
       }
     },

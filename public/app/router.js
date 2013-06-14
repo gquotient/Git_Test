@@ -87,7 +87,6 @@ define([
     },
 
     projectDevices: function(id, deviceId){
-      console.log(arguments);
       var project = this.findProject(id);
 
       this.contentLayout = new ProjectDevicesLayout({model: project, currentDevice: deviceId});
