@@ -109,7 +109,7 @@ define([
               'columns': ['freezetime', 'value_mean'],
               'filters': [
                 {'column': 'attribute', 'in_set': ['irradiance']},
-                {'column': 'identifier', 'in_set': ['ENV-1']}
+                {'column': 'identifier', 'in_set': ['IRR-1']}
               ]
             },
             {

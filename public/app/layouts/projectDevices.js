@@ -7,6 +7,7 @@ define([
 
   'project',
   'device',
+  'chart',
 
   'hbs!layouts/templates/projectDevices'
 ], function(
@@ -18,6 +19,7 @@ define([
 
   Project,
   Device,
+  Chart,
 
   projectDevicesTemplate
 ){
@@ -33,18 +35,114 @@ define([
 
     regions: {
       contentNavigation: '.nav_content',
-      deviceInfo: '.deviceInfo'
+      deviceInfo: '.deviceInfo',
+      charts: '.charts'
     },
 
     selectDevice: function(id){
-      console.log('select device', arguments);
-      var myDevice = this.model.devices.findWhere({id: id});
-
-      console.log('my device', myDevice);
+      var device = this.model.devices.findWhere({id: id});
 
       Backbone.history.navigate('/project/' + this.model.id + '/devices/' + id);
 
-      this.deviceInfo.show(new Marionette.Layout({template: _.template('Device: <%= id %> <br> Graphkey: <%= graph_key %>'), model: myDevice}));
+      this.deviceInfo.show(new Marionette.Layout({template: _.template('Device: <%= id %> <br> Graphkey: <%= graph_key %>'), model: device}));
+
+      this.buildCharts(device);
+    },
+
+    buildCharts: function(device){
+      var
+        template = [
+          '<div class="chart_powerAndIrradiance"></div>',
+          '<div class="chart_currentAndVoltage"></div>'
+        ].join(''),
+        chartsLayout = new Marionette.Layout({template: _.template(template)});
+        ddl = {
+          'Panel': 'pnl',
+          'String': 'str-pnl-calc',
+          'Inverter': 'inv-pnl-calc'
+        }
+      ;
+
+      this.charts.show(chartsLayout);
+
+      chartsLayout.addRegions({
+        chart_powerAndIrradiance: '.chart_powerAndIrradiance',
+        chart_currentAndVoltage: '.chart_currentAndVoltage'
+      });
+
+      var chart_powerAndIrradiance = new Chart.views.Line({
+        model: new Chart.models.timeSeries().set({
+          'timezone': this.model.get('timezone'),
+          'dataType': [
+            {
+              'project_label': this.model.id,
+              'ddl': 'env',
+              'dtstart': 'today',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'value_mean'],
+              'filters': [
+                {'column': 'attribute', 'in_set': ['irradiance']},
+                {'column': 'identifier', 'in_set': ['IRR-1']}
+              ]
+            },
+            {
+              'project_label': this.model.id,
+              'ddl': ddl[device.get('devtype')],
+              'dtstart': 'today',
+              'columns': ['freezetime', 'dc_power_output'],
+              'filters': [
+                {
+                  'column': 'identifier',
+                  'in_set': [device.get('graph_key')]
+                }
+              ]
+            }
+          ]
+        }),
+        series: [
+          Chart.seriesDefaults.irradiance,
+          Chart.seriesDefaults.power
+        ]
+      });
+
+      var chart_currentAndVoltage = new Chart.views.Line({
+        model: new Chart.models.timeSeries().set({
+          'timezone': this.model.get('timezone'),
+          'dataType': [
+            {
+              'project_label': this.model.id,
+              'ddl': 'pnl',
+              'dtstart': 'today',
+              'columns': ['freezetime', 'dc_current_output'],
+              'filters': [
+                {
+                  'column': 'identifier',
+                  'in_set': [device.get('graph_key')]
+                }
+              ]
+            },
+            {
+              'project_label': this.model.id,
+              'ddl': 'pnl',
+              'dtstart': 'today',
+              'columns': ['freezetime', 'dc_voltage_output'],
+              'filters': [
+                {
+                  'column': 'identifier',
+                  'in_set': [device.get('graph_key')]
+                }
+              ]
+            }
+          ]
+        }),
+        series: [
+          Chart.seriesDefaults.current,
+          Chart.seriesDefaults.voltage
+        ]
+      });
+
+      chartsLayout.chart_powerAndIrradiance.show(chart_powerAndIrradiance);
+      chartsLayout.chart_currentAndVoltage.show(chart_currentAndVoltage);
     },
 
     onShow: function(){
