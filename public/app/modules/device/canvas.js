@@ -6,6 +6,7 @@ define([
   'jquery.mousewheel',
   'paper',
 
+  'library',
   './canvas_symbols'
 ], function(
   $,
@@ -15,6 +16,7 @@ define([
   wheel,
   paper,
 
+  library,
   symbolLibrary
 ){
   var
@@ -25,6 +27,7 @@ define([
 
         this.paper = options.paper || paper;
         this.rendering_label = options.rendering_label;
+        this.style = options.style;
 
         this.listenTo(this.device, 'change:renderings', this.move);
         this.listenTo(this.model, 'change:renderings', this.move);
@@ -46,17 +49,8 @@ define([
         return this;
       },
 
-      styles: {
-        DEFAULT: {color: 'grey'},
-        MEASURED_BY: {color: 'grey', offset: 2},
-        FLOWS: {color: 'red'},
-        COLLECTS: {color: 'red', left: true}
-      },
-
       draw: function(){
         this.erase(true);
-
-        this.style = this.styles[this.model.getRelationship(this.device)] || this.styles.DEFAULT;
 
         this.edge = new this.paper.Path({
           segments: [[], [], [], []],
@@ -125,14 +119,6 @@ define([
     NodeView = Marionette.CollectionView.extend({
       itemView: EdgeView,
 
-      itemViewOptions: function(){
-        return {
-          device: this.model,
-          paper: this.paper,
-          rendering_label: this.rendering_label
-        };
-      },
-
       initialize: function(options){
         this.collection = this.model.outgoing;
 
@@ -146,9 +132,24 @@ define([
         this.on('close', this.erase);
       },
 
+      itemViewOptions: function(item){
+        var relationship = item.getRelationship(this.model);
+
+        return {
+          device: this.model,
+          paper: this.paper,
+          rendering_label: this.rendering_label,
+          style: library.relationships[relationship]
+        };
+      },
+
       // Prevent rendering of children that don't have position.
-      addItemView: function(model){
-        if (model.getPosition(this.rendering_label)){
+      addItemView: function(item){
+        var position = item.getPosition(this.rendering_label),
+          options = this.itemViewOptions(item),
+          renderings = options.style && options.style.renderings;
+
+        if (position && _.contains(renderings, this.rendering_label)) {
           Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
         }
       },
@@ -223,13 +224,6 @@ define([
     tagName: 'canvas',
     itemView: NodeView,
 
-    itemViewOptions: function(){
-      return {
-        paper: this.paper,
-        rendering_label: this.rendering_label
-      };
-    },
-
     attributes: {
       resize: true
     },
@@ -254,6 +248,13 @@ define([
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
     },
 
+    itemViewOptions: function(){
+      return {
+        paper: this.paper,
+        rendering_label: this.rendering_label
+      };
+    },
+
     // Listen for rendering additions.
     _initialEvents: function(){
       Marionette.CollectionView.prototype._initialEvents.call(this);
@@ -268,8 +269,8 @@ define([
     },
 
     // Prevent rendering of children that don't have position.
-    addItemView: function(model){
-      if (model.getPosition(this.rendering_label)){
+    addItemView: function(item){
+      if (item.getPosition(this.rendering_label)){
         Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
       }
     },
