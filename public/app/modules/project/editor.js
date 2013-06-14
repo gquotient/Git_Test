@@ -309,10 +309,12 @@ define([
       if (this.selection && this.selection.length > 0) {
         devices = this.selection.chain()
 
-          // Map the outgoing devices
+          // Map the outgoing devices for this rendering
           .map(function(device){
-            return device.outgoing.models;
-          })
+            return device.outgoing.filter(function(other){
+              return other.getRelationship(device, this.rendering_label);
+            }, this);
+          }, this)
 
           // Reduce the devices to a single common set
           .take(function(arr){
@@ -320,8 +322,8 @@ define([
           })
 
           // Prevent orphend nodes
-          .reject(function(device){
-            return device.incoming.length <= this.selection.length;
+          .filter(function(device){
+            return device.incoming.length > this.selection.length;
           }, this)
 
           .value();
@@ -458,7 +460,8 @@ define([
 
     disconnectDevice: function(device, target){
       var project = this.model,
-        relationship_label = device.getRelationship(target);
+        relationship_label = device.getRelationship(target),
+        rendering_label = this.rendering_label;
 
       if (relationship_label) {
         $.ajax('/api/relationships', {
@@ -473,6 +476,14 @@ define([
 
           success: function(){
             device.disconnectFrom(target);
+
+            var others = device.incoming.filter(function(other){
+              return device.getRelationship(other, rendering_label);
+            });
+
+            if (others.length === 0) {
+              device.setPosition(rendering_label, null, true);
+            }
           }
         });
       }
