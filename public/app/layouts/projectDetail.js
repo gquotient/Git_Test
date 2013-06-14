@@ -176,9 +176,11 @@ define([
       this.listenTo(Backbone, 'click:project', function(model){
         this.mapView.collection.set(model);
         this.mapView.fitToBounds();
+        this.model = model;
+        this.chartView_powerHistory.render();
         Backbone.trigger('update:breadcrumbs', model);
         Backbone.history.navigate('/project/' + model.id);
-      });
+      }, this);
 
     }
   });

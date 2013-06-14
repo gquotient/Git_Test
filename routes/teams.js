@@ -2,22 +2,17 @@ module.exports = function(app){
 
   var helpers = require('./helpers')(app)
   , makeRequest = helpers.makeRequest
-  , ensureAuthorized = helpers.ensureAuthorized;
+  , ensureAuthorized = helpers.ensureAuthorized
+  , ensureCurrentOrganization = helpers.ensureCurrentOrganization;
 
 
   //////
   // TEAMS
   //////
 
-  app.get('/api/teams', ensureAuthorized(['vendor_admin', 'admin']),
+  app.get('/api/teams', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
     makeRequest({
       path: '/res/teams',
-      setup: function(req, res, next){
-        if(req.user.role === 'vendor_admin'){
-          req.query.org_label = 'ALL';
-        }
-        next(req, res);
-      },
       translate: function(data, next){
         next(data.teams);
       }
@@ -47,7 +42,6 @@ module.exports = function(app){
     makeRequest({
       path: '/res/teams'
     }));
-
 
   app.put('/api/user_team', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({

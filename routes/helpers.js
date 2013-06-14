@@ -28,6 +28,11 @@ module.exports = function(app){
         res.redirect('/ia');
       }
     },
+    ensureCurrentOrganization: function(req, res, next){
+      req.query.org_label = req.body.org_label || req.query.org_label || req.params.org_label || req.session.org_label;
+      console.log(req.query.org_label);
+      next();
+    },
     separateProperties: function(root, ignore){
       return function(req, res, next){
         req.body = _.reduce(req.body, function(memo, value, key){

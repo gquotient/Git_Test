@@ -412,6 +412,10 @@ leftColumnWidth = 240px;
 
 .container {
   overflow: hidden;
+  &.half {
+    float: left;
+    width: 50%;
+  }
 }
 
 .moduleContainer {
@@ -507,12 +511,23 @@ leftColumnWidth = 240px;
 /* Admin */
 
 .admin-list {
+  background: colorBGDarkGrey;
   ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    li {
+    > li {
       padding: 5px;
+      text-shadow: 0 1px 0 #222;
+      cursor: pointer;
+      border-top: borderBasicMedium;
+      border-left: borderBasicMedium;
+      border-bottom: borderBasicDark;
+      border-right: borderBasicDark;
+      background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);  
+      &:hover {
+        background: linear-gradient(#252627, #282828);
+      }
     }
   }
 }

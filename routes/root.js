@@ -42,8 +42,10 @@ module.exports = function(app){
       fcall( function(){
         var myUserDef = Q.defer();
         // console.log('user')
-        request(requestOptions, function(error, response, user){
-          myTeams = JSON.stringify(JSON.parse(user).teams);
+        request(requestOptions, function(error, response, userJSON){
+          var user = JSON.parse(userJSON);
+          req.session.org_label = user.org_label;
+          myTeams = JSON.stringify(JSON.parse(userJSON).teams);
           console.log(myTeams);
           myUserDef.resolve(user);
         });
@@ -68,14 +70,15 @@ module.exports = function(app){
         requestOptions.uri = app.get('modelUrl') + '/res/teamprojects';
         request(requestOptions, function(error, response, projects){
           myProjects = projects;
-          console.log('projects')
+          // console.log('projects')
           myProjectsDef.resolve(projects);
         });
 
         return myProjectsDef.promise;
       })
       .then( function(obj){
-        console.log('render');
+        // console.log('render');
+        console.log(req.session);
         res.render('index', {
           user: JSON.stringify({
             name: req.user.name,

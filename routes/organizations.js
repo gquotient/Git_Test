@@ -2,6 +2,7 @@ module.exports = function(app){
 
   var helpers = require('./helpers')(app)
     , ensureAuthorized = helpers.ensureAuthorized
+    , ensureCurrentOrganization = helpers.ensureCurrentOrganization
     , makeRequest = helpers.makeRequest;
 
 
@@ -15,17 +16,9 @@ module.exports = function(app){
       path: '/res/organizations'
     }));
 
-  app.get('/api/organizations/:org_label/users', ensureAuthorized(['vendor_admin', 'admin']),
+  app.get('/api/organizations/:org_label/users', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
     makeRequest({
-      path: '/res/users',
-      setup: function(req, res, next){
-        console.log(req.user.role);
-        if(req.user.org_label === req.params.org_label || req.user.role === 'vendor_admin'){
-          next(req, res);
-        } else {
-          console.log('You\'re not allowed to look at that organization.');
-        }
-      }
+      path: '/res/users'
     }));
 
 };
