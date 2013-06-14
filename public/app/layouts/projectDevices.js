@@ -74,29 +74,8 @@ define([
         model: new Chart.models.timeSeries().set({
           'timezone': this.model.get('timezone'),
           'dataType': [
-            {
-              'project_label': this.model.id,
-              'ddl': 'env',
-              'dtstart': 'today',
-              'dtstop': 'now',
-              'columns': ['freezetime', 'value_mean'],
-              'filters': [
-                {'column': 'attribute', 'in_set': ['irradiance']},
-                {'column': 'identifier', 'in_set': ['IRR-1']}
-              ]
-            },
-            {
-              'project_label': this.model.id,
-              'ddl': ddl[device.get('devtype')],
-              'dtstart': 'today',
-              'columns': ['freezetime', 'dc_power_output'],
-              'filters': [
-                {
-                  'column': 'identifier',
-                  'in_set': [device.get('graph_key')]
-                }
-              ]
-            }
+            Chart.dataDefaults(this.model, device, 'irradiance'),
+            Chart.dataDefaults(this.model, device, 'power')
           ]
         }),
         series: [
@@ -109,30 +88,8 @@ define([
         model: new Chart.models.timeSeries().set({
           'timezone': this.model.get('timezone'),
           'dataType': [
-            {
-              'project_label': this.model.id,
-              'ddl': 'pnl',
-              'dtstart': 'today',
-              'columns': ['freezetime', 'dc_current_output'],
-              'filters': [
-                {
-                  'column': 'identifier',
-                  'in_set': [device.get('graph_key')]
-                }
-              ]
-            },
-            {
-              'project_label': this.model.id,
-              'ddl': 'pnl',
-              'dtstart': 'today',
-              'columns': ['freezetime', 'dc_voltage_output'],
-              'filters': [
-                {
-                  'column': 'identifier',
-                  'in_set': [device.get('graph_key')]
-                }
-              ]
-            }
+            Chart.dataDefaults(this.model, device, 'current'),
+            Chart.dataDefaults(this.model, device, 'voltage')
           ]
         }),
         series: [

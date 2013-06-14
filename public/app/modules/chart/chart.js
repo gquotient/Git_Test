@@ -69,6 +69,51 @@ function(
     })
   };
 
+  Chart.dataDefaults = function(project, device, dataType) {
+    var
+      ddl = {
+        'Panel': 'pnl',
+        'String': 'str-pnl-calc',
+        'Inverter': 'inv-pnl-calc'
+      },
+      column = {
+        power: 'dc_power_output',
+        current: 'dc_current_output',
+        voltage: 'dc_voltage_output'
+      },
+      dataDefinition
+    ;
+
+    if (dataType === 'irradiance') {
+      dataDefinition = {
+        'project_label': project.id,
+        'ddl': 'env',
+        'dtstart': 'today',
+        'dtstop': 'now',
+        'columns': ['freezetime', 'value_mean'],
+        'filters': [
+          {'column': 'attribute', 'in_set': ['irradiance']},
+          {'column': 'identifier', 'in_set': ['IRRA-1']}
+        ]
+      };
+    } else {
+      dataDefinition = {
+        'project_label': project.id,
+        'ddl': ddl[device.get('devtype')],
+        'dtstart': 'today',
+        'columns': ['freezetime', column[dataType]],
+        'filters': [
+          {
+            'column': 'identifier',
+            'in_set': [device.get('graph_key')]
+          }
+        ]
+      };
+    }
+
+    return dataDefinition;
+  };
+
   Chart.models.timeSeries = Backbone.Model.extend({
     url: '/api/timeline',
     parse: function(data){
