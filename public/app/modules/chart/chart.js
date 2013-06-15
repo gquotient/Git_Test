@@ -141,11 +141,13 @@ function(
 
       $.ajax({
         url: this.url + '?timezone=' + this.get('timezone'),
+        cache: false,
         type: 'POST',
         dataType: 'json',
         data: { traces: that.get('dataType') }
       })
       .done(function(data){
+        that.trigger('data:done');
         that.parse(data);
       });
     },
@@ -153,16 +155,6 @@ function(
       var that = this;
 
       this.url = (options && options.url) ? options.url : this.url;
-
-      var fetch = function(){
-        that.fetch();
-      };
-
-      // Using set timeout for now so it only updates once
-      //this.interval = setTimeout(fetch, 3000);
-
-      // Create series array
-      //this.set('series', []);
     }
   });
 
@@ -317,11 +309,16 @@ function(
 
   Chart.views.Line = Chart.views.core.extend({
     options: {
-      title: 'Generic Chart'
+      title: 'Generic Chart',
+      autoUpdate: true
     },
     render: function(){
       //Fetch data
       this.model.getData();
+    },
+    onClose: function(){
+      // Clear the auto update when view is closed
+      clearInterval(this.fetchInterval);
     },
     initialize: function(options){
       //console.log('init', this, this.model);
@@ -349,14 +346,21 @@ function(
               serie.setData(seriesData[index].data);
             } else {
               //throw no data error
-              // console.warn('No data found on trace:', seriesData[index]);
+              console.warn('No data found on trace:', seriesData[index]);
             }
           });
         } else {
           //throw no data error
-          // console.warn('No data came back at all. Call Thadeus.');
+          console.warn('No data came back at all. Call Thadeus.');
         }
       });
+
+      var fetch = function(){
+        that.model.getData();
+      };
+
+      // Using set timeout for now so it only updates once
+      this.fetchInterval = setInterval(fetch, 300000);
     }
   });
 
