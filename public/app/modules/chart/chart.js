@@ -74,7 +74,7 @@ function(
       ddl = {
         'Panel': 'pnl',
         'String': 'str-pnl-calc',
-        'Inverter': 'inv-pnl-calc'
+        'Inverter': 'inv'
       },
       column = {
         power: 'dc_power_output',
