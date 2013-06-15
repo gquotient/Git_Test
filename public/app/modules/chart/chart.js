@@ -341,6 +341,7 @@ function(
       this.model.on('change:series', function(model, seriesData){
         if (seriesData.length) {
           _.each(that.chart.series, function(serie, index){
+            console.log(serie, index);
             // Update series data
             if (seriesData[index].data && seriesData[index].data.length) {
               serie.setData(seriesData[index].data);
