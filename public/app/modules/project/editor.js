@@ -412,13 +412,16 @@ define([
           did: model.get('prefix') + '-' + index
         }),
 
-        rendering = _.findWhere(model.get('renderings'), {label: this.rendering_label}),
-
         relationship_label = (target === project) ? 'COMPRISES' :
           findIncomingRelationshipLabel(device, target);
 
-      if (rendering && relationship_label && target.has('id')) {
-        positionDevice(device, rendering, project, target);
+      if (relationship_label && target.has('id')) {
+
+        _.each(model.get('renderings'), function(rendering){
+          if (rendering.root || rendering.label === this.rendering_label) {
+            positionDevice(device, rendering, project, target);
+          }
+        }, this);
 
         project.devices.add(device);
         device.connectTo(target, relationship_label);
