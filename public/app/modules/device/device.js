@@ -23,7 +23,8 @@ define([
 
     // Need a better place for this.
     renderingRelationships = {
-      ELECTRICAL: ['FLOWS', 'COLLECTS', 'MEASURED_BY']
+      ELECTRICAL: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
+      COMMUNICATION: ['MANAGES', 'HAS']
     };
 
   Device.Model = Backbone.Model.extend({

@@ -24,6 +24,8 @@ define([
       FLOWS: {color: 'red'},
       COLLECTS: {color: 'red', left: true},
       MEASURED_BY: {color: 'grey', offset: 2},
+      MANAGES: {color: 'blue'},
+      HAS: {color: 'blue'},
       DEFAULT: {color: 'grey'}
     },
 
