@@ -125,7 +125,7 @@ define([
         });
       }
 
-    } else if (target && target !== project) {
+    } else if (target && target.getPosition) {
       position = target.getPosition(rendering.label);
 
       if (position && rendering.offset) {
@@ -340,6 +340,7 @@ define([
       if (label) {
         if (this.rendering_label !== label) {
           this.rendering_label = label;
+          this.selection = null;
           Backbone.trigger('editor:rendering', label);
         }
 
@@ -362,7 +363,7 @@ define([
           }, this);
         } else {
           _.times(times, function(){
-            this.addDevice(model, this.model);
+            this.addDevice(model);
           }, this);
         }
 
@@ -401,7 +402,9 @@ define([
     },
 
     addDevice: function(model, target){
-      var project = this.model,
+      var relationship_label, other,
+
+        project = this.model,
         type = model.get('device_type'),
         index = findNextIndex(project, type),
 
@@ -410,25 +413,39 @@ define([
           device_type: type,
           name: model.get('name') + ' ' + index,
           did: model.get('prefix') + '-' + index
-        }),
+        });
 
-        relationship_label = (target === project) ? 'COMPRISES' :
-          findIncomingRelationshipLabel(device, target);
+      _.each(model.get('renderings'), function(rendering){
+        if (rendering.root) {
+          positionDevice(device, rendering, project);
+          relationship_label = 'COMPRISES';
+
+        } else if (rendering.label === this.rendering_label) {
+          positionDevice(device, rendering, project, target);
+        }
+      }, this);
+
+      if (relationship_label) {
+        other = target;
+        target = project;
+      } else if (target) {
+        relationship_label = findIncomingRelationshipLabel(device, target);
+      }
 
       if (relationship_label && target.has('id')) {
-
-        _.each(model.get('renderings'), function(rendering){
-          if (rendering.root || rendering.label === this.rendering_label) {
-            positionDevice(device, rendering, project, target);
-          }
-        }, this);
-
         project.devices.add(device);
         device.connectTo(target, relationship_label);
 
         device.save({
           parent_id: target.get('id'),
           relationship_label: relationship_label
+        },
+        {
+          success: _.bind(function(){
+            if (other) {
+              this.connectDevice(device, other);
+            }
+          }, this)
         });
       }
     },
