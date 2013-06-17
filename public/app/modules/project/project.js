@@ -360,9 +360,6 @@ define([
     events: {
       'click': function(){
         Backbone.trigger('click:project', this.model);
-      // },
-      // 'dblclick': function(){
-      //   Backbone.trigger('select:project', this.model);
       }
     }
   });

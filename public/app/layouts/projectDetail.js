@@ -36,13 +36,12 @@ define([
     },
 
     regions: {
-      map: '#map',
-      kpis: '#kpis',
-      alarms: '#alarms',
-      contentNavigation: '.column_left',
-      issues: '#issues',
-      chart_powerHistory: '#chart_powerHistory',
-      chart_healthAndSoiling: '#chart_healthAndSoiling'
+      map: '.map',
+      kpis: '.kpis',
+      contentNavigation: '.nav_content',
+      issues: '.issues',
+      chart_powerHistory: '.chart#powerHistory',
+      chart_healthAndSoiling: '.chart#healthAndSoiling'
     },
 
     events: {
@@ -62,10 +61,10 @@ define([
 
       this.issues.show(this.issueView);
 
-      this.buildSettings();
+      this.buildSettingsDropdown();
     },
 
-    buildSettings: function(){
+    buildSettingsDropdown: function(){
       var that = this;
 
       //Create settings view
@@ -110,7 +109,7 @@ define([
               'columns': ['freezetime', 'value_mean'],
               'filters': [
                 {'column': 'attribute', 'in_set': ['irradiance']},
-                {'column': 'identifier', 'in_set': ['ENV-1']}
+                {'column': 'identifier', 'in_set': ['IRR-1']}
               ]
             },
             {
@@ -179,7 +178,6 @@ define([
         Backbone.trigger('update:breadcrumbs', model);
         Backbone.history.navigate('/project/' + model.id);
       });
-
     }
   });
 });
