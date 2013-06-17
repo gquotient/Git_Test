@@ -189,6 +189,16 @@ primaryBorderStyle = borderBasicDark;
       position: relative;
       background: none;
       border: none;
+      &.collapsed {
+        ul {
+          display: none;
+        }
+      }
+      &.expanded {
+        ul {
+          display: inherit;
+        }
+      }
       a {
         .expand {
           position: absolute;

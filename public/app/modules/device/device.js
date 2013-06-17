@@ -1,3 +1,13 @@
+/*
+
+  TODO:
+
+  [ ] Expand device tree if selected device is hidden
+  [ ] Add collapse icon and state
+  [ ] Animate expand/collapse (CSS transform?)
+
+*/
+
 define([
   'jquery',
   'underscore',
@@ -112,7 +122,10 @@ define([
       template: deviceListItemViewTemplate
     },
     attributes: {
-      class: 'device'
+      class: 'device collapsed'
+    },
+    options: {
+      expanded: false
     },
     events: {
       'click a': function(event){
@@ -126,31 +139,46 @@ define([
         event.stopPropagation();
 
         console.log('expand');
+
+        if (this.options.expanded) {
+          this.$el.removeClass('expanded');
+          this.$el.addClass('collapsed');
+          this.options.expanded = false;
+        } else {
+          this.$el.removeClass('collapsed');
+          this.$el.addClass('expanded');
+          this.options.expanded = true;
+        }
       }
     },
     onRender: function(){
       if (this.model.outgoing.length) {
-        // Add expand-o-matic
-        this.$el.find('a').append('<span class="expand">Expand</span>');
-
         // Create new collection
-        var devices = new Device.Collection();
-
-        // Make sure models have a devtype and push them to devices
-        devices.reset(this.model.outgoing.filter(function(device){
+        var filteredDevices = this.model.outgoing.filter(function(device){
           var devtype = device.get('devtype');
 
           return devtype && devtype !== 'Draker Panel Monitor' && devtype !== 'AC Bus';
-        }));
+        });
 
-        // Create a new collection view with this device's chidren
-        this.children = new Device.views.NavigationList({collection: devices});
+        // Only build children if whitelisted devices exist
+        if (filteredDevices.length) {
+          var devices = new Device.Collection();
 
-        // Render the view so the element is available
-        this.children.render();
+          // Add expand-o-matic
+          this.$el.find('> a').append('<span class="expand">Expand</span>');
 
-        // Append the child element to this view
-        this.$el.append(this.children.$el);
+          // Make sure models have a devtype and push them to devices
+          devices.reset(filteredDevices);
+
+          // Create a new collection view with this device's chidren
+          this.children = new Device.views.NavigationList({collection: devices});
+
+          // Render the view so the element is available
+          this.children.render();
+
+          // Append the child element to this view
+          this.$el.append(this.children.$el);
+        }
       }
     },
     onClose: function(){
