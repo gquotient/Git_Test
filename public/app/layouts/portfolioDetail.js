@@ -50,7 +50,7 @@ define([
       this.kpis.show(kpis);
 
       // Update the collection.
-      this.projectList.set(model.projects.models);
+      this.projectList.reset(model.projects.models);
       Backbone.trigger('update:breadcrumbs', model);
 
       // Reset active indicator
