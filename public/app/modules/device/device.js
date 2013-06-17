@@ -29,7 +29,13 @@ define([
   deviceListItemViewTemplate,
   deviceListViewTemplate
 ){
-  var Device = { views: {} };
+  var Device = { views: {} },
+
+    // Need a better place for this.
+    renderingRelationships = {
+      ELECTRICAL: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
+      COMMUNICATION: ['MANAGES', 'HAS']
+    };
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
@@ -44,27 +50,39 @@ define([
       this.incoming = new Device.Collection();
     },
 
-    getRelationship: function(target){
-      return this.relationships[target.id];
+    getRelationship: function(target, label){
+      var relationship = this.relationships[target.id];
+
+      if (!label || _.contains(renderingRelationships[label], relationship)) {
+        return relationship;
+      }
     },
 
-    getPosition: function(view){
+    getPosition: function(label){
       var renderings = this.get('renderings');
 
-      return _.clone(renderings[view]);
+      return _.clone(renderings[label]);
     },
 
-    setPosition: function(view, position, save){
-      var renderings = _.clone(this.get('renderings')),
-        isNew = !_.has(renderings, view);
+    setPosition: function(label, position, save){
+      var renderings = _.clone(this.get('renderings')), evnt;
 
-      if (isNew || !_.isEqual(renderings[view], position)) {
-        renderings[view] = position;
-        this[save ? 'save' : 'set']({renderings: renderings});
+      if (position) {
+        if (!_.has(renderings, label)) {
+          evnt = 'add';
+        } else if (_.isEqual(renderings[label], position)) {
+          return;
+        }
+        renderings[label] = position;
+      } else {
+        evnt = 'remove';
+        delete renderings[label];
       }
 
-      if (isNew) {
-        this.trigger('add:rendering', this);
+      this[save ? 'save' : 'set']({renderings: renderings});
+
+      if (evnt) {
+        this.trigger('rendering:' + evnt, this);
       }
     },
 

@@ -2,22 +2,38 @@ define(['backbone'], function(Backbone){
 
   return new Backbone.Collection([
     {
+      device_type: 'DAQ',
+      name: 'DAQ',
+      prefix: 'DAQ',
+      relationships: [
+        {label: 'MANAGES', direction: 'OUTGOING', device_type: 'INVERTER'},
+        {label: 'MANAGES', direction: 'OUTGOING', device_type: 'METER'},
+        {label: 'MANAGES', direction: 'OUTGOING', device_type: 'RECOMBINER'},
+        {label: 'MANAGES', direction: 'OUTGOING', device_type: 'COMBINER'}
+      ],
+      renderings: [
+        {label: 'COMMUNICATION', position: {x: 200, y: 200}, root: true}
+      ]
+    },
+    {
       device_type: 'INVERTER',
       name: 'Inverter',
       prefix: 'INV',
       relationships: [
-        {label: 'MEASURED_BY', direction: 'OUTGOING', device_type: 'METER'},
-
         {label: 'FLOWS', direction: 'OUTGOING', device_type: 'AC_BUS'},
         {label: 'FLOWS', direction: 'OUTGOING', device_type: 'TRANSFORMER'},
         {label: 'FLOWS', direction: 'OUTGOING', device_type: 'INTERCONNECT'},
 
-        {label: 'COLLECTS', direction: 'OUTGOING', device_type: 'DC_BUS'}
+        {label: 'COLLECTS', direction: 'OUTGOING', device_type: 'DC_BUS'},
+
+        {label: 'MEASURED_BY', direction: 'OUTGOING', device_type: 'METER'},
+
+        {label: 'MANAGES', direction: 'INCOMING', device_type: 'DAQ'}
       ],
       renderings: [
-        {label: 'ELECTRICAL', position: {x: 700, y: 200}, root: true}
-      ],
-      root: true
+        {label: 'ELECTRICAL', position: {x: 700, y: 200}, root: true},
+        {label: 'COMMUNICATION', offset: {x: 100, y: 0}}
+      ]
     },
     {
       device_type: 'LOAD',
@@ -30,16 +46,13 @@ define(['backbone'], function(Backbone){
       ],
       renderings: [
         {label: 'ELECTRICAL', position: {x: 700, y: 200}, root: true}
-      ],
-      root: true
+      ]
     },
     {
       device_type: 'AC_BUS',
       name: 'AC Bus',
       prefix: 'ACB',
       relationships: [
-        {label: 'MEASURED_BY', direction: 'OUTGOING', device_type: 'METER'},
-
         {label: 'FLOWS', direction: 'INCOMING', device_type: 'INVERTER'},
         {label: 'FLOWS', direction: 'INCOMING', device_type: 'LOAD'},
         {label: 'FLOWS', direction: 'INCOMING', device_type: 'AC_BUS'},
@@ -47,7 +60,9 @@ define(['backbone'], function(Backbone){
 
         {label: 'FLOWS', direction: 'OUTGOING', device_type: 'AC_BUS'},
         {label: 'FLOWS', direction: 'OUTGOING', device_type: 'TRANSFORMER'},
-        {label: 'FLOWS', direction: 'OUTGOING', device_type: 'INTERCONNECT'}
+        {label: 'FLOWS', direction: 'OUTGOING', device_type: 'INTERCONNECT'},
+
+        {label: 'MEASURED_BY', direction: 'OUTGOING', device_type: 'METER'}
       ],
       renderings: [
         {label: 'ELECTRICAL', offset: {x: 100, y: 0}}
@@ -59,10 +74,13 @@ define(['backbone'], function(Backbone){
       prefix: 'RM',
       relationships: [
         {label: 'MEASURED_BY', direction: 'INCOMING', device_type: 'INVERTER'},
-        {label: 'MEASURED_BY', direction: 'INCOMING', device_type: 'AC_BUS'}
+        {label: 'MEASURED_BY', direction: 'INCOMING', device_type: 'AC_BUS'},
+
+        {label: 'MANAGES', direction: 'INCOMING', device_type: 'DAQ'}
       ],
       renderings: [
-        {label: 'ELECTRICAL', offset: {x: 100, y: -100}}
+        {label: 'ELECTRICAL', offset: {x: 100, y: -100}},
+        {label: 'COMMUNICATION', offset: {x: 100, y: 0}}
       ]
     },
     {
@@ -135,10 +153,13 @@ define(['backbone'], function(Backbone){
         {label: 'COLLECTS', direction: 'INCOMING', device_type: 'DC_BUS'},
 
         {label: 'COLLECTS', direction: 'OUTGOING', device_type: 'ARRAY'},
-        {label: 'COLLECTS', direction: 'OUTGOING', device_type: 'COMBINER'}
+        {label: 'COLLECTS', direction: 'OUTGOING', device_type: 'COMBINER'},
+
+        {label: 'MANAGES', direction: 'INCOMING', device_type: 'DAQ'}
       ],
       renderings: [
-        {label: 'ELECTRICAL', offset: {x: -100, y: 0}}
+        {label: 'ELECTRICAL', offset: {x: -100, y: 0}},
+        {label: 'COMMUNICATION', offset: {x: 100, y: 0}}
       ]
     },
     {
@@ -150,10 +171,13 @@ define(['backbone'], function(Backbone){
         {label: 'COLLECTS', direction: 'INCOMING', device_type: 'RECOMBINER'},
 
         {label: 'COLLECTS', direction: 'OUTGOING', device_type: 'ARRAY'},
-        {label: 'COLLECTS', direction: 'OUTGOING', device_type: 'STRING'}
+        {label: 'COLLECTS', direction: 'OUTGOING', device_type: 'STRING'},
+
+        {label: 'MANAGES', direction: 'INCOMING', device_type: 'DAQ'}
       ],
       renderings: [
-        {label: 'ELECTRICAL', offset: {x: -100, y: 0}}
+        {label: 'ELECTRICAL', offset: {x: -100, y: 0}},
+        {label: 'COMMUNICATION', offset: {x: 100, y: 0}}
       ]
     },
     {
