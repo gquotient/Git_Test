@@ -114,6 +114,14 @@ define([
     attributes: {
       class: 'device'
     },
+    events: {
+      'click': function(event){
+        event.preventDefault();
+        event.stopPropagation();
+
+        Backbone.trigger('click:device', this.model);
+      }
+    },
     onRender: function(){
       if (this.model.outgoing.length) {
         // Create new collection
@@ -142,7 +150,8 @@ define([
     },
     initialize: function(options){
       // Add the dev type for targeted styles
-      this.$el.addClass(options.model.get('devtype'));
+      this.$el.addClass(options.model.get('devtype').replace(' ', '_'));
+      this.$el.attr('id', this.model.id);
     }
   });
 

@@ -46,6 +46,10 @@ define([
 
       this.deviceInfo.show(new Marionette.Layout({template: _.template('Device: <%= id %> <br> Graphkey: <%= graph_key %>'), model: device}));
 
+      $('.nav_content').find('.active').removeClass('active');
+
+      $('.nav_content').find('#' + device.id).addClass('active');
+
       this.buildCharts(device);
     },
 
@@ -106,14 +110,6 @@ define([
       this.contentNavigation.show(this.devicesTree);
     },
 
-    events: {
-      'click .device a': function(event){
-        event.preventDefault();
-
-        this.selectDevice(event.toElement.id);
-      }
-    },
-
     initialize: function(options){
       var that = this;
 
@@ -128,9 +124,15 @@ define([
         // Update collection once data is retrieved
         that.devicesTree.collection.reset(that.model.devices.where({devtype: 'Inverter'}));
 
+        // If router passes a device, build detail view
         if (options.currentDevice) {
           that.selectDevice(options.currentDevice);
         }
+      });
+
+      // Listen for a device to be clicked and change view
+      this.listenTo(Backbone, 'click:device', function(device){
+        that.selectDevice(device.id);
       });
     }
   });

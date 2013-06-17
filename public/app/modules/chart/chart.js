@@ -87,13 +87,13 @@ function(
     if (dataType === 'irradiance') {
       dataDefinition = {
         'project_label': project.id,
-        'ddl': 'env',
+        'ddl': 'pgen-env',
         'dtstart': 'today',
         'dtstop': 'now',
         'columns': ['freezetime', 'value_mean'],
         'filters': [
           {'column': 'attribute', 'in_set': ['irradiance']},
-          {'column': 'identifier', 'in_set': ['IRRA-1']}
+          {'column': 'identifier', 'in_set': [project.id + ':IRRA-1']}
         ]
       };
     } else {
@@ -140,7 +140,7 @@ function(
       var that = this;
 
       $.ajax({
-        url: this.url + '?timezone=' + this.get('timezone'),
+        url: this.url,
         cache: false,
         type: 'POST',
         dataType: 'json',

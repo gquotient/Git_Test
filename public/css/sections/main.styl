@@ -14,7 +14,7 @@ html, body, body > div {
 
 primaryBorderStyle = borderBasicDark;
 
-#banner {
+.banner {
   .notification {
     background: linear-gradient(#f8f356, #DFD85C);
     color: #555;
@@ -30,7 +30,7 @@ primaryBorderStyle = borderBasicDark;
   }
 }
 
-#nav_page {
+.nav_page {
   width: 100%;
   height: pageNavHeight;
   line-height: pageNavHeight;
@@ -44,7 +44,7 @@ primaryBorderStyle = borderBasicDark;
   border-bottom: borderBasicDark;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   text-shadow: 0 0 1px #000;
-  #breadcrumbs {
+  .breadcrumbs {
     float:left;
     ul.breadcrumbs {
       padding: 0;
@@ -112,7 +112,7 @@ primaryBorderStyle = borderBasicDark;
         text-decoration: none;
       }
       &.active {
-        a {
+        > a {
           border-right: 3px solid colorDrakerOrange;
           color: colorPrimaryText;
         }
@@ -177,12 +177,19 @@ primaryBorderStyle = borderBasicDark;
   > ul.devices {
     border: none;
     background: none;
-    ul {
-      padding: 0 0 0 6px;
-    }
-    li.device {
+    li {
       background: none;
       border: none;
+    }
+    > li {
+      border-top: borderBasicMedium;
+      > a {
+        background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+        border-bottom: borderBasicDark;
+      }
+    }
+    ul {
+      padding: 0 0 0 6px;
     }
   }
 }
