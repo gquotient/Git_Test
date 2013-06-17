@@ -183,7 +183,9 @@ define([
     },
     onClose: function(){
       // Close children view
-      this.children.close();
+      if (this.children) {
+        this.children.close();
+      }
     },
     initialize: function(options){
       // Add the dev type for targeted styles
