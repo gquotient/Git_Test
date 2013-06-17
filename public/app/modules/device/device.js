@@ -120,6 +120,12 @@ define([
         event.stopPropagation();
 
         Backbone.trigger('click:device', this.model);
+      },
+      'click .expand': function(event){
+        event.preventDefault();
+        event.stopPropagation();
+
+        console.log('expand');
       }
     },
     onRender: function(){
