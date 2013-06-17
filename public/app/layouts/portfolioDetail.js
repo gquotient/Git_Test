@@ -37,12 +37,14 @@ define([
     onShow: function(){
       // Poulate detail layout
       this.contentNavigation.show(this.portfolioNavigationListView);
-      this.projects.show(this.projectListView);
+      this.projects.show(this.projectTable);
       this.map.show(this.mapView);
+
+      // Select context
+      this.selectPortfolio(this.options.model);
     },
 
     selectPortfolio: function(model) {
-      console.log('selectPortfolio');
       // Build KPIs
       var kpis = new Portfolio.views.DetailKpis({ model: model });
       this.kpis.show(kpis);
@@ -53,15 +55,12 @@ define([
 
       // Reset active indicator
       $('.nav_content').find('.active').removeClass('active');
-      $('.nav_content').find('#' + model.id).addClass('active');
-      console.log(this.portfolioNavigationListView);
 
       // Find current model view and set active
       this.portfolioNavigationListView.children.each(function(view){
-        console.log(view);
-        console.log(view.model.id, model.id);
         if (view.model.id === model.id) {
           view.$el.addClass('active');
+          return;
         }
       });
     },
@@ -72,16 +71,16 @@ define([
         collection: options.portfolios
       });
 
-      this.projectList = options.model.projects.clone();
+      // Init shared project collection
+      this.projectList = new Project.Collection();
 
       // Extend map view for marker filtering
       this.mapView = new Project.views.Map({ collection: this.projectList });
 
-      this.projectListView = new Project.views.DataListView({
+      // Init project table
+      this.projectTable = new Project.views.DataListView({
         collection: this.projectList
       });
-
-      this.selectPortfolio(options.model);
 
       this.listenTo(Backbone, 'click:portfolio', function(model){
         this.selectPortfolio(model);
