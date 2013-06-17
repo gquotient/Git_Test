@@ -1,4 +1,5 @@
 define([
+  'jquery',
   'backbone',
   'backbone.marionette',
   'handlebars',
@@ -8,6 +9,7 @@ define([
 
   'hbs!layouts/templates/portfolioDetail'
 ], function(
+  $,
   Backbone,
   Marionette,
   Handlebars,
@@ -29,25 +31,46 @@ define([
       kpis: '#kpis',
       map: '#map',
       projects: '#projects',
-      contentNavigation: '.column_left'
+      contentNavigation: '.nav_content'
     },
 
     onShow: function(){
-        // Poulate detail layout
-        this.contentNavigation.show(this.portfolioNavigationListView);
-        this.kpis.show(this.kpisView);
-        this.projects.show(this.projectListView);
-        this.map.show(this.mapView);
-      },
+      // Poulate detail layout
+      this.contentNavigation.show(this.portfolioNavigationListView);
+      this.projects.show(this.projectListView);
+      this.map.show(this.mapView);
+    },
+
+    selectPortfolio: function(model) {
+      console.log('selectPortfolio');
+      // Build KPIs
+      var kpis = new Portfolio.views.DetailKpis({ model: model });
+      this.kpis.show(kpis);
+
+      // Update the collection.
+      this.projectList.set(model.projects.models);
+      Backbone.trigger('update:breadcrumbs', model);
+
+      // Reset active indicator
+      $('.nav_content').find('.active').removeClass('active');
+      $('.nav_content').find('#' + model.id).addClass('active');
+      console.log(this.portfolioNavigationListView);
+
+      // Find current model view and set active
+      this.portfolioNavigationListView.children.each(function(view){
+        console.log(view);
+        console.log(view.model.id, model.id);
+        if (view.model.id === model.id) {
+          view.$el.addClass('active');
+        }
+      });
+    },
 
     initialize: function(options){
       // Build primary portfolio nav
       this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
         collection: options.portfolios
       });
-
-      // Build KPIs
-      this.kpisView = new Portfolio.views.DetailKpis({ model: options.model }),
 
       this.projectList = options.model.projects.clone();
 
@@ -58,10 +81,11 @@ define([
         collection: this.projectList
       });
 
+      this.selectPortfolio(options.model);
+
       this.listenTo(Backbone, 'click:portfolio', function(model){
-        // Update the collection.
-        this.projectList.set(model.projects.models);
-        Backbone.trigger('update:breadcrumbs', model);
+        this.selectPortfolio(model);
+
         Backbone.history.navigate('/portfolio/' + model.id);
       });
     }
