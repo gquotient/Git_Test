@@ -115,7 +115,7 @@ define([
       class: 'device'
     },
     events: {
-      'click': function(event){
+      'click a': function(event){
         event.preventDefault();
         event.stopPropagation();
 
