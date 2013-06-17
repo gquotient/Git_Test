@@ -130,6 +130,9 @@ define([
     },
     onRender: function(){
       if (this.model.outgoing.length) {
+        // Add expand-o-matic
+        this.$el.find('a').append('<span class="expand">Expand</span>');
+
         // Create new collection
         var devices = new Device.Collection();
 
