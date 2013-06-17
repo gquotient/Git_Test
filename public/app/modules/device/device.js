@@ -1,3 +1,13 @@
+/*
+
+  TODO:
+
+  [ ] Expand device tree if selected device is hidden
+  [ ] Add collapse icon and state
+  [ ] Animate expand/collapse (CSS transform?)
+
+*/
+
 define([
   'jquery',
   'underscore',
@@ -130,18 +140,75 @@ define([
       template: deviceListItemViewTemplate
     },
     attributes: {
-      class: 'device'
+      class: 'device collapsed'
+    },
+    options: {
+      expanded: false
+    },
+    events: {
+      'click a': function(event){
+        event.preventDefault();
+        event.stopPropagation();
+
+        Backbone.trigger('click:device', this.model);
+      },
+      'click .expand': function(event){
+        event.preventDefault();
+        event.stopPropagation();
+
+        console.log('expand');
+
+        if (this.options.expanded) {
+          this.$el.removeClass('expanded');
+          this.$el.addClass('collapsed');
+          this.options.expanded = false;
+        } else {
+          this.$el.removeClass('collapsed');
+          this.$el.addClass('expanded');
+          this.options.expanded = true;
+        }
+      }
     },
     onRender: function(){
       if (this.model.outgoing.length) {
-        var subListView = new Device.views.NavigationList({collection: this.model.outgoing});
+        // Create new collection
+        var filteredDevices = this.model.outgoing.filter(function(device){
+          var devtype = device.get('devtype');
 
-        subListView.render();
-        this.$el.append(subListView.$el);
+          return devtype && devtype !== 'Draker Panel Monitor' && devtype !== 'AC Bus';
+        });
+
+        // Only build children if whitelisted devices exist
+        if (filteredDevices.length) {
+          var devices = new Device.Collection();
+
+          // Add expand-o-matic
+          this.$el.find('> a').append('<span class="expand">Expand</span>');
+
+          // Make sure models have a devtype and push them to devices
+          devices.reset(filteredDevices);
+
+          // Create a new collection view with this device's chidren
+          this.children = new Device.views.NavigationList({collection: devices});
+
+          // Render the view so the element is available
+          this.children.render();
+
+          // Append the child element to this view
+          this.$el.append(this.children.$el);
+        }
       }
     },
-    initialize: function(options) {
-
+    onClose: function(){
+      // Close children view
+      if (this.children) {
+        this.children.close();
+      }
+    },
+    initialize: function(options){
+      // Add the dev type for targeted styles
+      this.$el.addClass(options.model.get('devtype').replace(' ', '_'));
+      this.$el.attr('id', this.model.id);
     }
   });
 
@@ -150,10 +217,7 @@ define([
     attributes: {
       class: 'devices'
     },
-    itemView: Device.views.DeviceListItem,
-    initialize: function(options) {
-
-    }
+    itemView: Device.views.DeviceListItem
   });
 
   return Device;

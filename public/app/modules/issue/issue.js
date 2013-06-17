@@ -35,6 +35,10 @@ function(
   });
 
   Issue.views.Table = Marionette.CompositeView.extend({
+    tagName: 'table',
+    attributes: {
+      class: 'basic'
+    },
     template: {
       type: 'handlebars',
       template: tableTemplate

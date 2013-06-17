@@ -14,7 +14,7 @@ html, body, body > div {
 
 primaryBorderStyle = borderBasicDark;
 
-#banner {
+.banner {
   .notification {
     background: linear-gradient(#f8f356, #DFD85C);
     color: #555;
@@ -30,7 +30,7 @@ primaryBorderStyle = borderBasicDark;
   }
 }
 
-#nav_page {
+.nav_page {
   width: 100%;
   height: pageNavHeight;
   line-height: pageNavHeight;
@@ -44,7 +44,7 @@ primaryBorderStyle = borderBasicDark;
   border-bottom: borderBasicDark;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   text-shadow: 0 0 1px #000;
-  #breadcrumbs {
+  .breadcrumbs {
     float:left;
     ul.breadcrumbs {
       padding: 0;
@@ -94,87 +94,140 @@ primaryBorderStyle = borderBasicDark;
   background: colorBGDarkGrey;
   border-right: primaryBorderStyle;
   color: #aaa;
-    ul {
-      padding: 0;
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    > li {
+      padding: 0px;
+      text-shadow: 0 1px 0 #222;
       margin: 0;
-      list-style-type: none;
-      > li {
-        padding: 0px;
-        text-shadow: 0 1px 0 #222;
-        margin: 0;
-        border-top: borderBasicMedium;
-        border-bottom: borderBasicDark;
-        background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-        cursor: pointer;
-        a {
-          display: block;
-          padding: 6px;
-          text-decoration: none;
+      border-top: borderBasicMedium;
+      border-bottom: borderBasicDark;
+      background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+      cursor: pointer;
+      a {
+        display: block;
+        padding: 6px;
+        text-decoration: none;
+      }
+      &.active {
+        > a {
+          border-right: 3px solid colorDrakerOrange;
+          color: colorPrimaryText;
         }
-        &.active {
-          a {
-            border-right: 3px solid colorDrakerOrange;
-            color: colorPrimaryText;
-          }
+      }
+      &.empty {
+        background: none;
+        border: none;
+        padding: 6px;
+        font-style: italic;
+        box-shadow: none;
+        cursor: default;
+        &:hover {
+          background: none;
         }
-        &.empty {
+      }
+      &.nav-item {
+        padding: 6px;
+        h3 {
+          margin: 0 0 6px;
+          white-space: nowrap;
+          overflow: ellipsis;
+          font-size: 1.25em;
+          font-weight: 100;
+          color: #eee;
+        }
+        ul {
           background: none;
           border: none;
-          padding: 6px;
-          font-style: italic;
-          box-shadow: none;
-          cursor: default;
-          &:hover {
-            background: none;
-          }
-        }
-        &.nav-item {
-          padding: 6px;
-          h3 {
-            margin: 0 0 6px;
-            white-space: nowrap;
-            overflow: ellipsis;
-            font-size: 1.25em;
-            font-weight: 100;
-            color: #eee;
-          }
-          ul {
-            background: none;
+          padding: 0;
+          margin: 0;
+          overflow: hidden;
+          list-style-type: none;
+          li {
+            background-position: left center;
+            background-repeat: no-repeat;
             border: none;
-            padding: 0;
-            margin: 0;
-            overflow: hidden;
-            list-style-type: none;
-            li {
-              background-position: left center;
-              background-repeat: no-repeat;
-              border: none;
-              padding: 0 0 0 12px;
-              margin: 0 12px 0 0;
-              float: left;
-              &.projects {
-                background-image: url(../../img/icon_project_9x12.png);
-              }
-              &.subPortfolios {
-                background-image: url(../../img/icon_portfolio_12x9.png);
-                padding: 0 0 0 15px;
-              }
-              &.DCCapacity {
-                background-image: url(../../img/icon_energy_12x12.png);
-                padding: 0 0 0 15px;
-              }
+            padding: 0 0 0 12px;
+            margin: 0 12px 0 0;
+            float: left;
+            &.projects {
+              background-image: url(../../img/icon_project_9x12.png);
+            }
+            &.subPortfolios {
+              background-image: url(../../img/icon_portfolio_12x9.png);
+              padding: 0 0 0 15px;
+            }
+            &.DCCapacity {
+              background-image: url(../../img/icon_energy_12x12.png);
+              padding: 0 0 0 15px;
             }
           }
         }
-        &:hover {
-          background: linear-gradient(#252627, #282828);
+      }
+      &:hover {
+        background: linear-gradient(#252627, #282828);
+      }
+      &:first-child {
+        border-top: none;
+      }
+    }
+  }
+  > ul.devices {
+    border: none;
+    background: none;
+    > li {
+      > a {
+        border-top: borderBasicMedium;
+        border-bottom: borderBasicDark;
+        background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+      }
+    }
+    li {
+      width: 100%;
+      position: relative;
+      background: none;
+      border: none;
+      &.collapsed {
+        > ul {
+          display: none;
         }
-        &:first-child {
-          border-top: none;
+      }
+      &.expanded {
+        > ul {
+          display: inherit;
+        }
+        > a > .expand {
+          background: url(../../img/icon_collapse.png) right center no-repeat;
+        }
+      }
+      a {
+        .expand {
+          background: url(../../img/icon_expand.png) right center no-repeat;
+          opacity: 0;
+          position: absolute;
+          top: 0;
+          right: 0;
+          display: block;
+          width: 30px;
+          height: 30px;
+          padding: 0 30px 0 0;
+          text-indent: -200%;
+          overflow: hidden;
+          border-left: 1px dotted #202020;
+        }
+        &:hover {
+          > .expand {
+            opacity: 1;
+          }
         }
       }
     }
-
+    ul {
+      padding: 0 0 0 6px;
+    }
+  }
 }
 
 /* Detail View */
@@ -306,14 +359,14 @@ primaryBorderStyle = borderBasicDark;
   }
   #page-projectDetail {
     overflow: auto;
-    #map {
+    .map {
       height: 400px;
       border-bottom: borderBasicDark;
     }
-    #kpis {
+    .kpis {
       padding: 6px;
     }
-    #alarms {
+    .issues {
       table {
         width: 100%;
         border-top: none;
@@ -330,7 +383,7 @@ primaryBorderStyle = borderBasicDark;
     }
   }
 
-  #page-admin {
+  #page-admin, #page-projectDevices {
     .column_right {
       padding: 12px;
     }
