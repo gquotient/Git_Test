@@ -50,7 +50,7 @@ define([
       this.kpis.show(kpis);
 
       // Update the collection.
-      this.projectList.reset(model.projects.models);
+      this.projectList.set(model.projects.models);
       Backbone.trigger('update:breadcrumbs', model);
 
       // Reset active indicator
@@ -76,6 +76,7 @@ define([
 
       // Extend map view for marker filtering
       this.mapView = new Project.views.Map({ collection: this.projectList });
+      this.mapView.fitToBounds();
 
       // Init project table
       this.projectTable = new Project.views.DataListView({
