@@ -209,8 +209,9 @@ define([
 
     onShow: function(){
       this.buildInputViews();
-      this.rendering_label = this.viewView.parseInput().toUpperCase();
-      Backbone.trigger('editor:rendering', this.rendering_label);
+
+      this.onViewFocus();
+      this.onViewApply();
     },
 
     buildInputViews: function(){
@@ -221,10 +222,6 @@ define([
             collection: collection
           }), options);
 
-        if (collection) {
-          collection.comparator = 'name';
-        }
-
         _.each(['focus', 'apply'], function(evnt){
           this.listenTo(view, evnt, function(){
             this.triggerMethod(name + ':' + evnt);
@@ -234,21 +231,20 @@ define([
     },
 
     onViewFocus: function(){
-      var
-        renderings = library.reduce(function(memo, model){
-          _.each(model.get('renderings'), function(rendering){
-            var label = rendering.label;
+      var renderings = [];
 
-            if (label && !_.findWhere(memo, {label: label})) {
-              memo.push({
-                name: label[0].toUpperCase() + label.slice(1).toLowerCase(),
-                label: label
-              });
-            }
-          });
+      library.each(function(model){
+        _.each(model.get('renderings'), function(rendering){
+          var label = rendering.label;
 
-          return memo;
-        }, []);
+          if (label && !_.findWhere(renderings, {label: label})) {
+            renderings.push({
+              name: label[0].toUpperCase() + label.slice(1).toLowerCase(),
+              label: label
+            });
+          }
+        });
+      });
 
       this.viewCollection.reset(renderings);
     },
@@ -258,19 +254,40 @@ define([
 
       if (this.selection) {
         types = mapSelectionTypes(this.selection, {direction: 'OUTGOING'});
-
-        models = library.filter(function(model){
-          return _.contains(types, model.get('device_type')) &&
-            _.findWhere(model.get('renderings'), {label: this.rendering_label});
-        }, this);
-      } else {
-        models = library.filter(function(model){
-          return _.findWhere(model.get('renderings'), {
-            label: this.rendering_label,
-            root: true
-          });
-        }, this);
       }
+
+      models = library.chain()
+
+        .filter(function(model){
+          var rendering;
+
+          // Don't show devices that can't be added to selected
+          if (types && !_.contains(types, model.get('device_type'))) {
+            return false;
+          }
+
+          rendering = _.findWhere(model.get('renderings'), {
+            label: this.rendering_label
+          });
+
+          // Don't show devices that can't be rendered in current view
+          if (!rendering) {
+            return false;
+          }
+
+          // Don't show non-root devices if nothing selected
+          if (!this.selection && !rendering.root) {
+            return false;
+          }
+
+          return true;
+        }, this)
+
+        .sortBy(function(device){
+          return device.get('name');
+        })
+
+        .value();
 
       this.addCollection.reset(models);
     },
@@ -279,25 +296,33 @@ define([
       var devices = [];
 
       if (this.selection && this.selection.length > 0) {
-        devices = this.model.devices.filter(function(device){
+        devices = this.model.devices.chain()
 
-          // Don't show selected devices
-          if (this.selection.contains(device)) {
-            return false;
-          }
+          .filter(function(device){
 
-          // Don't show devices that can't be rendered
-          if (!findRendering(device.get('device_type'), this.rendering_label)) {
-            return false;
-          }
+            // Don't show selected devices
+            if (this.selection.contains(device)) {
+              return false;
+            }
 
-          // Only show devices that have a relationship and aren't already children
-          return this.selection.all(function(select){
-            var relationship = findIncomingRelationshipLabel(device, select);
+            // Don't show devices that can't be rendered
+            if (!findRendering(device.get('device_type'), this.rendering_label)) {
+              return false;
+            }
 
-            return relationship && !select.hasChild(device, relationship);
-          });
-        }, this);
+            // Only show devices that have a relationship and aren't already children
+            return this.selection.all(function(select){
+              var relationship = findIncomingRelationshipLabel(device, select);
+
+              return relationship && !select.hasChild(device, relationship);
+            });
+          }, this)
+
+          .sortBy(function(device){
+            return device.get('name');
+          })
+
+          .value();
       }
 
       this.connectCollection.reset(devices);
@@ -325,6 +350,10 @@ define([
           .filter(function(device){
             return device.incoming.length > this.selection.length;
           }, this)
+
+          .sortBy(function(device){
+            return device.get('name');
+          })
 
           .value();
       }
