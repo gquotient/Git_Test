@@ -34,7 +34,6 @@ define([
     },
     initialize: function(){
       this.model = this.team = this.options.team;
-      console.log(this.team.get('org_label'));
       this.allUsers = new User.OrganizationUsers({ org_label: this.team.get('org_label') });
 
       this.currentMembersView = new Team.views.TeamDetail({ model: this.team, collection: this.team.users });
