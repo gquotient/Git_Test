@@ -83,7 +83,7 @@ define([
 
           // Once more APIs are implemented, we can make sure everything else syncs up with the team.
         }
-      })
+      });
     },
 
     toggleNotificationBanner: function(){
@@ -144,7 +144,7 @@ define([
 
       this.listenTo(Backbone, 'select:team', function(teamLabel){
         this.switchTeam(teamLabel);
-      })
+      });
     }
   });
 });

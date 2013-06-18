@@ -44,7 +44,7 @@ define([
 
       this.listenTo(this, 'select:team', function(options){
         Backbone.trigger('select:team', options.view.$el.find('select').val());
-      })
+      });
     }
   });
 });
