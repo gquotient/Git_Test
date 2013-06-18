@@ -123,7 +123,6 @@ define([
     }
   });
 
-
   Project.views.DashboardItemView = Marionette.ItemView.extend({
     template: {
       type: 'handlebars',

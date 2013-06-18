@@ -3,7 +3,7 @@
   TODO:
 
   [ ] Expand device tree if selected device is hidden
-  [ ] Add collapse icon and state
+  [x] Add collapse icon and state
   [ ] Animate expand/collapse (CSS transform?)
 
 */
@@ -155,8 +155,6 @@ define([
       'click .expand': function(event){
         event.preventDefault();
         event.stopPropagation();
-
-        console.log('expand');
 
         if (this.options.expanded) {
           this.$el.removeClass('expanded');
