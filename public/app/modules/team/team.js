@@ -85,6 +85,10 @@ define(
       url: '/api/teams'
     });
 
+    Team.collections.AllTeams = Team.collections.Teams.extend({
+      url: '/api/teams?org_label=ALL'
+    });
+
     Team.views.TeamDetail = Marionette.CompositeView.extend({
       model: Team.models.Team,
       template: {
@@ -97,6 +101,13 @@ define(
 
     // Table CompositeView extended from form
     Team.views.EditTable = Forms.views.table.extend({
+      fields: ['name'],
+      model: Team.models.Team,
+      actions: ['edit', 'cancel', 'save', 'detail']
+    });
+
+    // Table CompositeView extended from form
+    Team.views.EditAllTable = Forms.views.table.extend({
       fields: ['name', 'team_label', 'org_label'],
       model: Team.models.Team,
       actions: ['edit', 'cancel', 'save', 'detail']

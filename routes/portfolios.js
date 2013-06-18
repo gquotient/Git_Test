@@ -1,17 +1,16 @@
 module.exports = function(app){
 
   var helpers = require('./helpers')(app)
-    , makeRequest = helpers.makeRequest;
+    , makeRequest = helpers.makeRequest
+    , ensureCurrentOrganization = helpers.ensureCurrentOrganization
+    , ensureCurrentTeam = helpers. ensureCurrentTeam;
 
 
-  app.get('/api/portfolios',
-  makeRequest({
-    path: '/res/portfolios'
-  }));
+  app.get('/api/portfolios', ensureCurrentOrganization, ensureCurrentTeam,
+    makeRequest({
+      path: '/res/teamportfolios'
+    })
+  );
 
-app.get('/api/portfolios/:team_label',
-  makeRequest({
-    path: '/res/portfolios'
-  }));
 
 };

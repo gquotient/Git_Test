@@ -30,7 +30,8 @@ define([
       }
     },
     triggers: {
-      'click .logout': 'logout'
+      'click .logout': 'logout',
+      'change select': 'select:team'
     },
     initialize: function(){
       this.listenTo(this, 'logout', function(){
@@ -40,6 +41,10 @@ define([
       this.listenTo(this.model, 'change', function(){
         this.render();
       });
+
+      this.listenTo(this, 'select:team', function(options){
+        Backbone.trigger('select:team', options.view.$el.find('select').val());
+      })
     }
   });
 });
