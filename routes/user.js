@@ -1,6 +1,9 @@
 module.exports = function(app){
 
   var helpers = require('./helpers')(app)
+    , ensureAuthorized = helpers.ensureAuthorized
+    , ensureCurrentUser = helpers.ensureCurrentUser
+    , ensureCurrentOrganization = helpers.ensureCurrentOrganization
     , makeRequest = helpers.makeRequest;
 
   //////
@@ -8,31 +11,31 @@ module.exports = function(app){
   //////
 
   // Get all users
-  app.get('/api/users', helpers.ensureAuthorized(['vendor_admin', 'admin']),
+  app.get('/api/users', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
     makeRequest({
       path: '/res/users'
     }));
 
-  app.get('/api/users/current', helpers.makeRequest({
+  app.get('/api/users/current', makeRequest({
     path: '/res/user'
   }));
 
-  app.put('/api/users', helpers.ensureAuthorized(['vendor_admin', 'admin']),
+  app.put('/api/users', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/user'
     }));
 
-  app.put('/api/users/current', helpers.ensureCurrentUser,
+  app.put('/api/users/current', ensureCurrentUser,
     makeRequest({
       path: '/res/user'
     }));
 
-  app.post('/api/users', helpers.ensureAuthorized(['vendor_admin', 'admin']),
+  app.post('/api/users', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/usermgt'
     }));
 
-  app.put('/api/reset_password', helpers.ensureAuthorized(['vendor_admin', 'admin']),
+  app.put('/api/reset_password', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/usermgt'
     }));

@@ -28,6 +28,14 @@ module.exports = function(app){
         res.redirect('/ia');
       }
     },
+    ensureCurrentOrganization: function(req, res, next){
+      req.query.org_label = req.body.org_label || req.query.org_label || req.params.org_label || req.session.org_label;
+      next();
+    },
+    ensureCurrentTeam: function(req, res, next){
+      req.query.team_label = req.body.team_label || req.query.team_label || req.params.team_label || req.session.team_label;
+      next();
+    },
     separateProperties: function(root, ignore){
       return function(req, res, next){
         req.body = _.reduce(req.body, function(memo, value, key){

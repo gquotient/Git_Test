@@ -2,7 +2,7 @@
 
   "admin": {
     "admin": {
-      "views": ["users", "organizations", "teams"]
+      "views": ["users", "teams"]
     },
     "header": {
       "showAdmin": true  
@@ -11,7 +11,7 @@
   
   "vendor_admin": {
     "admin": {
-      "views": ["users", "organizations", "teams", "vendor_users"]
+      "views": ["users", "teams", "all_users", "all_teams", "organizations"]
     },
     "header": {
       "showAdmin": true  

@@ -42,8 +42,12 @@ module.exports = function(app){
       fcall( function(){
         var myUserDef = Q.defer();
         // console.log('user')
-        request(requestOptions, function(error, response, user){
-          myTeams = JSON.stringify(JSON.parse(user).teams);
+        request(requestOptions, function(error, response, userJSON){
+          var user = JSON.parse(userJSON);
+          // Until we have a default team option for the user, assume first team or last selected.
+          req.session.team_label = req.session.team_label || user.teams[0][0]
+          req.session.org_label = user.org_label;
+          myTeams = JSON.stringify(JSON.parse(userJSON).teams);
           console.log(myTeams);
           myUserDef.resolve(user);
         });
@@ -53,7 +57,7 @@ module.exports = function(app){
       .then( function(){
         var myPortfoliosDef = Q.defer();
         // console.log('portfolios');
-        requestOptions.uri = app.get('modelUrl') + '/res/portfolios';
+        requestOptions.uri = app.get('modelUrl') + '/res/teamportfolios?team_label='+req.session.team_label+'&org_label='+req.session.org_label;
         request(requestOptions, function(error, response, portfolios){
           myPortfolios = portfolios;
           myPortfoliosDef.resolve(portfolios);
@@ -68,19 +72,22 @@ module.exports = function(app){
         requestOptions.uri = app.get('modelUrl') + '/res/teamprojects';
         request(requestOptions, function(error, response, projects){
           myProjects = projects;
-          console.log('projects')
+          // console.log('projects')
           myProjectsDef.resolve(projects);
         });
 
         return myProjectsDef.promise;
       })
       .then( function(obj){
-        console.log('render');
+        // console.log('render');
+        console.log(req.session);
         res.render('index', {
           user: JSON.stringify({
             name: req.user.name,
             email: req.user.email,
             teams: myTeams,
+            currentTeam: req.session.team_label,
+            currentOrganization: req.session.org_label,
             role: roles[req.user.role]
           }),
           portfolios: myPortfolios,

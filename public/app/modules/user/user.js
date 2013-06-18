@@ -53,18 +53,23 @@ function(
 
   User.Collection = Backbone.Collection.extend({
     url: '/api/users',
-    model: User.Model
+    model: User.Model,
+    comparator: function(user){
+      return user.get('name');
+    }
   });
 
-  User.TeamUsers = Backbone.Collection.extend({
+  User.AllUsers = User.Collection.extend({
+    url: '/api/users?org_label=None'
+  });
+
+  User.TeamUsers = User.Collection.extend({
     initialize: function(options){
       this.url = '/api/teams/' + options.team.id + '/users';
-    },
-    model: User.Model
+    }
   });
 
-  User.OrganizationUsers = Backbone.Collection.extend({
-    model: User.Model,
+  User.OrganizationUsers = User.Collection.extend({
     initialize: function(options){
       this.url = '/api/organizations/' + options.org_label + '/users';
     }

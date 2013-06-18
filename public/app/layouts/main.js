@@ -70,6 +70,22 @@ define([
       this.app.state = 'project';
     },
 
+    switchTeam: function(teamLabel){
+      var that = this;
+      this.app.currentTeam = teamLabel;
+      $.ajax('/api/teams/current', {
+        type: 'PUT',
+        data: {
+          team_label: teamLabel
+        },
+        success: function(){
+          that.app.rootPortfolio.portfolios.fetch();
+
+          // Once more APIs are implemented, we can make sure everything else syncs up with the team.
+        }
+      })
+    },
+
     toggleNotificationBanner: function(){
       var
         that = this,
@@ -125,6 +141,10 @@ define([
       this.banner.on('close', function(){
         $('#page').removeClass('withBanner');
       });
+
+      this.listenTo(Backbone, 'select:team', function(teamLabel){
+        this.switchTeam(teamLabel);
+      })
     }
   });
 });
