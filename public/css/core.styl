@@ -143,7 +143,19 @@ header {
         border-left: borderBasicDark;
         border-right: borderBasicMedium;
         &.team_select {
+          padding: 0;
+          border-right: none;
+        }
+        &.username {
+          color: #fff;
+          border-left: none;
           padding: 0 9px;
+        }
+        &:first-child {
+          border-left: none;
+        }
+        &:last-child {
+          border-right: none;
         }
         a {
           display: block;
@@ -153,14 +165,6 @@ header {
           &:hover {
             background: #252525;
           }
-        }
-        &:last-child {
-          border-right: none;
-        }
-        &.username {
-          color: #fff;
-          border-left: none;
-          padding: 0 9px 0 0;
         }
       }
     }

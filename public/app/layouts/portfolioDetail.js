@@ -1,4 +1,5 @@
 define([
+  'jquery',
   'backbone',
   'backbone.marionette',
   'handlebars',
@@ -8,6 +9,7 @@ define([
 
   'hbs!layouts/templates/portfolioDetail'
 ], function(
+  $,
   Backbone,
   Marionette,
   Handlebars,
@@ -29,16 +31,39 @@ define([
       kpis: '#kpis',
       map: '#map',
       projects: '#projects',
-      contentNavigation: '.column_left'
+      contentNavigation: '.nav_content'
     },
 
     onShow: function(){
-        // Poulate detail layout
-        this.contentNavigation.show(this.portfolioNavigationListView);
-        this.kpis.show(this.kpisView);
-        this.projects.show(this.projectListView);
-        this.map.show(this.mapView);
-      },
+      // Poulate detail layout
+      this.contentNavigation.show(this.portfolioNavigationListView);
+      this.projects.show(this.projectTable);
+      this.map.show(this.mapView);
+
+      // Select context
+      this.selectPortfolio(this.options.model);
+    },
+
+    selectPortfolio: function(model) {
+      // Build KPIs
+      var kpis = new Portfolio.views.DetailKpis({ model: model });
+      this.kpis.show(kpis);
+
+      // Update the collection.
+      this.projectList.set(model.projects.models);
+      Backbone.trigger('update:breadcrumbs', model);
+
+      // Reset active indicator
+      $('.nav_content').find('.active').removeClass('active');
+
+      // Find current model view and set active
+      this.portfolioNavigationListView.children.each(function(view){
+        if (view.model.id === model.id) {
+          view.$el.addClass('active');
+          return;
+        }
+      });
+    },
 
     initialize: function(options){
       // Build primary portfolio nav
@@ -46,22 +71,21 @@ define([
         collection: options.portfolios
       });
 
-      // Build KPIs
-      this.kpisView = new Portfolio.views.DetailKpis({ model: options.model }),
-
-      this.projectList = options.model.projects.clone();
+      // Init shared project collection
+      this.projectList = new Project.Collection();
 
       // Extend map view for marker filtering
       this.mapView = new Project.views.Map({ collection: this.projectList });
+      this.mapView.fitToBounds();
 
-      this.projectListView = new Project.views.DataListView({
+      // Init project table
+      this.projectTable = new Project.views.DataListView({
         collection: this.projectList
       });
 
       this.listenTo(Backbone, 'click:portfolio', function(model){
-        // Update the collection.
-        this.projectList.set(model.projects.models);
-        Backbone.trigger('update:breadcrumbs', model);
+        this.selectPortfolio(model);
+
         Backbone.history.navigate('/portfolio/' + model.id);
       });
     }

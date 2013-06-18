@@ -82,20 +82,14 @@ define([
 
     projectDetail: function(id){
       var project = this.findProject(id);
-      this.mainLayout.showProject(project);
       this.mainLayout.showProject(project, ia.rootPortfolio.projects);
     },
 
     projectDevices: function(id, deviceId){
-      console.log(arguments);
       var project = this.findProject(id);
 
-      this.contentLayout = new ProjectDevicesLayout({model: project});
+      this.contentLayout = new ProjectDevicesLayout({model: project, currentDevice: deviceId});
       this.mainLayout.mainContent.show(this.contentLayout);
-
-      if (deviceId) {
-        this.contentLayout.selectDevice(deviceId);
-      }
     },
 
     profile: function(){

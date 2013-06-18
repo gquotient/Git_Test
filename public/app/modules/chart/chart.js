@@ -69,6 +69,52 @@ function(
     })
   };
 
+  Chart.dataDefaults = function(project, device, dataType) {
+    var
+      ddl = {
+        'Panel': 'pnl',
+        'String': 'str-pnl-calc',
+        'Inverter': 'inv'
+      },
+      column = {
+        power: 'dc_power_output',
+        current: 'dc_current_output_mean',
+        voltage: 'dc_voltage_output_mean'
+      },
+      dataDefinition
+    ;
+
+    if (dataType === 'irradiance') {
+      dataDefinition = {
+        'project_label': project.id,
+        'ddl': 'pgen-env',
+        'dtstart': 'today',
+        'dtstop': 'now',
+        'columns': ['freezetime', 'value_mean'],
+        'filters': [
+          {'column': 'attribute', 'in_set': ['irradiance']},
+          {'column': 'identifier', 'in_set': [project.id + ':IRRA-1']}
+        ]
+      };
+    } else {
+      dataDefinition = {
+        'project_label': project.id,
+        'ddl': ddl[device.get('devtype')],
+        'dtstart': 'today',
+        'dtstop': 'now',
+        'columns': ['freezetime', column[dataType]],
+        'filters': [
+          {
+            'column': 'identifier',
+            'in_set': [device.get('graph_key')]
+          }
+        ]
+      };
+    }
+
+    return dataDefinition;
+  };
+
   Chart.models.timeSeries = Backbone.Model.extend({
     url: '/api/timeline',
     parse: function(data){
@@ -94,12 +140,14 @@ function(
       var that = this;
 
       $.ajax({
-        url: this.url + '?timezone=' + this.get('timezone'),
+        url: this.url,
+        cache: false,
         type: 'POST',
         dataType: 'json',
         data: { traces: that.get('dataType') }
       })
       .done(function(data){
+        that.trigger('data:done');
         that.parse(data);
       });
     },
@@ -107,16 +155,6 @@ function(
       var that = this;
 
       this.url = (options && options.url) ? options.url : this.url;
-
-      var fetch = function(){
-        that.fetch();
-      };
-
-      // Using set timeout for now so it only updates once
-      //this.interval = setTimeout(fetch, 3000);
-
-      // Create series array
-      //this.set('series', []);
     }
   });
 
@@ -206,7 +244,8 @@ function(
               color: '#ccc',
               'font-weight': 'normal'
             }
-          }
+          },
+          min: 0
         },
         {
           opposite: true,
@@ -216,7 +255,8 @@ function(
               color: '#ccc',
               'font-weight': 'normal'
             }
-          }
+          },
+          min: 0
         }
       ]
     },
@@ -269,11 +309,16 @@ function(
 
   Chart.views.Line = Chart.views.core.extend({
     options: {
-      title: 'Generic Chart'
+      title: 'Generic Chart',
+      autoUpdate: true
     },
     render: function(){
       //Fetch data
       this.model.getData();
+    },
+    onClose: function(){
+      // Clear the auto update when view is closed
+      clearInterval(this.fetchInterval);
     },
     initialize: function(options){
       //console.log('init', this, this.model);
@@ -296,19 +341,27 @@ function(
       this.model.on('change:series', function(model, seriesData){
         if (seriesData.length) {
           _.each(that.chart.series, function(serie, index){
+            console.log(serie, index);
             // Update series data
             if (seriesData[index].data && seriesData[index].data.length) {
               serie.setData(seriesData[index].data);
             } else {
               //throw no data error
-              // console.warn('No data found on trace:', seriesData[index]);
+              console.warn('No data found on trace:', seriesData[index]);
             }
           });
         } else {
           //throw no data error
-          // console.warn('No data came back at all. Call Thadeus.');
+          console.warn('No data came back at all. Call Thadeus.');
         }
       });
+
+      var fetch = function(){
+        that.model.getData();
+      };
+
+      // Using set timeout for now so it only updates once
+      this.fetchInterval = setInterval(fetch, 300000);
     }
   });
 

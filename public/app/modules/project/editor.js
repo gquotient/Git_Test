@@ -125,7 +125,7 @@ define([
         });
       }
 
-    } else if (target && target !== project) {
+    } else if (target && target.getPosition) {
       position = target.getPosition(rendering.label);
 
       if (position && rendering.offset) {
@@ -309,10 +309,12 @@ define([
       if (this.selection && this.selection.length > 0) {
         devices = this.selection.chain()
 
-          // Map the outgoing devices
+          // Map the outgoing devices for this rendering
           .map(function(device){
-            return device.outgoing.models;
-          })
+            return device.outgoing.filter(function(other){
+              return other.getRelationship(device, this.rendering_label);
+            }, this);
+          }, this)
 
           // Reduce the devices to a single common set
           .take(function(arr){
@@ -320,8 +322,8 @@ define([
           })
 
           // Prevent orphend nodes
-          .reject(function(device){
-            return device.incoming.length <= this.selection.length;
+          .filter(function(device){
+            return device.incoming.length > this.selection.length;
           }, this)
 
           .value();
@@ -338,6 +340,7 @@ define([
       if (label) {
         if (this.rendering_label !== label) {
           this.rendering_label = label;
+          this.selection = null;
           Backbone.trigger('editor:rendering', label);
         }
 
@@ -360,7 +363,7 @@ define([
           }, this);
         } else {
           _.times(times, function(){
-            this.addDevice(model, this.model);
+            this.addDevice(model);
           }, this);
         }
 
@@ -399,7 +402,9 @@ define([
     },
 
     addDevice: function(model, target){
-      var project = this.model,
+      var relationship_label, other,
+
+        project = this.model,
         type = model.get('device_type'),
         index = findNextIndex(project, type),
 
@@ -408,22 +413,39 @@ define([
           device_type: type,
           name: model.get('name') + ' ' + index,
           did: model.get('prefix') + '-' + index
-        }),
+        });
 
-        rendering = _.findWhere(model.get('renderings'), {label: this.rendering_label}),
+      _.each(model.get('renderings'), function(rendering){
+        if (rendering.root) {
+          positionDevice(device, rendering, project);
+          relationship_label = 'COMPRISES';
 
-        relationship_label = (target === project) ? 'COMPRISES' :
-          findIncomingRelationshipLabel(device, target);
+        } else if (rendering.label === this.rendering_label) {
+          positionDevice(device, rendering, project, target);
+        }
+      }, this);
 
-      if (rendering && relationship_label && target.has('id')) {
-        positionDevice(device, rendering, project, target);
+      if (relationship_label) {
+        other = target;
+        target = project;
+      } else if (target) {
+        relationship_label = findIncomingRelationshipLabel(device, target);
+      }
 
+      if (relationship_label && target.has('id')) {
         project.devices.add(device);
         device.connectTo(target, relationship_label);
 
         device.save({
           parent_id: target.get('id'),
           relationship_label: relationship_label
+        },
+        {
+          success: _.bind(function(){
+            if (other) {
+              this.connectDevice(device, other);
+            }
+          }, this)
         });
       }
     },
@@ -458,7 +480,8 @@ define([
 
     disconnectDevice: function(device, target){
       var project = this.model,
-        relationship_label = device.getRelationship(target);
+        relationship_label = device.getRelationship(target),
+        rendering_label = this.rendering_label;
 
       if (relationship_label) {
         $.ajax('/api/relationships', {
@@ -473,6 +496,14 @@ define([
 
           success: function(){
             device.disconnectFrom(target);
+
+            var others = device.incoming.filter(function(other){
+              return device.getRelationship(other, rendering_label);
+            });
+
+            if (others.length === 0) {
+              device.setPosition(rendering_label, null, true);
+            }
           }
         });
       }

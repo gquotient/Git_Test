@@ -37,9 +37,9 @@ define([
 
     regions: {
       header: '#header',
-      banner: '#banner',
-      navigation: '#nav_page',
-      breadcrumbs: '#breadcrumbs',
+      banner: '.banner',
+      navigation: '.nav_page',
+      breadcrumbs: '.breadcrumbs',
       pageSettings: '#pageSettings',
       mainContent: '#page'
     },

@@ -1,3 +1,13 @@
+/*
+
+  TODO:
+
+  [ ] Expand device tree if selected device is hidden
+  [x] Add collapse icon and state
+  [ ] Animate expand/collapse (CSS transform?)
+
+*/
+
 define([
   'jquery',
   'underscore',
@@ -19,7 +29,13 @@ define([
   deviceListItemViewTemplate,
   deviceListViewTemplate
 ){
-  var Device = { views: {} };
+  var Device = { views: {} },
+
+    // Need a better place for this.
+    renderingRelationships = {
+      ELECTRICAL: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
+      COMMUNICATION: ['MANAGES', 'HAS']
+    };
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
@@ -34,27 +50,39 @@ define([
       this.incoming = new Device.Collection();
     },
 
-    getRelationship: function(target){
-      return this.relationships[target.id];
+    getRelationship: function(target, label){
+      var relationship = this.relationships[target.id];
+
+      if (!label || _.contains(renderingRelationships[label], relationship)) {
+        return relationship;
+      }
     },
 
-    getPosition: function(view){
+    getPosition: function(label){
       var renderings = this.get('renderings');
 
-      return _.clone(renderings[view]);
+      return _.clone(renderings[label]);
     },
 
-    setPosition: function(view, position, save){
-      var renderings = _.clone(this.get('renderings')),
-        isNew = !_.has(renderings, view);
+    setPosition: function(label, position, save){
+      var renderings = _.clone(this.get('renderings')), evnt;
 
-      if (isNew || !_.isEqual(renderings[view], position)) {
-        renderings[view] = position;
-        this[save ? 'save' : 'set']({renderings: renderings});
+      if (position) {
+        if (!_.has(renderings, label)) {
+          evnt = 'add';
+        } else if (_.isEqual(renderings[label], position)) {
+          return;
+        }
+        renderings[label] = position;
+      } else {
+        evnt = 'remove';
+        delete renderings[label];
       }
 
-      if (isNew) {
-        this.trigger('add:rendering', this);
+      this[save ? 'save' : 'set']({renderings: renderings});
+
+      if (evnt) {
+        this.trigger('rendering:' + evnt, this);
       }
     },
 
@@ -112,18 +140,73 @@ define([
       template: deviceListItemViewTemplate
     },
     attributes: {
-      class: 'device'
+      class: 'device collapsed'
+    },
+    options: {
+      expanded: false
+    },
+    events: {
+      'click a': function(event){
+        event.preventDefault();
+        event.stopPropagation();
+
+        Backbone.trigger('click:device', this.model);
+      },
+      'click .expand': function(event){
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (this.options.expanded) {
+          this.$el.removeClass('expanded');
+          this.$el.addClass('collapsed');
+          this.options.expanded = false;
+        } else {
+          this.$el.removeClass('collapsed');
+          this.$el.addClass('expanded');
+          this.options.expanded = true;
+        }
+      }
     },
     onRender: function(){
       if (this.model.outgoing.length) {
-        var subListView = new Device.views.NavigationList({collection: this.model.outgoing});
+        // Create new collection
+        var filteredDevices = this.model.outgoing.filter(function(device){
+          var devtype = device.get('devtype');
 
-        subListView.render();
-        this.$el.append(subListView.$el);
+          return devtype && devtype !== 'Draker Panel Monitor' && devtype !== 'AC Bus';
+        });
+
+        // Only build children if whitelisted devices exist
+        if (filteredDevices.length) {
+          var devices = new Device.Collection();
+
+          // Add expand-o-matic
+          this.$el.find('> a').append('<span class="expand">Expand</span>');
+
+          // Make sure models have a devtype and push them to devices
+          devices.reset(filteredDevices);
+
+          // Create a new collection view with this device's chidren
+          this.children = new Device.views.NavigationList({collection: devices});
+
+          // Render the view so the element is available
+          this.children.render();
+
+          // Append the child element to this view
+          this.$el.append(this.children.$el);
+        }
       }
     },
-    initialize: function(options) {
-
+    onClose: function(){
+      // Close children view
+      if (this.children) {
+        this.children.close();
+      }
+    },
+    initialize: function(options){
+      // Add the dev type for targeted styles
+      this.$el.addClass(options.model.get('devtype').replace(' ', '_'));
+      this.$el.attr('id', this.model.id);
     }
   });
 
@@ -132,10 +215,7 @@ define([
     attributes: {
       class: 'devices'
     },
-    itemView: Device.views.DeviceListItem,
-    initialize: function(options) {
-
-    }
+    itemView: Device.views.DeviceListItem
   });
 
   return Device;

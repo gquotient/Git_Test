@@ -41,7 +41,12 @@ module.exports = function(app){
         req.body = _.reduce(req.body, function(memo, value, key){
           if (_.contains(root, key)) {
             memo[key] = value;
+
           } else if (!_.contains(ignore, key)) {
+            if (_.isPlainObject(value)) {
+              value = JSON.stringify(value);
+            }
+
             memo.properties[key] = value;
           }
           return memo;
