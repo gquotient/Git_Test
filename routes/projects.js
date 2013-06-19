@@ -15,7 +15,7 @@ module.exports = function(app){
   app.get('/api/projects',
     function(req, res){
       var project_label = req.query.project_label,
-        project = {devices: [], rels: []};
+        project = {devices: [], specs: [], rels: []};
 
       if (project_label) {
         request({
@@ -41,19 +41,22 @@ module.exports = function(app){
           } else if (resp.statusCode === 200) {
             body = JSON.parse(body);
 
-            _.each(body.devices, function(device){
+            _.each(body.devices, function(node){
 
-              if (/^PV[ASC]/.test(device.did)) {
-                _.extend(project, _.omit(device, 'devices'));
+              if (/^PV[ASC]/.test(node.did)) {
+                _.extend(project, _.omit(node, 'devices', 'specs', 'rels'));
+
+              } else if (/^EQT/.test(node.did)) {
+                project.specs.push(node);
 
               } else {
-                device.project_label = project_label;
+                node.project_label = project_label;
 
-                if (device.renderings) {
-                  device.renderings = JSON.parse(device.renderings);
+                if (node.renderings) {
+                  node.renderings = JSON.parse(node.renderings);
                 }
 
-                project.devices.push(device);
+                project.devices.push(node);
               }
             });
 

@@ -7,7 +7,9 @@ define([
   'leaflet',
   'css!components/leaflet/dist/leaflet.css',
 
+  'spec',
   'device',
+
   './editor',
 
   'hbs!project/templates/dataList',
@@ -26,7 +28,9 @@ define([
   L,
   leafletCSS,
 
+  Spec,
   Device,
+
   Editor,
 
   dataListTemplate,
@@ -36,7 +40,7 @@ define([
   navigationItemViewTemplate,
   navigationListTemplate
 ){
-  var Project = { views: {} };
+  var Project = { views: {Editor: Editor} };
 
   Project.Model = Backbone.Model.extend({
     idAttribute: 'label',
@@ -46,6 +50,7 @@ define([
     },
 
     initialize: function(){
+      this.specs = new Spec.Collection();
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
     },
@@ -54,19 +59,28 @@ define([
       if (resp.devices) {
         this.devices.reset(resp.devices);
 
+        if (resp.specs) {
+          this.specs.reset(resp.specs);
+        }
+
         if (resp.rels) {
           _.each(resp.rels, function(rel) {
             var target = rel[0] === resp.id ? this : this.devices.get(rel[0]),
-              device = this.devices.get(rel[2]);
+              device = this.devices.get(rel[2]),
+              spec = this.specs.get(rel[2]);
 
-            if (device && target) {
-              device.connectTo(target, rel[1]);
+            if (target) {
+              if (device) {
+                device.connectTo(target, rel[1]);
+              } else if (spec) {
+                target.spec = spec;
+              }
             }
           }, this);
         }
       }
 
-      return _.omit(resp, 'devices', 'rels');
+      return _.omit(resp, 'devices', 'specs', 'rels');
     },
 
     validate: function(attrs){
@@ -406,9 +420,6 @@ define([
       this.render();
     }
   });
-
-
-  Project.views.Editor = Editor;
 
   return Project;
 });

@@ -29,7 +29,7 @@ define([
   deviceListItemViewTemplate,
   deviceListViewTemplate
 ){
-  var Device = { views: {} },
+  var Device = { views: {Canvas: Canvas} },
 
     // Need a better place for this.
     renderingRelationships = {
@@ -130,8 +130,6 @@ define([
       return this.at(index - 1) || this.last();
     }
   });
-
-  Device.views.Canvas = Canvas;
 
   Device.views.DeviceListItem = Marionette.ItemView.extend({
     tagName: 'li',
