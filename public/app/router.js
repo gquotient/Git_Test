@@ -14,6 +14,7 @@ define([
   'layouts/projectEditor',
   'layouts/projectDetail',
   'layouts/projectDevices',
+  'layouts/projectAlarms',
   'layouts/profile',
   'layouts/admin'
 ], function(
@@ -32,6 +33,7 @@ define([
   ProjectEditorLayout,
   ProjectDetailLayout,
   ProjectDevicesLayout,
+  ProjectAlarmsLayout,
   ProfileLayout,
   AdminLayout
 ){
@@ -127,6 +129,8 @@ define([
       'project/:id': 'projectDetail',
       'project/:id/devices': 'projectDevices',
       'project/:id/devices/:deviceId': 'projectDevices',
+      'project/:id/alarms': 'projectAlarms',
+      'project/:id/alarms/:alarmId': 'projectAlarms',
 
       'profile': 'profile',
 
