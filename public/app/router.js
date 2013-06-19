@@ -94,6 +94,13 @@ define([
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
+    projectAlarms: function(id){
+      var project = this.findProject(id);
+
+      this.contentLayout = new ProjectAlarmsLayout({model: project});
+      this.mainLayout.mainContent.show(this.contentLayout);
+    },
+
     profile: function(){
       Backbone.trigger('reset:breadcrumbs', {name: 'Profile'});
 
