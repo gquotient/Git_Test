@@ -97,14 +97,10 @@ define([
           'dataType': [
             {
               'project_label': project.id,
-              'ddl': 'env_300',
+              'ddl': 'pgen-env',
               'dtstart': 'today',
               'dtstop': 'now',
-              'columns': ['freezetime', 'value_mean'],
-              'filters': [
-                {'column': 'attribute', 'in_set': ['irradiance']},
-                {'column': 'identifier', 'in_set': ['IRR-1']}
-              ]
+              'columns': ['freezetime', 'irradiance']
             },
             {
               'project_label': project.id,
