@@ -77,9 +77,23 @@ function(
         'Inverter': 'inv'
       },
       column = {
-        power: 'dc_power_output',
-        current: 'dc_current_output_mean',
-        voltage: 'dc_voltage_output_mean'
+        'Panel': {
+          power: 'dc_power_output',
+          current: 'dc_current_output_mean',
+          voltage: 'dc_voltage_output_mean'
+        },
+        'String': {
+          energy: 'dc_energy',
+          power: 'dc_power',
+          current: 'dc_current',
+          voltage: 'dc_voltage',
+          panel_power_mean: 'dc_power_output_mean'
+        },
+        'Inverter': {
+          power: 'dc_power_output',
+          current: 'dc_current_output_mean',
+          voltage: 'dc_voltage_output_mean'
+        }
       },
       dataDefinition
     ;
@@ -102,7 +116,7 @@ function(
         'ddl': ddl[device.get('devtype')],
         'dtstart': 'today',
         'dtstop': 'now',
-        'columns': ['freezetime', column[dataType]],
+        'columns': ['freezetime', column[device.get('devtype')][dataType]],
         'filters': [
           {
             'column': 'identifier',

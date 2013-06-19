@@ -40,6 +40,7 @@ define([
     },
 
     selectDevice: function(device){
+      console.log(device);
       Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.id);
 
       this.deviceInfo.show(new Marionette.Layout({template: _.template('Device: <%= id %> <br> Graphkey: <%= graph_key %>'), model: device}));
@@ -131,8 +132,7 @@ define([
 
       // Listen for a device to be clicked and change view
       this.listenTo(Backbone, 'click:device', function(device){
-        var myDevice = that.model.devices.findWhere({id: options.currentDevice});
-        that.selectDevice(myDevice);
+        that.selectDevice(device);
       });
     }
   });
