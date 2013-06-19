@@ -320,25 +320,26 @@ table.basic {
   }
 }
 
-table {
-  .statusIndicator {
-    background: colorOKBlue;
-    width: 12px;
-    height: 12px;
-    display: block;
-    text-indent: -9999px;
-    overflow: hidden;
-    border-radius: 6px;
-    box-shadow: 0 1px 0 #444;
-    //margin: 0 auto;
-    &.Warning {
-      background: colorWarningYellow;
-    }
-    &.Alert {
-      background: colorAlertRed;
-    }
+
+.statusIndicator {
+  background: colorOKBlue;
+  width: 12px;
+  height: 12px;
+  display: block;
+  text-indent: -9999px;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 1px 0 #444;
+  float: left;
+  //margin: 0 auto;
+  &.Warning {
+    background: colorWarningYellow;
+  }
+  &.Alert {
+    background: colorAlertRed;
   }
 }
+
 
 /* Forms */
 
@@ -528,7 +529,7 @@ leftColumnWidth = 240px;
       border-left: borderBasicMedium;
       border-bottom: borderBasicDark;
       border-right: borderBasicDark;
-      background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);  
+      background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
       &:hover {
         background: linear-gradient(#252627, #282828);
       }

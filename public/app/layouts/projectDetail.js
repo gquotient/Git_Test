@@ -82,6 +82,8 @@ define([
     },
 
     selectProject: function(project) {
+      this.model = project;
+
       Backbone.trigger('update:breadcrumbs', project);
 
       // Update map
@@ -157,13 +159,14 @@ define([
       this.chart_healthAndSoiling.show(chart_healthAndSoiling);
 
       // Build issues
-      this.issueView = new Issue.views.Table({
+      var issueView = new Issue.views.Table({
+        project: this.model,
         collection: new Issue.Collection()
       });
 
-      this.issues.show(this.issueView);
+      this.issues.show(issueView);
 
-      this.issueView.collection.fetch();
+      issueView.collection.fetch();
 
       // Reset active indicator
       $('.nav_content').find('.active').removeClass('active');
@@ -196,6 +199,12 @@ define([
       this.listenTo(Backbone, 'click:project', function(project){
         this.selectProject(project);
         Backbone.history.navigate('/project/' + project.id);
+      });
+
+      this.listenTo(Backbone, 'click:issue', function(issue){
+        var issuePath = (issue === 'all') ? '' : issue.id;
+
+        Backbone.history.navigate('/project/' + this.model.id + '/issues' + issuePath, true);
       });
     }
   });

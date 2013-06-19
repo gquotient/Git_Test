@@ -14,7 +14,7 @@ define([
   'layouts/projectEditor',
   'layouts/projectDetail',
   'layouts/projectDevices',
-  'layouts/projectAlarms',
+  'layouts/projectIssues',
   'layouts/profile',
   'layouts/admin'
 ], function(
@@ -33,7 +33,7 @@ define([
   ProjectEditorLayout,
   ProjectDetailLayout,
   ProjectDevicesLayout,
-  ProjectAlarmsLayout,
+  ProjectIssuesLayout,
   ProfileLayout,
   AdminLayout
 ){
@@ -94,10 +94,12 @@ define([
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
-    projectAlarms: function(id){
+    projectIssues: function(id, issueId){
       var project = this.findProject(id);
 
-      this.contentLayout = new ProjectAlarmsLayout({model: project});
+      console.log(project);
+
+      this.contentLayout = new ProjectIssuesLayout({model: project, currentIssue: +issueId});
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
@@ -136,8 +138,8 @@ define([
       'project/:id': 'projectDetail',
       'project/:id/devices': 'projectDevices',
       'project/:id/devices/:deviceId': 'projectDevices',
-      'project/:id/alarms': 'projectAlarms',
-      'project/:id/alarms/:alarmId': 'projectAlarms',
+      'project/:id/issues': 'projectIssues',
+      'project/:id/issues/:issueId': 'projectIssues',
 
       'profile': 'profile',
 
