@@ -94,7 +94,7 @@ define([
           'timezone': this.model.get('timezone'),
           'dataType': [
             {
-              'project_label': this.model.id,
+              'project_label': project.id,
               'ddl': 'env_300',
               'dtstart': 'today',
               'dtstop': 'now',
@@ -105,8 +105,8 @@ define([
               ]
             },
             {
-              'project_label': this.model.id,
-              'ddl': 'pgen-rm_300',
+              'project_label': project.id,
+              'ddl': 'pgen-rm',
               'dtstart': 'today',
               'dtstop': 'now',
               'columns': ['freezetime', 'ac_power']
@@ -124,7 +124,7 @@ define([
           'timezone': this.model.get('timezone'),
           'dataType': [
             {
-              'project_label': this.model.id,
+              'project_label': project.id,
               'ddl': 'env_300',
               'dtstart': 'today',
               'dtstop': 'now',
@@ -135,7 +135,7 @@ define([
               ]
             },
             {
-              'project_label': this.model.id,
+              'project_label': project.id,
               'ddl': 'pgen-rm_300',
               'dtstart': 'today',
               'dtstop': 'now',
@@ -164,6 +164,17 @@ define([
       this.issues.show(this.issueView);
 
       this.issueView.collection.fetch();
+
+      // Reset active indicator
+      $('.nav_content').find('.active').removeClass('active');
+
+      // Find current model view and set active
+      this.projectNavigationListView.children.each(function(view){
+        if (view.model.id === project.id) {
+          view.$el.addClass('active');
+          return;
+        }
+      });
     },
 
     onClose: function(){

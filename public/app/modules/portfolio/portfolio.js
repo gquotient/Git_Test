@@ -24,7 +24,6 @@ define([
   var Portfolio = { views: {} };
 
   Portfolio.Model = Backbone.Model.extend({
-    idAttribute: 'label',
     defaults: {
       type: 'portfolio',
 
@@ -110,7 +109,9 @@ define([
 
     initialize: function(models, options){
       this.root = options.root;
-    }
+    },
+
+    comparator: 'display_name'
   });
 
   /* The item view is the view for the individual portfolios in the navigation. */
