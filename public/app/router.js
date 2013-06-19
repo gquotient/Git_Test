@@ -99,7 +99,7 @@ define([
 
       console.log(project);
 
-      this.contentLayout = new ProjectIssuesLayout({model: project, currentIssue: +issueId});
+      this.contentLayout = new ProjectIssuesLayout({model: project, currentIssue: issueId});
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
