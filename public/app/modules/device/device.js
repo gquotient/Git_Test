@@ -173,8 +173,6 @@ define([
         var filteredDevices = this.model.outgoing.filter(function(device){
           var devtype = device.get('devtype');
 
-          if(devtype === 'AC Bus') console.log(device);
-
           return devtype && devtype !== 'Draker Panel Monitor' && devtype !== 'AC Bus';
         });
 

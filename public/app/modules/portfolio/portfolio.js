@@ -6,8 +6,8 @@ define([
 
   'project',
 
-  'hbs!portfolio/templates/navigationItemView',
-  'hbs!portfolio/templates/portfolioList',
+  'hbs!portfolio/templates/navigationList',
+  'hbs!portfolio/templates/navigationItem',
   'hbs!portfolio/templates/detailKpis'
 ], function(
   $,
@@ -17,8 +17,8 @@ define([
 
   Project,
 
-  navigationItemViewTemplate,
-  portfolioListTemplate,
+  navigationListTemplate,
+  navigationItemTemplate,
   detailKpisTemplate
 ){
   var Portfolio = { views: {} };
@@ -119,7 +119,7 @@ define([
     tagName: 'li',
     template: {
       type: 'handlebars',
-      template: navigationItemViewTemplate
+      template: navigationItemTemplate
     },
     attributes: {
       class: 'nav-item'
@@ -149,7 +149,7 @@ define([
     },
     template: {
       type: 'handlebars',
-      template: portfolioListTemplate
+      template: navigationListTemplate
     },
 
     itemViewContainer: '.portfolio-list',
