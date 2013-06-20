@@ -33,9 +33,6 @@ define([
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
-    defaults: {
-      renderings: {}
-    },
 
     initialize: function(){
       this.relationships = {};
@@ -69,30 +66,33 @@ define([
     },
 
     getPosition: function(label){
-      var renderings = this.get('renderings');
+      var renderings = this.get('renderings'),
+        rendering = renderings && renderings[label];
 
-      return _.clone(renderings[label]);
+      return rendering && _.clone(rendering);
     },
 
     setPosition: function(label, position, save){
-      var renderings = _.clone(this.get('renderings')), evnt;
+      var renderings = this.get('renderings'), evnt;
+
+      renderings = renderings ? _.clone(renderings) : {};
 
       if (position) {
         if (!_.has(renderings, label)) {
-          evnt = 'add';
+          evnt = 'rendering:add';
         } else if (_.isEqual(renderings[label], position)) {
           return;
         }
         renderings[label] = position;
       } else {
-        evnt = 'remove';
+        evnt = 'rendering:remove';
         delete renderings[label];
       }
 
       this[save ? 'save' : 'set']({renderings: renderings});
 
       if (evnt) {
-        this.trigger('rendering:' + evnt, this);
+        this.trigger(evnt, this);
       }
     },
 

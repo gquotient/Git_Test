@@ -166,6 +166,50 @@ define([
       });
     },
 
+    modelEvents: {
+      sync: function(project){
+        this.checkRenderings(project.outgoing);
+      }
+    },
+
+    checkRenderings: function(devices, target){
+      var project = this.model;
+
+      devices.each(function(device){
+        var model = findModel(device);
+
+        if (model) {
+          _.each(model.get('renderings'), function(rendering){
+            if (!device.getPosition(rendering.label)) {
+              if (rendering.root) {
+                positionDevice(device, rendering, project);
+              } else if (target && device.getRelationship(target, rendering.label)) {
+                positionDevice(device, rendering, project, target);
+              }
+            }
+          });
+        }
+
+        this.checkRenderings(device.outgoing, device);
+        this.checkName(device);
+      }, this);
+    },
+
+    checkName: function(device){
+      var model, did, index;
+
+      if (!device.has('name')) {
+        model = findModel(device);
+
+        did = device.get('did');
+        index = did && parseInt(did.replace(/^.*-/, ''), 10);
+
+        if (model && index) {
+          device.set({name: model.get('name') + ' ' + index});
+        }
+      }
+    },
+
     onShow: function(){
       this.buildInputViews();
 

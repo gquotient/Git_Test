@@ -142,6 +142,17 @@ define([
         this.on('close', this.erase);
       },
 
+      modelEvents: {
+        'selected': 'select',
+        'deselected': 'deselect',
+        'change:renderings': 'setCenter'
+      },
+
+      collectionEvents: {
+        'rendering:add': 'addChildView',
+        'rendering:remove': 'removeItemView'
+      },
+
       itemViewOptions: function(item){
         return {
           device: this.model,
@@ -163,12 +174,6 @@ define([
 
       // Prevent item views from being added to the DOM.
       appendHtml: function(){},
-
-      modelEvents: {
-        'selected': 'select',
-        'deselected': 'deselect',
-        'change:renderings': 'setCenter'
-      },
 
       draw: function(){
         this.erase(true);
@@ -267,21 +272,16 @@ define([
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
     },
 
+    collectionEvents: {
+      'rendering:add': 'addChildView',
+      'rendering:remove': 'removeItemView'
+    },
+
     itemViewOptions: function(){
       return {
         paper: this.paper,
         rendering_label: this.rendering_label
       };
-    },
-
-    // Listen for rendering additions.
-    _initialEvents: function(){
-      Marionette.CollectionView.prototype._initialEvents.call(this);
-
-      if (this.collection) {
-        this.listenTo(this.collection, 'rendering:add', this.addChildView);
-        this.listenTo(this.collection, 'rendering:remove', this.removeItemView);
-      }
     },
 
     // Prevent rendering of children that don't have position.
