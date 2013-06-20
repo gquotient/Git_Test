@@ -215,6 +215,8 @@ define([
       //append marker to the map
       this.marker.addTo(this.options.markers);
 
+      this.marker.bindPopup(this.model.id).openPopup();
+
       this.fadeTo(300, 1);
 
       //can't use events hash, because the events are bound
