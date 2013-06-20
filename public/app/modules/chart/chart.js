@@ -194,7 +194,7 @@ function(
         spacingBottom : 12,
         spacingLeft : 12,
         plotBorderWidth : 1,
-        plotBorderColor : '#555'
+        plotBorderColor : '#444'
       },
       title: {
         text: null
@@ -255,13 +255,13 @@ function(
       },
       xAxis: {
         type: 'datetime',
-        tickColor: '#555',
-        gridLineColor: '#444', //Lines inside plot
-        lineColor: '#555' //Bottom line of plot
+        tickColor: '#444',
+        gridLineColor: '#333', //Lines inside plot
+        lineColor: '#444' //Bottom line of plot
       },
       yAxis: [
         {
-          gridLineColor: '#444', //Lines inside plot
+          gridLineColor: '#333', //Lines inside plot
           title: {
             style: {
               color: '#ccc',
@@ -272,7 +272,7 @@ function(
         },
         {
           opposite: true,
-          gridLineColor: '#444', //Lines inside plot
+          gridLineColor: '#333', //Lines inside plot
           title: {
             style: {
               color: '#ccc',

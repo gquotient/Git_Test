@@ -141,7 +141,7 @@ header {
         padding: 0;
         float: left;
         border-left: borderBasicDark;
-        border-right: borderBasicMedium;
+        border-right: 1px solid #292929;
         &.team_select {
           padding: 0;
           border-right: none;
@@ -250,8 +250,7 @@ a, a:active, a:hover, a:visited {
   color: colorDrakerOrange;
 }
 
-.buttonContainer {
-  overflow: hidden;
+.buttons.container {
   margin: 0 0 12px;
 }
 
@@ -320,6 +319,13 @@ table.basic {
   }
 }
 
+td.status {
+  width: 24px;
+}
+
+td.name {
+  white-space: nowrap;
+}
 
 .statusIndicator {
   background: colorOKBlue;
