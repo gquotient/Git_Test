@@ -6,6 +6,7 @@ define([
 
   'library',
   'device',
+
   './editor_input',
 
   'hbs!project/templates/editor'
@@ -17,96 +18,89 @@ define([
 
   library,
   Device,
+
   InputView,
 
   editorTemplate
 ){
 
-  function mapSelectionTypes(selection, props){
-    return selection.chain()
+  function findModel(device){
+    return library.findWhere({label: device.getType()});
+  }
 
-      // Convert selection to a list of uniq device types
-      .invoke('get', 'device_type').uniq()
+  function findRelatedModels(devices, props){
+    return devices.chain()
 
-      // Map the selected device types to library models
-      .reduce(function(memo, type){
-        var model = library.findWhere({device_type: type});
+      // Convert selection to a list of uniq library models
+      .map(findModel).compact().uniq()
 
-        if (model) {
-          memo.push(model);
-        }
-
-        return memo;
-      }, [])
-
-      // Map the library models to related device types
+      // Map the models to related targets
       .map(function(model){
         var rels = model.get('relationships');
 
         if (props) {
-          rels = _.where(rels, props);
+          rels = rels.filter(function(rel){
+            return _.all(props, function(value, key){
+              if (key === 'rendering') {
+                return Device.Model.prototype.checkRelationship(rel.label, value);
+              }
+
+              return rel[key] === value;
+            });
+          });
         }
 
-        return _.pluck(rels, 'device_type');
+        return _.pluck(rels, 'target');
       })
 
-      // Reduce the related device types to a single common set
+      // Reduce the targets to a single common set
       .take(function(arr){
         return _.intersection.apply(this, arr);
       })
 
-      .value();
-  }
-
-  function findRelationships(device, target){
-    var type = device.get('device_type');
-
-    return library.chain()
-
-      // Find device type in library
-      .find(function(model) {
-        return model.get('device_type') === type;
-      })
-
-      // Extract the relatinship array
-      .take(function(model) {
-        return model.get('relationships');
-      })
-
-      // Filter the relationships by the target device type
-      .where({device_type: target.get('device_type')})
+      // Map the targets to a list of uniq library models
+      .map(function(target){
+        return library.findWhere({label: target});
+      }).compact().uniq()
 
       .value();
   }
 
-  function findIncomingRelationshipLabel(device, target){
-    var rels = findRelationships(device, target);
+  function findRelationshipLabel(device, target, rendering){
+    var model = findModel(device),
+      rel = _.findWhere(model && model.get('relationships'), {
+        target: target.getType(),
+        direction: 'INCOMING'
+      }),
+      label = rel && rel.label;
 
-    return (_.findWhere(rels, {direction: 'INCOMING'}) || {}).label;
+    if (label && (!rendering || device.checkRelationship(label, rendering))) {
+      return label;
+    }
   }
 
-  function findNextIndex(project, type, index){
-    index = index || 1;
+  function findRendering(device, label){
+    var model = findModel(device);
 
-    project.devices.each(function(device){
-      var num;
+    if (model) {
+      return _.findWhere(model.get('renderings'), {label: label});
+    }
+  }
 
-      if (device.get('device_type') === type) {
-        num = parseInt(device.get('did').replace(/^.*-/, ''), 10);
+  function findNextIndex(type, others){
+    var index = 1;
 
-        if (num && num >= index) {
-          index = num + 1;
-        }
+    others.each(function(other){
+      var did = other.get('did'),
+        parts = did && did.split('-'),
+        num = parts && parseInt(parts[1], 10);
+
+      if (num && num >= index && parts[0] === type) {
+        index = num + 1;
       }
     });
 
     return index;
-  }
-
-  function findRendering(device_type, label){
-    var model = library.findWhere({device_type: device_type});
-
-    return _.findWhere(model.get('renderings'), {label: label});
   }
 
   function positionDevice(device, rendering, project, target){
@@ -172,6 +166,13 @@ define([
       });
     },
 
+    onShow: function(){
+      this.buildInputViews();
+
+      this.onViewFocus();
+      this.onViewApply();
+    },
+
     inputViews: {
       view: {
         hotKey: 118
@@ -205,13 +206,6 @@ define([
       import: {
         hotKey: 105
       }
-    },
-
-    onShow: function(){
-      this.buildInputViews();
-
-      this.onViewFocus();
-      this.onViewApply();
     },
 
     buildInputViews: function(){
@@ -250,21 +244,21 @@ define([
     },
 
     onAddFocus: function(){
-      var types, models = [];
+      var models = [];
 
       if (this.selection) {
-        types = mapSelectionTypes(this.selection, {direction: 'OUTGOING'});
+        models = findRelatedModels(this.selection, {
+          direction: 'OUTGOING',
+          rendering: this.rendering_label
+        });
+      } else {
+        models = library.models;
       }
 
-      models = library.chain()
+      models = _.chain(models)
 
         .filter(function(model){
           var rendering;
-
-          // Don't show devices that can't be added to selected
-          if (types && !_.contains(types, model.get('device_type'))) {
-            return false;
-          }
 
           rendering = _.findWhere(model.get('renderings'), {
             label: this.rendering_label
@@ -275,12 +269,7 @@ define([
             return false;
           }
 
-          // Don't show non-root devices if nothing selected
-          if (!this.selection && !rendering.root) {
-            return false;
-          }
-
-          return true;
+          return this.selection || rendering.root;
         }, this)
 
         .sortBy(function(device){
@@ -306,15 +295,15 @@ define([
             }
 
             // Don't show devices that can't be rendered
-            if (!findRendering(device.get('device_type'), this.rendering_label)) {
+            if (!findRendering(device, this.rendering_label)) {
               return false;
             }
 
             // Only show devices that have a relationship and aren't already children
             return this.selection.all(function(select){
-              var relationship = findIncomingRelationshipLabel(device, select);
+              var rel = findRelationshipLabel(device, select, this.rendering_label);
 
-              return relationship && !select.hasChild(device, relationship);
+              return rel && !select.hasChild(device, rel);
             });
           }, this)
 
@@ -431,48 +420,49 @@ define([
     },
 
     addDevice: function(model, target){
-      var relationship_label, other,
+      var parnt, rel,
 
         project = this.model,
-        type = model.get('device_type'),
-        index = findNextIndex(project, type),
+        type = model.get('label'),
+        index = findNextIndex(type, project.devices),
 
         device = new Device.Model({
           project_label: project.get('label'),
-          device_type: type,
-          name: model.get('name') + ' ' + index,
-          did: model.get('prefix') + '-' + index
+          did: type + '-' + index,
+          name: model.get('name') + ' ' + index
         });
 
       _.each(model.get('renderings'), function(rendering){
         if (rendering.root) {
           positionDevice(device, rendering, project);
-          relationship_label = 'COMPRISES';
+          parnt = project;
 
         } else if (rendering.label === this.rendering_label) {
           positionDevice(device, rendering, project, target);
         }
       }, this);
 
-      if (relationship_label) {
-        other = target;
-        target = project;
-      } else if (target) {
-        relationship_label = findIncomingRelationshipLabel(device, target);
+      if (!parnt && target) {
+        parnt = target;
+        target = null;
       }
 
-      if (relationship_label && target.has('id')) {
+      if (parnt) {
+        rel = findRelationshipLabel(device, parnt);
+      }
+
+      if (rel && parnt.has('id')) {
         project.devices.add(device);
-        device.connectTo(target, relationship_label);
+        device.connectTo(parnt, rel);
 
         device.save({
-          parent_id: target.get('id'),
-          relationship_label: relationship_label
+          parent_id: parnt.get('id'),
+          relationship_label: rel
         },
         {
           success: _.bind(function(){
-            if (other) {
-              this.connectDevice(device, other);
+            if (target) {
+              this.connectDevice(device, target);
             }
           }, this)
         });
@@ -481,15 +471,15 @@ define([
 
     connectDevice: function(device, target){
       var project = this.model,
-        rendering = findRendering(device.get('device_type'), this.rendering_label),
-        relationship_label = findIncomingRelationshipLabel(device, target);
+        rendering = findRendering(device, this.rendering_label),
+        rel = findRelationshipLabel(device, target, this.rendering_label);
 
-      if (rendering && relationship_label) {
+      if (rendering && rel) {
         $.ajax('/api/relationships', {
           type: 'POST',
 
           data: {
-            relationship_label: relationship_label,
+            relationship_label: rel,
             project_label: project.get('label'),
             from_id: target.get('id'),
             to_id: device.get('id')
@@ -501,7 +491,7 @@ define([
               device.save();
             }
 
-            device.connectTo(target, relationship_label);
+            device.connectTo(target, rel);
           }
         });
       }

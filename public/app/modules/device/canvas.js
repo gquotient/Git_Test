@@ -173,16 +173,28 @@ define([
       draw: function(){
         this.erase(true);
 
-        var symbol = this.factory(this.model.get('device_type'), this.center),
-          label = new this.paper.PointText();
+        var symbol = this.factory(this.model.getType(), this.center),
+          label = this.drawLabel(this.model);
 
-        label.fontSize = 14;
-        label.fillColor = 'black';
-        label.content = this.model.get('name');
-        label.position = this.center.subtract(0, symbol.bounds.height * 0.8);
+        label.position = this.center.subtract(0, (symbol.bounds.height + label.bounds.height) * 0.55);
 
         this.node = new this.paper.Group([symbol, label]);
         this.paper.view.draw();
+      },
+
+      drawLabel: function(device){
+        var name = device.get('name');
+
+        if (!name || name.length > 12) {
+          name = device.get('did');
+        }
+
+        return new this.paper.PointText({
+          fontSize: 14,
+          fillColor: 'black',
+          justification: 'center',
+          content: name
+        });
       },
 
       erase: function(skipDraw){
@@ -437,7 +449,7 @@ define([
       var model = this.selection.last() || this.collection.last(),
         parnt = model && model.incoming && model.incoming.first();
 
-      if (parnt && parnt.has('device_type')) {
+      if (parnt && parnt.getType) {
         this.selection.add(parnt, {remove: !e.ctrlKey});
         this.paper.view.draw();
       }

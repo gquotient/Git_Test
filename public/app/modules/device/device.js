@@ -29,13 +29,7 @@ define([
   deviceListItemViewTemplate,
   deviceListViewTemplate
 ){
-  var Device = { views: {Canvas: Canvas} },
-
-    // Need a better place for this.
-    renderingRelationships = {
-      ELECTRICAL: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
-      COMMUNICATION: ['MANAGES', 'HAS']
-    };
+  var Device = { views: {Canvas: Canvas} };
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
@@ -50,10 +44,26 @@ define([
       this.incoming = new Device.Collection();
     },
 
+    getType: function(){
+      var did = this.get('did');
+
+      return did && did.replace(/-\d*$/, '');
+    },
+
+    // Need a better place for this.
+    checkRelationship: function(relationship, label){
+      var map = {
+        ELECTRICAL: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
+        COMMUNICATION: ['MANAGES', 'HAS']
+      };
+
+      return _.contains(map[label], relationship);
+    },
+
     getRelationship: function(target, label){
       var relationship = this.relationships[target.id];
 
-      if (!label || _.contains(renderingRelationships[label], relationship)) {
+      if (!label || this.checkRelationship(relationship, label)) {
         return relationship;
       }
     },
