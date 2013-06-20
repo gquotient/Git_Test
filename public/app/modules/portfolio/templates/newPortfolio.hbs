@@ -1,6 +1,28 @@
+<h3>New Portfolio <span class='close'>x</span></h3>
 <form>
-  Name: <input type='text' name='dName'></input>
-  Filter: <input type='text' name='filter'></input>
-  Share: <input type='checkbox' value='Y' name='share'></input>
-  <button>Save</button>
+  <ul>
+    <li><label>Name</label><input type='text' name='dName'></input></li>
+    
+{{!     <li>
+      <label>Filter</label>
+      <select name='filter-field'>
+        <option value='ac_capacity'>AC Capacity</option> 
+        <option value='dc_capacity'>DC Capacity</option> 
+        <option value='longitude'>Longitude</option> 
+        <option value='latitude'>Latitude</option>
+      </select>
+      <select name='filter-comparator'>
+        <option value='>'>&gt;</option>
+        <option value='='>=</option>
+        <option value='<'>&lt;</option>
+      </select>
+      <input type='text' name='filter-value' class='filter-value'></input>
+
+    </li> }}
+    
+    <li><label>Filter</label><input name='filter' type='text'></input></li>
+
+    <li><label>Share</label><input type='checkbox' value='Y' name='share'></input></li>
+  </ul>
+  <div><button>Save</button></div>
 </form>

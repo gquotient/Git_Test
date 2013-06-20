@@ -543,3 +543,45 @@ leftColumnWidth = 240px;
     }
   }
 }
+
+/* Modal */
+
+.modal {
+  position: absolute;
+  z-index: 1001;
+  height: auto;
+  perspective: 800px;
+  perspective-origin: 50% 100px;
+  &.hidden {
+    transform:scale3d(0,0,0);
+  }
+}
+
+/* New Portfolio */
+.new-portfolio {
+  background: colorBGDarkGrey;
+  transition: transform 0.25s ease-in-out;
+  padding: 10px;
+  box-shadow: 0px 0px 5px 0px #000;
+  h3{
+    font-size: 1.2em;
+    border-bottom: 1px solid colorDrakerOrange;
+    padding-bottom: 3px;
+    span {
+      float: right;
+      cursor: pointer;
+    }
+  }
+  ul {
+    li {
+      label {
+        font-size: 0.9
+        width: 60px;
+        display: inline-block;
+      }
+      .filter-value {
+        width: 30px;
+      }
+    }
+  }
+}

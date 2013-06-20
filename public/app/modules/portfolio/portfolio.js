@@ -172,8 +172,12 @@ define([
       },
       'click #new-portfolio': function(){
         var newPortfolioView = new Portfolio.views.NewPortfolio({collection: this.collection});
-        this.$el.append(newPortfolioView.$el);
+        $('body').append(newPortfolioView.$el);
         newPortfolioView.render();
+        newPortfolioView.$el.css({
+          top: this.$el.offset().top,
+          left: this.$el.offset().left + this.$el.width() 
+        }).removeClass('hidden');
       }
     },
 
@@ -216,6 +220,9 @@ define([
   });
 
   Portfolio.views.NewPortfolio = Marionette.ItemView.extend({
+    attributes: {
+      class: 'modal new-portfolio hidden'
+    },
     template: {
       type: 'handlebars',
       template: newPortfolioTemplate
@@ -223,24 +230,23 @@ define([
     events: {
       'click button': function(e){
         e.preventDefault();
-        var that = this;
-        // var portfolio = new Portfolio.Model({
-        //   display_name: this.$el.find('input[name=dislpay_name]').val(),
-        //   filter: this.$el.find('input[name=filter]').val()
-        // });
-        console.log({
-          display_name: this.$el.find('input[name=dName]').val(),
-          filter: this.$el.find('input[name=filter]').val()
-        });
-        var share = this.$el.find('input[name=share]:checked');
+        var that = this,
+            share = this.$el.find('input[name=share]:checked');
+
         this.collection.create({
           display_name: this.$el.find('input[name=dName]').val(),
           filter: this.$el.find('input[name=filter]').val(),
           share: share.val()
         });
-        // console.log(portfolio);
-        // portfolio.save();
+
+        this.close();
+      },
+      'click .close': function(e){
+        this.close();
       }
+    },
+    onBeforeClose: function(){
+      this.$el.addClass('hidden');
     }
   });
 
