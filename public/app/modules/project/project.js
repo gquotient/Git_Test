@@ -15,8 +15,8 @@ define([
   'hbs!project/templates/dashboardItem',
   'hbs!project/templates/create',
   'hbs!project/templates/navigationItemView',
-  'hbs!project/templates/projectList'
-
+  'hbs!project/templates/projectList',
+  'hbs!project/templates/markerPopUp'
 ], function(
   $,
   _,
@@ -34,7 +34,8 @@ define([
   dashboardItemTemplate,
   createTemplate,
   navigationItemViewTemplate,
-  navigationListTemplate
+  navigationListTemplate,
+  markerPopUpTemplate
 ){
   var Project = { views: {} };
 
@@ -135,13 +136,10 @@ define([
   });
 
   Project.views.MarkerPopUp = Marionette.ItemView.extend({
-    template: _.template([
-      '<h4><%= display_name %></h4>' +
-      '<p><%= address %><br>' +
-      '<%= city %>, <%= state %> <%= zipcode %>' +
-      '<div class="container">' +
-      '<a href="#<%= label %>" class="viewProject">View Project</a></div>'
-    ].join('')),
+    template: {
+      type: 'handlebars',
+      template: markerPopUpTemplate
+    },
     events: {
       'click a.viewProject': function(event){
         event.preventDefault();
