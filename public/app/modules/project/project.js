@@ -229,7 +229,6 @@ define([
 
     render: function(){
       var that = this;
-      console.log(this.model);
 
       this.popUp = new Project.views.MarkerPopUp({model: this.model});
 
@@ -260,6 +259,7 @@ define([
       var that = this;
       this.stopListening();
       this.fadeTo(250, 0, function(){ that.options.markers.removeLayer(that.marker); } );
+      this.popUp.close();
     }
   });
 
