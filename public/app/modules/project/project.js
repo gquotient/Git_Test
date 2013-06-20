@@ -209,11 +209,19 @@ define([
     },
 
     render: function(){
-
-      var that = this;
+      console.log(this.model);
+      var that = this,
+        popUpContent = _.template([
+          '<h4><%= display_name %></h4>' +
+          '<p>{{ Address broken }}<br>' +
+          '<%= city %>, <%= state %> {{ zip broken }}</p>' +
+          '<div class="container"><a href="/ia/project/' + this.model.id + '" class="viewProject">View Project</a></div>'
+        ].join(''));
 
       //append marker to the map
       this.marker.addTo(this.options.markers);
+
+      this.marker.bindPopup(popUpContent(this.model.attributes));
 
       this.fadeTo(300, 1);
 
@@ -229,9 +237,9 @@ define([
         Backbone.trigger('mouseout:project', that.model);
       });
 
-      this.marker.on('click', function(){
-        Backbone.trigger('select:project', that.model);
-      });
+      //this.marker.on('click', function(){
+      //  Backbone.trigger('select:project', that.model);
+      //});
     },
 
     remove: function(){
