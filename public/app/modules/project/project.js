@@ -230,13 +230,14 @@ define([
     render: function(){
       var that = this;
 
-      this.popUp = new Project.views.MarkerPopUp({model: this.model});
-
       //append marker to the map
       this.marker.addTo(this.options.markers);
 
-      this.popup = this.marker.bindPopup(this.popUp.el);
+      // Instantiate pop up content
+      this.popUp = new Project.views.MarkerPopUp({model: this.model});
+      this.marker.bindPopup(this.popUp.el);
 
+      // Fade in marker
       this.fadeTo(300, 1);
 
       //can't use events hash, because the events are bound
@@ -250,10 +251,9 @@ define([
       this.marker.on('mouseout', function(){
         Backbone.trigger('mouseout:project', that.model);
       });
-
-      //this.marker.on('click', function(){
-      //  Backbone.trigger('select:project', that.model);
-      //});
+    },
+    onClose: function(){
+      this.popUp.close();
     },
     remove: function(){
       var that = this;
