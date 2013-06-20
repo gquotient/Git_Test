@@ -94,6 +94,27 @@ primaryBorderStyle = borderBasicDark;
   background: colorBGDarkGrey;
   border-right: primaryBorderStyle;
   color: #aaa;
+  .sort {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    padding: 0 6px;
+    line-height: 30px;
+    background: #f00;
+    border-top: borderBasicMedium;
+    border-bottom: borderBasicDark;
+    background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .actions {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 6px;
+    border-top: borderBasicMedium;
+    border-bottom: borderBasicDark;
+    background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+  }
   ul {
     padding: 0;
     margin: 0;
@@ -175,6 +196,8 @@ primaryBorderStyle = borderBasicDark;
     }
   }
   ul.portfolio-list, ul.project-list {
+    padding-top: 30px;
+    padding-bottom: 38px;
     > .active {
       border-right: 3px solid colorDrakerOrange;
       color: colorPrimaryText;
