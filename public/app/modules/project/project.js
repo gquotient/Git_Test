@@ -213,8 +213,8 @@ define([
       var that = this,
         popUpContent = _.template([
           '<h4><%= display_name %></h4>' +
-          '<p>{{ Address broken }}<br>' +
-          '<%= city %>, <%= state %> {{ zip broken }}</p>' +
+          '<p><%= address %><br>' +
+          '<%= city %>, <%= state %> <%= zipcode %>' +
           '<div class="container"><a href="/ia/project/' + this.model.id + '" class="viewProject">View Project</a></div>'
         ].join(''));
 
