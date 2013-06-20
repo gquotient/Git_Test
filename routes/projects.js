@@ -12,6 +12,10 @@ module.exports = function(app){
   // PROJECTS
   //////
 
+  // app.get('/api/projects/:team_label', makeRequest({
+  //   path: '/res/teamprojects'
+  // }) );
+
   app.get('/api/projects',
     function(req, res){
       var project_label = req.query.project_label,

@@ -8,7 +8,8 @@ define([
 
   'hbs!portfolio/templates/navigationItemView',
   'hbs!portfolio/templates/portfolioList',
-  'hbs!portfolio/templates/detailKpis'
+  'hbs!portfolio/templates/detailKpis',
+  'hbs!portfolio/templates/newPortfolio'
 ], function(
   $,
   _,
@@ -19,7 +20,8 @@ define([
 
   navigationItemViewTemplate,
   portfolioListTemplate,
-  detailKpisTemplate
+  detailKpisTemplate,
+  newPortfolioTemplate
 ){
   var Portfolio = { views: {} };
 
@@ -106,7 +108,7 @@ define([
 
   Portfolio.Collection = Backbone.Collection.extend({
     model: Portfolio.Model,
-
+    url: '/api/portfolios',
     initialize: function(models, options){
       this.root = options.root;
     },
@@ -167,6 +169,11 @@ define([
             }
           )
         );
+      },
+      'click #new-portfolio': function(){
+        var newPortfolioView = new Portfolio.views.NewPortfolio({collection: this.collection});
+        this.$el.append(newPortfolioView.$el);
+        newPortfolioView.render();
       }
     },
 
@@ -205,6 +212,35 @@ define([
 
         that.render();
       });
+    }
+  });
+
+  Portfolio.views.NewPortfolio = Marionette.ItemView.extend({
+    template: {
+      type: 'handlebars',
+      template: newPortfolioTemplate
+    },
+    events: {
+      'click button': function(e){
+        e.preventDefault();
+        var that = this;
+        // var portfolio = new Portfolio.Model({
+        //   display_name: this.$el.find('input[name=dislpay_name]').val(),
+        //   filter: this.$el.find('input[name=filter]').val()
+        // });
+        console.log({
+          display_name: this.$el.find('input[name=dName]').val(),
+          filter: this.$el.find('input[name=filter]').val()
+        });
+        var share = this.$el.find('input[name=share]:checked');
+        this.collection.create({
+          display_name: this.$el.find('input[name=dName]').val(),
+          filter: this.$el.find('input[name=filter]').val(),
+          share: share.val()
+        });
+        // console.log(portfolio);
+        // portfolio.save();
+      }
     }
   });
 
