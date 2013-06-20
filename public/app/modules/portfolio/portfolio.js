@@ -124,7 +124,14 @@ define([
       template: navigationItemTemplate
     },
     attributes: {
-      class: 'nav-item'
+      class: 'nav-item hidden'
+    },
+    onRender: function(){
+      var that = this;
+      setTimeout(function(){ that.$el.removeClass('hidden') }, 0);
+    },
+    onBeforeClose: function(){
+      this.$el.removeClass('hidden');
     },
     events: {
       'mouseover': function(){

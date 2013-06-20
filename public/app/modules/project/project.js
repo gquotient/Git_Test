@@ -82,7 +82,7 @@ define([
 
   Project.Collection = Backbone.Collection.extend({
     model: Project.Model,
-
+    comparator: 'display_name',
     findBySiteLabel: function(label){
       var projects = this.where({site_label: label});
       return projects.length === 1 ? projects[0] : null;
@@ -362,7 +362,11 @@ define([
       template: navigationItemViewTemplate
     },
     attributes: {
-      class: 'nav-item'
+      class: 'nav-item hidden'
+    },
+    onRender: function(){
+      var that = this;
+      setTimeout(function(){ that.$el.removeClass('hidden') }, 0);
     },
     events: {
       'click': function(){
@@ -390,11 +394,10 @@ define([
 
     events: {
       'change #project-sort': function(){
-
         this.collection.reset(
           this.collection.sortBy(
             function(model){
-              return model.get( $('#portfolio-sort').val() );
+              return model.get( $('#project-sort').val() );
             }
           )
         );

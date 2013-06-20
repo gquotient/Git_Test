@@ -88,7 +88,7 @@ primaryBorderStyle = borderBasicDark;
 
 .nav_content {
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   position: relative;
   z-index: 200;
   background: colorBGDarkGrey;
@@ -120,6 +120,11 @@ primaryBorderStyle = borderBasicDark;
     margin: 0;
     list-style-type: none;
     > li {
+      
+      perspective: 800px;
+      perspective-origin: 50% 100px;
+      transition: transform 0.25s ease-in-out;
+
       padding: 0px;
       text-shadow: 0 1px 0 #222;
       margin: 0;
@@ -149,7 +154,10 @@ primaryBorderStyle = borderBasicDark;
           background: none;
         }
       }
-      &.nav-item {
+      &.hidden {
+        transform:translate3d(400px,0,0);
+      }
+      &.nav-item {  
         padding: 6px;
         h3 {
           margin: 0 0 6px;
@@ -530,5 +538,35 @@ primaryBorderStyle = borderBasicDark;
       color: colorDrakerOrange;
     }
     border-radius: 2px!important;
+  }
+}
+
+
+/* New Portfolio */
+.new-portfolio {
+  background: colorBGDarkGrey;
+  transition: transform 0.25s ease-in-out;
+  padding: 10px;
+  box-shadow: 0px 0px 5px 0px #000;
+  h3{
+    font-size: 1.2em;
+    border-bottom: 1px solid colorDrakerOrange;
+    padding-bottom: 3px;
+    span {
+      float: right;
+      cursor: pointer;
+    }
+  }
+  ul {
+    li {
+      label {
+        font-size: 0.9
+        width: 60px;
+        display: inline-block;
+      }
+      .filter-value {
+        width: 30px;
+      }
+    }
   }
 }
