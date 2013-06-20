@@ -74,12 +74,26 @@ function(
       ddl = {
         'Panel': 'pnl',
         'String': 'str-pnl-calc',
-        'Inverter': 'inv'
+        'Inverter': 'bus-str-calc'
       },
       column = {
-        power: 'dc_power_output',
-        current: 'dc_current_output_mean',
-        voltage: 'dc_voltage_output_mean'
+        'Panel': {
+          power: 'dc_power_output',
+          current: 'dc_current_output_mean',
+          voltage: 'dc_voltage_output_mean'
+        },
+        'String': {
+          energy: 'dc_energy',
+          power: 'dc_power',
+          current: 'dc_current',
+          voltage: 'dc_voltage',
+          panel_power_mean: 'dc_power_output_mean'
+        },
+        'Inverter': {
+          power: 'dc_power',
+          current: 'dc_current',
+          voltage: 'dc_voltage'
+        }
       },
       dataDefinition
     ;
@@ -90,19 +104,28 @@ function(
         'ddl': 'pgen-env',
         'dtstart': 'today',
         'dtstop': 'now',
+        'columns': ['freezetime', 'irradiance']
+      };
+      /*
+      dataDefinition = {
+        'project_label': project.id,
+        'ddl': 'env',
+        'dtstart': 'today',
+        'dtstop': 'now',
         'columns': ['freezetime', 'value_mean'],
         'filters': [
           {'column': 'attribute', 'in_set': ['irradiance']},
           {'column': 'identifier', 'in_set': [project.id + ':IRRA-1']}
         ]
       };
+      */
     } else {
       dataDefinition = {
         'project_label': project.id,
         'ddl': ddl[device.get('devtype')],
         'dtstart': 'today',
         'dtstop': 'now',
-        'columns': ['freezetime', column[dataType]],
+        'columns': ['freezetime', column[device.get('devtype')][dataType]],
         'filters': [
           {
             'column': 'identifier',
@@ -171,7 +194,7 @@ function(
         spacingBottom : 12,
         spacingLeft : 12,
         plotBorderWidth : 1,
-        plotBorderColor : '#555'
+        plotBorderColor : '#444'
       },
       title: {
         text: null
@@ -232,13 +255,13 @@ function(
       },
       xAxis: {
         type: 'datetime',
-        tickColor: '#555',
-        gridLineColor: '#444', //Lines inside plot
-        lineColor: '#555' //Bottom line of plot
+        tickColor: '#444',
+        gridLineColor: '#333', //Lines inside plot
+        lineColor: '#444' //Bottom line of plot
       },
       yAxis: [
         {
-          gridLineColor: '#444', //Lines inside plot
+          gridLineColor: '#333', //Lines inside plot
           title: {
             style: {
               color: '#ccc',
@@ -249,7 +272,7 @@ function(
         },
         {
           opposite: true,
-          gridLineColor: '#444', //Lines inside plot
+          gridLineColor: '#333', //Lines inside plot
           title: {
             style: {
               color: '#ccc',
@@ -341,7 +364,6 @@ function(
       this.model.on('change:series', function(model, seriesData){
         if (seriesData.length) {
           _.each(that.chart.series, function(serie, index){
-            console.log(serie, index);
             // Update series data
             if (seriesData[index].data && seriesData[index].data.length) {
               serie.setData(seriesData[index].data);

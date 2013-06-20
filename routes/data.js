@@ -15,7 +15,8 @@ module.exports = function(app){
           'Content-Type': 'application/json'
         }
       }, function(err, response, body){
-        console.log(body);
+        //console.log(response.headers);
+        //console.log(body);
         res.end(body);
       });
     }

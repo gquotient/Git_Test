@@ -72,11 +72,10 @@ define([
       });
 
       // Init shared project collection
-      this.projectList = new Project.Collection();
+      this.projectList = new Project.Collection(options.model.projects.models);
 
       // Extend map view for marker filtering
       this.mapView = new Project.views.Map({ collection: this.projectList });
-      this.mapView.fitToBounds();
 
       // Init project table
       this.projectTable = new Project.views.DataListView({

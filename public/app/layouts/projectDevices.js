@@ -39,10 +39,9 @@ define([
       charts: '.charts'
     },
 
-    selectDevice: function(id){
-      var device = this.model.devices.findWhere({id: id});
-
-      Backbone.history.navigate('/project/' + this.model.id + '/devices/' + id);
+    selectDevice: function(device){
+      console.log(device);
+      Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.id);
 
       this.deviceInfo.show(new Marionette.Layout({template: _.template('Device: <%= id %> <br> Graphkey: <%= graph_key %>'), model: device}));
 
@@ -126,13 +125,14 @@ define([
 
         // If router passes a device, build detail view
         if (options.currentDevice) {
-          that.selectDevice(options.currentDevice);
+          var myDevice = that.model.devices.findWhere({id: options.currentDevice});
+          that.selectDevice(myDevice);
         }
       });
 
       // Listen for a device to be clicked and change view
       this.listenTo(Backbone, 'click:device', function(device){
-        that.selectDevice(device.id);
+        that.selectDevice(device);
       });
     }
   });

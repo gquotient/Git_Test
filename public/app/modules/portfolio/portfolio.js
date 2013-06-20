@@ -6,8 +6,8 @@ define([
 
   'project',
 
-  'hbs!portfolio/templates/navigationItemView',
-  'hbs!portfolio/templates/portfolioList',
+  'hbs!portfolio/templates/navigationList',
+  'hbs!portfolio/templates/navigationItem',
   'hbs!portfolio/templates/detailKpis',
   'hbs!portfolio/templates/newPortfolio'
 ], function(
@@ -18,8 +18,8 @@ define([
 
   Project,
 
-  navigationItemViewTemplate,
-  portfolioListTemplate,
+  navigationListTemplate,
+  navigationItemTemplate,
   detailKpisTemplate,
   newPortfolioTemplate
 ){
@@ -121,7 +121,7 @@ define([
     tagName: 'li',
     template: {
       type: 'handlebars',
-      template: navigationItemViewTemplate
+      template: navigationItemTemplate
     },
     attributes: {
       class: 'nav-item'
@@ -151,7 +151,7 @@ define([
     },
     template: {
       type: 'handlebars',
-      template: portfolioListTemplate
+      template: navigationListTemplate
     },
 
     itemViewContainer: '.portfolio-list',

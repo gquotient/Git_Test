@@ -14,6 +14,7 @@ define([
   'layouts/projectEditor',
   'layouts/projectDetail',
   'layouts/projectDevices',
+  'layouts/projectIssues',
   'layouts/profile',
   'layouts/admin'
 ], function(
@@ -32,6 +33,7 @@ define([
   ProjectEditorLayout,
   ProjectDetailLayout,
   ProjectDevicesLayout,
+  ProjectIssuesLayout,
   ProfileLayout,
   AdminLayout
 ){
@@ -92,6 +94,15 @@ define([
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
+    projectIssues: function(id, issueId){
+      var project = this.findProject(id);
+
+      console.log(project);
+
+      this.contentLayout = new ProjectIssuesLayout({model: project, currentIssue: issueId});
+      this.mainLayout.mainContent.show(this.contentLayout);
+    },
+
     profile: function(){
       Backbone.trigger('reset:breadcrumbs', {name: 'Profile'});
 
@@ -127,6 +138,8 @@ define([
       'project/:id': 'projectDetail',
       'project/:id/devices': 'projectDevices',
       'project/:id/devices/:deviceId': 'projectDevices',
+      'project/:id/issues': 'projectIssues',
+      'project/:id/issues/:issueId': 'projectIssues',
 
       'profile': 'profile',
 
