@@ -218,14 +218,16 @@ primaryBorderStyle = borderBasicDark;
       position: relative;
       background: none;
       border: none;
-      &.collapsed {
-        > ul {
-          display: none;
-        }
+      > ul {
+        height: 0;
+        overflow: hidden;
+        transition: all 1s ease-in-out;
       }
       &.expanded {
         > ul {
-          display: inherit;
+          max-height: 10000px; // Not sure, at the moment, why this makes it work but it does
+          height: auto;
+          transition: all 1s ease-in-out;
         }
         > a > .expand {
           background: url(../../img/icon_collapse.png) right center no-repeat;
