@@ -134,6 +134,25 @@ define([
     itemView: Project.views.DashboardItemView
   });
 
+  Project.views.MarkerPopUp = Marionette.ItemView.extend({
+    template: _.template([
+      '<h4><%= display_name %></h4>' +
+      '<p><%= address %><br>' +
+      '<%= city %>, <%= state %> <%= zipcode %>' +
+      '<div class="container">' +
+      '<a href="#<%= label %>" class="viewProject">View Project</a></div>'
+    ].join('')),
+    events: {
+      'click a.viewProject': function(event){
+        event.preventDefault();
+        Backbone.trigger('select:project', this.model);
+      }
+    },
+    initialize: function(options){
+      this.render();
+    }
+  });
+
   Project.views.MarkerView = Marionette.ItemView.extend({
     initialize: function(options){
       var that = this,
@@ -209,19 +228,15 @@ define([
     },
 
     render: function(){
+      var that = this;
+      console.log(this.model);
 
-      var that = this,
-        popUpContent = _.template([
-          '<h4><%= display_name %></h4>' +
-          '<p><%= address %><br>' +
-          '<%= city %>, <%= state %> <%= zipcode %>' +
-          '<div class="container"><a href="/ia/project/' + this.model.id + '" class="viewProject">View Project</a></div>'
-        ].join(''));
+      this.popUp = new Project.views.MarkerPopUp({model: this.model});
 
       //append marker to the map
       this.marker.addTo(this.options.markers);
 
-      this.marker.bindPopup(popUpContent(this.model.attributes));
+      this.popup = this.marker.bindPopup(this.popUp.el);
 
       this.fadeTo(300, 1);
 
@@ -241,7 +256,6 @@ define([
       //  Backbone.trigger('select:project', that.model);
       //});
     },
-
     remove: function(){
       var that = this;
       this.stopListening();
@@ -312,6 +326,21 @@ define([
       this.fitToBounds();
 
       this.listenTo(Backbone, 'window:resize', this.map.viewreset);
+
+      this.map.on('popup', function(event){
+        event.preventDefault();
+        console.log('clicked viewProject', arguments);
+      });
+    },
+    events: {
+      'click': function(event){
+        console.log(arguments);
+      },
+      'click a.viewProject': function(event){
+        event.preventDefault();
+        console.log(arguments);
+        //Backbone.trigger('click:project', this.model);
+      }
     }
   });
 
