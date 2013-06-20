@@ -421,23 +421,24 @@ leftColumnWidth = 240px;
     float: left;
     width: 50%;
   }
-}
-
-.moduleContainer {
-  overflow: hidden;
-  padding:6px;
-  height: 300px;
-  &.half {
-    float: left;
-    width: 50%;
-  }
-  @media screen and (max-width: 1000px) {
+  &.module {
+    overflow: hidden;
+    padding:6px;
+    height: 300px;
     &.half {
-      float: none;
-      width: 100%;
+      float: left;
+      width: 50%;
+    }
+    @media screen and (max-width: 1000px) {
+      &.half {
+        float: none;
+        width: 100%;
+      }
     }
   }
 }
+
+
 
 .dropdown {
   position: relative;
