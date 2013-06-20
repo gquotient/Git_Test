@@ -252,6 +252,8 @@ define([
   Project.views.Map = Marionette.CollectionView.extend({
     itemView: Project.views.MarkerView,
 
+    layers: [],
+
     itemViewOptions: function(){
       return { markers: this.markers };
     },
@@ -295,6 +297,42 @@ define([
       return this;
     },
 
+    layerControls: function(){
+      var $controls = $('<div class="layerControls" />');
+
+      _.each(this.layers, function(layer, index){
+        if (layer.layer) {
+          var
+            checked = (layer.active)? 'checked' : '',
+            layerControl = [
+              '<label for="layer_' + layer.type + '"">' +
+                '<input id="layer_' + layer.type + '" class="layerControl" type="checkbox" ' +
+                checked +
+                '> ' +
+                layer.displayName +
+              '</label>'
+            ].join('')
+          ;
+
+          $controls.append(layerControl);
+        }
+      });
+
+      this.$el.append($controls);
+    },
+
+    toggleLayer: function(layer){
+      var myLayer = _.findWhere(this.layers, {type: layer});
+
+      if (myLayer.active) {
+        myLayer.active = false;
+        myLayer.layer.setOpacity(0);
+      } else {
+        myLayer.active = true;
+        myLayer.layer.setOpacity(1);
+      }
+    },
+
     onShow: function(){
       var map = this.map = L.map(this.el).setView([0, 0], 1);
 
@@ -302,6 +340,24 @@ define([
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
+
+      // Create cloud object NOTE: May want to Backboneify this
+      var cloudLayer = {
+        type: 'clouds',
+        displayName: 'Clouds',
+        active: true
+      };
+
+      // Create tiles layer and add to our map
+      cloudLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png', {
+        attribution: 'Map data © OpenWeatherMap'
+      }).addTo(map);
+
+      // Push cloud layer to layers
+      this.layers.push(cloudLayer);
+
+      // Build layer toggle controls
+      this.layerControls();
 
       this.markers = new L.layerGroup([]);
 
@@ -312,6 +368,12 @@ define([
       this.fitToBounds();
 
       this.listenTo(Backbone, 'window:resize', this.map.viewreset);
+    },
+
+    events: {
+      'click .layerControl': function(event){
+        this.toggleLayer(event.target.id.split('_')[1]);
+      }
     }
   });
 
