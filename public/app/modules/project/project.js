@@ -346,6 +346,8 @@ define([
     },
 
     addLayers: function(){
+      var that = this;
+
       this.layers = [];
 
       // Create cloud object NOTE: May want to Backboneify this
@@ -378,6 +380,15 @@ define([
 
       // Build layer toggle controls
       this.layerControls();
+
+      // Update layers
+      var fetchLayerTiles = function(){
+        _.each(that.layers, function(layer){
+          layer.layer.redraw();
+        });
+      };
+
+      this.fetchLayerTilesInterval = setInterval(fetchLayerTiles, 900000);
     },
 
     onShow: function(){
