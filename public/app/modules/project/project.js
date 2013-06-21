@@ -341,7 +341,7 @@ define([
         myLayer.layer.setOpacity(0);
       } else {
         myLayer.active = true;
-        myLayer.layer.setOpacity(1);
+        myLayer.layer.setOpacity(0.5);
       }
     },
 
@@ -358,7 +358,7 @@ define([
       // Create tiles layer and add to our map
       cloudLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png', {
         attribution: 'Map data © OpenWeatherMap'
-      }).addTo(this.map);
+      }).addTo(this.map).setOpacity(0.5);
 
       var precipitationLayer = {
         type: 'precipitation',
