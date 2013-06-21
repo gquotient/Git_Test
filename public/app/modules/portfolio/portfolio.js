@@ -252,8 +252,14 @@ define([
         this.close();
       }
     },
-    onBeforeClose: function(){
+    remove: function(){
+      var that = this;
+
+      this.stopListening();
       this.$el.addClass('hidden');
+
+      setTimeout(function(){ that.$el.remove(); }, 250);
+
     }
   });
 
