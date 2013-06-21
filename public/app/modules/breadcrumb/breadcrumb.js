@@ -15,10 +15,19 @@ define([
 ){
   var Breadcrumb = { views: {} };
 
+  Breadcrumb.Model = Backbone.Model.extend({
+
+  });
+
   Breadcrumb.Collection = Backbone.Collection.extend({
+    model: Breadcrumb.Model,
     prune: function(model){
+      var m = this.find(function(realModel){
+        return realModel.get('model') === model.get('model');
+      })
+
       // Return only the models from the first to the passed model
-      var models = this.models.slice(0, (this.models.indexOf(model)) + 1);
+      var models = this.models.slice(0, (this.models.indexOf(m)) + 1);
       // Set the collection as the new list of models
       this.set(models);
     },
@@ -29,7 +38,8 @@ define([
     },
 
     advance: function(model){
-      if (this.contains(model)) {
+      var models = this.pluck('model');
+      if (_.contains(models, model.get('model')) ) {
         this.prune(model);
       } else {
         this.add(model);
@@ -45,6 +55,9 @@ define([
     },
     triggers: {
       'click': 'prune'
+    },
+    serializeData: function(){
+      return this.model.get('model').toJSON();
     }
   });
 
@@ -61,7 +74,7 @@ define([
       Backbone.listenTo(this, 'itemview:prune', function(itemView){
         var model = itemView.model;
         // Fire global select event
-        Backbone.trigger('select:' + model.get('type'), model);
+        Backbone.trigger('select:' + model.get('state'), model.get('model'));
         // Prune collection
         that.collection.prune(model);
       });

@@ -31,22 +31,15 @@ define([
       var breadcrumbs = new Breadcrumb.Collection();
       this.breadcrumbsView = new Breadcrumb.views.Breadcrumbs({collection: breadcrumbs});
 
-      this.listenTo(Backbone, 'reset:breadcrumbs', function(model){
-        breadcrumbs.reset(model);
-      });
-
       this.listenTo(Backbone, 'set:breadcrumbs', function(model){
-        console.log(this.app.state, model.get('type'));
-        if(this.app.state !== model.get('type')){
-          breadcrumbs.advance(model);
+        var breadcrumbModel = new Breadcrumb.Model(model);
+        if(this.app.state !== breadcrumbModel.get('state')){
+          breadcrumbs.advance(breadcrumbModel);
         } else {
-          breadcrumbs.update(model);
+          breadcrumbs.update(breadcrumbModel);
         }
       }, this);
 
-      this.listenTo(Backbone, 'update:breadcrumbs', function(model){
-        breadcrumbs.update(model);
-      });
     },
 
     onShow: function(){

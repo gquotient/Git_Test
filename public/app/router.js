@@ -44,16 +44,16 @@ define([
 
     findPortfolio: function(id){
       if (!id || id === 'all') {
-        return ia.rootPortfolio;
+        return ia.portfolios.findWhere({label: 'ALL'});
       } else {
-        return ia.rootPortfolio.portfolios.get(id);
+        return ia.portfolios.get(id);
       }
     },
 
     portfolioDashboard: function(id){
       var portfolio = this.findPortfolio(id);
 
-      Backbone.trigger('reset:breadcrumbs', portfolio);
+      Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolio'});
 
       this.contentLayout = new PortfolioDashboardLayout({model: portfolio});
       this.mainLayout.mainContent.show(this.contentLayout);
@@ -65,7 +65,7 @@ define([
     },
 
     findProject: function(id){
-      return ia.rootPortfolio.projects.get(id);
+      return ia.projects.get(id);
     },
 
     projectCreate: function(){
@@ -84,7 +84,7 @@ define([
 
     projectDetail: function(id){
       var project = this.findProject(id);
-      this.mainLayout.showProject(project, ia.rootPortfolio.projects);
+      this.mainLayout.showProject(project, ia.projects);
     },
 
     projectDevices: function(id, deviceId){
@@ -104,7 +104,7 @@ define([
     },
 
     profile: function(){
-      Backbone.trigger('reset:breadcrumbs', {name: 'Profile'});
+      Backbone.trigger('set:breadcrumbs', {model: {display_name: 'Profile'}, state: 'profile' });
 
       this.contentLayout = new ProfileLayout( {model: ia.currentUser });
       this.mainLayout.mainContent.show(this.contentLayout);

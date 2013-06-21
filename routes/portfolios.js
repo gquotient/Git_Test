@@ -12,5 +12,11 @@ module.exports = function(app){
     })
   );
 
+  app.post('/api/portfolios', ensureCurrentOrganization, ensureCurrentTeam,
+    makeRequest({
+      path: '/res/portfolio'
+    })
+  );
+
 
 };

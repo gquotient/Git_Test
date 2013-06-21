@@ -103,7 +103,10 @@ define([
 
   Project.Collection = Backbone.Collection.extend({
     model: Project.Model,
-
+    initialize: function(){
+      this.sort_order = 'display_name';
+    },
+    // comparator: 'display_name',
     findBySiteLabel: function(label){
       var projects = this.where({site_label: label});
       return projects.length === 1 ? projects[0] : null;
@@ -485,7 +488,11 @@ define([
       template: navigationItemViewTemplate
     },
     attributes: {
-      class: 'nav-item'
+      class: 'nav-item hidden'
+    },
+    onRender: function(){
+      var that = this;
+      setTimeout(function(){ that.$el.removeClass('hidden') }, 0);
     },
     events: {
       'click': function(){
@@ -513,19 +520,15 @@ define([
 
     events: {
       'change #project-sort': function(){
-
-        this.collection.reset(
-          this.collection.sortBy(
-            function(model){
-              return model.get( $('#portfolio-sort').val() );
-            }
-          )
-        );
+        // this.collection.sort_order = $('#project-sort').val();
+        this.collection.comparator = $('#project-sort').val();
+        this.collection.sort();
       }
     },
 
     initialize: function(options){
       this.listenTo(Backbone, 'select:project', this.setProject);
+      this.listenTo(this.collection, 'sort', this._renderChildren);
     },
 
     // Setup the views for the current model.
