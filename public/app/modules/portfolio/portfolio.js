@@ -8,6 +8,7 @@ define([
 
   'hbs!portfolio/templates/navigationList',
   'hbs!portfolio/templates/navigationItem',
+  'hbs!portfolio/templates/newPortfolio',
   'hbs!portfolio/templates/aggregateKpis'
 ], function(
   $,
@@ -19,6 +20,7 @@ define([
 
   navigationListTemplate,
   navigationItemTemplate,
+  newPortfolioTemplate,
   aggregateKpisTemplate
 ){
   var Portfolio = { views: {} };
@@ -41,9 +43,9 @@ define([
     initialize: function(options){
       this.createCollections();
 
-      this.listenTo(this.portfolios, 'add remove', function(model){
-        this.set('total_portfolios', this.portfolios.length);
-      });
+      // this.listenTo(this.portfolios, 'add remove', function(model){
+      //   this.set('total_portfolios', this.portfolios.length);
+      // });
 
       this.listenTo(this.projects, 'add remove', function(model){
         this.set('total_projects', this.projects.length);
@@ -52,33 +54,32 @@ define([
     },
 
     createCollections: function(){
-      var root = this.collection.root;
+      var rootProjects = this.collection.projects;
+      // this.portfolios = new Portfolio.Collection([], {root: root});
+      this.projects = new Project.Collection([],{comparator: 'display_name'});
 
-      this.portfolios = new Portfolio.Collection([], {root: root});
-      this.projects = new Project.Collection();
+      // this.listenTo(root.portfolios, 'add', function(model){
+      //   if (_.contains(this.get('subPortfolioIDs'), model.id)) {
+      //     this.addPortfolio(model);
+      //   }
+      // });
 
-      this.listenTo(root.portfolios, 'add', function(model){
-        if (_.contains(this.get('subPortfolioIDs'), model.id)) {
-          this.addPortfolio(model);
-        }
-      });
-
-      this.listenTo(root.projects, 'add', function(model){
+      this.listenTo(rootProjects, 'add', function(model){
         if (_.contains(this.get('projects'), model.id)) {
           this.addProject(model);
         }
       });
     },
 
-    addPortfolio: function(portfolio){
-      this.portfolios.add(portfolio, {merge: true});
+    // addPortfolio: function(portfolio){
+    //   this.portfolios.add(portfolio, {merge: true});
 
-      this.portfolios.add(portfolio.portfolios.models, {merge: true});
-      this.projects.add(portfolio.projects.models, {merge: true});
+    //   this.portfolios.add(portfolio.portfolios.models, {merge: true});
+    //   this.projects.add(portfolio.projects.models, {merge: true});
 
-      this.listenTo(portfolio.portfolios, 'add', this.addPortfolio);
-      this.listenTo(portfolio.projects, 'add', this.addProject);
-    },
+    //   this.listenTo(portfolio.portfolios, 'add', this.addPortfolio);
+    //   this.listenTo(portfolio.projects, 'add', this.addProject);
+    // },
 
     addProject: function(project){
       this.projects.add(project, {merge: true});
@@ -99,25 +100,25 @@ define([
     }
   });
 
-  Portfolio.Root = Portfolio.Model.extend({
-    createCollections: function(){
-      this.portfolios = new Portfolio.Collection([], {
-        url: '/api/portfolios',
-        root: this
-      });
+  // Portfolio.Root = Portfolio.Model.extend({
+  //   createCollections: function(){
+  //     this.portfolios = new Portfolio.Collection([], {
+  //       url: '/api/portfolios',
+  //       root: this
+  //     });
 
-      this.projects = new Project.Collection();
-    }
-  });
+  //     this.projects = new Project.Collection();
+  //   }
+  // });
 
   Portfolio.Collection = Backbone.Collection.extend({
     model: Portfolio.Model,
-
+    url: '/api/portfolios',
     initialize: function(models, options){
-      this.root = options.root;
-    },
+      this.projects = options.projects;
+    }
 
-    comparator: 'display_name'
+    // comparator: 'display_name'
   });
 
   /* The item view is the view for the individual portfolios in the navigation. */
@@ -128,7 +129,14 @@ define([
       template: navigationItemTemplate
     },
     attributes: {
-      class: 'nav-item'
+      class: 'nav-item hidden'
+    },
+    onRender: function(){
+      var that = this;
+      setTimeout(function(){ that.$el.removeClass('hidden') }, 0);
+    },
+    onBeforeClose: function(){
+      this.$el.removeClass('hidden');
     },
     events: {
       'mouseover': function(){
@@ -165,27 +173,31 @@ define([
 
     events: {
       'change #portfolio-sort': function(){
-
-        this.collection.reset(
-          this.collection.sortBy(
-            function(model){
-              return model.get( $('#portfolio-sort').val() );
-            }
-          )
-        );
+        this.collection.comparator = $('#portfolio-sort').val();
+        this.collection.sort();
+      },
+      'click #new-portfolio': function(){
+        var newPortfolioView = new Portfolio.views.NewPortfolio({collection: this.collection});
+        $('body').append(newPortfolioView.$el);
+        newPortfolioView.render();
+        newPortfolioView.$el.css({
+          top: this.$el.offset().top,
+          left: this.$el.offset().left + this.$el.width()
+        }).removeClass('hidden');
       }
     },
 
     initialize: function(options){
       this.listenTo(Backbone, 'select:portfolio', this.setPortfolio);
+      this.listenTo(this.collection, 'sort', this._renderChildren);
     },
 
-    onRender: function(){
-      // Handle if no sub portfolios exist
-      if (this.collection.length === 0) {
-        this.$el.append('<li class="empty">No sub portfolios</li>');
-      }
-    },
+    // onRender: function(){
+    //   // Handle if no sub portfolios exist
+    //   if (this.collection.length === 0) {
+    //     this.$el.append('<li class="empty">No sub portfolios</li>');
+    //   }
+    // },
 
     // Setup the views for the current model.
     setPortfolio: function(model){
@@ -194,6 +206,9 @@ define([
 
       // Trigger a render. This forces the nav header to update, too.
       this.render();
+    },
+    serializeData: function(){
+      return '{sort_order:'+ this.collection.sort_order+'}';
     }
   });
 
@@ -211,6 +226,43 @@ define([
 
         that.render();
       });
+    }
+  });
+
+  Portfolio.views.NewPortfolio = Marionette.ItemView.extend({
+    attributes: {
+      class: 'modal new-portfolio hidden'
+    },
+    template: {
+      type: 'handlebars',
+      template: newPortfolioTemplate
+    },
+    events: {
+      'click button': function(e){
+        e.preventDefault();
+        var that = this,
+            share = this.$el.find('input[name=share]:checked');
+
+        this.collection.create({
+          display_name: this.$el.find('input[name=dName]').val(),
+          filter: this.$el.find('input[name=filter]').val(),
+          share: share.val()
+        });
+
+        this.close();
+      },
+      'click .close': function(e){
+        this.close();
+      }
+    },
+    remove: function(){
+      var that = this;
+
+      this.stopListening();
+      this.$el.addClass('hidden');
+
+      setTimeout(function(){ that.$el.remove(); }, 250);
+
     }
   });
 

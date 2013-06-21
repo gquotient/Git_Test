@@ -30,10 +30,12 @@ module.exports = function(app){
     },
     ensureCurrentOrganization: function(req, res, next){
       req.query.org_label = req.body.org_label || req.query.org_label || req.params.org_label || req.session.org_label;
+      req.body.org_label = req.query.org_label;
       next();
     },
     ensureCurrentTeam: function(req, res, next){
       req.query.team_label = req.body.team_label || req.query.team_label || req.params.team_label || req.session.team_label;
+      req.body.team_label = req.query.team_label;
       next();
     },
     separateProperties: function(root, ignore){

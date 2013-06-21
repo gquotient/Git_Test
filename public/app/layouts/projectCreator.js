@@ -41,7 +41,7 @@ define([
 
       // Set up listeners
       this.listenTo(Backbone, 'create:project', function(model){
-        ia.rootPortfolio.addProject(model);
+        ia.projects.addProject(model);
         Backbone.trigger('reset:breadcrumbs', model);
         Backbone.history.navigate('/project/' + model.id + '/edit', true);
       });
