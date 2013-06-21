@@ -353,6 +353,12 @@ define([
         attribution: 'Map data © OpenWeatherMap'
       }).addTo(map);
 
+      /* Precipitation layer
+      cloudLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png', {
+        attribution: 'Map data © OpenWeatherMap'
+      }).addTo(map);
+      */
+
       // Push cloud layer to layers
       this.layers.push(cloudLayer);
 
