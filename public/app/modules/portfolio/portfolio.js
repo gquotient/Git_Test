@@ -116,9 +116,12 @@ define([
     url: '/api/portfolios',
     initialize: function(models, options){
       this.projects = options.projects;
+      this.sort_order = 'display_name';
     },
 
-    comparator: 'display_name'
+    comparator: function(model){
+      return model.get(this.sort_order);
+    }
   });
 
   /* The item view is the view for the individual portfolios in the navigation. */
@@ -174,13 +177,8 @@ define([
     events: {
       'change #portfolio-sort': function(){
 
-        this.collection.reset(
-          this.collection.sortBy(
-            function(model){
-              return model.get( $('#portfolio-sort').val() );
-            }
-          )
-        );
+        this.collection.sort_order = $('#portfolio-sort').val();
+        this.collection.sort();
       },
       'click #new-portfolio': function(){
         var newPortfolioView = new Portfolio.views.NewPortfolio({collection: this.collection});
@@ -195,6 +193,7 @@ define([
 
     initialize: function(options){
       this.listenTo(Backbone, 'select:portfolio', this.setPortfolio);
+      this.listenTo(this.collection, 'sort', this._renderChildren);
     },
 
     // onRender: function(){
@@ -211,6 +210,9 @@ define([
 
       // Trigger a render. This forces the nav header to update, too.
       this.render();
+    },
+    serializeData: function(){
+      return '{sort_order:'+ this.collection.sort_order+'}';
     }
   });
 

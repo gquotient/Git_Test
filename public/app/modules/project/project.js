@@ -83,7 +83,12 @@ define([
 
   Project.Collection = Backbone.Collection.extend({
     model: Project.Model,
-    comparator: 'display_name',
+    initialize: function(){
+      this.sort_order = 'display_name';
+    },
+    comparator: function(project){
+      return project.get(this.sort_order);
+    },
     findBySiteLabel: function(label){
       var projects = this.where({site_label: label});
       return projects.length === 1 ? projects[0] : null;
@@ -497,18 +502,14 @@ define([
 
     events: {
       'change #project-sort': function(){
-        this.collection.reset(
-          this.collection.sortBy(
-            function(model){
-              return model.get( $('#project-sort').val() );
-            }
-          )
-        );
+        this.collection.sort_order = $('#project-sort').val();
+        this.collection.sort();
       }
     },
 
     initialize: function(options){
       this.listenTo(Backbone, 'select:project', this.setProject);
+      this.listenTo(this.collection, 'sort', this._renderChildren);
     },
 
     // Setup the views for the current model.
