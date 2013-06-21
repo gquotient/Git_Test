@@ -92,6 +92,12 @@ define([
         isNaN(attrs.longitude) ||
         isNaN(attrs.elevation)
       ) { return 'error'; }
+    },
+
+    getType: function(){
+      var did = this.get('did');
+
+      return did && did.replace(/-\d*$/, '');
     }
   });
 
