@@ -29,19 +29,10 @@ define([
   deviceListItemViewTemplate,
   deviceListViewTemplate
 ){
-  var Device = { views: {} },
-
-    // Need a better place for this.
-    renderingRelationships = {
-      ELECTRICAL: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
-      COMMUNICATION: ['MANAGES', 'HAS']
-    };
+  var Device = { views: {Canvas: Canvas} };
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
-    defaults: {
-      renderings: {}
-    },
 
     initialize: function(){
       this.relationships = {};
@@ -50,39 +41,58 @@ define([
       this.incoming = new Device.Collection();
     },
 
+    getType: function(){
+      var did = this.get('did');
+
+      return did && did.replace(/-\d*$/, '');
+    },
+
+    // Need a better place for this.
+    checkRelationship: function(relationship, label){
+      var map = {
+        ELECTRICAL: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
+        COMMUNICATION: ['MANAGES', 'HAS']
+      };
+
+      return _.contains(map[label], relationship);
+    },
+
     getRelationship: function(target, label){
       var relationship = this.relationships[target.id];
 
-      if (!label || _.contains(renderingRelationships[label], relationship)) {
+      if (!label || this.checkRelationship(relationship, label)) {
         return relationship;
       }
     },
 
     getPosition: function(label){
-      var renderings = this.get('renderings');
+      var renderings = this.get('renderings'),
+        rendering = renderings && renderings[label];
 
-      return _.clone(renderings[label]);
+      return rendering && _.clone(rendering);
     },
 
     setPosition: function(label, position, save){
-      var renderings = _.clone(this.get('renderings')), evnt;
+      var renderings = this.get('renderings'), evnt;
+
+      renderings = renderings ? _.clone(renderings) : {};
 
       if (position) {
         if (!_.has(renderings, label)) {
-          evnt = 'add';
+          evnt = 'rendering:add';
         } else if (_.isEqual(renderings[label], position)) {
           return;
         }
         renderings[label] = position;
       } else {
-        evnt = 'remove';
+        evnt = 'rendering:remove';
         delete renderings[label];
       }
 
       this[save ? 'save' : 'set']({renderings: renderings});
 
       if (evnt) {
-        this.trigger('rendering:' + evnt, this);
+        this.trigger(evnt, this);
       }
     },
 
@@ -130,8 +140,6 @@ define([
       return this.at(index - 1) || this.last();
     }
   });
-
-  Device.views.Canvas = Canvas;
 
   Device.views.DeviceListItem = Marionette.ItemView.extend({
     tagName: 'li',

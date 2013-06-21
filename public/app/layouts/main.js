@@ -144,7 +144,7 @@ define([
 
       this.listenTo(Backbone, 'select:team', function(teamLabel){
         this.switchTeam(teamLabel);
-      })
+      });
     }
   });
 });

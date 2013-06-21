@@ -89,6 +89,11 @@ require.config({
       name: 'library',
       main: 'library',
       location: 'modules/library'
+    },
+    {
+      name: 'spec',
+      main: 'spec',
+      location: 'modules/spec'
     }
   ],
   paths: {
