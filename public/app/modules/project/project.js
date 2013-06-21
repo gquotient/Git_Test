@@ -252,8 +252,6 @@ define([
   Project.views.Map = Marionette.CollectionView.extend({
     itemView: Project.views.MarkerView,
 
-    layers: [],
-
     itemViewOptions: function(){
       return { markers: this.markers };
     },
@@ -334,6 +332,8 @@ define([
     },
 
     addLayers: function(){
+      this.layers = [];
+
       // Create cloud object NOTE: May want to Backboneify this
       var cloudLayer = {
         type: 'clouds',
@@ -346,14 +346,21 @@ define([
         attribution: 'Map data © OpenWeatherMap'
       }).addTo(this.map);
 
-      /* Precipitation layer
+      var precipitationLayer = {
+        type: 'precipitation',
+        displayName: 'Precipitation',
+        active: false
+      };
+
+      //* Precipitation layer
       cloudLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png', {
         attribution: 'Map data © OpenWeatherMap'
-      }).addTo(map);
-      */
+      }).addTo(this.map);
+      //*/
 
       // Push cloud layer to layers
       this.layers.push(cloudLayer);
+      this.layers.push(precipitationLayer);
 
       // Build layer toggle controls
       this.layerControls();
