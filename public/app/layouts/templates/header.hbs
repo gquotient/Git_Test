@@ -2,9 +2,8 @@
 <nav id="nav_global" class="global">
   <ul>
     <li class="team_select">Team: {{{ team_select teams currentTeam }}}</li>
-    <li class="username">{{$ 'Hi' }}, {{ name }}!</li>
     {{#if role.header.showAdmin }}<li><a href="#admin" class="admin">{{$ 'Admin' }}</a></li>{{/if}}
     <li><a href="#profile" class="profile">{{$ 'My Profile' }}</a></li>
-    <li><a href="#logout" class="logout">{{$ 'Logout' }}</a></li>
+    <li><a href="/logout" class="logout">{{$ 'Logout' }}</a></li>
   </ul>
 </nav>
