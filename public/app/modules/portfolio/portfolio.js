@@ -56,7 +56,7 @@ define([
     createCollections: function(){
       var rootProjects = this.collection.projects;
       // this.portfolios = new Portfolio.Collection([], {root: root});
-      this.projects = new Project.Collection();
+      this.projects = new Project.Collection([],{comparator: 'display_name'});
 
       // this.listenTo(root.portfolios, 'add', function(model){
       //   if (_.contains(this.get('subPortfolioIDs'), model.id)) {
@@ -116,12 +116,9 @@ define([
     url: '/api/portfolios',
     initialize: function(models, options){
       this.projects = options.projects;
-      this.sort_order = 'display_name';
-    },
-
-    comparator: function(model){
-      return model.get(this.sort_order);
     }
+
+    // comparator: 'display_name'
   });
 
   /* The item view is the view for the individual portfolios in the navigation. */
@@ -176,8 +173,7 @@ define([
 
     events: {
       'change #portfolio-sort': function(){
-
-        this.collection.sort_order = $('#portfolio-sort').val();
+        this.collection.comparator = $('#portfolio-sort').val();
         this.collection.sort();
       },
       'click #new-portfolio': function(){

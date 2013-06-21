@@ -42,7 +42,7 @@ define([
   ia.currentUser = ia.users.push( JSON.parse($('#currentUserData').html()) );
 
   ia.projects = new Project.Collection();
-  ia.portfolios = new Portfolio.Collection( JSON.parse($('#bootstrapPortfolios').html()), { projects: ia.projects } );
+  ia.portfolios = new Portfolio.Collection( JSON.parse($('#bootstrapPortfolios').html()), { projects: ia.projects, comparator: 'display_name' } );
   ia.projects.add( JSON.parse($('#bootstrapProjects').html()) );
   // ia.rootPortfolio.portfolios.add( JSON.parse($('#bootstrapPortfolios').html()) );
   // ia.rootPortfolio.projects.add( JSON.parse($('#bootstrapProjects').html()) );
