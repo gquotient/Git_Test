@@ -14,6 +14,78 @@ html, body, body > div {
 
 primaryBorderStyle = borderBasicDark;
 
+header {
+  background: colorBGDarkGrey;
+  height: headerHeight;
+  width: 100%;
+  overflow: hidden;
+  padding: 0 6px;
+  border-bottom: borderBasicDark;
+  position: relative;
+  z-index: 201;
+  h1 {
+    padding: 0;
+    margin: 0;
+    float: left;
+    background: url(../img/logo_draker_sml_wShadow.png) center center no-repeat;
+    display: inline-block;
+    width: 183px;
+    height: headerHeight;
+    line-height: headerHeight;
+    overflow: hidden;
+    a {
+      display: inline-block;
+      width: 100%
+      height: 100%;
+      text-indent: -200%;
+    }
+  }
+  nav.global {
+    float: right;
+    padding: 0;
+    margin: 0;
+    font-weight: 100;
+    text-shadow: 0 0 1px #000;
+    font-size: .85em;
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      height: headerHeight
+      line-height: headerHeight;
+      li {
+        padding: 0;
+        float: left;
+        border-left: borderBasicDark;
+        border-right: 1px solid #292929;
+        &.team_select {
+          padding: 0 9px;
+        }
+        &.username {
+          color: #fff;
+          border-left: none;
+          padding: 0 9px;
+        }
+        &:first-child {
+          border-left: none;
+        }
+        &:last-child {
+          border-right: none;
+        }
+        a {
+          display: block;
+          text-decoration: none;
+          padding: 0 9px;
+          margin: 0;
+          &:hover {
+            background: #252525;
+          }
+        }
+      }
+    }
+  }
+}
+
 .banner {
   .notification {
     background: linear-gradient(#f8f356, #DFD85C);
@@ -136,6 +208,7 @@ primaryBorderStyle = borderBasicDark;
         > a {
           border-right: 3px solid colorDrakerOrange;
           color: colorPrimaryText;
+          transition:.2s;
         }
       }
       &.empty {
@@ -189,6 +262,7 @@ primaryBorderStyle = borderBasicDark;
       }
       &:hover {
         background: linear-gradient(#252627, #282828);
+
       }
       &:first-child {
         border-top: none;
@@ -201,6 +275,7 @@ primaryBorderStyle = borderBasicDark;
     > .active {
       border-right: 3px solid colorDrakerOrange;
       color: colorPrimaryText;
+      transition:.2s;
     }
   }
   > ul.devices {
@@ -515,20 +590,84 @@ primaryBorderStyle = borderBasicDark;
   }
 }
 
-.leaflet-popup {
-  color: #555;
-  .leaflet-popup-content-wrapper {
-    h4 {
-      padding:0;
-      margin: 0 0 6px;
+.leaflet-container {
+  .leaflet-popup {
+    color: #555;
+    .leaflet-popup-content-wrapper {
+      h4 {
+        padding:0;
+        margin: 0 0 6px;
+      }
+      p {
+        padding: 0;
+        margin: 0 0 3px;
+      }
+      a {
+        color: colorDrakerOrange;
+      }
+      border-radius: 2px!important;
     }
-    p {
+  }
+  .leaflet-control-zoom {
+    opacity: 0.6;
+    box-shadow: 0 3px 3px rgba(0,0,0,0.1);
+    &:hover {
+      opacity: 1;
+      transition:.2s;
+    }
+  }
+  .layerControls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 3px 3px rgba(0,0,0,0.1);
+    color: #555;
+    opacity: 0.6;
+    &:hover {
+      opacity: 1;
+      transition:.2s;
+    }
+    ul {
       padding: 0;
-      margin: 0 0 3px;
+      margin: 0;
+      list-style-type: none;
+      li {
+        padding: 0;
+        margin: 0 0 3px;
+        &:last-child {
+          margin: 0;
+        }
+      }
     }
-    a {
-      color: colorDrakerOrange;
+  }
+}
+
+/* Module styles */
+
+.module {
+  &.issues {
+    table {
+      border: none;
     }
-    border-radius: 2px!important;
+    > div {
+      position: relative;
+      height: 100%;
+      border: borderBasicDark;
+      .actions {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 6px;
+        border-top: borderBasicMedium;
+        background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+        a {
+          text-decoration: none;
+        }
+      }
+    }
   }
 }

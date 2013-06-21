@@ -17,8 +17,8 @@ define([
   'hbs!project/templates/dashboardItem',
   'hbs!project/templates/create',
   'hbs!project/templates/navigationItemView',
-  'hbs!project/templates/projectList'
-
+  'hbs!project/templates/projectList',
+  'hbs!project/templates/markerPopUp'
 ], function(
   $,
   _,
@@ -38,7 +38,8 @@ define([
   dashboardItemTemplate,
   createTemplate,
   navigationItemViewTemplate,
-  navigationListTemplate
+  navigationListTemplate,
+  markerPopUpTemplate
 ){
   var Project = { views: {Editor: Editor} };
 
@@ -148,6 +149,22 @@ define([
     itemView: Project.views.DashboardItemView
   });
 
+  Project.views.MarkerPopUp = Marionette.ItemView.extend({
+    template: {
+      type: 'handlebars',
+      template: markerPopUpTemplate
+    },
+    events: {
+      'click a.viewProject': function(event){
+        event.preventDefault();
+        Backbone.trigger('select:project', this.model);
+      }
+    },
+    initialize: function(options){
+      this.render();
+    }
+  });
+
   Project.views.MarkerView = Marionette.ItemView.extend({
     initialize: function(options){
       var that = this,
@@ -223,20 +240,16 @@ define([
     },
 
     render: function(){
-
-      var that = this,
-        popUpContent = _.template([
-          '<h4><%= display_name %></h4>' +
-          '<p><%= address %><br>' +
-          '<%= city %>, <%= state %> <%= zipcode %>' +
-          '<div class="container"><a href="/ia/project/' + this.model.id + '" class="viewProject">View Project</a></div>'
-        ].join(''));
+      var that = this;
 
       //append marker to the map
       this.marker.addTo(this.options.markers);
 
-      this.marker.bindPopup(popUpContent(this.model.attributes));
+      // Instantiate pop up content
+      this.popUp = new Project.views.MarkerPopUp({model: this.model});
+      this.marker.bindPopup(this.popUp.el);
 
+      // Fade in marker
       this.fadeTo(300, 1);
 
       //can't use events hash, because the events are bound
@@ -250,16 +263,15 @@ define([
       this.marker.on('mouseout', function(){
         Backbone.trigger('mouseout:project', that.model);
       });
-
-      //this.marker.on('click', function(){
-      //  Backbone.trigger('select:project', that.model);
-      //});
     },
-
+    onClose: function(){
+      this.popUp.close();
+    },
     remove: function(){
       var that = this;
       this.stopListening();
       this.fadeTo(250, 0, function(){ that.options.markers.removeLayer(that.marker); } );
+      this.popUp.close();
     }
   });
 
@@ -309,6 +321,89 @@ define([
       return this;
     },
 
+    layerControls: function(){
+      var $controls = $('<div class="layerControls"><ul></ul></div>');
+
+      _.each(this.layers, function(layer, index){
+        if (layer.layer) {
+          var
+            checked = (layer.active)? 'checked' : '',
+            layerControl = [
+              '<li>' +
+                '<label for="layer_' + layer.type + '"">' +
+                  '<input id="layer_' + layer.type + '" class="layerControl" type="checkbox" ' +
+                  checked +
+                  '> ' +
+                  layer.displayName +
+                '</label>' +
+              '</li>'
+            ].join('')
+          ;
+
+          $controls.find('ul').append(layerControl);
+        }
+      });
+
+      this.$el.append($controls);
+    },
+
+    toggleLayer: function(layer){
+      var myLayer = _.findWhere(this.layers, {type: layer});
+
+      if (myLayer.active) {
+        myLayer.active = false;
+        myLayer.layer.setOpacity(0);
+      } else {
+        myLayer.active = true;
+        myLayer.layer.setOpacity(0.5);
+      }
+    },
+
+    addLayers: function(){
+      var that = this;
+
+      this.layers = [];
+
+      // Create cloud object NOTE: May want to Backboneify this
+      var cloudLayer = {
+        type: 'clouds',
+        displayName: 'Clouds',
+        active: true
+      };
+
+      // Create tiles layer and add to our map
+      cloudLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png', {
+        attribution: 'Map data © OpenWeatherMap'
+      }).addTo(this.map).setOpacity(0.5);
+
+      var precipitationLayer = {
+        type: 'precipitation',
+        displayName: 'Precipitation',
+        active: false
+      };
+
+      //* Precipitation layer
+      precipitationLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png', {
+        attribution: 'Map data © OpenWeatherMap'
+      }).addTo(this.map).setOpacity(0);
+      //*/
+
+      // Push cloud layer to layers
+      this.layers.push(cloudLayer, precipitationLayer);
+
+      // Build layer toggle controls
+      this.layerControls();
+
+      // Update layers
+      var fetchLayerTiles = function(){
+        _.each(that.layers, function(layer){
+          layer.layer.redraw();
+        });
+      };
+
+      this.fetchLayerTilesInterval = setInterval(fetchLayerTiles, 900000);
+    },
+
     onShow: function(){
       var map = this.map = L.map(this.el).setView([0, 0], 1);
 
@@ -321,11 +416,19 @@ define([
 
       this.markers.addTo(this.map);
 
+      this.addLayers();
+
       this._renderChildren();
 
       this.fitToBounds();
 
       this.listenTo(Backbone, 'window:resize', this.map.viewreset);
+    },
+
+    events: {
+      'click .layerControl': function(event){
+        this.toggleLayer(event.target.id.split('_')[1]);
+      }
     }
   });
 

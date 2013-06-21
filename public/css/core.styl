@@ -96,81 +96,6 @@ h1, h2, h3 {
   font-weight: normal;
 }
 
-/* Basic layout */
-
-header {
-  background: colorBGDarkGrey;
-  height: headerHeight;
-  width: 100%;
-  overflow: hidden;
-  padding: 0 6px;
-  border-bottom: borderBasicDark;
-  position: relative;
-  z-index: 201;
-  h1 {
-    padding: 0;
-    margin: 0;
-    float: left;
-    background: url(../img/logo_draker_sml_wShadow.png) center center no-repeat;
-    display: inline-block;
-    width: 183px;
-    height: headerHeight;
-    line-height: headerHeight;
-    overflow: hidden;
-    a {
-      display: inline-block;
-      width: 100%
-      height: 100%;
-      text-indent: -200%;
-    }
-  }
-  nav.global {
-    float: right;
-    padding: 0;
-    margin: 0;
-    font-weight: 100;
-    text-shadow: 0 0 1px #000;
-    font-size: .85em;
-    ul {
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-      height: headerHeight
-      line-height: headerHeight;
-      li {
-        padding: 0;
-        float: left;
-        border-left: borderBasicDark;
-        border-right: 1px solid #292929;
-        &.team_select {
-          padding: 0;
-          border-right: none;
-        }
-        &.username {
-          color: #fff;
-          border-left: none;
-          padding: 0 9px;
-        }
-        &:first-child {
-          border-left: none;
-        }
-        &:last-child {
-          border-right: none;
-        }
-        a {
-          display: block;
-          text-decoration: none;
-          padding: 0 9px;
-          margin: 0;
-          &:hover {
-            background: #252525;
-          }
-        }
-      }
-    }
-  }
-}
-
 /* Messages */
 
 .message {
@@ -381,9 +306,7 @@ input[type="email"], input[type="password"], input[type="text"], input[type="pas
 }
 
 input[type="checkbox"], input[type="radio"] {
-  padding:0;
-  margin:0;
-  vertical-align: middle;
+
 }
 
 select[disabled], select:disabled {

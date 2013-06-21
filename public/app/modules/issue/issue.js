@@ -39,7 +39,6 @@ function(
   });
 
   Issue.views.Table = Marionette.CompositeView.extend({
-    tagName: 'table',
     attributes: {
       class: 'basic'
     },
