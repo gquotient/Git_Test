@@ -309,7 +309,7 @@ define([
 
     layerControls: function(){
       var $controls = $('<div class="layerControls"><ul></ul></div>');
-      console.log(this.layers);
+
       _.each(this.layers, function(layer, index){
         if (layer.layer) {
           var
@@ -375,8 +375,7 @@ define([
       //*/
 
       // Push cloud layer to layers
-      this.layers.push(cloudLayer);
-      this.layers.push(precipitationLayer);
+      this.layers.push(cloudLayer, precipitationLayer);
 
       // Build layer toggle controls
       this.layerControls();
