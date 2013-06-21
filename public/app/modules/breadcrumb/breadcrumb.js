@@ -22,22 +22,26 @@ define([
   Breadcrumb.Collection = Backbone.Collection.extend({
     model: Breadcrumb.Model,
     prune: function(model){
+      var m = this.find(function(realModel){
+        return realModel === model;
+      })
       // Return only the models from the first to the passed model
-      var models = this.models.slice(0, (this.models.indexOf(model)) + 1);
+      var models = this.models.slice(0, (this.models.indexOf(m)) + 1);
       // Set the collection as the new list of models
       this.set(models);
     },
 
     update: function(model){
       this.pop();
-      this.push(model.model);
+      this.push(model);
     },
 
     advance: function(model){
-      if (this.contains(model.model)) {
-        this.prune(model.model);
+      var models = this.pluck('model');
+      if (_.contains(models, model.get('model')) ) {
+        this.prune(model);
       } else {
-        this.add(model.model);
+        this.add(model);
       }
     }
   });
@@ -50,6 +54,9 @@ define([
     },
     triggers: {
       'click': 'prune'
+    },
+    serializeData: function(){
+      return this.model.get('model').toJSON();
     }
   });
 

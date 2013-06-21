@@ -41,9 +41,9 @@ define([
     initialize: function(options){
       this.createCollections();
 
-      this.listenTo(this.portfolios, 'add remove', function(model){
-        this.set('total_portfolios', this.portfolios.length);
-      });
+      // this.listenTo(this.portfolios, 'add remove', function(model){
+      //   this.set('total_portfolios', this.portfolios.length);
+      // });
 
       this.listenTo(this.projects, 'add remove', function(model){
         this.set('total_projects', this.projects.length);
@@ -183,7 +183,7 @@ define([
         newPortfolioView.render();
         newPortfolioView.$el.css({
           top: this.$el.offset().top,
-          left: this.$el.offset().left + this.$el.width() 
+          left: this.$el.offset().left + this.$el.width()
         }).removeClass('hidden');
       }
     },
