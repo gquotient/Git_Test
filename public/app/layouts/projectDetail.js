@@ -164,6 +164,17 @@ define([
 
       issueView.collection.fetch();
 
+
+
+
+      var kpisView = new Project.views.Kpis({model: this.model});
+
+      this.kpis.show(kpisView);
+
+
+
+
+
       // Reset active indicator
       $('.nav_content').find('.active').removeClass('active');
 
