@@ -296,23 +296,25 @@ define([
     },
 
     layerControls: function(){
-      var $controls = $('<div class="layerControls" />');
-
+      var $controls = $('<div class="layerControls"><ul></ul></div>');
+      console.log(this.layers);
       _.each(this.layers, function(layer, index){
         if (layer.layer) {
           var
             checked = (layer.active)? 'checked' : '',
             layerControl = [
-              '<label for="layer_' + layer.type + '"">' +
-                '<input id="layer_' + layer.type + '" class="layerControl" type="checkbox" ' +
-                checked +
-                '> ' +
-                layer.displayName +
-              '</label>'
+              '<li>' +
+                '<label for="layer_' + layer.type + '"">' +
+                  '<input id="layer_' + layer.type + '" class="layerControl" type="checkbox" ' +
+                  checked +
+                  '> ' +
+                  layer.displayName +
+                '</label>' +
+              '</li>'
             ].join('')
           ;
 
-          $controls.append(layerControl);
+          $controls.find('ul').append(layerControl);
         }
       });
 
@@ -353,9 +355,9 @@ define([
       };
 
       //* Precipitation layer
-      cloudLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png', {
+      precipitationLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png', {
         attribution: 'Map data © OpenWeatherMap'
-      }).addTo(this.map);
+      }).addTo(this.map).setOpacity(0);
       //*/
 
       // Push cloud layer to layers
