@@ -18,7 +18,8 @@ define([
   'hbs!project/templates/create',
   'hbs!project/templates/navigationItemView',
   'hbs!project/templates/projectList',
-  'hbs!project/templates/markerPopUp'
+  'hbs!project/templates/markerPopUp',
+  'hbs!project/templates/kpis'
 ], function(
   $,
   _,
@@ -39,7 +40,8 @@ define([
   createTemplate,
   navigationItemViewTemplate,
   navigationListTemplate,
-  markerPopUpTemplate
+  markerPopUpTemplate,
+  kpisTemplate
 ){
   var Project = { views: {Editor: Editor} };
 
@@ -92,6 +94,12 @@ define([
         isNaN(attrs.longitude) ||
         isNaN(attrs.elevation)
       ) { return 'error'; }
+    },
+
+    getType: function(){
+      var did = this.get('did');
+
+      return did && did.replace(/-\d*$/, '');
     }
   });
 
@@ -537,6 +545,16 @@ define([
 
       // Trigger a render. This forces the nav header to update, too.
       this.render();
+    }
+  });
+
+  Project.views.Kpis = Marionette.ItemView.extend({
+    template: {
+      type: 'handlebars',
+      template: kpisTemplate
+    },
+    initialize: function(){
+      console.log('kpis init');
     }
   });
 
