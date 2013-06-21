@@ -133,7 +133,7 @@ define([
     },
     onRender: function(){
       var that = this;
-      setTimeout(function(){ that.$el.removeClass('hidden') }, 0);
+      setTimeout(function(){ that.$el.removeClass('hidden'); }, 0);
     },
     onBeforeClose: function(){
       this.$el.removeClass('hidden');

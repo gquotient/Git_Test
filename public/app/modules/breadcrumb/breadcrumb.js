@@ -24,7 +24,7 @@ define([
     prune: function(model){
       var m = this.find(function(realModel){
         return realModel.get('model') === model.get('model');
-      })
+      });
 
       // Return only the models from the first to the passed model
       var models = this.models.slice(0, (this.models.indexOf(m)) + 1);
