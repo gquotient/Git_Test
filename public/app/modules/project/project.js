@@ -324,21 +324,6 @@ define([
       this.fitToBounds();
 
       this.listenTo(Backbone, 'window:resize', this.map.viewreset);
-
-      this.map.on('popup', function(event){
-        event.preventDefault();
-        console.log('clicked viewProject', arguments);
-      });
-    },
-    events: {
-      'click': function(event){
-        console.log(arguments);
-      },
-      'click a.viewProject': function(event){
-        event.preventDefault();
-        console.log(arguments);
-        //Backbone.trigger('click:project', this.model);
-      }
     }
   });
 
