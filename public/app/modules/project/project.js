@@ -333,14 +333,7 @@ define([
       }
     },
 
-    onShow: function(){
-      var map = this.map = L.map(this.el).setView([0, 0], 1);
-
-      // add an OpenStreetMap tile layer
-      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
-
+    addLayers: function(){
       // Create cloud object NOTE: May want to Backboneify this
       var cloudLayer = {
         type: 'clouds',
@@ -351,7 +344,7 @@ define([
       // Create tiles layer and add to our map
       cloudLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png', {
         attribution: 'Map data © OpenWeatherMap'
-      }).addTo(map);
+      }).addTo(this.map);
 
       /* Precipitation layer
       cloudLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png', {
@@ -364,10 +357,21 @@ define([
 
       // Build layer toggle controls
       this.layerControls();
+    },
+
+    onShow: function(){
+      var map = this.map = L.map(this.el).setView([0, 0], 1);
+
+      // add an OpenStreetMap tile layer
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
 
       this.markers = new L.layerGroup([]);
 
       this.markers.addTo(this.map);
+
+      this.addLayers();
 
       this._renderChildren();
 
