@@ -8,7 +8,7 @@ define([
 
   'hbs!portfolio/templates/navigationList',
   'hbs!portfolio/templates/navigationItem',
-  'hbs!portfolio/templates/detailKpis'
+  'hbs!portfolio/templates/aggregateKpis'
 ], function(
   $,
   _,
@@ -19,7 +19,7 @@ define([
 
   navigationListTemplate,
   navigationItemTemplate,
-  detailKpisTemplate
+  aggregateKpisTemplate
 ){
   var Portfolio = { views: {} };
 
@@ -35,6 +35,8 @@ define([
       irradiance_now: 0,
       power_now: 0
     },
+
+    kpis: ['dc_capacity', 'ac_capacity'],
 
     initialize: function(options){
       this.createCollections();
@@ -83,9 +85,13 @@ define([
     },
 
     aggregateKpis: function(){
+      var that = this;
+
       return this.projects.reduce(function(memo, project){
-        _.each(project.get('kpis'), function(value, key){
-          memo[key] = (memo[key] || 0) + value;
+        _.each(that.kpis, function(kpi){
+          var value = project.get(kpi) || 0;
+
+          memo[kpi] = (memo[kpi] || 0) + value;
         });
 
         return memo;
@@ -191,11 +197,11 @@ define([
     }
   });
 
-  Portfolio.views.DetailKpis = Marionette.ItemView.extend({
+  Portfolio.views.AggregateKpis = Marionette.ItemView.extend({
     tagName: 'ul',
     template: {
       type: 'handlebars',
-      template: detailKpisTemplate
+      template: aggregateKpisTemplate
     },
     initialize: function(options){
       var that = this;
