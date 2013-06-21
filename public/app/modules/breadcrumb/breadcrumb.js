@@ -23,8 +23,9 @@ define([
     model: Breadcrumb.Model,
     prune: function(model){
       var m = this.find(function(realModel){
-        return realModel === model;
+        return realModel.get('model') === model.get('model');
       })
+
       // Return only the models from the first to the passed model
       var models = this.models.slice(0, (this.models.indexOf(m)) + 1);
       // Set the collection as the new list of models

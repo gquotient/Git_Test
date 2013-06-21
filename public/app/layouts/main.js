@@ -48,13 +48,13 @@ define([
       this.header.show(this.headerView);
       this.breadcrumbs.show(this.navigationView);
 
-      Backbone.trigger('set:breadcrumbs', {model: this.app.rootPortfolio, state: 'portfolio'});
+      Backbone.trigger('set:breadcrumbs', {model: this.app.portfolios.findWhere({label: 'ALL'}), state: 'portfolio'});
     },
 
     showPortfolio: function(portfolio){
       this.activePortfolio = portfolio;
       // Build portfolio view
-      var contentLayout = new PortfolioDetailLayout({model: portfolio, portfolios: this.app.rootPortfolio.portfolios});
+      var contentLayout = new PortfolioDetailLayout({model: portfolio, portfolios: this.app.portfolios});
       this.mainContent.show(contentLayout);
 
       // Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolio'});
@@ -79,7 +79,7 @@ define([
           team_label: teamLabel
         },
         success: function(){
-          that.app.rootPortfolio.portfolios.fetch();
+          that.app.portfolios.fetch();
 
           // Once more APIs are implemented, we can make sure everything else syncs up with the team.
         }
@@ -103,7 +103,7 @@ define([
       var that = this;
       this.app = options.app;
       this.app.state = 'portfolio';
-      this.activePortfolio = this.app.rootPortfolio;
+      this.activePortfolio = this.app.portfolios.findWhere({label: 'ALL'});
       // Build header
       this.headerView = new Header({model: options.currentUser});
 

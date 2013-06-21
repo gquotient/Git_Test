@@ -309,7 +309,7 @@ define([
 
     layerControls: function(){
       var $controls = $('<div class="layerControls"><ul></ul></div>');
-      console.log(this.layers);
+
       _.each(this.layers, function(layer, index){
         if (layer.layer) {
           var
@@ -346,6 +346,8 @@ define([
     },
 
     addLayers: function(){
+      var that = this;
+
       this.layers = [];
 
       // Create cloud object NOTE: May want to Backboneify this
@@ -373,11 +375,19 @@ define([
       //*/
 
       // Push cloud layer to layers
-      this.layers.push(cloudLayer);
-      this.layers.push(precipitationLayer);
+      this.layers.push(cloudLayer, precipitationLayer);
 
       // Build layer toggle controls
       this.layerControls();
+
+      // Update layers
+      var fetchLayerTiles = function(){
+        _.each(that.layers, function(layer){
+          layer.layer.redraw();
+        });
+      };
+
+      this.fetchLayerTilesInterval = setInterval(fetchLayerTiles, 900000);
     },
 
     onShow: function(){

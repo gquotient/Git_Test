@@ -8,8 +8,8 @@ define([
 
   'hbs!portfolio/templates/navigationList',
   'hbs!portfolio/templates/navigationItem',
-  'hbs!portfolio/templates/detailKpis',
-  'hbs!portfolio/templates/newPortfolio'
+  'hbs!portfolio/templates/newPortfolio',
+  'hbs!portfolio/templates/aggregateKpis'
 ], function(
   $,
   _,
@@ -20,8 +20,8 @@ define([
 
   navigationListTemplate,
   navigationItemTemplate,
-  detailKpisTemplate,
-  newPortfolioTemplate
+  newPortfolioTemplate,
+  aggregateKpisTemplate
 ){
   var Portfolio = { views: {} };
 
@@ -38,6 +38,8 @@ define([
       power_now: 0
     },
 
+    kpis: ['dc_capacity', 'ac_capacity'],
+
     initialize: function(options){
       this.createCollections();
 
@@ -52,42 +54,45 @@ define([
     },
 
     createCollections: function(){
-      var root = this.collection.root;
-
-      this.portfolios = new Portfolio.Collection([], {root: root});
+      var rootProjects = this.collection.projects;
+      // this.portfolios = new Portfolio.Collection([], {root: root});
       this.projects = new Project.Collection();
 
-      this.listenTo(root.portfolios, 'add', function(model){
-        if (_.contains(this.get('subPortfolioIDs'), model.id)) {
-          this.addPortfolio(model);
-        }
-      });
+      // this.listenTo(root.portfolios, 'add', function(model){
+      //   if (_.contains(this.get('subPortfolioIDs'), model.id)) {
+      //     this.addPortfolio(model);
+      //   }
+      // });
 
-      this.listenTo(root.projects, 'add', function(model){
+      this.listenTo(rootProjects, 'add', function(model){
         if (_.contains(this.get('projects'), model.id)) {
           this.addProject(model);
         }
       });
     },
 
-    addPortfolio: function(portfolio){
-      this.portfolios.add(portfolio, {merge: true});
+    // addPortfolio: function(portfolio){
+    //   this.portfolios.add(portfolio, {merge: true});
 
-      this.portfolios.add(portfolio.portfolios.models, {merge: true});
-      this.projects.add(portfolio.projects.models, {merge: true});
+    //   this.portfolios.add(portfolio.portfolios.models, {merge: true});
+    //   this.projects.add(portfolio.projects.models, {merge: true});
 
-      this.listenTo(portfolio.portfolios, 'add', this.addPortfolio);
-      this.listenTo(portfolio.projects, 'add', this.addProject);
-    },
+    //   this.listenTo(portfolio.portfolios, 'add', this.addPortfolio);
+    //   this.listenTo(portfolio.projects, 'add', this.addProject);
+    // },
 
     addProject: function(project){
       this.projects.add(project, {merge: true});
     },
 
     aggregateKpis: function(){
+      var that = this;
+
       return this.projects.reduce(function(memo, project){
-        _.each(project.get('kpis'), function(value, key){
-          memo[key] = (memo[key] || 0) + value;
+        _.each(that.kpis, function(kpi){
+          var value = project.get(kpi) || 0;
+
+          memo[kpi] = (memo[kpi] || 0) + value;
         });
 
         return memo;
@@ -95,22 +100,22 @@ define([
     }
   });
 
-  Portfolio.Root = Portfolio.Model.extend({
-    createCollections: function(){
-      this.portfolios = new Portfolio.Collection([], {
-        url: '/api/portfolios',
-        root: this
-      });
+  // Portfolio.Root = Portfolio.Model.extend({
+  //   createCollections: function(){
+  //     this.portfolios = new Portfolio.Collection([], {
+  //       url: '/api/portfolios',
+  //       root: this
+  //     });
 
-      this.projects = new Project.Collection();
-    }
-  });
+  //     this.projects = new Project.Collection();
+  //   }
+  // });
 
   Portfolio.Collection = Backbone.Collection.extend({
     model: Portfolio.Model,
     url: '/api/portfolios',
     initialize: function(models, options){
-      this.root = options.root;
+      this.projects = options.projects;
     },
 
     comparator: 'display_name'
@@ -192,12 +197,12 @@ define([
       this.listenTo(Backbone, 'select:portfolio', this.setPortfolio);
     },
 
-    onRender: function(){
-      // Handle if no sub portfolios exist
-      if (this.collection.length === 0) {
-        this.$el.append('<li class="empty">No sub portfolios</li>');
-      }
-    },
+    // onRender: function(){
+    //   // Handle if no sub portfolios exist
+    //   if (this.collection.length === 0) {
+    //     this.$el.append('<li class="empty">No sub portfolios</li>');
+    //   }
+    // },
 
     // Setup the views for the current model.
     setPortfolio: function(model){
@@ -209,11 +214,11 @@ define([
     }
   });
 
-  Portfolio.views.DetailKpis = Marionette.ItemView.extend({
+  Portfolio.views.AggregateKpis = Marionette.ItemView.extend({
     tagName: 'ul',
     template: {
       type: 'handlebars',
-      template: detailKpisTemplate
+      template: aggregateKpisTemplate
     },
     initialize: function(options){
       var that = this;

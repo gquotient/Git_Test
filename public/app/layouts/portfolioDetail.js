@@ -46,7 +46,7 @@ define([
 
     selectPortfolio: function(model) {
       // Build KPIs
-      var kpis = new Portfolio.views.DetailKpis({ model: model });
+      var kpis = new Portfolio.views.AggregateKpis({ model: model });
       this.kpis.show(kpis);
 
       // Update the collection.

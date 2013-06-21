@@ -44,9 +44,9 @@ define([
 
     findPortfolio: function(id){
       if (!id || id === 'all') {
-        return ia.rootPortfolio;
+        return ia.portfolios.findWhere({label: 'ALL'});
       } else {
-        return ia.rootPortfolio.portfolios.get(id);
+        return ia.portfolios.get(id);
       }
     },
 
@@ -65,7 +65,7 @@ define([
     },
 
     findProject: function(id){
-      return ia.rootPortfolio.projects.get(id);
+      return ia.projects.get(id);
     },
 
     projectCreate: function(){
@@ -84,7 +84,7 @@ define([
 
     projectDetail: function(id){
       var project = this.findProject(id);
-      this.mainLayout.showProject(project, ia.rootPortfolio.projects);
+      this.mainLayout.showProject(project, ia.projects);
     },
 
     projectDevices: function(id, deviceId){
