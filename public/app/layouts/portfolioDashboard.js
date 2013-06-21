@@ -49,7 +49,7 @@ define([
 
         this.dashboardView = new Project.views.Dashboard({ collection: this.projectList });
 
-        this.listenTo(Backbone, 'select:portfolio', function(model){
+        this.listenTo(Backbone, 'click:portfolio', function(model){
           // Update the collection.
           this.projectList.set(model.projects.models);
         });
