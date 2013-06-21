@@ -36,8 +36,8 @@ define([
       });
 
       this.listenTo(Backbone, 'set:breadcrumbs', function(model){
-        console.log(this.app.state, model.get('type'));
-        if(this.app.state !== model.get('type')){
+        console.log(this.app.state, model.state);
+        if(this.app.state !== model.state){
           breadcrumbs.advance(model);
         } else {
           breadcrumbs.update(model);

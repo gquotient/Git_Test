@@ -48,7 +48,7 @@ define([
       this.header.show(this.headerView);
       this.breadcrumbs.show(this.navigationView);
 
-      Backbone.trigger('set:breadcrumbs', this.app.rootPortfolio);
+      Backbone.trigger('set:breadcrumbs', {model: this.app.rootPortfolio, state: 'portfolio'});
     },
 
     showPortfolio: function(portfolio){
@@ -57,7 +57,7 @@ define([
       var contentLayout = new PortfolioDetailLayout({model: portfolio, portfolios: this.app.rootPortfolio.portfolios});
       this.mainContent.show(contentLayout);
 
-      Backbone.trigger('set:breadcrumbs', portfolio);
+      // Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolio'});
       this.app.state = 'portfolio';
     },
 
@@ -66,7 +66,7 @@ define([
       var contentLayout = new ProjectDetailLayout({model: project, collection: this.activePortfolio.projects, settingsRegion: this.pageSettings});
       this.mainContent.show(contentLayout);
 
-      Backbone.trigger('set:breadcrumbs', project);
+      // Backbone.trigger('set:breadcrumbs', {model: project, state: 'project'});
       this.app.state = 'project';
     },
 
@@ -83,7 +83,7 @@ define([
 
           // Once more APIs are implemented, we can make sure everything else syncs up with the team.
         }
-      })
+      });
     },
 
     toggleNotificationBanner: function(){

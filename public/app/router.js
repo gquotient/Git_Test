@@ -53,7 +53,7 @@ define([
     portfolioDashboard: function(id){
       var portfolio = this.findPortfolio(id);
 
-      Backbone.trigger('reset:breadcrumbs', portfolio);
+      Backbone.trigger('reset:breadcrumbs', {model: portfolio, state: 'portfolio'});
 
       this.contentLayout = new PortfolioDashboardLayout({model: portfolio});
       this.mainLayout.mainContent.show(this.contentLayout);

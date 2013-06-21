@@ -51,7 +51,7 @@ define([
 
       // Update the collection.
       this.projectList.set(model.projects.models);
-      Backbone.trigger('update:breadcrumbs', model);
+      Backbone.trigger('set:breadcrumbs', {model: model, state: 'portfolio'});
 
       // Reset active indicator
       $('.nav_content').find('.active').removeClass('active');

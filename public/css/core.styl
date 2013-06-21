@@ -88,9 +88,6 @@ body {
   font-weight: 100;
   border-top: 4px solid colorDrakerOrange;
   height: 100%;
-  
-  perspective: 800px;
-  perspective-origin: 50% 100px;
 }
 
 h1, h2, h3 {
@@ -384,7 +381,9 @@ input[type="email"], input[type="password"], input[type="text"], input[type="pas
 }
 
 input[type="checkbox"], input[type="radio"] {
-
+  padding:0;
+  margin:0;
+  vertical-align: middle;
 }
 
 select[disabled], select:disabled {
@@ -551,6 +550,8 @@ leftColumnWidth = 240px;
   position: absolute;
   z-index: 1001;
   height: auto;
+  perspective: 800px;
+  perspective-origin: 50% 100px;
   &.hidden {
     transform:scale3d(0,0,0);
   }

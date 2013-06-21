@@ -84,7 +84,7 @@ define([
     selectProject: function(project) {
       this.model = project;
 
-      Backbone.trigger('update:breadcrumbs', project);
+      Backbone.trigger('set:breadcrumbs', {model: project, state: 'project'});
 
       // Update map
       this.mapView.collection.set([project]);
