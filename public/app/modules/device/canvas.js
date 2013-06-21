@@ -164,12 +164,12 @@ define([
 
       // Prevent rendering of children that don't have position or relationship.
       addItemView: function(item){
-        var position = item.getPosition(this.rendering_label),
-          relationship = item.getRelationship(this.model, this.rendering_label);
+        if (this.children.findByModel(item)) { return; }
 
-        if (position && relationship) {
-          Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
-        }
+        if (!item.getPosition(this.rendering_label)) { return; }
+        if (!item.getRelationship(this.model, this.rendering_label)) { return; }
+
+        Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
       },
 
       // Prevent item views from being added to the DOM.
@@ -286,9 +286,11 @@ define([
 
     // Prevent rendering of children that don't have position.
     addItemView: function(item){
-      if (item.getPosition(this.rendering_label)){
-        Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
-      }
+      if (this.children.findByModel(item)) { return; }
+
+      if (!item.getPosition(this.rendering_label)) { return; }
+
+      Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
     },
 
     // Prevent item views from being added to the DOM.
