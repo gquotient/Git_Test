@@ -62,7 +62,7 @@ define([
       // Fetch additional project information for editing.
       this.model.fetch({data: {
         project_label: this.model.get('label'),
-        index: 'StagedProjects'
+        index: 'AlignedProjects/no'
       }});
 
       // Set up events on document.

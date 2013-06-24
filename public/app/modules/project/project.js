@@ -499,7 +499,7 @@ define([
     },
     onRender: function(){
       var that = this;
-      setTimeout(function(){ that.$el.removeClass('hidden') }, 0);
+      setTimeout(function(){ that.$el.removeClass('hidden'); }, 0);
     },
     events: {
       'click': function(){
