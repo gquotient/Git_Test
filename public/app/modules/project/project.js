@@ -153,6 +153,11 @@ define([
     template: {
       type: 'handlebars',
       template: dashboardItemTemplate
+    },
+    events: {
+      'click': function(){
+        Backbone.history.navigate('/project/'+this.model.id, true);
+      }
     }
   });
 
