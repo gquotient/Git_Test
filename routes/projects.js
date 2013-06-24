@@ -1,11 +1,11 @@
 var _ = require('lodash')
-  , request = require('request');
+, request = require('request');
 
 module.exports = function(app){
 
   var helpers = require('./helpers')(app)
-  , makeRequest = helpers.makeRequest
   , ensureAuthorized = helpers.ensureAuthorized
+  , makeRequest = helpers.makeRequest
   , separateProperties = helpers.separateProperties;
 
   //////
@@ -70,7 +70,7 @@ module.exports = function(app){
       }
     });
 
-  app.post('/api/projects',
+  app.post('/api/projects', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/projects',
       setup: function(req, res, next){
@@ -93,7 +93,7 @@ module.exports = function(app){
       }
     }));
 
-  app.put('/api/projects',
+  app.put('/api/projects', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/projects',
       setup: separateProperties([
