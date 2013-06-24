@@ -15,7 +15,8 @@ define([
   });
 
   Spec.Collection = Backbone.Collection.extend({
-    model: Spec.Model
+    model: Spec.Model,
+    url: '/api/specs'
   });
 
   return Spec;
