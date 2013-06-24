@@ -128,17 +128,7 @@ define([
   });
 
   Device.Collection = Backbone.Collection.extend({
-    model: Device.Model,
-
-    next: function(model){
-      var index = this.indexOf(model);
-      return (index !== -1 && this.at(index + 1)) || this.first();
-    },
-
-    previous: function(model){
-      var index = this.indexOf(model);
-      return this.at(index - 1) || this.last();
-    }
+    model: Device.Model
   });
 
   Device.views.DeviceListItem = Marionette.ItemView.extend({

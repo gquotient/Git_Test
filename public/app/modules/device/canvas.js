@@ -419,55 +419,6 @@ define([
       }
     },
 
-    onKeyTab: function(e){
-      var model = this.selection.last();
-
-      this.selection.add(this.collection.next(model), {remove: !e.ctrlKey});
-      this.paper.view.draw();
-    },
-
-    onKeyLeft: function(e){
-      var model = this.selection.last() || this.collection.last(),
-        parnt = model && model.incoming && model.incoming.first(),
-        sibling = parnt && parnt.outgoing && parnt.outgoing.previous(model);
-
-      if (sibling) {
-        this.selection.add(sibling, {remove: !e.ctrlKey});
-        this.paper.view.draw();
-      }
-    },
-
-    onKeyRight: function(e){
-      var model = this.selection.last() || this.collection.last(),
-        parnt = model && model.incoming && model.incoming.last(),
-        sibling = parnt && parnt.outgoing && parnt.outgoing.next(model);
-
-      if (sibling) {
-        this.selection.add(sibling, {remove: !e.ctrlKey});
-        this.paper.view.draw();
-      }
-    },
-
-    onKeyUp: function(e){
-      var model = this.selection.last() || this.collection.last(),
-        parnt = model && model.incoming && model.incoming.first();
-
-      if (parnt && parnt.getType) {
-        this.selection.add(parnt, {remove: !e.ctrlKey});
-        this.paper.view.draw();
-      }
-    },
-
-    onKeyDown: function(e){
-      var model = this.selection.last() || this.collection.last(),
-        child = model && model.outgoing && model.outgoing.first();
-
-      if (child) {
-        this.selection.add(child, {remove: !e.ctrlKey});
-        this.paper.view.draw();
-      }
-    },
-
     onZoomIn: function(e){
       this.paper.view.zoom /= 1.1;
     },
