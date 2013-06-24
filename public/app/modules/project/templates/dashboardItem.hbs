@@ -1,5 +1,5 @@
 <div class="projectStatus">
-  <div class="name">{{ name }}</div>
+  <div class="name">{{ display_name }}</div>
   <div class="resource">
       <div class="irradiance">
         <div class="indicator" style="width: {{ percent kpis.irradiance_now 1000 }} %"></div>
@@ -16,3 +16,42 @@
 
   <div class="alarm {{status}}"><div>
 </div>
+
+
+
+{{! <div class="projectStatus">
+  <div class="name"><%= p.get('project_name') %></div>
+  <div class="resource">
+    <% if (p.get('irradiance_now') !== 'N/A') { %>
+      <div class="irradiance">
+        <div class="indicator" style="width:<%= Math.round(p.get('irradiance_now') / 1000*100) %>%"></div>
+      </div>
+    <% } %>
+    <div class="power">
+      <div class="indicator" style="width:<%= Math.round(p.get('power_now')/p.get('ac_capacity')*100)%>%"></div>
+    </div>
+  </div>
+  <% if( !p.get('alarm') ) { %>
+    <div class="performanceRatio">
+    <% if (p.get('dpi_now') === 'N/A') { %>
+      <span class="value"><%= p.get('dpi_now') %>
+    <% } else { %>
+      <span class="value"><%= Math.round(p.get('dpi_now')) %></span>
+      <span class="unit">%</span>
+    <% } %>
+  </div>  
+  <% } %>
+  
+  <div class="alarm <% if( p.get('alarm') && p.get('alarm').alarm['acknowledged?'] ){ %><%= 'acknowledged' %><%} else if(p.get('alarm') && !p.get('alarm').alarm['acknowledged?']){ %><%= 'unacknowledged' %><% } %>">
+    <span class="icon <% if( p.get('alarm') && !p.get('alarm').alarm.type) { %><%= p.get('alarm').alarm.name %><% } else if( p.get('alarm') ) { %><%= p.get('alarm').alarm.type %><% } %>">
+      <% if( p.get('alarm') && !p.get('alarm').alarm.type) { %>
+        <%= p.get('alarm').alarm.name %>
+      <% } else if( p.get('alarm') ) { %>
+
+        <%= p.get('alarm').alarm.type %>
+
+      <% } %>
+    </span>
+  </div>
+</div>
+ }}

@@ -54,7 +54,7 @@ define([
     showPortfolio: function(portfolio){
       this.activePortfolio = portfolio;
       // Build portfolio view
-      var contentLayout = new PortfolioDetailLayout({model: portfolio, portfolios: this.app.portfolios});
+      var contentLayout = new PortfolioDetailLayout({model: portfolio, portfolios: this.app.portfolios, settingsRegion: this.pageSettings});
       this.mainContent.show(contentLayout);
 
       // Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolio'});
