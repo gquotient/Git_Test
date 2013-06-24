@@ -161,7 +161,7 @@ define(['backbone'], function(Backbone){
       relationships: [
         {label: 'MANAGES', direction: 'INCOMING', target: 'DSC'},
 
-        {label: 'MEASURED_BY', direction: 'INCOMING', target: 'RM'},
+        {label: 'MEASURED_BY', direction: 'INCOMING', target: 'INV'},
         {label: 'MEASURED_BY', direction: 'INCOMING', target: 'ACB'}
       ],
       renderings: [

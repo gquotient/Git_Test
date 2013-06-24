@@ -348,7 +348,7 @@ define([
               var rel = findRelationshipLabel(device, select, this.rendering_label);
 
               return rel && !select.hasChild(device, rel);
-            });
+            }, this);
           }, this)
 
           .sortBy(function(device){
