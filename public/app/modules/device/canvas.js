@@ -255,6 +255,7 @@ define([
     initialize: function(options){
       this.paper = paper.setup(this.el);
       this.rendering_label = options.rendering_label;
+      this.read_only = options.read_only;
 
       this.selection = new Backbone.Collection();
 
@@ -392,8 +393,8 @@ define([
       } else if (this.select) {
         this.moveSelect(e.projectPoint);
 
-      // Otherwise move any models currently selected.
-      } else {
+      // Otherwise move any models currently selected if not read only.
+      } else if (!this.read_only) {
         this.moveSelection(e.projectDelta);
       }
     },
@@ -412,8 +413,8 @@ define([
         this.selection.add(models, {remove: !e.ctrlKey});
         this.eraseSelect();
 
-      // Otherwise snap any models that may have moved.
-      } else {
+      // Otherwise snap any models that may have moved if not read only.
+      } else if (!this.read_only) {
         this.snapSelection();
       }
     },
