@@ -76,6 +76,11 @@ define([
     projectEdit: function(id){
       var project = this.findProject(id);
 
+      if (!project) {
+        ia.projects.add({label: id});
+        project = ia.projects.get(id);
+      }
+
       if (project) {
         this.contentLayout = new ProjectEditorLayout({model: project});
         this.mainLayout.mainContent.show(this.contentLayout);
