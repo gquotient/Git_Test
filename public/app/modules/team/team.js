@@ -101,7 +101,7 @@ define(
 
     // Table CompositeView extended from form
     Team.views.EditTable = Forms.views.table.extend({
-      fields: ['name'],
+      fields: ['name', 'team_label'],
       model: Team.models.Team,
       actions: ['edit', 'cancel', 'save', 'detail']
     });
