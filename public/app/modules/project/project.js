@@ -77,6 +77,11 @@ define([
               'project_label': this.id,
               'ddl': 'pgen-env',
               'columns': ['irradiance']
+            },
+            {
+              'project_label': this.id,
+              'ddl': 'pgen-rm',
+              'columns': ['ac_power']
             }
           ]
         }
@@ -95,6 +100,7 @@ define([
       };
       console.log(data);
       kpis.irradiance = data[0].data[0][0];
+      kpis.power = data[1].data[0][0];
 
       this.set('kpis', kpis);
     },
