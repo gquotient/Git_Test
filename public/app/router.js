@@ -13,8 +13,6 @@ define([
   'layouts/projectCreator',
   'layouts/projectEditor',
   'layouts/projectDetail',
-  'layouts/projectDevices',
-  'layouts/projectIssues',
   'layouts/profile',
   'layouts/admin'
 ], function(
@@ -32,8 +30,6 @@ define([
   ProjectCreatorLayout,
   ProjectEditorLayout,
   ProjectDetailLayout,
-  ProjectDevicesLayout,
-  ProjectIssuesLayout,
   ProfileLayout,
   AdminLayout
 ){
@@ -53,7 +49,7 @@ define([
     portfolioDashboard: function(id){
       var portfolio = this.findPortfolio(id);
 
-      Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolioDashboard'});
+      Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolioDashboard', display_name: portfolio.get('display_name')});
 
       this.contentLayout = new PortfolioDashboardLayout({model: portfolio, app: ia});
       this.mainLayout.mainContent.show(this.contentLayout);
@@ -94,18 +90,13 @@ define([
 
     projectDevices: function(id, deviceId){
       var project = this.findProject(id);
-
-      this.contentLayout = new ProjectDevicesLayout({model: project, currentDevice: deviceId});
-      this.mainLayout.mainContent.show(this.contentLayout);
+      this.mainLayout.showProjectDevices(project, deviceId);
     },
 
     projectIssues: function(id, issueId){
       var project = this.findProject(id);
 
-      console.log(project);
-
-      this.contentLayout = new ProjectIssuesLayout({model: project, currentIssue: issueId});
-      this.mainLayout.mainContent.show(this.contentLayout);
+      this.mainLayout.showProjectIssues(project, issueId);
     },
 
     profile: function(){

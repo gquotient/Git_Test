@@ -33,8 +33,10 @@ define([
 
       this.listenTo(Backbone, 'set:breadcrumbs', function(model){
         var breadcrumbModel = new Breadcrumb.Model(model);
+
         if(this.app.state !== breadcrumbModel.get('state')){
           breadcrumbs.advance(breadcrumbModel);
+          this.app.state = breadcrumbModel.get('state');
         } else {
           breadcrumbs.update(breadcrumbModel);
         }

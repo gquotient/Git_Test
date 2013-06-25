@@ -10,6 +10,8 @@ define([
   'layouts/navigation',
   'layouts/portfolioDetail',
   'layouts/projectDetail',
+  'layouts/projectIssues',
+  'layouts/projectDevices',
 
 
   'hbs!layouts/templates/index'
@@ -25,6 +27,8 @@ define([
   Navigation,
   PortfolioDetailLayout,
   ProjectDetailLayout,
+  ProjectIssuesLayout,
+  ProjectDevicesLayout,
 
   indexTemplate
 ){
@@ -47,8 +51,8 @@ define([
     onShow: function(){
       this.header.show(this.headerView);
       this.breadcrumbs.show(this.navigationView);
-
-      Backbone.trigger('set:breadcrumbs', {model: this.app.portfolios.findWhere({label: 'ALL'}), state: 'portfolio'});
+      var allPortfolio = this.app.portfolios.findWhere({label: 'ALL'});
+      Backbone.trigger('set:breadcrumbs', { model: allPortfolio, state: 'portfolio', display_name: allPortfolio.get('display_name')});
     },
 
     showPortfolio: function(portfolio){
@@ -58,7 +62,7 @@ define([
       this.mainContent.show(contentLayout);
 
       // Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolio'});
-      this.app.state = 'portfolio';
+      // this.app.state = 'portfolio';
     },
 
     showProject: function(project){
@@ -67,7 +71,19 @@ define([
       this.mainContent.show(contentLayout);
 
       // Backbone.trigger('set:breadcrumbs', {model: project, state: 'project'});
-      this.app.state = 'project';
+      // this.app.state = 'project';
+    },
+
+    showProjectIssues: function(project, issue){
+      Backbone.trigger('set:breadcrumbs', {model: project, state: 'project', display_name: project.get('display_name')});
+      var issueLayout = new ProjectIssuesLayout({model: project, currentIssue: issue, app: this.app});
+      this.mainContent.show(issueLayout);
+    },
+
+    showProjectDevices: function(project, deviceId){
+      Backbone.trigger('set:breadcrumbs', {model: project, state: 'project', display_name: project.get('display_name')});
+      var deviceLayout = new ProjectDevicesLayout({model: project, currentDevice: deviceId});
+      this.mainContent.show(deviceLayout);
     },
 
     switchTeam: function(teamLabel){
@@ -102,7 +118,7 @@ define([
     initialize: function(options){
       var that = this;
       this.app = options.app;
-      this.app.state = 'portfolio';
+
       this.activePortfolio = this.app.portfolios.findWhere({label: 'ALL'});
       // Build header
       this.headerView = new Header({model: options.currentUser});

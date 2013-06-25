@@ -55,9 +55,6 @@ define([
     },
     triggers: {
       'click': 'prune'
-    },
-    serializeData: function(){
-      return this.model.get('model').toJSON();
     }
   });
 
