@@ -21,4 +21,22 @@ module.exports = function(app){
       });
     }
   );
+
+  app.post('/api/snapshot',
+    function(req, res){
+      console.log(req.body);
+      request({
+        method: 'POST',
+        uri: app.get('dataUrl') + '/api/snapshot',
+        body: JSON.stringify(req.body),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, function(err, response, body){
+        //console.log(response.headers);
+        console.log(body);
+        res.end(body);
+      });
+    }
+  );
 };
