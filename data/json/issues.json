@@ -13,7 +13,8 @@
     "created_at_epoch": "1369147730.0",
     "id": "10226",
     "device_id": "S-17",
-    "acknowledged": true
+    "acknowledged": true,
+    "display_name": "Inverter Offline."
   },
   {
     "description": [
@@ -28,6 +29,7 @@
     "label": "Soiling",
     "created_at_epoch": "1369341797.0",
     "id": "10240",
-    "acknowledged": false
+    "acknowledged": false,
+    "display_name": "Soiling"
   }
 ]

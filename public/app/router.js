@@ -100,14 +100,14 @@ define([
     },
 
     profile: function(){
-      Backbone.trigger('set:breadcrumbs', {model: {display_name: 'Profile'}, state: 'profile' });
+      Backbone.trigger('set:breadcrumbs', {display_name: 'Profile', state: 'profile' });
 
       this.contentLayout = new ProfileLayout( {model: ia.currentUser });
       this.mainLayout.mainContent.show(this.contentLayout);
     },
 
     admin: function(page, detail){
-      Backbone.trigger('reset:breadcrumbs', {name: 'Admin'});
+      Backbone.trigger('set:breadcrumbs', {display_name: 'Admin', state: 'admin'});
 
       this.contentLayout = new AdminLayout({ initialView: page, currentUser: ia.currentUser });
       this.mainLayout.mainContent.show(this.contentLayout);
