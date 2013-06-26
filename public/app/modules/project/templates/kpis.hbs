@@ -17,7 +17,7 @@
   <h3>Performance Snapshot</h3>
   <div class="snapshot power">
     <div class="label">Power</div>
-    <div class="value">{{ roundNumber kpis.power 1 }} <span class="unit">kWh</span></div>
+    <div class="value">{{ unitConversion kpis.power 'k' }} <span class="unit">kWh</span></div>
     <div class="indicator">
       <div class="bar"><span style="width:{{ percent kpis.power dc_capacity }}%;"></span></div>
       <div class="legend">
