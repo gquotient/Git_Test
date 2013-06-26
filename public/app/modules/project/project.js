@@ -80,7 +80,17 @@ define([
             },
             {
               'project_label': this.id,
+              'ddl': 'pgen-acm',
+              'columns': ['ac_power']
+            },
+            {
+              'project_label': this.id,
               'ddl': 'pgen-rm',
+              'columns': ['ac_power']
+            },
+            {
+              'project_label': this.id,
+              'ddl': 'pgen-util',
               'columns': ['ac_power']
             }
           ]
@@ -98,9 +108,22 @@ define([
         power: 0,
         dpi: 0
       };
-      console.log(data);
-      kpis.irradiance = data[0].data[0][0];
-      kpis.power = data[1].data[0][0];
+
+      _.each(data, function(kpi){
+        if (kpi.columns) {
+          var dataType = kpi.columns[0];
+
+          // Set irradiance kpi
+          if (dataType === 'irradiance') {
+            kpis.irradiance = kpi.data[0][0];
+          }
+
+          // Select first available power snapshot
+          if (dataType === 'ac_power' && kpis.power === 0) {
+            kpis.power = kpi.data[0][0];
+          }
+        }
+      });
 
       this.set('kpis', kpis);
     },
