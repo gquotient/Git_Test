@@ -49,7 +49,12 @@ define([
       kpis: {
         irradiance: 0,
         power: 0,
-        dpi: 0
+        dpi: 0,
+        energyYTD: {
+          generated: 0,
+          forecast: 0,
+          modeled: 0
+        }
       }
     },
 
@@ -104,7 +109,7 @@ define([
         dpi: 0
       };
 
-      _.each(data, function(kpi){
+      _.each(data, function(kpi, index){
         if (kpi.columns) {
           var dataType = kpi.columns[0];
 
@@ -121,7 +126,9 @@ define([
       });
 
       // DPI cheat
-      kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000);
+      if (kpis.power > 0 && kpis.irradiance) {
+        kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000);
+      }
 
       this.set('kpis', kpis);
     },

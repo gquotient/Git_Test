@@ -2,15 +2,15 @@
   <h3>Energy Production YTD</h3>
   <div class="generated metric">
     <div class="label">Generated</div>
-    <div class="value">1,248.41<span class="unit">MWh</span></div>
+    <div class="value">{{ kpis.energyYTD.generated }}<span class="unit">MWh</span></div>
   </div>
   <div class="forecast metric">
     <div class="label">Forecast</div>
-    <div class="value">1,169.04<span class="unit">MWh</span></div>
+    <div class="value">{{ kpis.energyYTD.forecast }}<span class="unit">MWh</span></div>
   </div>
   <div class="modeled metric">
     <div class="label">Modeled</div>
-    <div class="value">1,130.86<span class="unit">MWh</span></div>
+    <div class="value">{{ kpis.energyYTD.modeled }}<span class="unit">MWh</span></div>
   </div>
 </section>
 <section class="snapshots">
@@ -19,7 +19,7 @@
     <div class="label">Power</div>
     <div class="value">{{ unitConversion kpis.power 'k' }} <span class="unit">kWh</span></div>
     <div class="indicator">
-      <div class="bar"><span style="width:{{ percent kpis.power dc_capacity }}%;"></span></div>
+      <div class="bar"><span style="width:{{ percent kpis.power dc_capacity null 0 }}%;"></span></div>
       <div class="legend">
         <span class="min">0</span>
         <span class="max">{{ unitConversion dc_capacity 'k' }} kWh</span>
@@ -39,7 +39,7 @@
   </div>
   <div class="snapshot dpi">
     <div class="label">DPI</div>
-    <div class="value">{{ kpis.dpi }} <span class="unit">%</span></div>
+    <div class="value">{{ roundNumber kpis.dpi 0 }} <span class="unit">%</span></div>
     <div class="indicator">
       <div class="bar"><span style="width:{{ percent kpis.dpi 100 100 }}%;"></span></div>
       <div class="legend">
