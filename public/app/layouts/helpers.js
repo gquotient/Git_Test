@@ -33,10 +33,16 @@ function(
     }
   });
 
-  Handlebars.registerHelper('percent', function(value, max, peak){
+  Handlebars.registerHelper('percent', function(value, max, peak, floor){
     var percent = value / max * 100;
 
-    return (typeof peak === 'number') ? Math.min(percent, peak) : percent;
+    return (typeof peak === 'number') ?
+      Math.min(percent, peak)
+      :
+      (typeof floor === 'number') ?
+        Math.max(percent, floor)
+        :
+        percent;
   });
 
   Handlebars.registerHelper('equal', function(argLeft, argRight, options) {
