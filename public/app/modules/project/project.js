@@ -125,6 +125,9 @@ define([
         }
       });
 
+      // DPI cheat
+      kpis.dpi = kpis.power / this.get('ac_capacity');
+
       this.set('kpis', kpis);
     },
 
