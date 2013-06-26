@@ -56,7 +56,7 @@ define([
         dpi: 0,
         energyYTD: {
           generated: 0,
-          forcast: 0,
+          forecast: 0,
           modeled: 0
         }
       }
