@@ -12,7 +12,11 @@ define([
   'layouts/projectDetail',
   'layouts/projectIssues',
   'layouts/projectDevices',
-
+  'layouts/portfolioDashboard',
+  'layouts/projectCreator',
+  'layouts/projectEditor',
+  'layouts/profile',
+  'layouts/admin',
 
   'hbs!layouts/templates/index'
 ], function(
@@ -29,6 +33,11 @@ define([
   ProjectDetailLayout,
   ProjectIssuesLayout,
   ProjectDevicesLayout,
+  PortfolioDashboardLayout,
+  ProjectCreatorLayout,
+  ProjectEditorLayout,
+  ProfileLayout,
+  AdminLayout,
 
   indexTemplate
 ){
@@ -57,21 +66,28 @@ define([
 
     showPortfolio: function(portfolio){
       this.activePortfolio = portfolio;
-      // Build portfolio view
+
       var contentLayout = new PortfolioDetailLayout({model: portfolio, portfolios: this.app.portfolios, settingsRegion: this.pageSettings});
       this.mainContent.show(contentLayout);
+    },
 
-      // Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolio'});
-      // this.app.state = 'portfolio';
+    showPortfolioDashboard: function(portfolio){
+      var contentLayout = new PortfolioDashboardLayout({model: portfolio, app: this.app});
+      this.mainContent.show(contentLayout);
     },
 
     showProject: function(project){
-      // Build project view
       var contentLayout = new ProjectDetailLayout({model: project, collection: this.activePortfolio.projects, settingsRegion: this.pageSettings});
       this.mainContent.show(contentLayout);
+    },
 
-      // Backbone.trigger('set:breadcrumbs', {model: project, state: 'project'});
-      // this.app.state = 'project';
+    showProjectCreate: function(){
+      this.mainContent.show(new ProjectCreatorLayout());
+    },
+
+    showProjectEdit: function(project){
+      var contentLayout = new ProjectEditorLayout({model: project});
+      this.mainContent.show(contentLayout);
     },
 
     showProjectIssues: function(project, issue){
@@ -84,6 +100,17 @@ define([
       Backbone.trigger('set:breadcrumbs', {model: project, state: 'project', display_name: project.get('display_name')});
       var deviceLayout = new ProjectDevicesLayout({model: project, currentDevice: deviceId});
       this.mainContent.show(deviceLayout);
+    },
+
+    showProfile: function(){
+      var contentLayout = new ProfileLayout({ model: this.app.currentUser });
+      this.mainContent.show(contentLayout);
+    },
+
+    showAdmin: function(page, detail){
+      var contentLayout = new AdminLayout({ initialView: page, currentUser: this.app.currentUser });
+      this.mainContent.show(contentLayout);
+
     },
 
     switchTeam: function(teamLabel){
