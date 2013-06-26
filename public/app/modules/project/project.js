@@ -469,7 +469,7 @@ define([
 
       // Create tiles layer and add to our map
       cloudLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png', {
-        attribution: 'Map data © OpenWeatherMap'
+        attribution: 'OpenWeatherMap'
       }).addTo(this.map).setOpacity(0.5);
 
       var precipitationLayer = {
@@ -480,7 +480,7 @@ define([
 
       //* Precipitation layer
       precipitationLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png', {
-        attribution: 'Map data © OpenWeatherMap'
+        //attribution: 'OpenWeatherMap'
       }).addTo(this.map).setOpacity(0);
       //*/
 
@@ -505,7 +505,7 @@ define([
 
       // add an OpenStreetMap tile layer
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
       }).addTo(map);
 
       this.markers = new L.layerGroup([]);
