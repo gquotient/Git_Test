@@ -56,12 +56,14 @@ module.exports = function(app){
               }
             });
 
-            if (body.rels) {
-              project.rels = body.rels;
-            }
-
-            res.send(project);
+            _.each(body.rels, function(rel){
+              if (rel[1] !== 'SPEC') {
+                project.rels.push(rel);
+              }
+            });
           }
+
+          res.send(project);
         });
       }
     });
