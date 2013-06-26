@@ -49,13 +49,86 @@ define([
     idAttribute: 'label',
     url: '/api/projects',
     defaults: {
-      type: 'project'
+      type: 'project',
+      kpis: {
+        irradiance: 0,
+        power: 0,
+        dpi: 0
+      }
     },
 
     initialize: function(){
       this.specs = new Spec.Collection();
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
+    },
+
+    fetchKpis: function(){
+      var that = this;
+
+      return $.ajax({
+        url: '/api/snapshot',
+        cache: false,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          traces: [
+            {
+              'project_label': this.id,
+              'ddl': 'pgen-env',
+              'columns': ['irradiance']
+            },
+            {
+              'project_label': this.id,
+              'ddl': 'pgen-acm',
+              'columns': ['ac_power']
+            },
+            {
+              'project_label': this.id,
+              'ddl': 'pgen-rm',
+              'columns': ['ac_power']
+            },
+            {
+              'project_label': this.id,
+              'ddl': 'pgen-util',
+              'columns': ['ac_power']
+            }
+          ]
+        }
+      })
+      .done(function(data){
+        that.trigger('data:done');
+        that.parseKpis(data.response);
+      });
+    },
+
+    parseKpis: function(data){
+      var kpis = {
+        irradiance: 0,
+        power: 0,
+        dpi: 0
+      };
+
+      _.each(data, function(kpi){
+        if (kpi.columns) {
+          var dataType = kpi.columns[0];
+
+          // Set irradiance kpi
+          if (dataType === 'irradiance') {
+            kpis.irradiance = kpi.data[0][0];
+          }
+
+          // Select first available power snapshot
+          if (dataType === 'ac_power' && kpis.power === 0) {
+            kpis.power = kpi.data[0][0];
+          }
+        }
+      });
+
+      // DPI cheat
+      kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000);
+
+      this.set('kpis', kpis);
     },
 
     parse: function(resp){
@@ -554,7 +627,8 @@ define([
       template: kpisTemplate
     },
     initialize: function(){
-      console.log('kpis init');
+      this.model.fetchKpis();
+      this.listenTo(this.model, 'change:kpis', this.render);
     }
   });
 

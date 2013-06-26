@@ -17,20 +17,20 @@
   <h3>Performance Snapshot</h3>
   <div class="snapshot power">
     <div class="label">Power</div>
-    <div class="value">864 <span class="unit">kWh</span></div>
+    <div class="value">{{ unitConversion kpis.power 'k' }} <span class="unit">kWh</span></div>
     <div class="indicator">
-      <div class="bar"><span style="width:86%;"></span></div>
+      <div class="bar"><span style="width:{{ percent kpis.power dc_capacity }}%;"></span></div>
       <div class="legend">
         <span class="min">0</span>
-        <span class="max">1000 kWh</span>
+        <span class="max">{{ unitConversion dc_capacity 'k' }} kWh</span>
       </div>
     </div>
   </div>
   <div class="snapshot irradiance">
     <div class="label">Irradiance</div>
-    <div class="value">1,047 <span class="unit">W/m<sup>2</sup></span></div>
+    <div class="value">{{ roundNumber kpis.irradiance 0 }} <span class="unit">W/m<sup>2</sup></span></div>
     <div class="indicator">
-      <div class="bar"><span style="width:100%;"></span></div>
+      <div class="bar"><span style="width:{{ percent kpis.irradiance 1000 }}%;"></span></div>
       <div class="legend">
         <span class="min">0</span>
         <span class="max">1000 W/m<sup>2</sup></span>
@@ -39,9 +39,9 @@
   </div>
   <div class="snapshot dpi">
     <div class="label">DPI</div>
-    <div class="value">105 <span class="unit">%</span></div>
+    <div class="value">{{ kpis.dpi }} <span class="unit">%</span></div>
     <div class="indicator">
-      <div class="bar"><span style="width:100%;"></span></div>
+      <div class="bar"><span style="width:{{ percent kpis.dpi 100 100 }}%;"></span></div>
       <div class="legend">
         <span class="min">0</span>
         <span class="max">100%</span>
