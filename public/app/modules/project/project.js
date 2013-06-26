@@ -109,7 +109,7 @@ define([
         dpi: 0
       };
 
-      _.each(data, function(kpi){
+      _.each(data, function(kpi, index){
         if (kpi.columns) {
           var dataType = kpi.columns[0];
 
@@ -126,7 +126,9 @@ define([
       });
 
       // DPI cheat
-      kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000);
+      if (kpis.power > 0 && kpis.irradiance) {
+        kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000);
+      }
 
       this.set('kpis', kpis);
     },

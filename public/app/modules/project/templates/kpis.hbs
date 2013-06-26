@@ -19,7 +19,7 @@
     <div class="label">Power</div>
     <div class="value">{{ unitConversion kpis.power 'k' }} <span class="unit">kWh</span></div>
     <div class="indicator">
-      <div class="bar"><span style="width:{{ percent kpis.power dc_capacity }}%;"></span></div>
+      <div class="bar"><span style="width:{{ percent kpis.power dc_capacity null 0 }}%;"></span></div>
       <div class="legend">
         <span class="min">0</span>
         <span class="max">{{ unitConversion dc_capacity 'k' }} kWh</span>
@@ -39,7 +39,7 @@
   </div>
   <div class="snapshot dpi">
     <div class="label">DPI</div>
-    <div class="value">{{ kpis.dpi }} <span class="unit">%</span></div>
+    <div class="value">{{ roundNumber kpis.dpi 0 }} <span class="unit">%</span></div>
     <div class="indicator">
       <div class="bar"><span style="width:{{ percent kpis.dpi 100 100 }}%;"></span></div>
       <div class="legend">
