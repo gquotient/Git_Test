@@ -7,16 +7,7 @@ define([
   'ia',
 
   'layouts/helpers',
-  'layouts/main',
-  'layouts/portfolioDashboard',
-  'layouts/portfolioDetail',
-  'layouts/projectCreator',
-  'layouts/projectEditor',
-  'layouts/projectDetail',
-  'layouts/projectDevices',
-  'layouts/projectIssues',
-  'layouts/profile',
-  'layouts/admin'
+  'layouts/main'
 ], function(
   $,
   _,
@@ -26,16 +17,8 @@ define([
   ia,
 
   Helpers,
-  MainLayout,
-  PortfolioDashboardLayout,
-  PortfolioDetailLayout,
-  ProjectCreatorLayout,
-  ProjectEditorLayout,
-  ProjectDetailLayout,
-  ProjectDevicesLayout,
-  ProjectIssuesLayout,
-  ProfileLayout,
-  AdminLayout
+  MainLayout
+
 ){
   var RouteController = Backbone.Marionette.Controller.extend({
     index: function(){
@@ -52,15 +35,12 @@ define([
 
     portfolioDashboard: function(id){
       var portfolio = this.findPortfolio(id);
-
-      Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolioDashboard'});
-
-      this.contentLayout = new PortfolioDashboardLayout({model: portfolio, app: ia});
-      this.mainLayout.mainContent.show(this.contentLayout);
+      this.mainLayout.showPortfolioDashboard(this.contentLayout);
     },
 
     portfolioDetail: function(id){
       var portfolio = this.findPortfolio(id);
+      Backbone.trigger('reset:breadcrumbs', {model: portfolio, display_name: portfolio.get('display_name'), state: 'portfolio'})
       this.mainLayout.showPortfolio(portfolio);
     },
 
@@ -69,8 +49,7 @@ define([
     },
 
     projectCreate: function(){
-      this.contentLayout = new ProjectCreatorLayout();
-      this.mainLayout.mainContent.show(this.contentLayout);
+      this.mainLayout.showProjectCreate();
     },
 
     projectEdit: function(id){
@@ -78,12 +57,11 @@ define([
 
       if (!project) {
         ia.projects.add({label: id});
-        project = ia.projects.get(id);
+        project = this.findProject(id);
       }
 
       if (project) {
-        this.contentLayout = new ProjectEditorLayout({model: project});
-        this.mainLayout.mainContent.show(this.contentLayout);
+        this.mainLayout.showProjectEdit(project);
       }
     },
 
@@ -94,32 +72,20 @@ define([
 
     projectDevices: function(id, deviceId){
       var project = this.findProject(id);
-
-      this.contentLayout = new ProjectDevicesLayout({model: project, currentDevice: deviceId});
-      this.mainLayout.mainContent.show(this.contentLayout);
+      this.mainLayout.showProjectDevices(project, deviceId);
     },
 
     projectIssues: function(id, issueId){
       var project = this.findProject(id);
-
-      console.log(project);
-
-      this.contentLayout = new ProjectIssuesLayout({model: project, currentIssue: issueId});
-      this.mainLayout.mainContent.show(this.contentLayout);
+      this.mainLayout.showProjectIssues(project, issueId);
     },
 
     profile: function(){
-      Backbone.trigger('set:breadcrumbs', {model: {display_name: 'Profile'}, state: 'profile' });
-
-      this.contentLayout = new ProfileLayout( {model: ia.currentUser });
-      this.mainLayout.mainContent.show(this.contentLayout);
+      this.mainLayout.showProfile();
     },
 
     admin: function(page, detail){
-      Backbone.trigger('reset:breadcrumbs', {name: 'Admin'});
-
-      this.contentLayout = new AdminLayout({ initialView: page, currentUser: ia.currentUser });
-      this.mainLayout.mainContent.show(this.contentLayout);
+      this.mainLayout.showAdmin(page, detail);
     },
 
     initialize: function(){

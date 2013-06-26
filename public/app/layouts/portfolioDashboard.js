@@ -36,8 +36,9 @@ define([
     },
 
     initialize: function(options){
-    //   this.stopListening();
-      console.log(options);
+      var portfolio = options.model;
+      Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolioDashboard', display_name: portfolio.get('display_name')});
+
       if (this.currentState !== 'portfolioDashboard') {
 
         this.projectList = options.model.projects.clone();
