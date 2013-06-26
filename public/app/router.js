@@ -40,6 +40,7 @@ define([
 
     portfolioDetail: function(id){
       var portfolio = this.findPortfolio(id);
+      Backbone.trigger('reset:breadcrumbs', {model: portfolio, display_name: portfolio.get('display_name'), state: 'portfolio'})
       this.mainLayout.showPortfolio(portfolio);
     },
 
