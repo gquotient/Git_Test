@@ -33,7 +33,7 @@ module.exports = function(app){
       }
     }));
 
-  app.post('/api/teams', ensureAuthorized(['vendor_admin', 'admin']),
+  app.post('/api/teams', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
     makeRequest({
       path: '/res/teams'
     }));
@@ -44,7 +44,7 @@ module.exports = function(app){
     }));
 
   app.put('/api/teams/current', function(req, res){
-      req.session.team_label = req.body.team_label
+      req.session.team_label = req.body.team_label;
       res.send(200);
     });
 
@@ -57,4 +57,4 @@ module.exports = function(app){
     makeRequest({
       path: '/res/userteammgt'
     }));
-}
+};

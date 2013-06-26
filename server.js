@@ -64,6 +64,17 @@ app.configure('development', function(){
   app.set('modelUrl', 'http://127.0.0.1:8433');
 });
 
+app.configure('development-local-auth', function(){
+  console.log('Using Development');
+  app.use(express.errorHandler());
+  app.set('clientID', 'IA6_0.1');
+  app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
+  app.set('callbackURL', 'http://127.0.0.1:' + app.get('port') + '/token');
+  app.set('authPort', 8431);
+  app.set('modelUrl', 'http://model.stage.intelligentarray.com');
+  app.set('dataUrl', 'http://data.stage.intelligentarray.com');
+});
+
 app.configure('development-remote', function(){
   console.log('Using Remote');
   app.use(express.errorHandler());
