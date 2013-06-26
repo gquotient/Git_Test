@@ -13,6 +13,10 @@ function(
     return result;
   };
 
+  Handlebars.registerHelper('roundNumber', function(value, decimal) {
+    return roundNumber(value, decimal);
+  });
+
   Handlebars.registerHelper('unitConversion', function(value, factor) {
     var factors = {
       M: 1000000,
@@ -29,8 +33,10 @@ function(
     }
   });
 
-  Handlebars.registerHelper('percent', function(value, max){
-    return value / max * 100;
+  Handlebars.registerHelper('percent', function(value, max, peak){
+    var percent = value / max * 100;
+
+    return (typeof peak === 'number') ? Math.min(percent, peak) : percent;
   });
 
   Handlebars.registerHelper('equal', function(argLeft, argRight, options) {
