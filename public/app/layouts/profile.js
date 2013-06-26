@@ -35,7 +35,7 @@ define([
 
     initialize: function(options){
 
-      Backbone.trigger('set:breadcrumbs', {display_name: 'Profile', state: 'profile' });
+      Backbone.trigger('reset:breadcrumbs', {display_name: 'Profile', state: 'profile' });
       this.user = options.model;
 
     }
