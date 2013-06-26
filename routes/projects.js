@@ -15,7 +15,7 @@ module.exports = function(app){
   app.get('/api/projects',
     function(req, res){
       var project_label = req.query.project_label,
-        project = {devices: [], specs: [], rels: []};
+        project = {devices: [], rels: []};
 
       if (project_label) {
         request({
@@ -42,14 +42,10 @@ module.exports = function(app){
             body = JSON.parse(body);
 
             _.each(body.devices, function(node){
-
               if (/^PV[ASC]/.test(node.did)) {
-                _.extend(project, _.omit(node, 'devices', 'specs', 'rels'));
+                _.extend(project, _.omit(node, 'devices', 'rels'));
 
-              } else if (/^EQT/.test(node.did)) {
-                project.specs.push(node);
-
-              } else {
+              } else if (!/^EQT/.test(node.did)) {
                 node.project_label = project_label;
 
                 if (node.renderings) {

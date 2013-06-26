@@ -8,7 +8,6 @@ module.exports = function(app){
   require('./routes/portfolios')(app);
   require('./routes/projects')(app);
   require('./routes/session')(app);
-  require('./routes/specs')(app);
   require('./routes/teams')(app);
   require('./routes/user')(app);
 };
