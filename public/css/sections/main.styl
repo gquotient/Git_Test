@@ -287,6 +287,19 @@ header {
       transition:.2s;
     }
   }
+  ul.issues-list {
+    li {
+      overflow: ellipsis;
+      span.statusIndicator {
+        margin-right: 6px;
+      }
+    }
+    > .active {
+      border-right: 3px solid colorDrakerOrange;
+      color: colorPrimaryText;
+      transition:.2s;
+    }
+  }
   > ul.devices {
     border: none;
     background: none;
@@ -681,6 +694,9 @@ header {
   &.issues {
     table {
       border: none;
+      tr {
+        cursor: pointer;
+      }
     }
     > div {
       position: relative;
