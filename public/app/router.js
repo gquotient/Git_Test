@@ -55,7 +55,7 @@ define([
     },
 
     projectEdit: function(id){
-      var project = this.findProject(id) || {label: id}
+      var project = this.findProject(id) || {label: id};
       this.mainLayout.showProjectEdit(project);
     },
 
