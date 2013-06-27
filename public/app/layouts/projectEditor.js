@@ -49,7 +49,9 @@ define([
     },
 
     onShow: function(){
-      this.overlay.show( new Project.views.Editor({model: this.model}) );
+      this.overlay.show( new Project.views.Editor({
+        model: this.model
+      }));
     },
 
     onClose: function(){

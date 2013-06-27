@@ -55,7 +55,7 @@ define([
 
       this.listenTo(Backbone, 'reset:breadcrumbs', function(model){
         this.resetBreadcrumbs(model);
-      })
+      });
 
     },
 

@@ -26,11 +26,7 @@ define([
     },
 
     findPortfolio: function(id){
-      if (!id || id === 'all') {
-        return ia.portfolios.findWhere({label: 'ALL'});
-      } else {
-        return ia.portfolios.get(id);
-      }
+      return ia.portfolios.get(id) || ia.allPortfolio;
     },
 
     portfolioDashboard: function(id){
@@ -40,7 +36,13 @@ define([
 
     portfolioDetail: function(id){
       var portfolio = this.findPortfolio(id);
-      Backbone.trigger('reset:breadcrumbs', {model: portfolio, display_name: portfolio.get('display_name'), state: 'portfolio'})
+
+      Backbone.trigger('reset:breadcrumbs', {
+        state: 'portfolio',
+        display_name: portfolio.get('display_name'),
+        model: portfolio
+      });
+
       this.mainLayout.showPortfolio(portfolio);
     },
 
@@ -54,20 +56,12 @@ define([
 
     projectEdit: function(id){
       var project = this.findProject(id);
-
-      if (!project) {
-        ia.projects.add({label: id});
-        project = this.findProject(id);
-      }
-
-      if (project) {
-        this.mainLayout.showProjectEdit(project);
-      }
+      this.mainLayout.showProjectEdit(project);
     },
 
     projectDetail: function(id){
       var project = this.findProject(id);
-      this.mainLayout.showProject(project, ia.projects);
+      this.mainLayout.showProject(project);
     },
 
     projectDevices: function(id, deviceId){

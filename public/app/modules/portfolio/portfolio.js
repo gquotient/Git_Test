@@ -41,48 +41,18 @@ define([
     kpis: ['dc_capacity', 'ac_capacity'],
 
     initialize: function(options){
-      this.createCollections();
+      this.projects = new Project.Collection([], {comparator: 'display_name'});
 
-      // this.listenTo(this.portfolios, 'add remove', function(model){
-      //   this.set('total_portfolios', this.portfolios.length);
-      // });
+      _.each(this.get('projects'), function(project){
+        project = this.collection.projects.get(project);
 
-      this.listenTo(this.projects, 'add remove', function(model){
-        this.set('total_projects', this.projects.length);
-        this.set(this.aggregateKpis());
-      });
-    },
-
-    createCollections: function(){
-      var rootProjects = this.collection.projects;
-      // this.portfolios = new Portfolio.Collection([], {root: root});
-      this.projects = new Project.Collection([],{comparator: 'display_name'});
-
-      // this.listenTo(root.portfolios, 'add', function(model){
-      //   if (_.contains(this.get('subPortfolioIDs'), model.id)) {
-      //     this.addPortfolio(model);
-      //   }
-      // });
-
-      this.listenTo(rootProjects, 'add', function(model){
-        if (_.contains(this.get('projects'), model.id)) {
-          this.addProject(model);
+        if (project) {
+          this.projects.add(project);
         }
-      });
-    },
+      }, this);
 
-    // addPortfolio: function(portfolio){
-    //   this.portfolios.add(portfolio, {merge: true});
-
-    //   this.portfolios.add(portfolio.portfolios.models, {merge: true});
-    //   this.projects.add(portfolio.projects.models, {merge: true});
-
-    //   this.listenTo(portfolio.portfolios, 'add', this.addPortfolio);
-    //   this.listenTo(portfolio.projects, 'add', this.addProject);
-    // },
-
-    addProject: function(project){
-      this.projects.add(project, {merge: true});
+      this.set('total_projects', this.projects.length);
+      this.set(this.aggregateKpis());
     },
 
     aggregateKpis: function(){
@@ -99,17 +69,6 @@ define([
       }, {});
     }
   });
-
-  // Portfolio.Root = Portfolio.Model.extend({
-  //   createCollections: function(){
-  //     this.portfolios = new Portfolio.Collection([], {
-  //       url: '/api/portfolios',
-  //       root: this
-  //     });
-
-  //     this.projects = new Project.Collection();
-  //   }
-  // });
 
   Portfolio.Collection = Backbone.Collection.extend({
     model: Portfolio.Model,
