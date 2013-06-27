@@ -111,7 +111,12 @@ define([
       var kpis = {
         irradiance: 0,
         power: 0,
-        dpi: 0
+        dpi: 0,
+        energyYTD: {
+          generated: 0,
+          forecast: 0,
+          modeled: 0
+        }
       };
 
       _.each(data, function(kpi, index){
