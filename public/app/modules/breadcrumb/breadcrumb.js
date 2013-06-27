@@ -16,7 +16,9 @@ define([
   var Breadcrumb = { views: {} };
 
   Breadcrumb.Model = Backbone.Model.extend({
-
+    is: function(model){
+      return model.get('display_name') === this.get('display_name') && model.get('state') === this.get('state');
+    }
   });
 
   Breadcrumb.Collection = Backbone.Collection.extend({
@@ -31,15 +33,24 @@ define([
       // Set the collection as the new list of models
       this.set(models);
     },
+    hasModel: function(model){
+      var containsModel = false;
+      this.each(function(breadcrumbModel){
+        if( breadcrumbModel.is(model) ){
+          containsModel = true;
+        }
+      });
 
+      return containsModel;
+      // return model.display_name === this.display_name && model.state === this.state;
+    },
     update: function(model){
       this.pop();
       this.push(model);
     },
 
     advance: function(model){
-      var models = this.pluck('model');
-      if (_.contains(models, model.get('model')) ) {
+      if ( this.hasModel(model) ) {
         this.prune(model);
       } else {
         this.add(model);
@@ -55,9 +66,6 @@ define([
     },
     triggers: {
       'click': 'prune'
-    },
-    serializeData: function(){
-      return this.model.get('model').toJSON();
     }
   });
 

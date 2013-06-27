@@ -65,7 +65,7 @@ app.configure('development', function(){
 });
 
 app.configure('development-local-auth', function(){
-  console.log('Using Development');
+  console.log('Using Development with Local Auth');
   app.use(express.errorHandler());
   app.set('clientID', 'IA6_0.1');
   app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');

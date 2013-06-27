@@ -141,6 +141,7 @@ define([
     },
 
     initialize: function(options){
+      Backbone.trigger('reset:breadcrumbs', {state:'admin', display_name: 'Admin'})
       this.detail = this.options.detail;
 
       this.initialView = options.initialView || 'users';

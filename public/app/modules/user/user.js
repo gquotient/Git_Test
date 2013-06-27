@@ -60,7 +60,7 @@ function(
   });
 
   User.AllUsers = User.Collection.extend({
-    url: '/api/users?org_label=None'
+    url: '/api/users?org_label=ALL'
   });
 
   User.TeamUsers = User.Collection.extend({

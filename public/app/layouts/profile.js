@@ -34,7 +34,10 @@ define([
     },
 
     initialize: function(options){
+
+      Backbone.trigger('reset:breadcrumbs', {display_name: 'Profile', state: 'profile' });
       this.user = options.model;
+
     }
   });
 });
