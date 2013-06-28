@@ -12,7 +12,8 @@
         'init'
       ],
       exclude: [
-        'components/requirejs/require'
+        'components/requirejs/require',
+        'paper'
       ]
     }
   ],
