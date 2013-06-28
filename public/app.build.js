@@ -1,7 +1,7 @@
 ({
   baseUrl: '.',
   appDir: 'app',
-  dir: 'app',
+  dir: 'app.build',
 
   mainConfigFile: 'app/config.js',
 
