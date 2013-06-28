@@ -87,8 +87,8 @@ define([
       this.listenTo(Backbone, 'editor:rendering', function(label){
         this.content.show( new Device.views.Canvas({
           collection: this.model.devices,
-          rendering_label: label,
-          read_only: false
+          rendering: label,
+          editable: true
         }));
       });
     }

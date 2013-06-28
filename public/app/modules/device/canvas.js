@@ -35,7 +35,7 @@ define([
         this.device = options.device;
 
         this.paper = options.paper || paper;
-        this.rendering_label = options.rendering_label;
+        this.rendering = options.rendering;
 
         this.style = relationshipStyles[options.relationship] || relationshipStyles.DEFAULT;
 
@@ -86,11 +86,11 @@ define([
       },
 
       startPoint: function(){
-        return new this.paper.Point(this.device.getPosition(this.rendering_label));
+        return new this.paper.Point(this.device.getPosition(this.rendering));
       },
 
       endPoint: function(){
-        return new this.paper.Point(this.model.getPosition(this.rendering_label));
+        return new this.paper.Point(this.model.getPosition(this.rendering));
       },
 
       move: function(){
@@ -133,7 +133,7 @@ define([
         this.collection = this.model.outgoing;
 
         this.paper = options.paper || paper;
-        this.rendering_label = options.rendering_label;
+        this.rendering = options.rendering;
 
         this.factory = symbolLibrary(this.paper);
         this.setCenter();
@@ -157,7 +157,7 @@ define([
         return {
           device: this.model,
           paper: this.paper,
-          rendering_label: this.rendering_label,
+          rendering: this.rendering,
           relationship: item.getRelationship(this.model)
         };
       },
@@ -166,8 +166,8 @@ define([
       addItemView: function(item){
         if (this.children.findByModel(item)) { return; }
 
-        if (!item.getPosition(this.rendering_label)) { return; }
-        if (!item.getRelationship(this.model, this.rendering_label)) { return; }
+        if (!item.getPosition(this.rendering)) { return; }
+        if (!item.getRelationship(this.model, this.rendering)) { return; }
 
         Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
       },
@@ -228,7 +228,7 @@ define([
 
       setCenter: function(){
         var orig = this.center,
-          point = this.center = new this.paper.Point(this.model.getPosition(this.rendering_label)),
+          point = this.center = new this.paper.Point(this.model.getPosition(this.rendering)),
           delta = point.subtract(orig);
 
         if (this.node) { this.node.translate(delta); }
@@ -254,8 +254,7 @@ define([
 
     initialize: function(options){
       this.paper = paper.setup(this.el);
-      this.rendering_label = options.rendering_label;
-      this.read_only = options.read_only;
+      this.rendering = options.rendering;
 
       this.selection = new Backbone.Collection();
 
@@ -281,7 +280,7 @@ define([
     itemViewOptions: function(){
       return {
         paper: this.paper,
-        rendering_label: this.rendering_label
+        rendering: this.rendering
       };
     },
 
@@ -289,7 +288,7 @@ define([
     addItemView: function(item){
       if (this.children.findByModel(item)) { return; }
 
-      if (!item.getPosition(this.rendering_label)) { return; }
+      if (!item.getPosition(this.rendering)) { return; }
 
       Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
     },
@@ -394,7 +393,7 @@ define([
         this.moveSelect(e.projectPoint);
 
       // Otherwise move any models currently selected if not read only.
-      } else if (!this.read_only) {
+      } else if (this.options.editable) {
         this.moveSelection(e.projectDelta);
       }
     },
@@ -414,7 +413,7 @@ define([
         this.eraseSelect();
 
       // Otherwise snap any models that may have moved if not read only.
-      } else if (!this.read_only) {
+      } else if (this.options.editable) {
         this.snapSelection();
       }
     },
@@ -450,9 +449,9 @@ define([
 
     moveSelection: function(delta){
       this.selection.each(function(model) {
-        var position = model.getPosition(this.rendering_label);
+        var position = model.getPosition(this.rendering);
 
-        model.setPosition(this.rendering_label, {
+        model.setPosition(this.rendering, {
           x: position.x + delta.x,
           y: position.y + delta.y
         });
@@ -461,9 +460,9 @@ define([
 
     snapSelection: function(){
       this.selection.each(function(model) {
-        var position = model.getPosition(this.rendering_label);
+        var position = model.getPosition(this.rendering);
 
-        model.setPosition(this.rendering_label, {
+        model.setPosition(this.rendering, {
           x: Math.round(position.x / 100) * 100,
           y: Math.round(position.y / 100) * 100
         }, true);
