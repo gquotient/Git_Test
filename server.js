@@ -50,7 +50,7 @@ app.configure(function(){
   app.use(passport.session());
   app.use(flash());
   app.use(app.router);
-  //app.use('/public', express.static(path.join(__dirname, 'public')));
+  app.use('/public', express.static(path.join(__dirname, 'public')));
 });
 
 app.configure('development', function(){
