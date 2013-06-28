@@ -93,7 +93,7 @@ app.configure('stage', function(){
   console.log('Using Stage');
   app.use(express.errorHandler());
   app.set('clientID', 'IA6_0.1');
-  app.set('PORT', 80);
+  app.set('port', 80);
   app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
   app.set('callbackURL', 'http://app.stage.intelligentarray.com:' + app.get('port') + '/token');
   app.set('authorizationURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/auth');
