@@ -106,7 +106,12 @@ define([
       var kpis = {
         irradiance: 0,
         power: 0,
-        dpi: 0
+        dpi: 0,
+        energyYTD: {
+          generated: 0,
+          forecast: 0,
+          modeled: 0
+        }
       };
 
       _.each(data, function(kpi, index){
@@ -497,7 +502,7 @@ define([
       // add an OpenStreetMap tile layer
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-      }).addTo(map);
+      }).addTo(map).setOpacity(0.99);
 
       this.markers = new L.layerGroup([]);
 

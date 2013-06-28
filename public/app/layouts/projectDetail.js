@@ -193,6 +193,8 @@ define([
     },
 
     initialize: function(options){
+
+      console.log(this.model);
       // Instantiate map
       this.mapView = new Project.views.Map({
         collection: new Project.Collection()
