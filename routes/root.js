@@ -43,6 +43,7 @@ module.exports = function(app){
         var myUserDef = Q.defer();
         // console.log('user')
         request(requestOptions, function(error, response, userJSON){
+          console.log(arguments);
           var user = JSON.parse(userJSON);
           // Until we have a default team option for the user, assume first team or last selected.
           req.session.team_label = req.session.team_label || user.teams[0][0]
