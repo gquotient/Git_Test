@@ -180,15 +180,7 @@ define([
   });
 
   Project.Collection = Backbone.Collection.extend({
-    model: Project.Model,
-    initialize: function(){
-      this.sort_order = 'display_name';
-    },
-    // comparator: 'display_name',
-    findBySiteLabel: function(label){
-      var projects = this.where({site_label: label});
-      return projects.length === 1 ? projects[0] : null;
-    }
+    model: Project.Model
   });
 
   Project.views.DataListItem = Marionette.ItemView.extend({
@@ -603,7 +595,6 @@ define([
 
     events: {
       'change #project-sort': function(){
-        // this.collection.sort_order = $('#project-sort').val();
         this.collection.comparator = $('#project-sort').val();
         this.collection.sort();
       }

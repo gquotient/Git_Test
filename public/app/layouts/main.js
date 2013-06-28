@@ -58,59 +58,93 @@ define([
     },
 
     onShow: function(){
+      var portfolio = this.app.allPortfolio;
+
       this.header.show(this.headerView);
       this.breadcrumbs.show(this.navigationView);
-      var allPortfolio = this.app.portfolios.findWhere({label: 'ALL'});
-      Backbone.trigger('set:breadcrumbs', { model: allPortfolio, state: 'portfolio', display_name: allPortfolio.get('display_name')});
+
+      Backbone.trigger('set:breadcrumbs', {
+        state: 'portfolio',
+        display_name: portfolio.get('display_name'),
+        model: portfolio
+      });
     },
 
     showPortfolio: function(portfolio){
       this.activePortfolio = portfolio;
 
-      var contentLayout = new PortfolioDetailLayout({model: portfolio, portfolios: this.app.portfolios, settingsRegion: this.pageSettings});
-      this.mainContent.show(contentLayout);
+      this.mainContent.show( new PortfolioDetailLayout({
+        model: portfolio,
+        portfolios: this.app.portfolios,
+        settingsRegion: this.pageSettings
+      }));
     },
 
     showPortfolioDashboard: function(portfolio){
-      var contentLayout = new PortfolioDashboardLayout({model: portfolio, app: this.app});
-      this.mainContent.show(contentLayout);
+      this.mainContent.show( new PortfolioDashboardLayout({
+        model: portfolio,
+        app: this.app
+      }));
     },
 
     showProject: function(project){
-      var contentLayout = new ProjectDetailLayout({model: project, collection: this.activePortfolio.projects, settingsRegion: this.pageSettings});
-      this.mainContent.show(contentLayout);
+      this.mainContent.show( new ProjectDetailLayout({
+        model: project,
+        collection: this.activePortfolio.projects,
+        settingsRegion: this.pageSettings
+      }));
     },
 
     showProjectCreate: function(){
-      this.mainContent.show(new ProjectCreatorLayout());
+      this.mainContent.show( new ProjectCreatorLayout({
+        projects: this.app.projects
+      }));
     },
 
     showProjectEdit: function(project){
-      var contentLayout = new ProjectEditorLayout({model: project});
-      this.mainContent.show(contentLayout);
+      this.mainContent.show( new ProjectEditorLayout({
+        model: project
+      }));
     },
 
-    showProjectIssues: function(project, issue){
-      Backbone.trigger('set:breadcrumbs', {model: project, state: 'project', display_name: project.get('display_name')});
-      var issueLayout = new ProjectIssuesLayout({model: project, currentIssue: issue, app: this.app});
-      this.mainContent.show(issueLayout);
+    showProjectIssues: function(project, issueId){
+      Backbone.trigger('set:breadcrumbs', {
+        state: 'project',
+        display_name: project.get('display_name'),
+        model: project
+      });
+
+      this.mainContent.show( new ProjectIssuesLayout({
+        model: project,
+        currentIssue: issueId,
+        app: this.app
+      }));
     },
 
     showProjectDevices: function(project, deviceId){
-      Backbone.trigger('set:breadcrumbs', {model: project, state: 'project', display_name: project.get('display_name')});
-      var deviceLayout = new ProjectDevicesLayout({model: project, currentDevice: deviceId});
-      this.mainContent.show(deviceLayout);
+      Backbone.trigger('set:breadcrumbs', {
+        state: 'project',
+        display_name: project.get('display_name'),
+        model: project
+      });
+
+      this.mainContent.show( new ProjectDevicesLayout({
+        model: project,
+        currentDevice: deviceId
+      }));
     },
 
     showProfile: function(){
-      var contentLayout = new ProfileLayout({ model: this.app.currentUser });
-      this.mainContent.show(contentLayout);
+      this.mainContent.show( new ProfileLayout({
+        model: this.app.currentUser
+      }));
     },
 
     showAdmin: function(page, detail){
-      var contentLayout = new AdminLayout({ initialView: page, currentUser: this.app.currentUser });
-      this.mainContent.show(contentLayout);
-
+      this.mainContent.show( new AdminLayout({
+        initialView: page,
+        currentUser: this.app.currentUser
+      }));
     },
 
     switchTeam: function(teamLabel){
@@ -130,10 +164,7 @@ define([
     },
 
     toggleNotificationBanner: function(){
-      var
-        that = this,
-        notification = new Message.views.notificationBanner({parentRegion: this.banner})
-      ;
+      var notification = new Message.views.notificationBanner({parentRegion: this.banner});
 
       this.banner.show(notification);
 
@@ -143,10 +174,10 @@ define([
     },
 
     initialize: function(options){
-      var that = this;
       this.app = options.app;
 
-      this.activePortfolio = this.app.portfolios.findWhere({label: 'ALL'});
+      this.activePortfolio = this.app.allPortfolio;
+
       // Build header
       this.headerView = new Header({model: options.currentUser});
 

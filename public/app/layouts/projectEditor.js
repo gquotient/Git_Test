@@ -65,6 +65,10 @@ define([
       var model = this.model = options.model,
         equipment = this.equipment = new Equipment.Collection();
 
+      if (!(model instanceof Backbone.Model)) {
+        model = this.model = new Project.Model(model);
+      }
+
       equipment.fetch().done(function(){
         model.fetch({
           data: {
