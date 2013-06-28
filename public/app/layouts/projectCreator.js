@@ -3,7 +3,6 @@ define([
   'backbone.marionette',
   'handlebars',
 
-  'ia',
   'project',
 
   'hbs!layouts/templates/projectCreator'
@@ -12,7 +11,6 @@ define([
   Marionette,
   Handlebars,
 
-  ia,
   Project,
 
   projectCreatorTemplate
@@ -37,12 +35,13 @@ define([
     },
 
     initialize: function(options){
+      var projects = options.projects;
+
       this.model = new Project.Model();
 
       // Set up listeners
       this.listenTo(Backbone, 'create:project', function(model){
-        ia.projects.addProject(model);
-        Backbone.trigger('reset:breadcrumbs', model);
+        projects.add(model);
         Backbone.history.navigate('/project/' + model.id + '/edit', true);
       });
     }

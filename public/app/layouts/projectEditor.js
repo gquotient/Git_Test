@@ -49,7 +49,9 @@ define([
     },
 
     onShow: function(){
-      this.overlay.show( new Project.views.Editor({model: this.model}) );
+      this.overlay.show( new Project.views.Editor({
+        model: this.model
+      }));
     },
 
     onClose: function(){
@@ -57,7 +59,11 @@ define([
     },
 
     initialize: function(options){
-      this.model = options.model;
+      if (options.model instanceof Backbone.Model) {
+        this.model = options.model;
+      } else {
+        this.model = new Project.Model(options.model);
+      }
 
       // Fetch additional project information for editing.
       this.model.fetch({data: {
