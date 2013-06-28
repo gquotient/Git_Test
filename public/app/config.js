@@ -89,6 +89,11 @@ require.config({
       name: 'library',
       main: 'library',
       location: 'modules/library'
+    },
+    {
+      name: 'equipment',
+      main: 'equipment',
+      location: 'modules/equipment'
     }
   ],
   paths: {

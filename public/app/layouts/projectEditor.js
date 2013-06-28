@@ -6,6 +6,7 @@ define([
 
   'project',
   'device',
+  'equipment',
 
   'hbs!layouts/templates/projectEditor'
 ], function(
@@ -16,6 +17,7 @@ define([
 
   Project,
   Device,
+  Equipment,
 
   projectEditorTemplate
 ){
@@ -49,7 +51,10 @@ define([
     },
 
     onShow: function(){
-      this.overlay.show( new Project.views.Editor({model: this.model}) );
+      this.overlay.show( new Project.views.Editor({
+        model: this.model,
+        equipment: this.equipment
+      }));
     },
 
     onClose: function(){
@@ -57,13 +62,18 @@ define([
     },
 
     initialize: function(options){
-      this.model = options.model;
+      var model = this.model = options.model,
+        equipment = this.equipment = new Equipment.Collection();
 
-      // Fetch additional project information for editing.
-      this.model.fetch({data: {
-        project_label: this.model.get('label'),
-        index: 'AlignedProjects/no'
-      }});
+      equipment.fetch().done(function(){
+        model.fetch({
+          data: {
+            project_label: model.get('label'),
+            index: 'AlignedProjects/no'
+          },
+          equipment: equipment
+        });
+      });
 
       // Set up events on document.
       this.$doc = $(document);

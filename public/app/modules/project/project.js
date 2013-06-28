@@ -133,9 +133,9 @@ define([
       this.set('kpis', kpis);
     },
 
-    parse: function(resp){
+    parse: function(resp, options){
       if (resp.devices) {
-        this.devices.reset(resp.devices);
+        this.devices.reset(resp.devices, _.pick(options, 'equipment'));
 
         if (resp.rels) {
           _.each(resp.rels, function(rel) {

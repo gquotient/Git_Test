@@ -34,11 +34,20 @@ define([
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
 
-    initialize: function(){
+    initialize: function(attrs, options){
       this.relationships = {};
 
       this.outgoing = new Device.Collection();
       this.incoming = new Device.Collection();
+
+      this.equipment = this.findEquipment(options.equipment);
+    },
+
+    findEquipment: function(coll){
+      var equip = this.get('equipment'),
+        did = this.get('did');
+
+      return coll.get(equip) || coll.findWhere({label: did.replace(/-\d*$/, '')});
     },
 
     getType: function(){
