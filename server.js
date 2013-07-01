@@ -71,6 +71,7 @@ app.configure('development-local-auth', function(){
   app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
   app.set('callbackURL', 'http://127.0.0.1:' + app.get('port') + '/token');
   app.set('authPort', 8431);
+  app.set('authUrl', '127.0.0.1');
   app.set('modelUrl', 'http://model.stage.intelligentarray.com');
   app.set('dataUrl', 'http://data.stage.intelligentarray.com');
 });
@@ -98,7 +99,7 @@ app.configure('stage', function(){
   app.set('authorizationURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/auth');
   app.set('tokenURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/token');
   app.set('authPort', 80);
-  app.set('authUrl', 'http://auth.stage.intelligentarray.com');
+  app.set('authUrl', 'auth.stage.intelligentarray.com');
   app.set('modelUrl', 'http://model.stage.intelligentarray.com');
   app.set('dataUrl', 'http://data.stage.intelligentarray.com');
 });
