@@ -94,7 +94,8 @@ module.exports = function(app){
           }),
           portfolios: myPortfolios,
           projects: JSON.stringify(JSON.parse(myProjects).projects),
-          locale: req.user.locale || req.acceptedLanguages[0].toLowerCase()
+          locale: req.user.locale || req.acceptedLanguages[0].toLowerCase(),
+          staticDir: app.get('staticDir') || 'app'
         });
       });
 

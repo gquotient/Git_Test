@@ -102,6 +102,7 @@ app.configure('stage', function(){
   app.set('authUrl', 'auth.stage.intelligentarray.com');
   app.set('modelUrl', 'http://model.stage.intelligentarray.com');
   app.set('dataUrl', 'http://data.stage.intelligentarray.com');
+  app.set('staticDir', 'app.build');
 });
 
 app.configure('development-vagrant', function(){
