@@ -39,15 +39,6 @@ define([
 
       this.outgoing = new Device.Collection();
       this.incoming = new Device.Collection();
-
-      this.equipment = this.findEquipment(options.equipment);
-    },
-
-    findEquipment: function(coll){
-      var equip = this.get('equipment'),
-        did = this.get('did');
-
-      return coll.get(equip) || coll.findWhere({label: did.replace(/-\d*$/, '')});
     },
 
     connectTo: function(target, rel){

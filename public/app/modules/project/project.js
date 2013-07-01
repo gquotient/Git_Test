@@ -140,7 +140,18 @@ define([
 
     parse: function(resp, options){
       if (resp.devices) {
-        this.devices.reset(resp.devices, _.pick(options, 'equipment'));
+        this.devices.reset(resp.devices);
+
+        if (options.equipment) {
+          this.devices.each(function(device){
+            var equip = options.equipment.findForDevice(device);
+
+            if (equip) {
+              device.equipment = equip;
+              device.trigger('equipment:add', device);
+            }
+          });
+        }
 
         if (resp.rels) {
           _.each(resp.rels, function(rel) {

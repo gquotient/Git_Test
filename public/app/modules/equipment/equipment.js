@@ -121,15 +121,18 @@ define([
 
     factory: function(project){
       var label = this.get('label'),
-        index = findNextIndex(label, project.devices.pluck('did'));
+        index = findNextIndex(label, project.devices.pluck('did')),
 
-      return new Device.Model({
-        project_label: project.get('label'),
-        did: label + '-' + index,
-        name: this.get('name') + ' ' + index
-      }, {
-        equipment: this.collection
-      });
+        device = new Device.Model({
+          equipment_label: this.get('label'),
+          project_label: project.get('label'),
+          did: label + '-' + index,
+          name: this.get('name') + ' ' + index
+        });
+
+      device.equipment = this;
+
+      return device;
     },
 
     addRootRenderings: function(device, project){
@@ -180,6 +183,16 @@ define([
 
     getRenderingLabels: function(){
       return _.keys(renderings);
+    },
+
+    findForDevice: function(device){
+      var label = device.get('equipment_label');
+
+      if (!label) {
+        label = device.get('did').replace(/-\d*$/, '');
+      }
+
+      return this.get(label);
     }
   });
 

@@ -276,6 +276,7 @@ define([
     },
 
     collectionEvents: {
+      'equipment:add': 'addChildView',
       'rendering:add': 'addChildView',
       'rendering:remove': 'removeItemView'
     },
