@@ -4,9 +4,6 @@ define([
   'backbone',
   'backbone.marionette',
 
-  'library',
-  'device',
-
   './editor_input',
 
   'hbs!project/templates/editor'
@@ -16,134 +13,10 @@ define([
   Backbone,
   Marionette,
 
-  library,
-  Device,
-
   InputView,
 
   editorTemplate
 ){
-
-  function findModel(device){
-    return library.findWhere({label: device.getType()});
-  }
-
-  function findRelatedModels(devices, props){
-    return devices.chain()
-
-      // Convert selection to a list of uniq library models
-      .map(findModel).compact().uniq()
-
-      // Map the models to related targets
-      .map(function(model){
-        var rels = model.get('relationships');
-
-        if (props) {
-          rels = rels.filter(function(rel){
-            return _.all(props, function(value, key){
-              if (key === 'rendering') {
-                return Device.Model.prototype.checkRelationship(rel.label, value);
-              }
-
-              return rel[key] === value;
-            });
-          });
-        }
-
-        return _.pluck(rels, 'target');
-      })
-
-      // Reduce the targets to a single common set
-      .take(function(arr){
-        return _.intersection.apply(this, arr);
-      })
-
-      // Map the targets to a list of uniq library models
-      .map(function(target){
-        return library.findWhere({label: target});
-      }).compact().uniq()
-
-      .value();
-  }
-
-  function findRelationshipLabel(device, target, rendering){
-    var model = findModel(device),
-      rel = _.findWhere(model && model.get('relationships'), {
-        target: target.getType(),
-        direction: 'INCOMING'
-      }),
-      label = rel && rel.label;
-
-    if (label && (!rendering || device.checkRelationship(label, rendering))) {
-      return label;
-    }
-  }
-
-  function findRendering(device, label){
-    var model = findModel(device);
-
-    if (model) {
-      return _.findWhere(model.get('renderings'), {label: label});
-    }
-  }
-
-  function findNextIndex(type, others){
-    var index = 1;
-
-    others.each(function(other){
-      var did = other.get('did'),
-        parts = did && did.split('-'),
-        num = parts && parseInt(parts[1], 10);
-
-      if (num && num >= index && parts[0] === type) {
-        index = num + 1;
-      }
-    });
-
-    return index;
-  }
-
-  function positionDevice(device, rendering, project, target){
-    var position;
-
-    if (rendering.root) {
-      position = _.clone(rendering.position);
-
-      if (position) {
-        project.devices.each(function(other){
-          var pos = other.getPosition(rendering.label);
-
-          if (pos && pos.y >= position.y) {
-            position.y = pos.y + 200;
-          }
-        });
-      }
-
-    } else if (target && target.getPosition) {
-      position = target.getPosition(rendering.label);
-
-      if (position && rendering.offset) {
-        position.x += rendering.offset.x || 0;
-        position.y += rendering.offset.y || 0;
-      }
-    }
-
-    function overlaps(other){
-      var pos = other.getPosition(rendering.label);
-
-      return pos && pos.x === position.x && pos.y === position.y;
-    }
-
-    if (position) {
-      while (project.devices.any(overlaps)) {
-        position.y += 100;
-      }
-
-      device.setPosition(rendering.label, position);
-    }
-  }
-
-
   return Marionette.ItemView.extend({
     tagName: 'form',
     template: {
@@ -155,11 +28,13 @@ define([
       id: 'editor'
     },
 
-    initialize: function(){
+    initialize: function(options){
+      this.equipment = options.equipment;
+
       this.viewCollection = new Backbone.Collection();
-      this.addCollection = new Backbone.Collection();
-      this.connectCollection = new Backbone.Collection();
-      this.disconnectCollection = new Backbone.Collection();
+      this.addCollection = new Backbone.Collection([], {comparator: 'name'});
+      this.connectCollection = new Backbone.Collection([], {comparator: 'name'});
+      this.disconnectCollection = new Backbone.Collection([], {comparator: 'name'});
 
       this.listenTo(Backbone, 'editor:selection', function(selection){
         this.selection = selection.length > 0 ? selection : null;
@@ -176,16 +51,14 @@ define([
       var project = this.model;
 
       devices.each(function(device){
-        var model = findModel(device);
+        var equip = device.equipment;
 
-        if (model) {
-          _.each(model.get('renderings'), function(rendering){
-            if (!device.getPosition(rendering.label)) {
-              if (rendering.root) {
-                positionDevice(device, rendering, project);
-              } else if (target && device.getRelationship(target, rendering.label)) {
-                positionDevice(device, rendering, project, target);
-              }
+        equip.addRootRenderings(device, project);
+
+        if (target) {
+          _.each(this.equipment.getRenderingLabels(), function(label){
+            if (!device.getPosition(label) && equip.getRelationship(target, label)) {
+              equip.addRelativeRendering(device, project, label, target);
             }
           });
         }
@@ -196,16 +69,14 @@ define([
     },
 
     checkName: function(device){
-      var model, did, index;
+      var did, index;
 
       if (!device.has('name')) {
-        model = findModel(device);
-
         did = device.get('did');
         index = did && parseInt(did.replace(/^.*-/, ''), 10);
 
-        if (model && index) {
-          device.set({name: model.get('name') + ' ' + index});
+        if (index) {
+          device.set({name: device.equipment.get('name') + ' ' + index});
         }
       }
     },
@@ -269,93 +140,71 @@ define([
     },
 
     onViewFocus: function(){
-      var renderings = [];
+      var views = [];
 
-      library.each(function(model){
-        _.each(model.get('renderings'), function(rendering){
-          var label = rendering.label;
-
-          if (label && !_.findWhere(renderings, {label: label})) {
-            renderings.push({
-              name: label[0].toUpperCase() + label.slice(1).toLowerCase(),
-              label: label
-            });
-          }
+      _.each(this.equipment.getRenderingLabels(), function(label){
+        views.push({
+          name: label[0].toUpperCase() + label.slice(1).toLowerCase(),
+          label: label
         });
       });
 
-      this.viewCollection.reset(renderings);
+      this.viewCollection.reset(views);
     },
 
     onAddFocus: function(){
-      var models = [];
+      var equipment = [];
 
-      if (this.selection) {
-        models = findRelatedModels(this.selection, {
-          direction: 'OUTGOING',
-          rendering: this.rendering_label
-        });
-      } else {
-        models = library.models;
-      }
+      this.equipment.each(function(equip){
 
-      models = _.chain(models)
+        // Don't include equipment that can't be rendered.
+        if (!equip.hasRendering(this.rendering)) { return; }
 
-        .filter(function(model){
-          var rendering;
+        if (!this.selection) {
 
-          rendering = _.findWhere(model.get('renderings'), {
-            label: this.rendering_label
-          });
+          // Don't include equipment that isn't root for this rendering.
+          if (!equip.isRoot(this.rendering)) { return; }
 
-          // Don't show devices that can't be rendered in current view
-          if (!rendering) {
-            return false;
-          }
+        } else {
 
-          return this.selection || rendering.root;
-        }, this)
+          // Don't include equipment that doesn't have a relationship for this rendering
+          // or that can't be added to the selected devices.
+          if (this.selection.any(function(select){
+            var rel = equip.getRelationship(select.equipment, this.rendering);
 
-        .sortBy(function(device){
-          return device.get('name');
-        })
+            return !rel || !select.equipment.outgoing.contains(equip);
+          }, this)) { return; }
+        }
 
-        .value();
+        equipment.push(equip);
+      }, this);
 
-      this.addCollection.reset(models);
+      this.addCollection.reset(equipment);
     },
 
     onConnectFocus: function(){
       var devices = [];
 
-      if (this.selection && this.selection.length > 0) {
-        devices = this.model.devices.chain()
+      if (this.selection) {
+        this.model.devices.each(function(device){
+          var equip = device.equipment;
 
-          .filter(function(device){
+          // Don't include selected devices.
+          if (this.selection.contains(device)) { return; }
 
-            // Don't show selected devices
-            if (this.selection.contains(device)) {
-              return false;
-            }
+          // Don't include devices that can't be rendered.
+          if (!equip.hasRendering(this.rendering)) { return; }
 
-            // Don't show devices that can't be rendered
-            if (!findRendering(device, this.rendering_label)) {
-              return false;
-            }
+          // Don't include devices that don't have a relationship for this rendering
+          // or are already children of the selected devices.
+          if (this.selection.any(function(select){
+            var rel = equip.getRelationship(select.equipment, this.rendering);
 
-            // Only show devices that have a relationship and aren't already children
-            return this.selection.all(function(select){
-              var rel = findRelationshipLabel(device, select, this.rendering_label);
+            return !rel || select.hasChild(device, rel);
+          }, this)) { return; }
 
-              return rel && !select.hasChild(device, rel);
-            }, this);
-          }, this)
-
-          .sortBy(function(device){
-            return device.get('name');
-          })
-
-          .value();
+          devices.push(device);
+        }, this);
       }
 
       this.connectCollection.reset(devices);
@@ -364,31 +213,26 @@ define([
     onDisconnectFocus: function(){
       var devices = [];
 
-      if (this.selection && this.selection.length > 0) {
-        devices = this.selection.chain()
+      if (this.selection) {
+        this.model.devices.each(function(device){
+          var equip = device.equipment;
 
-          // Map the outgoing devices for this rendering
-          .map(function(device){
-            return device.outgoing.filter(function(other){
-              return other.getRelationship(device, this.rendering_label);
-            }, this);
-          }, this)
+          // Don't include selected devices.
+          if (this.selection.contains(device)) { return; }
 
-          // Reduce the devices to a single common set
-          .take(function(arr){
-            return _.intersection.apply(this, arr);
-          })
+          // Don't include devices that don't have a relationship for this rendering
+          // or that don't share a connection with the selected devices.
+          if (this.selection.any(function(select){
+            var rel = equip.getRelationship(select.equipment, this.rendering);
 
-          // Prevent orphend nodes
-          .filter(function(device){
-            return device.incoming.length > this.selection.length;
-          }, this)
+            return !rel || !select.outgoing.contains(device);
+          }, this)) { return; }
 
-          .sortBy(function(device){
-            return device.get('name');
-          })
+          // Don't include devices that could be orphend.
+          if (device.incoming.length <= this.selection.length) { return; }
 
-          .value();
+          devices.push(device);
+        }, this);
       }
 
       this.disconnectCollection.reset(devices);
@@ -400,8 +244,8 @@ define([
         label = rendering && rendering.get('label');
 
       if (label) {
-        if (this.rendering_label !== label) {
-          this.rendering_label = label;
+        if (this.rendering !== label) {
+          this.rendering = label;
           this.selection = null;
           Backbone.trigger('editor:rendering', label);
         }
@@ -414,18 +258,18 @@ define([
     onAddApply: function(){
       var times = this.addView.times || 1,
         name = this.addView.parseInput(),
-        model = this.addCollection.findWhere({name: name});
+        equip = this.addCollection.findWhere({name: name});
 
-      if (model) {
+      if (equip) {
         if (this.selection && this.selection.length > 0) {
           this.selection.each(function(target){
             _.times(times, function(){
-              this.addDevice(model, target);
+              this.addDevice(equip, target);
             }, this);
           }, this);
         } else {
           _.times(times, function(){
-            this.addDevice(model);
+            this.addDevice(equip);
           }, this);
         }
 
@@ -463,112 +307,89 @@ define([
       }
     },
 
-    addDevice: function(model, target){
-      var parnt, rel,
+    addDevice: function(equip, target){
+      var project = this.model,
+        device = equip.factory(project),
+        parnt, rel;
 
-        project = this.model,
-        type = model.get('label'),
-        index = findNextIndex(type, project.devices),
-
-        device = new Device.Model({
-          project_label: project.get('label'),
-          did: type + '-' + index,
-          name: model.get('name') + ' ' + index
-        });
-
-      _.each(model.get('renderings'), function(rendering){
-        if (rendering.root) {
-          positionDevice(device, rendering, project);
-          parnt = project;
-
-        } else if (rendering.label === this.rendering_label) {
-          positionDevice(device, rendering, project, target);
-        }
-      }, this);
-
-      if (!parnt && target) {
-        parnt = target;
-        target = null;
+      if (equip.isRoot()) {
+        equip.addRootRenderings(device, project);
+        parnt = project;
       }
 
-      if (parnt) {
-        rel = findRelationshipLabel(device, parnt);
+      if (target && equip.hasRendering(this.rendering)) {
+        equip.addRelativeRendering(device, project, this.rendering, target);
+        parnt = parnt || target;
       }
 
-      if (rel && parnt.has('id')) {
-        project.devices.add(device);
-        device.connectTo(parnt, rel);
+      if (parnt && parnt.has('id')) {
+        rel = equip.getRelationship(parnt);
 
-        device.save({
-          parent_id: parnt.get('id'),
-          relationship_label: rel
-        },
-        {
-          success: _.bind(function(){
-            if (target) {
+        if (rel) {
+          project.devices.add(device);
+          device.connectTo(parnt, rel);
+
+          device.save({
+            parent_id: parnt.get('id'),
+            relationship_label: rel
+          }).done(_.bind(function(){
+            if (target && target !== parnt) {
               this.connectDevice(device, target);
             }
-          }, this)
-        });
+          }, this));
+        }
       }
     },
 
     connectDevice: function(device, target){
       var project = this.model,
-        rendering = findRendering(device, this.rendering_label),
-        rel = findRelationshipLabel(device, target, this.rendering_label);
+        equip = device.equipment,
+        rel = equip.getRelationship(target);
 
-      if (rendering && rel) {
+      if (rel && equip.hasRendering(this.rendering)) {
         $.ajax('/api/relationships', {
           type: 'POST',
+          data: {
+            relationship_label: rel,
+            project_label: project.get('label'),
+            from_id: target.get('id'),
+            to_id: device.get('id')
+          }
+        }).done(_.bind(function(){
+          if (!device.getPosition(this.rendering)) {
+            equip.addRelativeRendering(device, project, this.rendering, target);
+            device.save();
+          }
+
+          device.connectTo(target, rel);
+        }, this));
+      }
+    },
+
+    disconnectDevice: function(device, target){
+      var project = this.model,
+        equip = device.equipment,
+        rel = equip.getRelationship(target);
+
+      if (rel) {
+        $.ajax('/api/relationships', {
+          type: 'DELETE',
 
           data: {
             relationship_label: rel,
             project_label: project.get('label'),
             from_id: target.get('id'),
             to_id: device.get('id')
-          },
-
-          success: function(){
-            if (!device.getPosition(rendering.label)) {
-              positionDevice(device, rendering, project, target);
-              device.save();
-            }
-
-            device.connectTo(target, rel);
           }
-        });
-      }
-    },
+        }).done(_.bind(function(){
+          device.disconnectFrom(target);
 
-    disconnectDevice: function(device, target){
-      var project = this.model,
-        relationship_label = device.getRelationship(target),
-        rendering_label = this.rendering_label;
-
-      if (relationship_label) {
-        $.ajax('/api/relationships', {
-          type: 'DELETE',
-
-          data: {
-            relationship_label: relationship_label,
-            project_label: project.get('label'),
-            from_id: target.get('id'),
-            to_id: device.get('id')
-          },
-
-          success: function(){
-            device.disconnectFrom(target);
-
-            var others = device.incoming.filter(function(other){
-              return device.getRelationship(other, rendering_label);
-            });
-
-            if (others.length === 0) {
-              device.setPosition(rendering_label, null, true);
-            }
+          if (device.incoming.all(function(other){
+            return !equip.getRelationship(other, this.rendering);
+          }, this)) {
+            device.setPosition(this.rendering, null, true);
           }
-        });
+        }, this));
       }
     }
   });

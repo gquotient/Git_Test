@@ -50,41 +50,44 @@ define([
       return coll.get(equip) || coll.findWhere({label: did.replace(/-\d*$/, '')});
     },
 
-    getType: function(){
-      var did = this.get('did');
+    connectTo: function(target, rel){
+      if (!_.has(this.relationships, target.cid)) {
+        this.relationships[target.cid] = rel;
 
-      return did && did.replace(/-\d*$/, '');
-    },
-
-    // Need a better place for this.
-    checkRelationship: function(relationship, label){
-      var map = {
-        ELECTRICAL: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
-        COMMUNICATION: ['MANAGES', 'HAS']
-      };
-
-      return _.contains(map[label], relationship);
-    },
-
-    getRelationship: function(target, label){
-      var relationship = this.relationships[target.id];
-
-      if (!label || this.checkRelationship(relationship, label)) {
-        return relationship;
+        this.incoming.add(target);
+        target.outgoing.add(this);
       }
     },
 
-    getPosition: function(label){
-      var renderings = this.get('renderings'),
-        rendering = renderings && renderings[label];
+    disconnectFrom: function(target){
+      if (_.has(this.relationships, target.cid) && _.size(this.relationships) > 1) {
+        delete this.relationships[target.cid];
 
-      return rendering && _.clone(rendering);
+        this.incoming.remove(target);
+        target.outgoing.remove(this);
+      }
+    },
+
+    getRelationship: function(target){
+      return this.relationships[target.cid];
+    },
+
+    hasChild: function(target, rel){
+      return this.outgoing.any(function(device){
+        if (device.getRelationship(this) === rel) {
+          return device === target || device.hasChild(target, rel);
+        }
+      }, this);
+    },
+
+    getPosition: function(label){
+      var renderings = this.get('renderings');
+
+      return renderings && _.clone(renderings[label]);
     },
 
     setPosition: function(label, position, save){
-      var renderings = this.get('renderings'), evnt;
-
-      renderings = renderings ? _.clone(renderings) : {};
+      var renderings = _.clone(this.get('renderings')) || {}, evnt;
 
       if (position) {
         if (!_.has(renderings, label)) {
@@ -102,36 +105,6 @@ define([
 
       if (evnt) {
         this.trigger(evnt, this);
-      }
-    },
-
-    connectTo: function(target, label){
-      if (!_.has(this.relationships, target.id)) {
-        this.relationships[target.id] = label;
-
-        this.incoming.add(target);
-        target.outgoing.add(this);
-      }
-    },
-
-    disconnectFrom: function(target){
-      if (_.has(this.relationships, target.id) && _.size(this.relationships) > 1) {
-        delete this.relationships[target.id];
-
-        this.incoming.remove(target);
-        target.outgoing.remove(this);
-      }
-    },
-
-    hasChild: function(child, relationship){
-      var rel = child.relationships[this.id];
-
-      if (rel && (!relationship || relationship === rel)) {
-        return true;
-      } else {
-        return this.outgoing.any(function(model){
-          return model.hasChild(child, relationship);
-        });
       }
     }
   });

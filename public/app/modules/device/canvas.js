@@ -164,10 +164,11 @@ define([
 
       // Prevent rendering of children that don't have position or relationship.
       addItemView: function(item){
-        if (this.children.findByModel(item)) { return; }
+        var equip = item.equipment;
 
+        if (this.children.findByModel(item)) { return; }
         if (!item.getPosition(this.rendering)) { return; }
-        if (!item.getRelationship(this.model, this.rendering)) { return; }
+        if (!equip.getRelationship(this.model, this.rendering)) { return; }
 
         Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
       },
@@ -178,7 +179,7 @@ define([
       draw: function(){
         this.erase(true);
 
-        var symbol = this.factory(this.model.getType(), this.center),
+        var symbol = this.factory(this.model.equipment.get('label'), this.center),
           label = this.drawLabel(this.model);
 
         label.position = this.center.subtract(0, (symbol.bounds.height + label.bounds.height) * 0.55);
@@ -289,6 +290,7 @@ define([
       if (this.children.findByModel(item)) { return; }
 
       if (!item.getPosition(this.rendering)) { return; }
+      if (!item.equipment) { return; }
 
       Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
     },
