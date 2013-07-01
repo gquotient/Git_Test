@@ -288,7 +288,6 @@ define([
     // Prevent rendering of children that don't have position.
     addItemView: function(item){
       if (this.children.findByModel(item)) { return; }
-
       if (!item.getPosition(this.rendering)) { return; }
       if (!item.equipment) { return; }
 
@@ -394,7 +393,7 @@ define([
       } else if (this.select) {
         this.moveSelect(e.projectPoint);
 
-      // Otherwise move any models currently selected if not read only.
+      // Otherwise move any models currently selected if editable.
       } else if (this.options.editable) {
         this.moveSelection(e.projectDelta);
       }
@@ -414,7 +413,7 @@ define([
         this.selection.add(models, {remove: !e.ctrlKey});
         this.eraseSelect();
 
-      // Otherwise snap any models that may have moved if not read only.
+      // Otherwise snap any models that may have moved if editable.
       } else if (this.options.editable) {
         this.snapSelection();
       }
