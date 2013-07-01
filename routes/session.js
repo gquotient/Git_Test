@@ -1,9 +1,9 @@
 var passport = require('passport')
-  , DrakerIA6Strategy = require('../lib/strategies/passport-draker-ia6').Strategy
+  , DrakerIA6Strategy = require('../lib/strategies/passport-draker-ia6').Strategy;
 
 module.exports = function(app){
-  var ensureAuthenticated = require('./helpers')(app).ensureAuthenticated; 
-  
+  var ensureAuthenticated = require('./helpers')(app).ensureAuthenticated;
+
   app.get('/login', function(req, res){
     if (req.isAuthenticated() ) {
       if (req.session.redirectUrl) {
