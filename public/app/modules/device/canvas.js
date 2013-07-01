@@ -162,15 +162,17 @@ define([
         };
       },
 
-      // Prevent rendering of children that don't have position or relationship.
       addItemView: function(item){
         var equip = item.equipment;
 
-        if (this.children.findByModel(item)) { return; }
-        if (!item.getPosition(this.rendering)) { return; }
-        if (!equip.getRelationship(this.model, this.rendering)) { return; }
+        // Only add new items if they have position.
+        if (!this.children.findByModel(item) && item.getPosition(this.rendering)) {
 
-        Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
+          // And a relationship in the current rendering.
+          if (equip.getRelationship(this.model, this.rendering)) {
+            Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
+          }
+        }
       },
 
       // Prevent item views from being added to the DOM.
@@ -285,13 +287,12 @@ define([
       };
     },
 
-    // Prevent rendering of children that don't have position.
     addItemView: function(item){
-      if (this.children.findByModel(item)) { return; }
-      if (!item.getPosition(this.rendering)) { return; }
-      if (!item.equipment) { return; }
 
-      Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
+      // Only add new items if they have position and equipment.
+      if (!this.children.findByModel(item) && item.getPosition(this.rendering) && item.equipment) {
+        Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
+      }
     },
 
     // Prevent item views from being added to the DOM.
