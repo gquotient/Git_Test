@@ -34,7 +34,7 @@ define([
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
 
-    initialize: function(attrs, options){
+    initialize: function(){
       this.relationships = {};
 
       this.outgoing = new Device.Collection();
