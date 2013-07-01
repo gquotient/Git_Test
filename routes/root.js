@@ -44,8 +44,9 @@ module.exports = function(app){
         // console.log('user')
         request(requestOptions, function(error, response, userJSON){
           var user = JSON.parse(userJSON);
-          // Until we have a default team option for the user, assume first team or last selected.
-          req.session.team_label = req.session.team_label || user.teams[0][0]
+          // Until we have a default team option for the user, assume first team or last selected. Or, you know. No team at all.
+          var team = user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
+          req.session.team_label = req.session.team_label || team;
           req.session.org_label = user.org_label;
           myTeams = JSON.stringify(JSON.parse(userJSON).teams);
           console.log(myTeams);
