@@ -206,13 +206,15 @@ define([
       },
 
       erase: function(skipDraw){
+        this.deselect();
+
         if (this.node) {
           this.node.remove();
           this.node = null;
+        }
 
-          if (!skipDraw) {
-            this.paper.view.draw();
-          }
+        if (!skipDraw) {
+          this.paper.view.draw();
         }
       },
 
@@ -225,8 +227,10 @@ define([
       },
 
       deselect: function(){
-        this.highlight.remove();
-        this.highlight = null;
+        if (this.highlight) {
+          this.highlight.remove();
+          this.highlight = null;
+        }
       },
 
       setCenter: function(){
