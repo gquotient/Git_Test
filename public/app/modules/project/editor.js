@@ -39,6 +39,21 @@ define([
       this.listenTo(Backbone, 'editor:selection', function(selection){
         this.selection = selection.length > 0 ? selection : null;
       });
+
+      this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
+    },
+
+    keydownEvents: {
+      46: 'delete'
+    },
+
+    handleKeyEvent: function(e){
+      var value = (this[e.type + 'Events'] || {})[e.which];
+
+      if (value && e.target.nodeName !== 'INPUT') {
+        e.preventDefault();
+        this.triggerMethod(value, e);
+      }
     },
 
     modelEvents: {
@@ -307,6 +322,14 @@ define([
       }
     },
 
+    onDelete: function(){
+      if (this.selection) {
+        _.each(this.selection.models.slice(0), function(device){
+          this.deleteDevice(device);
+        }, this);
+      }
+    },
+
     addDevice: function(equip, target){
       var project = this.model,
         device = equip.factory(project),
@@ -337,6 +360,42 @@ define([
               this.connectDevice(device, target);
             }
           }, this));
+        }
+      }
+    },
+
+    deleteDevice: function(device){
+      var project = this.model,
+        equip = device.equipment,
+        targets;
+
+      // If the device has no outgoing relationships then delete it.
+      if (device.outgoing.length === 0) {
+        device.destroy({
+          data: {
+            project_label: project.get('label'),
+            id: device.get('id')
+          },
+          processData: true
+        });
+
+      // Otherwise, if the device has no outgoing relationships in the
+      // current view.
+      } else if (!device.outgoing.any(function(other){
+        return equip.getRelationship(other, this.rendering);
+      }, this)) {
+
+        // Then find all of the incoming relationship for the current view.
+        targets = device.incoming.filter(function(other){
+          return equip.getRelationship(other, this.rendering);
+        }, this);
+
+        // And if the device has at least one incoming relationship in another
+        // view then remove it from this view.
+        if (targets.length < device.incoming.length) {
+          _.each(targets, function(target){
+            this.disconnectDevice(device, target);
+          }, this);
         }
       }
     },
