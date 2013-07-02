@@ -109,9 +109,25 @@ define([
     },
 
     getAutocomplete: function(){
-      var view = this.dropdown.children.first();
+      var values, partial, last, len;
 
-      return view && view.model.get('name');
+      values = this.dropdown.children.map(function(view){
+        return view.model.get('name');
+      }).sort();
+
+      partial = _.first(values) || '';
+
+      if (values.length > 1) {
+        len = partial.length;
+        last = _.last(values);
+
+        while (len > 0 && last.indexOf(partial) !== 0) {
+          len -= 1;
+          partial = partial.substring(0, len);
+        }
+      }
+
+      return partial;
     },
 
     onKeyTab: function(){
