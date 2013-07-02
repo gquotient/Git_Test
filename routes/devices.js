@@ -59,6 +59,16 @@ module.exports = function(app){
       }
     }));
 
+  app.del('/api/devices', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/devices'
+    }));
+
+
+  //////
+  // DEVICE RELATIONSHIPS
+  //////
+
   app.all('/api/relationships', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/relationships'

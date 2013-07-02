@@ -39,6 +39,10 @@ define([
 
       this.outgoing = new Device.Collection();
       this.incoming = new Device.Collection();
+
+      this.listenTo(this.incoming, 'remove', function(model){
+        delete this.relationships[model.cid];
+      });
     },
 
     connectTo: function(target, rel){
