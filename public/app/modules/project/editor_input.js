@@ -23,6 +23,9 @@ define([
         template: {
           type: 'handlebars',
           template: inputItemTemplate
+        },
+        triggers: {
+          'mousedown a': 'select'
         }
       }),
 
@@ -48,6 +51,11 @@ define([
       this.placeholder = this.ui.input.val();
 
       this.dropdown = new Dropdown({collection: this.collection});
+
+      this.listenTo(this.dropdown, 'itemview:select', function(view){
+        this.ui.input.val(view.model.get('name'));
+        this.trigger('apply');
+      });
 
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
     },
