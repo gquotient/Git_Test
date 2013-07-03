@@ -72,7 +72,11 @@ module.exports = function(app){
         // console.log('projects');
         requestOptions.uri = app.get('modelUrl') + '/res/teamprojects?team_label'+req.session.team_label+'&org_label='+req.session.org_label; ;
         request(requestOptions, function(error, response, projects){
-          myProjects = projects;
+          myProjects = JSON.stringify(_.map(JSON.parse(projects).projects, function(project){
+            return _.extend({
+              project_label: project.label
+            }, _.omit(project, 'label'));
+          }));
           console.log(req.session.team_label, projects);
           // console.log('projects')
           myProjectsDef.resolve(projects);
@@ -93,7 +97,7 @@ module.exports = function(app){
             role: roles[req.user.role]
           }),
           portfolios: myPortfolios,
-          projects: JSON.stringify(JSON.parse(myProjects).projects),
+          projects: myProjects,
           locale: req.user.locale || req.acceptedLanguages[0].toLowerCase(),
           staticDir: app.get('staticDir') || 'app'
         });
