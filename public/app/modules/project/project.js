@@ -556,17 +556,19 @@ define([
     },
 
     onSubmit: function(){
-      this.model.save({
+      var project = this.model;
+
+      project.save({
         name: this.ui.name.val().trim(),
         site_label: this.ui.label.val().replace(/\W|_/g, ''),
         latitude: parseFloat(this.ui.latitude.val()),
         longitude: parseFloat(this.ui.longitude.val()),
         elevation: parseFloat(this.ui.elevation.val()) || 0
-      }, {
-        success: function(model){
-          Backbone.trigger('create:project', model);
-        }
-      });
+      }).done(_.bind(function(){
+        Backbone.trigger('create:project', project);
+
+        project.log('created this project', this.options.user);
+      }, this));
     },
 
     onReset: function(){

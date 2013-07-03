@@ -97,7 +97,8 @@ define([
 
     showProjectCreate: function(){
       this.mainContent.show( new ProjectCreatorLayout({
-        projects: this.app.projects
+        projects: this.app.projects,
+        user: this.app.currentUser
       }));
     },
 

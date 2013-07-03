@@ -31,18 +31,21 @@ define([
     },
 
     onShow: function(){
-      this.createProject.show( new Project.views.Create({model: this.model}) );
+      this.createProject.show(this.creator);
     },
 
     initialize: function(options){
-      var projects = options.projects;
 
-      this.model = new Project.Model();
+      // Create creator view.
+      this.creator = new Project.views.Create({
+        model: new Project.Model(),
+        user: options.user
+      });
 
-      // Set up listeners
-      this.listenTo(Backbone, 'create:project', function(model){
-        projects.add(model);
-        Backbone.history.navigate('/project/' + model.id + '/edit', true);
+      // Set up listeners.
+      this.listenTo(Backbone, 'create:project', function(project){
+        options.projects.add(project);
+        Backbone.history.navigate('/project/' + project.id + '/edit', true);
       });
     }
   });
