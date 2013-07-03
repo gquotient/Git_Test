@@ -86,7 +86,7 @@ define([
         model: model,
         equipment: equipment,
         user: options.user
-      })
+      });
 
       // Set up view listener.
       this.listenTo(Backbone, 'editor:change:view', function(model){
