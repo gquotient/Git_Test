@@ -102,7 +102,9 @@ module.exports = function(app){
         'latitude',
         'longitude',
         'elevation',
-        'index_name'
+        'index_name',
+        'type',
+        'kpis'
       ]),
       translate: function(body, next){
         next(_.extend({},
