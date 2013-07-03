@@ -94,8 +94,3 @@ TODO
 ----
 
 X Flash messages
-* Login
-  X Wrong password
-  - Password reset/Forgot password // Once we actual store passwords.
-  X redirect from /login to /index if authenticated already
-  X Logout

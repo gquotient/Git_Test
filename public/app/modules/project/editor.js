@@ -375,7 +375,7 @@ define([
       if (device.outgoing.length === 0) {
         device.destroy({
           data: {
-            project_label: project.get('label'),
+            project_label: project.id,
             id: device.get('id')
           },
           processData: true
@@ -412,7 +412,7 @@ define([
           type: 'POST',
           data: {
             relationship_label: rel,
-            project_label: project.get('label'),
+            project_label: project.id,
             from_id: target.get('id'),
             to_id: device.get('id')
           }
@@ -438,7 +438,7 @@ define([
 
           data: {
             relationship_label: rel,
-            project_label: project.get('label'),
+            project_label: project.id,
             from_id: target.get('id'),
             to_id: device.get('id')
           }

@@ -5,7 +5,7 @@ define([
   'backbone.marionette',
 
   'leaflet',
-  'css!components/leaflet/dist/leaflet.css',
+  'css!leaflet.css', //This seems silly but also seems to work, sooooo...
 
   'device',
   './editor',
@@ -44,7 +44,7 @@ define([
   var Project = { views: {Editor: Editor} };
 
   Project.Model = Backbone.Model.extend({
-    idAttribute: 'label',
+    idAttribute: 'project_label',
     url: '/api/projects',
     defaults: {
       type: 'project',
