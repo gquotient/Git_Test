@@ -323,7 +323,7 @@ define([
     },
 
     handleMouseEvent: function(e){
-      var offset = this.$el.offset();
+      var offset = this.$el.offset(), method;
 
       e.point = new this.paper.Point(e.pageX, e.pageY);
       e.delta = e.point.subtract(this.lastPoint);
@@ -334,9 +334,13 @@ define([
       this.lastProjectPoint = e.projectPoint;
 
       if (e.type === 'mousemove' && this.dragging) {
-        this.triggerMethod('mousedrag', e);
-      } else {
-        this.triggerMethod(e.type, e);
+        e.type = 'mousedrag';
+      }
+
+      method = this['on' + e.type[0].toUpperCase() + e.type.slice(1)];
+
+      if (method) {
+        method.call(this, e);
       }
 
       if (e.type === 'mousedown') { this.dragging = true; }
@@ -348,17 +352,17 @@ define([
     handleKeyEvent: function(e){
       var value = (this[e.type + 'Events'] || {})[e.which];
 
-      if (value && e.target.nodeName !== 'INPUT') {
+      if (value && !_.contains(['INPUT', 'TEXTAREA'], e.target.nodeName)) {
         e.preventDefault();
-        this.triggerMethod(value, e);
+        this.triggerMethod(value);
       }
     },
 
     handleWheelEvent: function(e, delta){
       if (delta < 0) {
-        this.triggerMethod('zoom:in', e);
+        this.triggerMethod('zoom:in');
       } else if (delta > 0) {
-        this.triggerMethod('zoom:out', e);
+        this.triggerMethod('zoom:out');
       }
     },
 
@@ -425,15 +429,15 @@ define([
       }
     },
 
-    onZoomIn: function(e){
+    onZoomIn: function(){
       this.paper.view.zoom /= 1.1;
     },
 
-    onZoomOut: function(e){
+    onZoomOut: function(){
       this.paper.view.zoom *= 1.1;
     },
 
-    onZoomReset: function(e){
+    onZoomReset: function(){
       this.paper.view.zoom = 1;
     },
 

@@ -50,9 +50,9 @@ define([
     handleKeyEvent: function(e){
       var value = (this[e.type + 'Events'] || {})[e.which];
 
-      if (value && e.target.nodeName !== 'INPUT') {
+      if (value && !_.contains(['INPUT', 'TEXTAREA'], e.target.nodeName)) {
         e.preventDefault();
-        this.triggerMethod(value, e);
+        this.triggerMethod(value);
       }
     },
 

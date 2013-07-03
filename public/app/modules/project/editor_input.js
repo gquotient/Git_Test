@@ -80,11 +80,14 @@ define([
 
       if (value && this.focused) {
         e.preventDefault();
-        this.triggerMethod(value, e);
+        this.triggerMethod(value);
 
-      } else if (this.hotKey && e.which === this.hotKey && e.target.nodeName !== 'INPUT') {
-        e.preventDefault();
-        this.triggerMethod('hotkey', e);
+      } else if (this.hotKey && e.which === this.hotKey) {
+
+        if (!_.contains(['INPUT', 'TEXTAREA'], e.target.nodeName)) {
+          e.preventDefault();
+          this.triggerMethod('hotkey');
+        }
       }
     },
 
@@ -138,11 +141,11 @@ define([
       }
     },
 
-    onHotkey: function(e){
+    onHotkey: function(){
       this.ui.input.focus();
     },
 
-    onKeyEsc: function(e){
+    onKeyEsc: function(){
       this.ui.input.blur();
     }
   });
