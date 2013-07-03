@@ -17,7 +17,8 @@ define([
   'hbs!project/templates/navigationItemView',
   'hbs!project/templates/projectList',
   'hbs!project/templates/markerPopUp',
-  'hbs!project/templates/kpis'
+  'hbs!project/templates/kpis',
+  'hbs!project/templates/changelog'
 ], function(
   $,
   _,
@@ -37,7 +38,8 @@ define([
   navigationItemViewTemplate,
   navigationListTemplate,
   markerPopUpTemplate,
-  kpisTemplate
+  kpisTemplate,
+  changelogTemplate
 ){
   var Project = { views: {Editor: Editor} };
 
@@ -628,6 +630,46 @@ define([
     initialize: function(){
       this.model.fetchKpis();
       this.listenTo(this.model, 'change:kpis', this.render);
+    }
+  });
+
+  Project.views.ChangeLog = Marionette.ItemView.extend({
+    tagName: 'form',
+    template: {
+      type: 'handlebars',
+      template: changelogTemplate
+    },
+
+    attributes: {
+      id: 'changelog'
+    },
+
+    ui: {
+      textarea: 'textarea'
+    },
+
+    events: {
+      'keyup textarea': function(e){
+        this.model.set('changelog', this.ui.textarea.val());
+
+        if (e.which === 27) {
+          this.ui.textarea.blur();
+        }
+      },
+
+      'blur textarea': function(){
+        this.model.save();
+      }
+    },
+
+    modelEvents: {
+      'change:changelog': function(){
+        this.ui.textarea.val(this.model.get('changelog'));
+      }
+    },
+
+    onClose: function(){
+      this.model.save();
     }
   });
 

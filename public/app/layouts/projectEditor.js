@@ -84,12 +84,24 @@ define([
       this.delegateEditorEvents();
 
       // Set up listeners.
-      this.listenTo(Backbone, 'editor:rendering', function(label){
-        this.content.show( new Device.views.Canvas({
-          collection: this.model.devices,
-          rendering: label,
-          editable: true
-        }));
+      this.listenTo(Backbone, 'editor:change:view', function(label){
+        var view;
+
+        if (label === 'CHANGELOG') {
+          view = new Project.views.ChangeLog({
+            model: this.model
+          });
+        } else {
+          view =  new Device.views.Canvas({
+            collection: this.model.devices,
+            rendering: label,
+            editable: true
+          });
+        }
+
+        if (view) {
+          this.content.show(view);
+        }
       });
     }
   });

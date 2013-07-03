@@ -164,6 +164,8 @@ define([
         });
       });
 
+      views.push({name: 'Change Log', label: 'CHANGELOG'});
+
       this.viewCollection.reset(views);
     },
 
@@ -262,7 +264,7 @@ define([
         if (this.currentView !== label) {
           this.currentView = label;
           this.selection = null;
-          Backbone.trigger('editor:rendering', label);
+          Backbone.trigger('editor:change:view', label);
         }
 
         this.viewView.placeholder = name;
