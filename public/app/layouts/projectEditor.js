@@ -62,11 +62,11 @@ define([
     },
 
     initialize: function(options){
-      var model = this.model = options.model,
-        equipment = this.equipment = new Equipment.Collection();
+      var equipment = new Equipment.Collection(),
+        model = options.model;
 
-      if (!(model instanceof Backbone.Model)) {
-        model = this.model = new Project.Model(model);
+      if (_.isString(model)) {
+        model = new Project.Model({project_label: model});
       }
 
       equipment.fetch().done(function(){
@@ -77,7 +77,11 @@ define([
           },
           equipment: equipment
         });
+
       });
+
+      this.equipment = equipment;
+      this.model = model;
 
       // Set up events on document.
       this.$doc = $(document);
