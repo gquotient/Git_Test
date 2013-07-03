@@ -173,19 +173,19 @@ define([
       this.equipment.each(function(equip){
 
         // Don't include equipment that can't be rendered.
-        if (!equip.hasRendering(this.rendering)) { return; }
+        if (!equip.hasRendering(this.currentView)) { return; }
 
         if (!this.selection) {
 
-          // Don't include equipment that isn't root for this rendering.
-          if (!equip.isRoot(this.rendering)) { return; }
+          // Don't include equipment that isn't root for the current view.
+          if (!equip.isRoot(this.currentView)) { return; }
 
         } else {
 
-          // Don't include equipment that doesn't have a relationship for this rendering
-          // or that can't be added to the selected devices.
+          // Don't include equipment that doesn't have a relationship in the
+          // current view or that can't be added to the selected devices.
           if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, this.rendering);
+            var rel = equip.getRelationship(select.equipment, this.currentView);
 
             return !rel || !select.equipment.outgoing.contains(equip);
           }, this)) { return; }
@@ -208,12 +208,12 @@ define([
           if (this.selection.contains(device)) { return; }
 
           // Don't include devices that can't be rendered.
-          if (!equip.hasRendering(this.rendering)) { return; }
+          if (!equip.hasRendering(this.currentView)) { return; }
 
-          // Don't include devices that don't have a relationship for this rendering
-          // or are already children of the selected devices.
+          // Don't include devices that don't have a relationship in the
+          // current view or are already children of the selected devices.
           if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, this.rendering);
+            var rel = equip.getRelationship(select.equipment, this.currentView);
 
             return !rel || select.hasChild(device, rel);
           }, this)) { return; }
@@ -235,10 +235,10 @@ define([
           // Don't include selected devices.
           if (this.selection.contains(device)) { return; }
 
-          // Don't include devices that don't have a relationship for this rendering
-          // or that don't share a connection with the selected devices.
+          // Don't include devices that don't have a relationship in the current
+          // view or that don't share a connection with the selected devices.
           if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, this.rendering);
+            var rel = equip.getRelationship(select.equipment, this.currentView);
 
             return !rel || !select.outgoing.contains(device);
           }, this)) { return; }
@@ -255,12 +255,12 @@ define([
 
     onViewApply: function(){
       var name = this.viewView.parseInput(),
-        rendering = this.viewCollection.findWhere({name: name}),
-        label = rendering && rendering.get('label');
+        view = this.viewCollection.findWhere({name: name}),
+        label = view && view.get('label');
 
       if (label) {
-        if (this.rendering !== label) {
-          this.rendering = label;
+        if (this.currentView !== label) {
+          this.currentView = label;
           this.selection = null;
           Backbone.trigger('editor:rendering', label);
         }
@@ -340,8 +340,8 @@ define([
         parnt = project;
       }
 
-      if (target && equip.hasRendering(this.rendering)) {
-        equip.addRelativeRendering(device, project, this.rendering, target);
+      if (target && equip.hasRendering(this.currentView)) {
+        equip.addRelativeRendering(device, project, this.currentView, target);
         parnt = parnt || target;
       }
 
@@ -379,15 +379,15 @@ define([
           processData: true
         });
 
-      // Otherwise, if the device has no outgoing relationships in the
-      // current view.
+      // Otherwise, if the device has no outgoing relationships in the current
+      // view.
       } else if (!device.outgoing.any(function(other){
-        return equip.getRelationship(other, this.rendering);
+        return equip.getRelationship(other, this.currentView);
       }, this)) {
 
         // Then find all of the incoming relationship for the current view.
         targets = device.incoming.filter(function(other){
-          return equip.getRelationship(other, this.rendering);
+          return equip.getRelationship(other, this.currentView);
         }, this);
 
         // And if the device has at least one incoming relationship in another
@@ -405,7 +405,7 @@ define([
         equip = device.equipment,
         rel = equip.getRelationship(target);
 
-      if (rel && equip.hasRendering(this.rendering)) {
+      if (rel && equip.hasRendering(this.currentView)) {
         $.ajax('/api/relationships', {
           type: 'POST',
           data: {
@@ -415,8 +415,8 @@ define([
             to_id: device.get('id')
           }
         }).done(_.bind(function(){
-          if (!device.getPosition(this.rendering)) {
-            equip.addRelativeRendering(device, project, this.rendering, target);
+          if (!device.getPosition(this.currentView)) {
+            equip.addRelativeRendering(device, project, this.currentView, target);
             device.save();
           }
 
@@ -444,9 +444,9 @@ define([
           device.disconnectFrom(target);
 
           if (device.incoming.all(function(other){
-            return !equip.getRelationship(other, this.rendering);
+            return !equip.getRelationship(other, this.currentView);
           }, this)) {
-            device.setPosition(this.rendering, null, true);
+            device.setPosition(this.currentView, null, true);
           }
         }, this));
       }
