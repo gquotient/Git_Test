@@ -366,6 +366,8 @@ define([
             if (target && target !== parnt) {
               this.connectDevice(device, target);
             }
+
+            project.log('added ' + device.get('did'), this.user);
           }, this));
         }
       }
@@ -384,7 +386,9 @@ define([
             id: device.get('id')
           },
           processData: true
-        });
+        }).done(_.bind(function(){
+          project.log('deleted ' + device.get('did'), this.user);
+        }, this));
 
       // Otherwise, if the device has no outgoing relationships in the current
       // view.
@@ -428,6 +432,8 @@ define([
           }
 
           device.connectTo(target, rel);
+
+          project.log('connected ' + device.get('did') + ' to ' + target.get('did'), this.user);
         }, this));
       }
     },
@@ -455,6 +461,8 @@ define([
           }, this)) {
             device.setPosition(this.currentView, null, true);
           }
+
+          project.log('disconnected ' + device.get('did') + ' from ' + target.get('did'), this.user);
         }, this));
       }
     }

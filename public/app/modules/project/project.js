@@ -57,7 +57,8 @@ define([
           forecast: 0,
           modeled: 0
         }
-      }
+      },
+      changelog: ''
     },
 
     initialize: function(){
@@ -183,6 +184,17 @@ define([
         isNaN(attrs.longitude) ||
         isNaN(attrs.elevation)
       ) { return 'error'; }
+    },
+
+    log: function(msg, user){
+      var log = this.get('changelog'),
+        now = new Date(),
+        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ',
+        who = user ? user.get('name') + ' ' : '';
+
+      this.save({
+        changelog: when + who + msg + '\n' + log
+      });
     }
   });
 
