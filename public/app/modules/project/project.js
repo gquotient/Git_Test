@@ -5,7 +5,7 @@ define([
   'backbone.marionette',
 
   'leaflet',
-  'css!components/leaflet/dist/leaflet.css',
+  'css!leaflet.css', //This seems silly but also seems to work, sooooo...
 
   'device',
   './editor',
