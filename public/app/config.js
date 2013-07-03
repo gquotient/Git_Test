@@ -10,7 +10,7 @@
  *
  * Also: I want to user backbone.marionette.handlebars because it works so nicely
  * with Alex's require handlebars plugin. It seems to have trouble being installed
- * via bower (underscore dependency issue), so I just dropped it in to the components
+ * via bower (underscore dependency issue), so I just dropped it in to the bower_components
  * folder. This is going to be a pain in the ass until it gets fixed.
  *
  * Finally: marionette requires babysitter and wreqr (and backbone, jQuery, underscore
@@ -96,29 +96,29 @@ require.config({
     ia: 'ia',
 
     // Require plugins
-    text: 'components/requirejs-text/text',
-    css: 'components/css/css',
-    hbs: 'components/require-handlebars-plugin/hbs',
+    text: 'bower_components/requirejs-text/text',
+    css: 'bower_components/css/css',
+    hbs: 'bower_components/require-handlebars-plugin/hbs',
 
     // Libraries
-    es5shim: 'components/es5-shim/es5-shim',
-    json2: 'components/require-handlebars-plugin/hbs/json2',
-    i18nprecompile: 'components/require-handlebars-plugin/hbs/i18nprecompile',
-    jquery: 'components/jquery/jquery',
-    underscore: 'components/underscore/underscore',
-    // underscore: 'components/lodash/lodash',
-    backbone: 'components/backbone/backbone',
-    'backbone.babysitter': 'components/backbone.babysitter/lib/amd/backbone.babysitter',
-    'backbone.wreqr': 'components/backbone.wreqr/lib/amd/backbone.wreqr',
-    'backbone.marionette': 'components/backbone.marionette/lib/core/amd/backbone.marionette',
-    'backbone.marionette.handlebars': 'components/backbone.marionette.handlebars/backbone.marionette.handlebars',
-    handlebars: 'components/handlebars/handlebars',
-    modernizr: 'components/modernizr/modernizr',
-    leaflet: 'components/leaflet/dist/leaflet',
-    messageformat: 'components/messageformat.js/messageformat',
-    paper: 'components/paper/dist/paper',
-    'jquery.mousewheel': 'components/jquery-mousewheel/jquery.mousewheel',
-    highcharts: 'components/highcharts/highcharts'
+    es5shim: 'bower_components/es5-shim/es5-shim',
+    json2: 'bower_components/require-handlebars-plugin/hbs/json2',
+    i18nprecompile: 'bower_components/require-handlebars-plugin/hbs/i18nprecompile',
+    jquery: 'bower_components/jquery/jquery',
+    underscore: 'bower_components/underscore/underscore',
+    // underscore: 'bower_components/lodash/lodash',
+    backbone: 'bower_components/backbone/backbone',
+    'backbone.babysitter': 'bower_components/backbone.babysitter/lib/amd/backbone.babysitter',
+    'backbone.wreqr': 'bower_components/backbone.wreqr/lib/amd/backbone.wreqr',
+    'backbone.marionette': 'bower_components/backbone.marionette/lib/core/amd/backbone.marionette',
+    'backbone.marionette.handlebars': 'bower_components/backbone.marionette.handlebars/backbone.marionette.handlebars',
+    handlebars: 'bower_components/handlebars/handlebars',
+    modernizr: 'bower_components/modernizr/modernizr',
+    leaflet: 'bower_components/leaflet/dist/leaflet',
+    messageformat: 'bower_components/messageformat.js/messageformat',
+    paper: 'bower_components/paper/dist/paper',
+    'jquery.mousewheel': 'bower_components/jquery-mousewheel/jquery.mousewheel',
+    highcharts: 'bower_components/highcharts/highcharts'
   },
   shim: {
     backbone: {
