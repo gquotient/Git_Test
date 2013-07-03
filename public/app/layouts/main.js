@@ -103,7 +103,8 @@ define([
 
     showProjectEdit: function(project){
       this.mainContent.show( new ProjectEditorLayout({
-        model: project
+        model: project,
+        user: this.app.currentUser
       }));
     },
 

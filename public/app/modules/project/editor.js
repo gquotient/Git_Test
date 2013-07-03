@@ -30,6 +30,7 @@ define([
 
     initialize: function(options){
       this.equipment = options.equipment;
+      this.user = options.user;
 
       this.viewCollection = new Backbone.Collection();
       this.addCollection = new Backbone.Collection([], {comparator: 'name'});
@@ -160,11 +161,16 @@ define([
       _.each(this.equipment.getRenderingLabels(), function(label){
         views.push({
           name: label[0].toUpperCase() + label.slice(1).toLowerCase(),
-          label: label
+          rendering: label,
+          collection: this.model.devices,
+          editable: true
         });
-      });
+      }, this);
 
-      views.push({name: 'Change Log', label: 'CHANGELOG'});
+      views.push({
+        name: 'Change Log',
+        model: this.model
+      });
 
       this.viewCollection.reset(views);
     },
@@ -257,14 +263,13 @@ define([
 
     onViewApply: function(){
       var name = this.viewView.parseInput(),
-        view = this.viewCollection.findWhere({name: name}),
-        label = view && view.get('label');
+        view = this.viewCollection.findWhere({name: name});
 
-      if (label) {
-        if (this.currentView !== label) {
-          this.currentView = label;
+      if (view) {
+        if (this.currentView !== name) {
+          this.currentView = view.get('rendering') || name;
           this.selection = null;
-          Backbone.trigger('editor:change:view', label);
+          Backbone.trigger('editor:change:view', view);
         }
 
         this.viewView.placeholder = name;

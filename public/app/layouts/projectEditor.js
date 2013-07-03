@@ -51,10 +51,8 @@ define([
     },
 
     onShow: function(){
-      this.overlay.show( new Project.views.Editor({
-        model: this.model,
-        equipment: this.equipment
-      }));
+      this.delegateEditorEvents();
+      this.overlay.show(this.editor);
     },
 
     onClose: function(){
@@ -69,6 +67,10 @@ define([
         model = new Project.Model({project_label: model});
       }
 
+      this.model = model;
+      this.$doc = $(document);
+
+      // Fetch equipment and project from server.
       equipment.fetch().done(function(){
         model.fetch({
           data: {
@@ -77,35 +79,26 @@ define([
           },
           equipment: equipment
         });
-
       });
 
-      this.equipment = equipment;
-      this.model = model;
+      // Create editor view.
+      this.editor = new Project.views.Editor({
+        model: model,
+        equipment: equipment,
+        user: options.user
+      })
 
-      // Set up events on document.
-      this.$doc = $(document);
-      this.delegateEditorEvents();
+      // Set up view listener.
+      this.listenTo(Backbone, 'editor:change:view', function(model){
+        var View;
 
-      // Set up listeners.
-      this.listenTo(Backbone, 'editor:change:view', function(label){
-        var view;
-
-        if (label === 'CHANGELOG') {
-          view = new Project.views.ChangeLog({
-            model: this.model
-          });
+        if (model.get('name') === 'Change Log') {
+          View = Project.views.ChangeLog;
         } else {
-          view =  new Device.views.Canvas({
-            collection: this.model.devices,
-            rendering: label,
-            editable: true
-          });
+          View = Device.views.Canvas;
         }
 
-        if (view) {
-          this.content.show(view);
-        }
+        this.content.show( new View(model.toJSON()) );
       });
     }
   });
