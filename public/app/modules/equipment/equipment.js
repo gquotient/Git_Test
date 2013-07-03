@@ -119,13 +119,17 @@ define([
       });
     },
 
+    getRootLabel: function(){
+      return this.get('label');
+    },
+
     factory: function(project){
-      var label = this.get('label'),
+      var label = this.getRootLabel(),
         index = findNextIndex(label, project.devices.pluck('did')),
 
         device = new Device.Model({
-          equipment_label: this.get('label'),
-          project_label: project.get('label'),
+          equipment_label: this.id,
+          project_label: project.id,
           did: label + '-' + index,
           name: this.get('name') + ' ' + index
         });

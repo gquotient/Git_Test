@@ -72,7 +72,7 @@ define([
       equipment.fetch().done(function(){
         model.fetch({
           data: {
-            project_label: model.get('label'),
+            project_label: model.id,
             index: 'AlignedProjects/no'
           },
           equipment: equipment

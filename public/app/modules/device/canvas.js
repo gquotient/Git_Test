@@ -181,7 +181,7 @@ define([
       draw: function(){
         this.erase(true);
 
-        var symbol = this.factory(this.model.equipment.get('label'), this.center),
+        var symbol = this.factory(this.model.equipment.getRootLabel(), this.center),
           label = this.drawLabel(this.model);
 
         label.position = this.center.subtract(0, (symbol.bounds.height + label.bounds.height) * 0.55);
