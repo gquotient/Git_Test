@@ -363,11 +363,19 @@ define([
             parent_id: parnt.get('id'),
             relationship_label: rel
           }).done(_.bind(function(){
+            project.log([
+              'added',
+              equip.get('name').toLowerCase(),
+              device.get('did'),
+              'to'
+            ].concat(parnt.equipment ? [
+              parnt.equipment.get('name').toLowerCase(),
+              parnt.get('did')
+            ] : 'project').join(' '), this.user);
+
             if (target && target !== parnt) {
               this.connectDevice(device, target);
             }
-
-            project.log('added ' + device.get('did'), this.user);
           }, this));
         }
       }
@@ -387,7 +395,11 @@ define([
           },
           processData: true
         }).done(_.bind(function(){
-          project.log('deleted ' + device.get('did'), this.user);
+          project.log([
+            'deleted',
+            equip.get('name').toLowerCase(),
+            device.get('did')
+          ].join(' '), this.user);
         }, this));
 
       // Otherwise, if the device has no outgoing relationships in the current
@@ -433,7 +445,14 @@ define([
 
           device.connectTo(target, rel);
 
-          project.log('connected ' + device.get('did') + ' to ' + target.get('did'), this.user);
+          project.log([
+            'connected',
+            equip.get('name').toLowerCase(),
+            device.get('did'),
+            'to',
+            target.equipment.get('name').toLowerCase(),
+            target.get('did')
+          ].join(' '), this.user);
         }, this));
       }
     },
@@ -462,7 +481,14 @@ define([
             device.setPosition(this.currentView, null, true);
           }
 
-          project.log('disconnected ' + device.get('did') + ' from ' + target.get('did'), this.user);
+          project.log([
+            'disconnected',
+            equip.get('name').toLowerCase(),
+            device.get('did'),
+            'from',
+            target.equipment.get('name').toLowerCase(),
+            target.get('did')
+          ].join(' '), this.user);
         }, this));
       }
     }

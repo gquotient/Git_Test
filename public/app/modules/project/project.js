@@ -192,10 +192,11 @@ define([
         when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ',
         who = user ? user.get('name') + ' ' : '';
 
-      this.save({
-        changelog: when + who + msg + '\n' + log
-      });
-    }
+      this.set({changelog: when + who + msg + '\n' + log});
+      this.lazySave();
+    },
+
+    lazySave: _.debounce(Backbone.Model.prototype.save, 1000)
   });
 
   Project.Collection = Backbone.Collection.extend({
@@ -567,7 +568,7 @@ define([
       }).done(_.bind(function(){
         Backbone.trigger('create:project', project);
 
-        project.log('created this project', this.options.user);
+        project.log('created project', this.options.user);
       }, this));
     },
 
