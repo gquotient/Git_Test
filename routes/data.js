@@ -5,6 +5,17 @@ module.exports = function(app){
   // Data
   /////
 
+  app.get('/api/discovery/:id?/ddls',
+    function(req, res){
+      request({
+        method: 'GET',
+        uri: app.get('dataUrl') + '/api/discovery/' + req.params.id + '/ddls'
+      }, function(err, response, body){
+        res.end(body);
+      });
+    }
+  );
+
   app.post('/api/timeline',
     function(req, res){
       request({

@@ -58,6 +58,11 @@ define([
           modeled: 0
         }
       },
+      preferredEnergySource: [
+        'pgen-acm',
+        'pgen-rm',
+        'pgen-util'
+      ],
       changelog: ''
     },
 
@@ -100,7 +105,7 @@ define([
         }
       })
       .done(function(data){
-        that.trigger('data:done');
+        that.trigger('data:done', data);
         that.parseKpis(data.response);
       });
     },
@@ -139,6 +144,21 @@ define([
       }
 
       this.set('kpis', kpis);
+    },
+
+    fetchDDLs: function(){
+      var that = this;
+
+      return $.ajax({
+        url: '/api/discovery/' + this.id + '/ddls',
+        cache: false,
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done(function(data){
+        that.trigger('data:done', data);
+        that.set('ddls', data.ddls);
+      });
     },
 
     parse: function(resp, options){

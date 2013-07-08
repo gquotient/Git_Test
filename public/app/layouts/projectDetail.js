@@ -90,6 +90,8 @@ define([
       this.mapView.collection.set([project]);
       this.mapView.fitToBounds();
 
+      this.model.fetchDDLs().done(function(data){console.log(data.ddls);});
+
       // Build charts
       var chart_powerHistory = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
