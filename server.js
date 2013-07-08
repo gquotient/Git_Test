@@ -64,6 +64,18 @@ app.configure('development', function(){
   app.set('modelUrl', 'http://127.0.0.1:8433');
 });
 
+app.configure('development-local-auth', function(){
+  console.log('Using Development with Local Auth');
+  app.use(express.errorHandler());
+  app.set('clientID', 'IA6_0.1');
+  app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
+  app.set('callbackURL', 'http://127.0.0.1:' + app.get('port') + '/token');
+  app.set('authPort', 8431);
+  app.set('authUrl', '127.0.0.1');
+  app.set('modelUrl', 'http://model.stage.intelligentarray.com');
+  app.set('dataUrl', 'http://data.stage.intelligentarray.com');
+});
+
 app.configure('development-remote', function(){
   console.log('Using Remote');
   app.use(express.errorHandler());
@@ -78,8 +90,23 @@ app.configure('development-remote', function(){
   app.set('dataUrl', 'http://data.stage.intelligentarray.com');
 });
 
+app.configure('stage', function(){
+  console.log('Using Stage');
+  app.use(express.errorHandler());
+  app.set('clientID', 'IA6_0.1');
+  app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
+  app.set('callbackURL', 'http://app.stage.intelligentarray.com/token');
+  app.set('authorizationURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/auth');
+  app.set('tokenURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/token');
+  app.set('authPort', 80);
+  app.set('authUrl', 'auth.stage.intelligentarray.com');
+  app.set('modelUrl', 'http://model.stage.intelligentarray.com');
+  app.set('dataUrl', 'http://data.stage.intelligentarray.com');
+  app.set('staticDir', 'app.build');
+});
+
 app.configure('development-vagrant', function(){
-  console.log("Using Vagrant");
+  console.log('Using Vagrant');
   app.use(express.errorHandler());
   app.set('clientID', 'IA6_0.1');
   app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');

@@ -23,6 +23,9 @@ define([
         template: {
           type: 'handlebars',
           template: inputItemTemplate
+        },
+        triggers: {
+          'mousedown a': 'select'
         }
       }),
 
@@ -49,6 +52,11 @@ define([
 
       this.dropdown = new Dropdown({collection: this.collection});
 
+      this.listenTo(this.dropdown, 'itemview:select', function(view){
+        this.ui.input.val(view.model.get('name'));
+        this.trigger('apply');
+      });
+
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
     },
 
@@ -72,11 +80,14 @@ define([
 
       if (value && this.focused) {
         e.preventDefault();
-        this.triggerMethod(value, e);
+        this.triggerMethod(value);
 
-      } else if (this.hotKey && e.which === this.hotKey && e.target.nodeName !== 'INPUT') {
-        e.preventDefault();
-        this.triggerMethod('hotkey', e);
+      } else if (this.hotKey && e.which === this.hotKey) {
+
+        if (!_.contains(['INPUT', 'TEXTAREA'], e.target.nodeName)) {
+          e.preventDefault();
+          this.triggerMethod('hotkey');
+        }
       }
     },
 
@@ -101,9 +112,25 @@ define([
     },
 
     getAutocomplete: function(){
-      var view = this.dropdown.children.first();
+      var values, partial, last, len;
 
-      return view && view.model.get('name');
+      values = this.dropdown.children.map(function(view){
+        return view.model.get('name');
+      }).sort();
+
+      partial = _.first(values) || '';
+
+      if (values.length > 1) {
+        len = partial.length;
+        last = _.last(values);
+
+        while (len > 0 && last.indexOf(partial) !== 0) {
+          len -= 1;
+          partial = partial.substring(0, len);
+        }
+      }
+
+      return partial;
     },
 
     onKeyTab: function(){
@@ -114,11 +141,11 @@ define([
       }
     },
 
-    onHotkey: function(e){
+    onHotkey: function(){
       this.ui.input.focus();
     },
 
-    onKeyEsc: function(e){
+    onKeyEsc: function(){
       this.ui.input.blur();
     }
   });

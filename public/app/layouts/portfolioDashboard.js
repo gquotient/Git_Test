@@ -27,7 +27,7 @@ define([
     },
     regions: {
       dashboard: '#dashboard',
-      contentNavigation: '#nav_content'
+      contentNavigation: '.nav_content'
     },
 
     onShow: function(){
@@ -36,7 +36,8 @@ define([
     },
 
     initialize: function(options){
-    //   this.stopListening();
+      var portfolio = options.model;
+      Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolioDashboard', display_name: portfolio.get('display_name')});
 
       if (this.currentState !== 'portfolioDashboard') {
 
@@ -44,12 +45,12 @@ define([
 
         // Build primary portfolio nav
         this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
-          collection: options.model.portfolios
+          collection: options.app.portfolios
         });
 
         this.dashboardView = new Project.views.Dashboard({ collection: this.projectList });
 
-        this.listenTo(Backbone, 'select:portfolio', function(model){
+        this.listenTo(Backbone, 'click:portfolio', function(model){
           // Update the collection.
           this.projectList.set(model.projects.models);
         });

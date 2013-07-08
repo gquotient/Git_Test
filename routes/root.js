@@ -44,8 +44,9 @@ module.exports = function(app){
         // console.log('user')
         request(requestOptions, function(error, response, userJSON){
           var user = JSON.parse(userJSON);
-          // Until we have a default team option for the user, assume first team or last selected.
-          req.session.team_label = req.session.team_label || user.teams[0][0]
+          // Until we have a default team option for the user, assume first team or last selected. Or, you know. No team at all.
+          var team = user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
+          req.session.team_label = req.session.team_label || team;
           req.session.org_label = user.org_label;
           myTeams = JSON.stringify(JSON.parse(userJSON).teams);
           console.log(myTeams);
@@ -69,9 +70,10 @@ module.exports = function(app){
       .then( function(myPortfolios){
         var myProjectsDef = Q.defer();
         // console.log('projects');
-        requestOptions.uri = app.get('modelUrl') + '/res/teamprojects';
+        requestOptions.uri = app.get('modelUrl') + '/res/teamprojects?team_label'+req.session.team_label+'&org_label='+req.session.org_label; ;
         request(requestOptions, function(error, response, projects){
-          myProjects = projects;
+          myProjects = JSON.stringify(JSON.parse(projects).projects || []);
+          console.log(req.session.team_label, projects);
           // console.log('projects')
           myProjectsDef.resolve(projects);
         });
@@ -91,8 +93,9 @@ module.exports = function(app){
             role: roles[req.user.role]
           }),
           portfolios: myPortfolios,
-          projects: JSON.stringify(JSON.parse(myProjects).projects),
-          locale: req.user.locale || req.acceptedLanguages[0].toLowerCase()
+          projects: myProjects,
+          locale: req.user.locale || req.acceptedLanguages[0].toLowerCase(),
+          staticDir: app.get('staticDir') || 'app'
         });
       });
 

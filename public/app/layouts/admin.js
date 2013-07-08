@@ -141,11 +141,14 @@ define([
     },
 
     initialize: function(options){
+      this.view = this.initialView = options.initialView || 'users';
+
+      Backbone.trigger('reset:breadcrumbs', {
+        state:'admin',
+        display_name: 'Admin'
+      });
+
       this.detail = this.options.detail;
-
-      this.initialView = options.initialView || 'users';
-
-      this.view = this.initialView;
 
       this.listenTo(Backbone, 'detail', function(model){
         this.renderDetailView({ model: model, page: this.view });

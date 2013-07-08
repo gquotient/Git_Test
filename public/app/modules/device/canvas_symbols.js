@@ -27,17 +27,6 @@ define(['underscore'], function(_){
 
     var symbols = _.reduce({
 
-      CIRCLE: function(center, size){
-        var half = size / 2,
-
-          path = new paper.Path.Circle(center, half);
-
-        path.strokeColor = 'black';
-        path.fillColor = 'white';
-
-        return path;
-      },
-
       SQUARE: function(center, size){
         var half = size / 2,
 
@@ -49,7 +38,34 @@ define(['underscore'], function(_){
         return path;
       },
 
-      DIVIDER: function(center, size){
+      LINE: function(center, size){
+        var half = size / 2,
+
+          path = new paper.Path.Line(
+            center.subtract(half, 0),
+            center.add(half, 0)
+          );
+
+        path.strokeColor = 'black';
+        path.fillColor = 'white';
+
+        return path;
+      },
+
+      CIRCLE: function(center, size){
+        var half = size / 2,
+
+          path = new paper.Path.Circle(center, half);
+
+        path.strokeColor = 'black';
+        path.fillColor = 'white';
+
+        return path;
+      },
+
+
+
+      _DIVIDER: function(center, size){
         var half = size / 2,
 
           path = new paper.Path.Line(
@@ -62,7 +78,7 @@ define(['underscore'], function(_){
         return path;
       },
 
-      AC: function(center, size){
+      _AC: function(center, size){
         var half = size / 2,
           quarter = size / 4,
 
@@ -76,7 +92,7 @@ define(['underscore'], function(_){
         return path;
       },
 
-      DC: function(center, size){
+      _DC: function(center, size){
         var half = size / 2,
           quarter = size / 4,
           eighth = size / 8,
@@ -92,7 +108,219 @@ define(['underscore'], function(_){
         return group;
       },
 
-      GRID: function(center, size){
+      _CT: function(center, size){
+        var half = size / 2,
+          quarter = size / 4,
+
+          group = new paper.Group(pathsFromPoints([
+            [[0, 0], [0, -quarter]],
+            [[0, 0], [-quarter, quarter], [-half, 0]],
+            [[0, 0], [quarter, quarter], [half, 0]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      _M: function(center, size){
+        var half = size / 2,
+          third = size / 3,
+
+          group = new paper.Group(pathsFromPoints([
+            [[-third, -half], [-third, half]],
+            [[third, -half], [third, half]],
+            [[-third, -half], [0, 0]],
+            [[third, -half], [0, 0]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      _V: function(center, size){
+        var half = size / 2,
+
+          group = new paper.Group(pathsFromPoints([
+            [[-half, -half], [0, 0]],
+            [[half, -half], [0, 0]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      _T: function(center, size){
+        var half = size / 2,
+
+          group = new paper.Group(pathsFromPoints([
+            [[-half, -half], [half, -half]],
+            [[0, -half], [0, half]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      _PYRA: function(center, size){
+        var half = size / 2,
+          quarter = size / 4,
+          eighth = size / 8,
+
+          group = new paper.Group(pathsFromPoints([
+            [[-quarter, 0], [0, -quarter], [quarter, 0]],
+
+            [[-quarter, 0], [quarter, 0]],
+            [[-half, eighth], [half, eighth]],
+            [[-half, quarter], [half, quarter]],
+
+            [[-quarter, 0], [-quarter, eighth]],
+            [[quarter, 0], [quarter, eighth]],
+            [[-half, eighth], [-half, quarter]],
+            [[half, eighth], [half, quarter]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      _GILL: function(center, size){
+        var half = size / 2,
+          third = size / 3,
+          quarter = size / 4,
+          sixth = size / 6,
+
+          group = new paper.Group(pathsFromPoints([
+            [[-quarter, -third], [quarter, -third]],
+            [[-half, -sixth], [half, -sixth]],
+            [[-half, 0], [half, 0]],
+            [[-half, sixth], [half, sixth]],
+            [[-half, third], [half, third]],
+            [[-half, half], [half, half]],
+
+            [[-quarter, -third], [-half, -sixth]],
+            [[quarter, -third], [half, -sixth]],
+            [[-quarter, -sixth], [-half, 0]],
+            [[quarter, -sixth], [half, 0]],
+            [[-quarter, 0], [-half, sixth]],
+            [[quarter, 0], [half, sixth]],
+            [[-quarter, sixth], [-half, third]],
+            [[quarter, sixth], [half, third]],
+            [[-quarter, third], [-half, half]],
+            [[quarter, third], [half, half]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      _ANEM: function(center, size){
+        var half = size / 2,
+          quarter = size / 4,
+          eighth = size / 8,
+
+          group = new paper.Group(pathsFromPoints([
+            [[-quarter, -quarter], [quarter, -quarter]],
+
+            [[-half, -quarter], [-eighth * 3, -eighth * 3], [-quarter, -quarter]],
+            [[-half, -quarter], [-eighth * 3, -eighth], [-quarter, -quarter]],
+            [[half, -quarter], [eighth * 3, -eighth * 3], [quarter, -quarter]],
+            [[half, -quarter], [eighth * 3, -eighth], [quarter, -quarter]],
+
+            [[0, -quarter], [0, half]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      _VANE: function(center, size){
+        var half = size / 2,
+          quarter = size / 4,
+          eighth = size / 8,
+
+          group = new paper.Group(pathsFromPoints([
+            [[-half, 0], [-eighth * 3, -eighth]],
+            [[-half, 0], [-eighth * 3, eighth]],
+            [[-eighth * 3, -eighth], [-eighth * 3, eighth]],
+
+            [[-eighth * 3, 0], [quarter, 0]],
+
+            [[quarter, 0], [eighth * 3, -eighth * 3]],
+            [[quarter, 0], [eighth * 3, eighth * 3]],
+            [[eighth * 3, -eighth * 3], [half, -eighth * 3]],
+            [[eighth * 3, eighth * 3], [half, eighth * 3]],
+            [[half, -eighth * 3], [half, eighth * 3]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      _TIP: function(center, size){
+        var half = size / 2,
+          quarter = size / 4,
+          eighth = size / 8,
+
+          group = new paper.Group(pathsFromPoints([
+            [[-eighth * 3, -half], [-eighth * 3, -quarter]],
+            [[eighth * 3, -half], [eighth * 3, -quarter]],
+            [[-eighth * 3, -quarter], [0, eighth]],
+            [[eighth * 3, -quarter], [0, eighth]],
+
+            [[-quarter, eighth * 3], [quarter, eighth]],
+
+            [[0, quarter], [-eighth, eighth * 3]],
+            [[0, quarter], [eighth, eighth * 3]],
+            [[-eighth, eighth * 3], [eighth, eighth * 3]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      _WYE: function(center, size){
+        var half = size / 2,
+          third = size / 3,
+          sixth = size / 6,
+
+          group = new paper.Group(pathsFromPoints([
+            [[-third, -half], [0, -sixth]],
+            [[third, -half], [0, -sixth]],
+            [[0, half], [0, -sixth]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      _DOWN: function(center, size){
+        var half = size / 2,
+          third = size / 3,
+          sixth = size / 6,
+
+          group = new paper.Group(pathsFromPoints([
+            [[0, -half], [0, sixth]],
+            [[-third, sixth], [third, sixth]],
+            [[-third, sixth], [0, half]],
+            [[third, sixth], [0, half]]
+          ], center));
+
+        group.strokeColor = 'black';
+
+        return group;
+      },
+
+      _GRID: function(center, size){
         var half = size / 2,
           quarter = size / 4,
 
@@ -111,99 +339,7 @@ define(['underscore'], function(_){
         return group;
       },
 
-      M: function(center, size){
-        var half = size / 2,
-          third = size / 3,
-
-          group = new paper.Group(pathsFromPoints([
-            [[-third, -half], [-third, half]],
-            [[third, -half], [third, half]],
-            [[-third, -half], [0, 0]],
-            [[third, -half], [0, 0]]
-          ], center));
-
-        group.strokeColor = 'black';
-
-        return group;
-      },
-
-      CT: function(center, size){
-        var half = size / 2,
-          quarter = size / 4,
-
-          group = new paper.Group(pathsFromPoints([
-            [[0, 0], [0, -quarter]],
-            [[0, 0], [-quarter, quarter], [-half, 0]],
-            [[0, 0], [quarter, quarter], [half, 0]]
-          ], center));
-
-        group.strokeColor = 'black';
-
-        return group;
-      },
-
-      COILS: function(center, size){
-        var half = size / 2,
-          quarter = size / 4,
-          eighth = size / 8,
-
-          group = new paper.Group(pathsFromPoints([
-            [[0, -half], [0, half]],
-
-            [[-eighth * 3, -half], [-quarter, -half]],
-            [[eighth * 3, -half], [quarter, -half]],
-            [[-eighth * 3, half], [-quarter, half]],
-            [[eighth * 3, half], [quarter, half]],
-
-            [[-quarter, -half], [-eighth, -eighth * 3], [-quarter, -quarter]],
-            [[quarter, -half], [eighth, -eighth * 3], [quarter, -quarter]],
-            [[-quarter, -quarter], [-eighth, -eighth], [-quarter, 0]],
-            [[quarter, -quarter], [eighth, -eighth], [quarter, 0]],
-            [[-quarter, 0], [-eighth, eighth], [-quarter, quarter]],
-            [[quarter, 0], [eighth, eighth], [quarter, quarter]],
-            [[-quarter, quarter], [-eighth, eighth * 3], [-quarter, half]],
-            [[quarter, quarter], [eighth, eighth * 3], [quarter, half]]
-          ], center));
-
-        group.strokeColor = 'black';
-
-        return group;
-      },
-
-      WYE: function(center, size){
-        var half = size / 2,
-          third = size / 3,
-          sixth = size / 6,
-
-          group = new paper.Group(pathsFromPoints([
-            [[-third, -half], [0, -sixth]],
-            [[third, -half], [0, -sixth]],
-            [[0, half], [0, -sixth]]
-          ], center));
-
-        group.strokeColor = 'black';
-
-        return group;
-      },
-
-      DOWN: function(center, size){
-        var half = size / 2,
-          third = size / 3,
-          sixth = size / 6,
-
-          group = new paper.Group(pathsFromPoints([
-            [[0, -half], [0, sixth]],
-            [[-third, sixth], [third, sixth]],
-            [[-third, sixth], [0, half]],
-            [[third, sixth], [0, half]]
-          ], center));
-
-        group.strokeColor = 'black';
-
-        return group;
-      },
-
-      COMBINE: function(center, size){
+      _COMBINE: function(center, size){
         var half = size / 2,
           quarter = size / 4,
           fourteenth = size / 14,
@@ -233,12 +369,27 @@ define(['underscore'], function(_){
         return group;
       },
 
-      V: function(center, size){
+      _COILS: function(center, size){
         var half = size / 2,
+          quarter = size / 4,
+          eighth = size / 8,
 
           group = new paper.Group(pathsFromPoints([
-            [[-half, -half], [0, 0]],
-            [[half, -half], [0, 0]]
+            [[0, -half], [0, half]],
+
+            [[-eighth * 3, -half], [-quarter, -half]],
+            [[eighth * 3, -half], [quarter, -half]],
+            [[-eighth * 3, half], [-quarter, half]],
+            [[eighth * 3, half], [quarter, half]],
+
+            [[-quarter, -half], [-eighth, -eighth * 3], [-quarter, -quarter]],
+            [[quarter, -half], [eighth, -eighth * 3], [quarter, -quarter]],
+            [[-quarter, -quarter], [-eighth, -eighth], [-quarter, 0]],
+            [[quarter, -quarter], [eighth, -eighth], [quarter, 0]],
+            [[-quarter, 0], [-eighth, eighth], [-quarter, quarter]],
+            [[quarter, 0], [eighth, eighth], [quarter, quarter]],
+            [[-quarter, quarter], [-eighth, eighth * 3], [-quarter, half]],
+            [[quarter, quarter], [eighth, eighth * 3], [quarter, half]]
           ], center));
 
         group.strokeColor = 'black';
@@ -246,96 +397,177 @@ define(['underscore'], function(_){
         return group;
       },
 
-      DC_BUS: function(center, size){
+
+
+      DSS: function(center, size){
         return new paper.Group([
-          symbols.SQUARE(center),
-          symbols.DC(center, 2 / 3)
+          symbols.SQUARE(center)
         ]);
       },
 
-      AC_BUS: function(center, size){
+      DSC: function(center, size){
         return new paper.Group([
           symbols.SQUARE(center),
-          symbols.AC(center, 2 / 3)
+          symbols.SQUARE(center, 1 / 2, 2 / 3),
+          symbols.SQUARE(center.subtract(0, size / 12), 1 / 3),
+          symbols.LINE(center.add(size / 24, size / 5), 1 / 4)
         ]);
       },
 
-      INVERTER: function(center, size){
+      ESI: function(center, size){
         return new paper.Group([
-          symbols.SQUARE(center),
-          symbols.DIVIDER(center),
-          symbols.DC(center.subtract(size / 4), 1 / 3),
-          symbols.AC(center.add(size / 4), 1 / 3)
+          symbols.SQUARE(center)
         ]);
       },
 
-      METER: function(center, size){
+      IRRA: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols._PYRA(center.subtract(size / 16), 2 / 3).rotate(-45)
+        ]);
+      },
+
+      IRRZ: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols._PYRA(center, 2 / 3)
+        ]);
+      },
+
+      TMPC: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols.CIRCLE(center, 1 / 2),
+          symbols._T(center.add(0, size / 32), 1 / 4)
+        ]);
+      },
+
+      TMPA: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols._GILL(center, 2 / 3)
+        ]);
+      },
+
+      WSPD: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols._ANEM(center, 2 / 3)
+        ]);
+      },
+
+      WDIR: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols._VANE(center, 2 / 3)
+        ]);
+      },
+
+      BARO: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center)
+        ]);
+      },
+
+      RAIN: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols._TIP(center, 2 / 3)
+        ]);
+      },
+
+
+
+      INV: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols._DIVIDER(center),
+          symbols._DC(center.subtract(size / 4), 1 / 3),
+          symbols._AC(center.add(size / 4), 1 / 3)
+        ]);
+      },
+
+      RM: function(center, size){
         return new paper.Group([
           symbols.SQUARE(center),
           symbols.CIRCLE(center.subtract(0, size / 9), 4 / 9),
-          symbols.M(center.subtract(0, size / 9), 1 / 4),
-          symbols.CT(center.add(0, size * 2 / 9), 4 / 9)
+          symbols._M(center.subtract(0, size / 9), 1 / 4),
+          symbols._CT(center.add(0, size * 2 / 9), 4 / 9)
         ]);
       },
 
-      TRANSFORMER: function(center, size){
+      LD: function(center, size){
         return new paper.Group([
           symbols.SQUARE(center),
-          symbols.COILS(center, 2 / 3)
+          symbols._DOWN(center, 2 / 3)
         ]);
       },
 
-      INTERCONNECT: function(center, size){
+      ACB: function(center, size){
         return new paper.Group([
           symbols.SQUARE(center),
-          symbols.WYE(center, 2 / 3)
+          symbols._AC(center, 2 / 3)
         ]);
       },
 
-      LOAD: function(center, size){
+      XFR: function(center, size){
         return new paper.Group([
           symbols.SQUARE(center),
-          symbols.DOWN(center, 2 / 3)
+          symbols._COILS(center, 2 / 3)
         ]);
       },
 
-      ARRAY: function(center, size){
+      IC: function(center, size){
         return new paper.Group([
           symbols.SQUARE(center),
-          symbols.GRID(center)
+          symbols._WYE(center, 2 / 3)
         ]);
       },
 
-      RECOMBINER: function(center, size){
+      DCB: function(center, size){
         return new paper.Group([
           symbols.SQUARE(center),
-          symbols.COMBINE(center.subtract(size / 4, 0), 1, 2 / 3),
+          symbols._DC(center, 2 / 3)
+        ]);
+      },
+
+      APH: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols._GRID(center)
+        ]);
+      },
+
+      RCB: function(center, size){
+        return new paper.Group([
+          symbols.SQUARE(center),
+          symbols._COMBINE(center.subtract(size / 4, 0), 1, 2 / 3),
           symbols.CIRCLE(center, 1 / 4)
         ]);
       },
 
-      COMBINER: function(center, size){
+      CMB: function(center, size){
         return new paper.Group([
           symbols.SQUARE(center),
-          symbols.COMBINE(center.subtract(size / 4, 0), 1, 2 / 3),
+          symbols._COMBINE(center.subtract(size / 4, 0), 1, 2 / 3),
           symbols.CIRCLE(center, 1 / 4)
         ]);
       },
 
-      STRING: function(center, size){
+      S: function(center, size){
         return new paper.Group([
           symbols.SQUARE(center),
-          symbols.V(center.subtract(0, size / 4)),
-          symbols.V(center.subtract(0, size / 8)),
-          symbols.V(center),
-          symbols.V(center.add(0, size / 8))
+          symbols._V(center.subtract(0, size / 4)),
+          symbols._V(center.subtract(0, size / 8)),
+          symbols._V(center),
+          symbols._V(center.add(0, size / 8))
         ]);
       },
 
-      PANEL: function(center, size){
+      P: function(center, size){
         return new paper.Group([
           symbols.SQUARE(center),
-          symbols.V(center.subtract(0, size / 4))
+          symbols._V(center.subtract(0, size / 4))
         ]);
       }
 

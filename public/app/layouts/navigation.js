@@ -25,28 +25,38 @@ define([
       crumbs: '#breadcrumbs'
     },
 
+    setBreadcrumbs: function(model){
+      var breadcrumbModel = new Breadcrumb.Model(model);
+
+      if(this.app.state !== breadcrumbModel.get('state')){
+        this.breadcrumbs.advance(breadcrumbModel);
+        this.app.state = breadcrumbModel.get('state');
+      } else {
+        this.breadcrumbs.update(breadcrumbModel);
+      }
+    },
+
+    resetBreadcrumbs: function(model){
+      var breadcrumbModel = new Breadcrumb.Model(model);
+
+      this.breadcrumbs.reset([breadcrumbModel]);
+      this.app.state = breadcrumbModel.get('state');
+    },
+
     initialize: function(options){
       this.app = options.app;
 
-      var breadcrumbs = new Breadcrumb.Collection();
-      this.breadcrumbsView = new Breadcrumb.views.Breadcrumbs({collection: breadcrumbs});
-
-      this.listenTo(Backbone, 'reset:breadcrumbs', function(model){
-        breadcrumbs.reset(model);
-      });
+      this.breadcrumbs = new Breadcrumb.Collection();
+      this.breadcrumbsView = new Breadcrumb.views.Breadcrumbs({collection: this.breadcrumbs});
 
       this.listenTo(Backbone, 'set:breadcrumbs', function(model){
-        console.log(this.app.state, model.get('type'));
-        if(this.app.state !== model.get('type')){
-          breadcrumbs.advance(model);
-        } else {
-          breadcrumbs.update(model);
-        }
+        this.setBreadcrumbs(model);
       }, this);
 
-      this.listenTo(Backbone, 'update:breadcrumbs', function(model){
-        breadcrumbs.update(model);
+      this.listenTo(Backbone, 'reset:breadcrumbs', function(model){
+        this.resetBreadcrumbs(model);
       });
+
     },
 
     onShow: function(){

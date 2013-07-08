@@ -3,6 +3,7 @@ module.exports = function(app){
   require('./routes/alarms')(app);
   require('./routes/data')(app);
   require('./routes/devices')(app);
+  require('./routes/equipment')(app);
   require('./routes/helpers')(app);
   require('./routes/organizations')(app);
   require('./routes/portfolios')(app);

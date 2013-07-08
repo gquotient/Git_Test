@@ -5,7 +5,7 @@ define([
   'backbone.marionette',
 
   'leaflet',
-  'css!components/leaflet/dist/leaflet.css',
+  'css!leaflet.css', //This seems silly but also seems to work, sooooo...
 
   'device',
   './editor',
@@ -16,7 +16,9 @@ define([
   'hbs!project/templates/create',
   'hbs!project/templates/navigationItemView',
   'hbs!project/templates/projectList',
-  'hbs!project/templates/markerPopUp'
+  'hbs!project/templates/markerPopUp',
+  'hbs!project/templates/kpis',
+  'hbs!project/templates/changelog'
 ], function(
   $,
   _,
@@ -35,15 +37,28 @@ define([
   createTemplate,
   navigationItemViewTemplate,
   navigationListTemplate,
-  markerPopUpTemplate
+  markerPopUpTemplate,
+  kpisTemplate,
+  changelogTemplate
 ){
-  var Project = { views: {} };
+  var Project = { views: {Editor: Editor} };
 
   Project.Model = Backbone.Model.extend({
-    idAttribute: 'label',
+    idAttribute: 'project_label',
     url: '/api/projects',
     defaults: {
-      type: 'project'
+      type: 'project',
+      kpis: {
+        irradiance: 0,
+        power: 0,
+        dpi: 0,
+        energyYTD: {
+          generated: 0,
+          forecast: 0,
+          modeled: 0
+        }
+      },
+      changelog: ''
     },
 
     initialize: function(){
@@ -51,17 +66,108 @@ define([
       this.outgoing = new Device.Collection();
     },
 
-    parse: function(resp){
+    fetchKpis: function(){
+      var that = this;
+
+      return $.ajax({
+        url: '/api/snapshot',
+        cache: false,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          traces: [
+            {
+              'project_label': this.id,
+              'ddl': 'pgen-env',
+              'columns': ['irradiance']
+            },
+            {
+              'project_label': this.id,
+              'ddl': 'pgen-acm',
+              'columns': ['ac_power']
+            },
+            {
+              'project_label': this.id,
+              'ddl': 'pgen-rm',
+              'columns': ['ac_power']
+            },
+            {
+              'project_label': this.id,
+              'ddl': 'pgen-util',
+              'columns': ['ac_power']
+            }
+          ]
+        }
+      })
+      .done(function(data){
+        that.trigger('data:done');
+        that.parseKpis(data.response);
+      });
+    },
+
+    parseKpis: function(data){
+      var kpis = {
+        irradiance: 0,
+        power: 0,
+        dpi: 0,
+        energyYTD: {
+          generated: 0,
+          forecast: 0,
+          modeled: 0
+        }
+      };
+
+      _.each(data, function(kpi, index){
+        if (kpi.columns) {
+          var dataType = kpi.columns[0];
+
+          // Set irradiance kpi
+          if (dataType === 'irradiance') {
+            kpis.irradiance = kpi.data[0][0];
+          }
+
+          // Select first available power snapshot
+          if (dataType === 'ac_power' && kpis.power === 0) {
+            kpis.power = kpi.data[0][0];
+          }
+        }
+      });
+
+      // DPI cheat
+      if (kpis.power > 0 && kpis.irradiance) {
+        kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000);
+      }
+
+      this.set('kpis', kpis);
+    },
+
+    parse: function(resp, options){
       if (resp.devices) {
         this.devices.reset(resp.devices);
 
+        if (options.equipment) {
+          this.devices.each(function(device){
+            var equip = options.equipment.findForDevice(device);
+
+            if (equip) {
+              device.equipment = equip;
+              device.trigger('equipment:add', device);
+            }
+          });
+        }
+
         if (resp.rels) {
           _.each(resp.rels, function(rel) {
-            var target = rel[0] === resp.id ? this : this.devices.get(rel[0]),
-              device = this.devices.get(rel[2]);
+            var source = this.devices.get(rel[2]),
+              target = this.devices.get(rel[0]),
+              relationship = rel[1];
 
-            if (device && target) {
-              device.connectTo(target, rel[1]);
+            if (!target && rel[0] === resp.id) {
+              target = this;
+            }
+
+            if (source && target) {
+              source.connectTo(target, relationship);
             }
           }, this);
         }
@@ -78,16 +184,23 @@ define([
         isNaN(attrs.longitude) ||
         isNaN(attrs.elevation)
       ) { return 'error'; }
-    }
+    },
+
+    log: function(msg, user){
+      var log = this.get('changelog'),
+        now = new Date(),
+        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ',
+        who = user ? user.get('name') + ' ' : '';
+
+      this.set({changelog: when + who + msg + '\n' + log});
+      this.lazySave();
+    },
+
+    lazySave: _.debounce(Backbone.Model.prototype.save, 1000)
   });
 
   Project.Collection = Backbone.Collection.extend({
-    model: Project.Model,
-
-    findBySiteLabel: function(label){
-      var projects = this.where({site_label: label});
-      return projects.length === 1 ? projects[0] : null;
-    }
+    model: Project.Model
   });
 
   Project.views.DataListItem = Marionette.ItemView.extend({
@@ -128,6 +241,11 @@ define([
     template: {
       type: 'handlebars',
       template: dashboardItemTemplate
+    },
+    events: {
+      'click': function(){
+        Backbone.history.navigate('/project/'+this.model.id, true);
+      }
     }
   });
 
@@ -359,6 +477,7 @@ define([
 
       // Create tiles layer and add to our map
       cloudLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png', {
+        attribution: 'OpenWeatherMap'
       }).addTo(this.map).setOpacity(0.5);
 
       var precipitationLayer = {
@@ -369,6 +488,7 @@ define([
 
       //* Precipitation layer
       precipitationLayer.layer = L.tileLayer('http://{s}.tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png', {
+        //attribution: 'OpenWeatherMap'
       }).addTo(this.map).setOpacity(0);
       //*/
 
@@ -394,7 +514,7 @@ define([
       // add an OpenStreetMap tile layer
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-      }).addTo(map);
+      }).addTo(map).setOpacity(0.99);
 
       this.markers = new L.layerGroup([]);
 
@@ -437,17 +557,19 @@ define([
     },
 
     onSubmit: function(){
-      this.model.save({
+      var project = this.model;
+
+      project.save({
         name: this.ui.name.val().trim(),
         site_label: this.ui.label.val().replace(/\W|_/g, ''),
         latitude: parseFloat(this.ui.latitude.val()),
         longitude: parseFloat(this.ui.longitude.val()),
         elevation: parseFloat(this.ui.elevation.val()) || 0
-      }, {
-        success: function(model){
-          Backbone.trigger('create:project', model);
-        }
-      });
+      }).done(_.bind(function(){
+        Backbone.trigger('create:project', project);
+
+        project.log('created project', this.options.user);
+      }, this));
     },
 
     onReset: function(){
@@ -463,7 +585,11 @@ define([
       template: navigationItemViewTemplate
     },
     attributes: {
-      class: 'nav-item'
+      class: 'nav-item hidden'
+    },
+    onRender: function(){
+      var that = this;
+      setTimeout(function(){ that.$el.removeClass('hidden'); }, 0);
     },
     events: {
       'click': function(){
@@ -491,19 +617,14 @@ define([
 
     events: {
       'change #project-sort': function(){
-
-        this.collection.reset(
-          this.collection.sortBy(
-            function(model){
-              return model.get( $('#portfolio-sort').val() );
-            }
-          )
-        );
+        this.collection.comparator = $('#project-sort').val();
+        this.collection.sort();
       }
     },
 
     initialize: function(options){
       this.listenTo(Backbone, 'select:project', this.setProject);
+      this.listenTo(this.collection, 'sort', this._renderChildren);
     },
 
     // Setup the views for the current model.
@@ -516,8 +637,56 @@ define([
     }
   });
 
+  Project.views.Kpis = Marionette.ItemView.extend({
+    template: {
+      type: 'handlebars',
+      template: kpisTemplate
+    },
+    initialize: function(){
+      this.model.fetchKpis();
+      this.listenTo(this.model, 'change:kpis', this.render);
+    }
+  });
 
-  Project.views.Editor = Editor;
+  Project.views.ChangeLog = Marionette.ItemView.extend({
+    tagName: 'form',
+    template: {
+      type: 'handlebars',
+      template: changelogTemplate
+    },
+
+    attributes: {
+      id: 'changelog'
+    },
+
+    ui: {
+      textarea: 'textarea'
+    },
+
+    events: {
+      'keyup textarea': function(e){
+        this.model.set('changelog', this.ui.textarea.val());
+
+        if (e.which === 27) {
+          this.ui.textarea.blur();
+        }
+      },
+
+      'blur textarea': function(){
+        this.model.save();
+      }
+    },
+
+    modelEvents: {
+      'change:changelog': function(){
+        this.ui.textarea.val(this.model.get('changelog'));
+      }
+    },
+
+    onClose: function(){
+      this.model.save();
+    }
+  });
 
   return Project;
 });

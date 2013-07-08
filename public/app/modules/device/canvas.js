@@ -35,7 +35,7 @@ define([
         this.device = options.device;
 
         this.paper = options.paper || paper;
-        this.rendering_label = options.rendering_label;
+        this.rendering = options.rendering;
 
         this.style = relationshipStyles[options.relationship] || relationshipStyles.DEFAULT;
 
@@ -86,11 +86,11 @@ define([
       },
 
       startPoint: function(){
-        return new this.paper.Point(this.device.getPosition(this.rendering_label));
+        return new this.paper.Point(this.device.getPosition(this.rendering));
       },
 
       endPoint: function(){
-        return new this.paper.Point(this.model.getPosition(this.rendering_label));
+        return new this.paper.Point(this.model.getPosition(this.rendering));
       },
 
       move: function(){
@@ -133,7 +133,7 @@ define([
         this.collection = this.model.outgoing;
 
         this.paper = options.paper || paper;
-        this.rendering_label = options.rendering_label;
+        this.rendering = options.rendering;
 
         this.factory = symbolLibrary(this.paper);
         this.setCenter();
@@ -142,57 +142,79 @@ define([
         this.on('close', this.erase);
       },
 
-      itemViewOptions: function(item){
-        return {
-          device: this.model,
-          paper: this.paper,
-          rendering_label: this.rendering_label,
-          relationship: item.getRelationship(this.model)
-        };
-      },
-
-      // Prevent rendering of children that don't have position or relationship.
-      addItemView: function(item){
-        var position = item.getPosition(this.rendering_label),
-          relationship = item.getRelationship(this.model, this.rendering_label);
-
-        if (position && relationship) {
-          Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
-        }
-      },
-
-      // Prevent item views from being added to the DOM.
-      appendHtml: function(){},
-
       modelEvents: {
         'selected': 'select',
         'deselected': 'deselect',
         'change:renderings': 'setCenter'
       },
 
+      collectionEvents: {
+        'rendering:add': 'addChildView',
+        'rendering:remove': 'removeItemView'
+      },
+
+      itemViewOptions: function(item){
+        return {
+          device: this.model,
+          paper: this.paper,
+          rendering: this.rendering,
+          relationship: item.getRelationship(this.model)
+        };
+      },
+
+      addItemView: function(item){
+        var equip = item.equipment;
+
+        // Only add new items if they have position.
+        if (!this.children.findByModel(item) && item.getPosition(this.rendering)) {
+
+          // And a relationship in the current rendering.
+          if (equip.getRelationship(this.model, this.rendering)) {
+            Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
+          }
+        }
+      },
+
+      // Prevent item views from being added to the DOM.
+      appendHtml: function(){},
+
       draw: function(){
         this.erase(true);
 
-        var symbol = this.factory(this.model.get('device_type'), this.center),
-          label = new this.paper.PointText();
+        var symbol = this.factory(this.model.equipment.getRootLabel(), this.center),
+          label = this.drawLabel(this.model);
 
-        label.fontSize = 14;
-        label.fillColor = 'black';
-        label.content = this.model.get('name');
-        label.position = this.center.subtract(0, symbol.bounds.height * 0.8);
+        label.position = this.center.subtract(0, (symbol.bounds.height + label.bounds.height) * 0.55);
 
         this.node = new this.paper.Group([symbol, label]);
         this.paper.view.draw();
       },
 
+      drawLabel: function(device){
+        var name = device.get('name');
+
+        if (!name || name.length > 12) {
+          name = device.get('did');
+        }
+
+        return new this.paper.PointText({
+          fontSize: 14,
+          fillColor: 'black',
+          justification: 'center',
+          content: name
+        });
+      },
+
       erase: function(skipDraw){
+        this.deselect();
+
         if (this.node) {
           this.node.remove();
           this.node = null;
+        }
 
-          if (!skipDraw) {
-            this.paper.view.draw();
-          }
+        if (!skipDraw) {
+          this.paper.view.draw();
         }
       },
 
@@ -205,13 +227,15 @@ define([
       },
 
       deselect: function(){
-        this.highlight.remove();
-        this.highlight = null;
+        if (this.highlight) {
+          this.highlight.remove();
+          this.highlight = null;
+        }
       },
 
       setCenter: function(){
         var orig = this.center,
-          point = this.center = new this.paper.Point(this.model.getPosition(this.rendering_label)),
+          point = this.center = new this.paper.Point(this.model.getPosition(this.rendering)),
           delta = point.subtract(orig);
 
         if (this.node) { this.node.translate(delta); }
@@ -237,7 +261,7 @@ define([
 
     initialize: function(options){
       this.paper = paper.setup(this.el);
-      this.rendering_label = options.rendering_label;
+      this.rendering = options.rendering;
 
       this.selection = new Backbone.Collection();
 
@@ -255,26 +279,23 @@ define([
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
     },
 
+    collectionEvents: {
+      'equipment:add': 'addChildView',
+      'rendering:add': 'addChildView',
+      'rendering:remove': 'removeItemView'
+    },
+
     itemViewOptions: function(){
       return {
         paper: this.paper,
-        rendering_label: this.rendering_label
+        rendering: this.rendering
       };
     },
 
-    // Listen for rendering additions.
-    _initialEvents: function(){
-      Marionette.CollectionView.prototype._initialEvents.call(this);
-
-      if (this.collection) {
-        this.listenTo(this.collection, 'rendering:add', this.addChildView);
-        this.listenTo(this.collection, 'rendering:remove', this.removeItemView);
-      }
-    },
-
-    // Prevent rendering of children that don't have position.
     addItemView: function(item){
-      if (item.getPosition(this.rendering_label)){
+
+      // Only add new items if they have position and equipment.
+      if (!this.children.findByModel(item) && item.getPosition(this.rendering) && item.equipment) {
         Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
       }
     },
@@ -302,7 +323,7 @@ define([
     },
 
     handleMouseEvent: function(e){
-      var offset = this.$el.offset();
+      var offset = this.$el.offset(), method;
 
       e.point = new this.paper.Point(e.pageX, e.pageY);
       e.delta = e.point.subtract(this.lastPoint);
@@ -313,9 +334,13 @@ define([
       this.lastProjectPoint = e.projectPoint;
 
       if (e.type === 'mousemove' && this.dragging) {
-        this.triggerMethod('mousedrag', e);
-      } else {
-        this.triggerMethod(e.type, e);
+        e.type = 'mousedrag';
+      }
+
+      method = this['on' + e.type[0].toUpperCase() + e.type.slice(1)];
+
+      if (method) {
+        method.call(this, e);
       }
 
       if (e.type === 'mousedown') { this.dragging = true; }
@@ -327,17 +352,17 @@ define([
     handleKeyEvent: function(e){
       var value = (this[e.type + 'Events'] || {})[e.which];
 
-      if (value && e.target.nodeName !== 'INPUT') {
+      if (value && !_.contains(['INPUT', 'TEXTAREA'], e.target.nodeName)) {
         e.preventDefault();
-        this.triggerMethod(value, e);
+        this.triggerMethod(value);
       }
     },
 
     handleWheelEvent: function(e, delta){
       if (delta < 0) {
-        this.triggerMethod('zoom:in', e);
+        this.triggerMethod('zoom:in');
       } else if (delta > 0) {
-        this.triggerMethod('zoom:out', e);
+        this.triggerMethod('zoom:out');
       }
     },
 
@@ -378,8 +403,8 @@ define([
       } else if (this.select) {
         this.moveSelect(e.projectPoint);
 
-      // Otherwise move any models currently selected.
-      } else {
+      // Otherwise move any models currently selected if editable.
+      } else if (this.options.editable) {
         this.moveSelection(e.projectDelta);
       }
     },
@@ -398,70 +423,21 @@ define([
         this.selection.add(models, {remove: !e.ctrlKey});
         this.eraseSelect();
 
-      // Otherwise snap any models that may have moved.
-      } else {
+      // Otherwise snap any models that may have moved if editable.
+      } else if (this.options.editable) {
         this.snapSelection();
       }
     },
 
-    onKeyTab: function(e){
-      var model = this.selection.last();
-
-      this.selection.add(this.collection.next(model), {remove: !e.ctrlKey});
-      this.paper.view.draw();
-    },
-
-    onKeyLeft: function(e){
-      var model = this.selection.last() || this.collection.last(),
-        parnt = model && model.incoming && model.incoming.first(),
-        sibling = parnt && parnt.outgoing && parnt.outgoing.previous(model);
-
-      if (sibling) {
-        this.selection.add(sibling, {remove: !e.ctrlKey});
-        this.paper.view.draw();
-      }
-    },
-
-    onKeyRight: function(e){
-      var model = this.selection.last() || this.collection.last(),
-        parnt = model && model.incoming && model.incoming.last(),
-        sibling = parnt && parnt.outgoing && parnt.outgoing.next(model);
-
-      if (sibling) {
-        this.selection.add(sibling, {remove: !e.ctrlKey});
-        this.paper.view.draw();
-      }
-    },
-
-    onKeyUp: function(e){
-      var model = this.selection.last() || this.collection.last(),
-        parnt = model && model.incoming && model.incoming.first();
-
-      if (parnt && parnt.has('device_type')) {
-        this.selection.add(parnt, {remove: !e.ctrlKey});
-        this.paper.view.draw();
-      }
-    },
-
-    onKeyDown: function(e){
-      var model = this.selection.last() || this.collection.last(),
-        child = model && model.outgoing && model.outgoing.first();
-
-      if (child) {
-        this.selection.add(child, {remove: !e.ctrlKey});
-        this.paper.view.draw();
-      }
-    },
-
-    onZoomIn: function(e){
+    onZoomIn: function(){
       this.paper.view.zoom /= 1.1;
     },
 
-    onZoomOut: function(e){
+    onZoomOut: function(){
       this.paper.view.zoom *= 1.1;
     },
 
-    onZoomReset: function(e){
+    onZoomReset: function(){
       this.paper.view.zoom = 1;
     },
 
@@ -484,9 +460,9 @@ define([
 
     moveSelection: function(delta){
       this.selection.each(function(model) {
-        var position = model.getPosition(this.rendering_label);
+        var position = model.getPosition(this.rendering);
 
-        model.setPosition(this.rendering_label, {
+        model.setPosition(this.rendering, {
           x: position.x + delta.x,
           y: position.y + delta.y
         });
@@ -495,9 +471,9 @@ define([
 
     snapSelection: function(){
       this.selection.each(function(model) {
-        var position = model.getPosition(this.rendering_label);
+        var position = model.getPosition(this.rendering);
 
-        model.setPosition(this.rendering_label, {
+        model.setPosition(this.rendering, {
           x: Math.round(position.x / 100) * 100,
           y: Math.round(position.y / 100) * 100
         }, true);

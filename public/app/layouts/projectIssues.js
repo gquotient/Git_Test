@@ -42,6 +42,10 @@ define([
     },
 
     selectIssue: function(issue){
+      Backbone.trigger('set:breadcrumbs', {model: issue, state: 'issue', display_name: issue.get('title')});
+
+      // this.app.state = 'issue';
+
       Backbone.history.navigate('/project/' + this.model.id + '/issues/' + issue.id);
 
       this.issueDetail.show(new Marionette.Layout({template: _.template('Issue: <%= id %> <br> Description: <%= title %>'), model: issue}));
@@ -56,7 +60,10 @@ define([
     },
 
     initialize: function(options){
+      this.app = options.app;
       var that = this;
+
+      Backbone.trigger('set:breadcrumbs', {state: 'issue', display_name: 'Issues'});
 
       // Set the project model to this layout's model
       this.model = options.model;

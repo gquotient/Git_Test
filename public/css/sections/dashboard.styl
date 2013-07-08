@@ -1,0 +1,168 @@
+@import 'shared';
+@import 'nib';
+@import 'nib/gradients';
+
+//Formatting
+
+#dashboard {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 85%;
+  overflow:auto;
+  clear:both;
+  width:100%;
+  height: 100%;
+  background: #333;
+}
+
+.block-notice.flash {
+  padding: 5px;
+  background: colorYellow;
+  color: #222;
+  text-align: center;
+  width: 30%;
+  margin: 10px auto;
+}
+
+#select_portfolio div{
+  float: left;
+  width: 80%;
+}
+
+#select_portfolio div span {
+  color: colorDrakerOrange;
+  padding: 0 6px 0 12px;
+  font-size: 0.8em;
+}
+
+#select_portfolio select {
+  font-size: 0.8em;
+}
+
+.projectStatus {
+  cursor: pointer;
+  width:300px;
+  height: 90px;
+  // border: 1px solid #444;
+  overflow:hidden;
+  float:left;
+  position:relative;
+  text-shadow: 0 1px 0 #444;
+  background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+  // border-top: borderBasicMedium;
+  border: borderBasicDark;
+  box-shadow: 0px 3px 3px #222;
+  border-radius: 3px;
+  margin:6px;
+  .name {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    padding:0 6px;
+    font-size:2em;
+    line-height:1.5em;
+    border-top: borderBasicMedium;
+    text-overflow: ellipsis;
+  }
+  .resource {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width:178px;
+    float:left;
+    height:48px;
+    border-top-right-radius: 2px;
+    border:1px solid #222;
+    border-bottom:none;
+    border-left:none;
+    .irradiance {
+      border-top-right-radius: 2px;
+      background:#555;
+      background: linear-gradient(top, #555, #666 50%, #555);
+      .indicator {
+        height:6px;
+        background: colorYellow;
+      }
+    }
+    .power {
+      background:#555;
+      border-top:1px solid #555;
+      // @include background-image(linear-gradient(top, #555, #666 50%, #555 ));
+      background: linear-gradient(top, #555, #666 50%, #555);
+
+      .indicator {
+        height:41px;
+        background: colorGreen;
+      }
+    }
+  }
+  .performanceRatio {
+    width:120px;
+    float:right;
+    text-align:right;
+    padding:0 6px;
+    .value {
+      font-size:2.5em;
+      font-weight:bold;
+      color: colorGreen;
+    }
+    .unit {
+      font-size:2em;
+      color:#555;
+    }
+  }
+
+  .alarm {
+    display:none;
+    position:absolute;
+    bottom:0;
+    height:48px;
+    text-align:center;
+    .icon {
+      display:inline-block;
+      overflow:hidden;
+      line-height:48px;
+      height:48px;
+      width:48px;
+      margin:0 auto;
+      text-indent: -300px;
+      background-position: center 0;
+      // background-image: url(/assets/sprite_od_alarm_icons.png);
+    }
+    .communication {
+      background-position: center -100px;
+    }
+    .daq {
+      background-position: center -700px;
+    }
+    .dc {
+      background-position: center -200px;
+    }
+    .inverter {
+      background-position: center -300px;
+    }
+    .meteorological {
+      background-position: center -400px;
+    }
+    .meter {
+      background-position: center -500px;
+    }
+    .switch_gear {
+      background-position: center -600px;
+    }
+  }
+  .alarm.acknowledged {
+    display: block;
+    border-top-left-radius: 2px;
+    width:100px;
+    right:0;
+    background: colorRedSecondary;
+  }
+  .alarm.unacknowledged {
+    display: block;
+    width:100%;
+    background: colorRedPrimary;
+  }
+}
+
+form.formtastic ol, form.formtastic ul { list-style:none; }
+form.formtastic abbr { border:0; }

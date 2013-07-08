@@ -10,7 +10,13 @@ define([
   'layouts/navigation',
   'layouts/portfolioDetail',
   'layouts/projectDetail',
-
+  'layouts/projectIssues',
+  'layouts/projectDevices',
+  'layouts/portfolioDashboard',
+  'layouts/projectCreator',
+  'layouts/projectEditor',
+  'layouts/profile',
+  'layouts/admin',
 
   'hbs!layouts/templates/index'
 ], function(
@@ -25,6 +31,13 @@ define([
   Navigation,
   PortfolioDetailLayout,
   ProjectDetailLayout,
+  ProjectIssuesLayout,
+  ProjectDevicesLayout,
+  PortfolioDashboardLayout,
+  ProjectCreatorLayout,
+  ProjectEditorLayout,
+  ProfileLayout,
+  AdminLayout,
 
   indexTemplate
 ){
@@ -45,29 +58,95 @@ define([
     },
 
     onShow: function(){
+      var portfolio = this.app.allPortfolio;
+
       this.header.show(this.headerView);
       this.breadcrumbs.show(this.navigationView);
 
-      Backbone.trigger('set:breadcrumbs', this.app.rootPortfolio);
+      Backbone.trigger('set:breadcrumbs', {
+        state: 'portfolio',
+        display_name: portfolio.get('display_name'),
+        model: portfolio
+      });
     },
 
     showPortfolio: function(portfolio){
       this.activePortfolio = portfolio;
-      // Build portfolio view
-      var contentLayout = new PortfolioDetailLayout({model: portfolio, portfolios: this.app.rootPortfolio.portfolios});
-      this.mainContent.show(contentLayout);
 
-      Backbone.trigger('set:breadcrumbs', portfolio);
-      this.app.state = 'portfolio';
+      this.mainContent.show( new PortfolioDetailLayout({
+        model: portfolio,
+        portfolios: this.app.portfolios,
+        settingsRegion: this.pageSettings
+      }));
+    },
+
+    showPortfolioDashboard: function(portfolio){
+      this.mainContent.show( new PortfolioDashboardLayout({
+        model: portfolio,
+        app: this.app
+      }));
     },
 
     showProject: function(project){
-      // Build project view
-      var contentLayout = new ProjectDetailLayout({model: project, collection: this.activePortfolio.projects, settingsRegion: this.pageSettings});
-      this.mainContent.show(contentLayout);
+      this.mainContent.show( new ProjectDetailLayout({
+        model: project,
+        collection: this.activePortfolio.projects,
+        settingsRegion: this.pageSettings
+      }));
+    },
 
-      Backbone.trigger('set:breadcrumbs', project);
-      this.app.state = 'project';
+    showProjectCreate: function(){
+      this.mainContent.show( new ProjectCreatorLayout({
+        projects: this.app.projects,
+        user: this.app.currentUser
+      }));
+    },
+
+    showProjectEdit: function(project){
+      this.mainContent.show( new ProjectEditorLayout({
+        model: project,
+        user: this.app.currentUser
+      }));
+    },
+
+    showProjectIssues: function(project, issueId){
+      Backbone.trigger('set:breadcrumbs', {
+        state: 'project',
+        display_name: project.get('display_name'),
+        model: project
+      });
+
+      this.mainContent.show( new ProjectIssuesLayout({
+        model: project,
+        currentIssue: issueId,
+        app: this.app
+      }));
+    },
+
+    showProjectDevices: function(project, deviceId){
+      Backbone.trigger('set:breadcrumbs', {
+        state: 'project',
+        display_name: project.get('display_name'),
+        model: project
+      });
+
+      this.mainContent.show( new ProjectDevicesLayout({
+        model: project,
+        currentDevice: deviceId
+      }));
+    },
+
+    showProfile: function(){
+      this.mainContent.show( new ProfileLayout({
+        model: this.app.currentUser
+      }));
+    },
+
+    showAdmin: function(page, detail){
+      this.mainContent.show( new AdminLayout({
+        initialView: page,
+        currentUser: this.app.currentUser
+      }));
     },
 
     switchTeam: function(teamLabel){
@@ -79,18 +158,15 @@ define([
           team_label: teamLabel
         },
         success: function(){
-          that.app.rootPortfolio.portfolios.fetch();
+          that.app.portfolios.fetch();
 
           // Once more APIs are implemented, we can make sure everything else syncs up with the team.
         }
-      })
+      });
     },
 
     toggleNotificationBanner: function(){
-      var
-        that = this,
-        notification = new Message.views.notificationBanner({parentRegion: this.banner})
-      ;
+      var notification = new Message.views.notificationBanner({parentRegion: this.banner});
 
       this.banner.show(notification);
 
@@ -100,10 +176,10 @@ define([
     },
 
     initialize: function(options){
-      var that = this;
       this.app = options.app;
-      this.app.state = 'portfolio';
-      this.activePortfolio = this.app.rootPortfolio;
+
+      this.activePortfolio = this.app.allPortfolio;
+
       // Build header
       this.headerView = new Header({model: options.currentUser});
 
@@ -144,7 +220,7 @@ define([
 
       this.listenTo(Backbone, 'select:team', function(teamLabel){
         this.switchTeam(teamLabel);
-      })
+      });
     }
   });
 });

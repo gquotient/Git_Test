@@ -40,7 +40,7 @@ define([
     },
 
     selectDevice: function(device){
-      console.log(device);
+      Backbone.trigger('set:breadcrumbs', {model: device, state: 'device', display_name: device.get('devtype')+' '+device.get('did')});
       Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.id);
 
       this.deviceInfo.show(new Marionette.Layout({template: _.template('Device: <%= id %> <br> Graphkey: <%= graph_key %>'), model: device}));
@@ -112,6 +112,8 @@ define([
     initialize: function(options){
       var that = this;
 
+      Backbone.trigger('set:breadcrumbs', {state:'device', display_name:'Devices'});
+
       // Set the project model to this layout's model
       this.model = options.model;
 
@@ -119,7 +121,7 @@ define([
       this.devicesTree = new Device.views.NavigationList({collection: new Device.Collection()});
 
       // Fetch project to get devices
-      this.model.fetch({data: {project_label: this.model.get('label')}}).done(function(){
+      this.model.fetch({data: {project_label: this.model.id}}).done(function(){
         // Update collection once data is retrieved
         that.devicesTree.collection.reset(that.model.devices.where({devtype: 'Inverter'}));
 

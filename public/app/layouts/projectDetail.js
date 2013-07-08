@@ -84,7 +84,7 @@ define([
     selectProject: function(project) {
       this.model = project;
 
-      Backbone.trigger('update:breadcrumbs', project);
+      Backbone.trigger('set:breadcrumbs', {model: project, state: 'project', display_name: project.get('display_name')});
 
       // Update map
       this.mapView.collection.set([project]);
@@ -164,6 +164,17 @@ define([
 
       issueView.collection.fetch();
 
+
+
+
+      var kpisView = new Project.views.Kpis({model: this.model});
+
+      this.kpis.show(kpisView);
+
+
+
+
+
       // Reset active indicator
       $('.nav_content').find('.active').removeClass('active');
 
@@ -182,6 +193,8 @@ define([
     },
 
     initialize: function(options){
+
+      console.log(this.model);
       // Instantiate map
       this.mapView = new Project.views.Map({
         collection: new Project.Collection()
@@ -198,9 +211,10 @@ define([
       });
 
       this.listenTo(Backbone, 'click:issue', function(issue){
-        var issuePath = (issue === 'all') ? '' : issue.id;
+        console.log('clicked issue');
+        var issueId = (issue === 'all') ? '' : '/' + issue.id;
 
-        Backbone.history.navigate('/project/' + this.model.id + '/issues' + issuePath, true);
+        Backbone.history.navigate('/project/' + this.model.id + '/issues' + issueId, true);
       });
     }
   });

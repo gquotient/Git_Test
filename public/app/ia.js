@@ -6,7 +6,8 @@ define([
   'backbone.marionette.handlebars',
 
   'user',
-  'portfolio'
+  'portfolio',
+  'project'
 ], function(
   $,
   _,
@@ -15,7 +16,8 @@ define([
   MarionetteHandlebars,
 
   User,
-  Portfolio
+  Portfolio,
+  Project
 ){
   var ia = new Marionette.Application();
 
@@ -34,13 +36,16 @@ define([
 
   // Create global collections and models
   ia.users = new User.Collection();
-  ia.rootPortfolio = new Portfolio.Root({label: 'all', display_name: 'All Portfolios'});
-
-  // Bootstrap the root portfolios and projects
   ia.currentUser = ia.users.push( JSON.parse($('#currentUserData').html()) );
-  ia.rootPortfolio.portfolios.add( JSON.parse($('#bootstrapPortfolios').html()) );
-  ia.rootPortfolio.projects.add( JSON.parse($('#bootstrapProjects').html()) );
   ia.currentTeam = ia.currentUser.get('currentTeam');
-  // ia.currentUser.set('currentTeam', ia.currentTeam);
+
+  ia.projects = new Project.Collection( JSON.parse($('#bootstrapProjects').html()) );
+  ia.portfolios = new Portfolio.Collection( JSON.parse($('#bootstrapPortfolios').html()), {
+    projects: ia.projects,
+    comparator: 'display_name'
+  });
+
+  ia.allPortfolio = ia.portfolios.findWhere({display_name: 'All Projects'});
+
   return ia;
 });

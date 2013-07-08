@@ -6,6 +6,7 @@ define([
 
   'project',
   'device',
+  'equipment',
 
   'hbs!layouts/templates/projectEditor'
 ], function(
@@ -16,6 +17,7 @@ define([
 
   Project,
   Device,
+  Equipment,
 
   projectEditorTemplate
 ){
@@ -49,7 +51,8 @@ define([
     },
 
     onShow: function(){
-      this.overlay.show( new Project.views.Editor({model: this.model}) );
+      this.delegateEditorEvents();
+      this.overlay.show(this.editor);
     },
 
     onClose: function(){
@@ -57,24 +60,45 @@ define([
     },
 
     initialize: function(options){
-      this.model = options.model;
+      var equipment = new Equipment.Collection(),
+        model = options.model;
 
-      // Fetch additional project information for editing.
-      this.model.fetch({data: {
-        project_label: this.model.get('label'),
-        index: 'AlignedProjects'
-      }});
+      if (_.isString(model)) {
+        model = new Project.Model({project_label: model});
+      }
 
-      // Set up events on document.
+      this.model = model;
       this.$doc = $(document);
-      this.delegateEditorEvents();
 
-      // Set up listeners
-      this.listenTo(Backbone, 'editor:rendering', function(label){
-        this.content.show( new Device.views.Canvas({
-          collection: this.model.devices,
-          rendering_label: label
-        }));
+      // Fetch equipment and project from server.
+      equipment.fetch().done(function(){
+        model.fetch({
+          data: {
+            project_label: model.id,
+            index: 'AlignedProjects/no'
+          },
+          equipment: equipment
+        });
+      });
+
+      // Create editor view.
+      this.editor = new Project.views.Editor({
+        model: model,
+        equipment: equipment,
+        user: options.user
+      });
+
+      // Set up view listener.
+      this.listenTo(Backbone, 'editor:change:view', function(model){
+        var View;
+
+        if (model.get('name') === 'Change Log') {
+          View = Project.views.ChangeLog;
+        } else {
+          View = Device.views.Canvas;
+        }
+
+        this.content.show( new View(model.toJSON()) );
       });
     }
   });

@@ -12,7 +12,8 @@
         'init'
       ],
       exclude: [
-        'components/requirejs/require'
+        'bower_components/requirejs/require',
+        'paper'
       ]
     }
   ],

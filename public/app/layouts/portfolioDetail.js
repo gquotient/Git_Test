@@ -1,4 +1,5 @@
 define([
+  'underscore',
   'jquery',
   'backbone',
   'backbone.marionette',
@@ -9,6 +10,7 @@ define([
 
   'hbs!layouts/templates/portfolioDetail'
 ], function(
+  _,
   $,
   Backbone,
   Marionette,
@@ -40,8 +42,31 @@ define([
       this.projects.show(this.projectTable);
       this.map.show(this.mapView);
 
+      this.buildSettingsDropdown();
+
       // Select context
       this.selectPortfolio(this.options.model);
+    },
+
+    buildSettingsDropdown: function(){
+      var that = this;
+
+      //Create settings view
+      this.settings = new Marionette.ItemView({
+        tagName: 'ul',
+        template: _.template('<li><a href="#" class="edit">Operator Dashboard</a></li>')
+      });
+
+      //Show ItemView in cached region
+      this.options.settingsRegion.show(this.settings);
+
+      //Define listeners
+      this.options.settingsRegion.$el.find('.edit').on('click', function(event){
+        event.preventDefault();
+
+        //Navigate to edit view
+        Backbone.history.navigate('/portfolio/dashboard/' + that.model.id, true);
+      });
     },
 
     selectPortfolio: function(model) {
@@ -51,7 +76,7 @@ define([
 
       // Update the collection.
       this.projectList.set(model.projects.models);
-      Backbone.trigger('update:breadcrumbs', model);
+      Backbone.trigger('set:breadcrumbs', {model: model, state: 'portfolio', display_name: model.get('display_name')});
 
       // Reset active indicator
       $('.nav_content').find('.active').removeClass('active');

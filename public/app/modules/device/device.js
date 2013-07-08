@@ -29,66 +29,25 @@ define([
   deviceListItemViewTemplate,
   deviceListViewTemplate
 ){
-  var Device = { views: {} },
-
-    // Need a better place for this.
-    renderingRelationships = {
-      ELECTRICAL: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
-      COMMUNICATION: ['MANAGES', 'HAS']
-    };
+  var Device = { views: {Canvas: Canvas} };
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
-    defaults: {
-      renderings: {}
-    },
 
     initialize: function(){
       this.relationships = {};
 
       this.outgoing = new Device.Collection();
       this.incoming = new Device.Collection();
+
+      this.listenTo(this.incoming, 'remove', function(model){
+        delete this.relationships[model.cid];
+      });
     },
 
-    getRelationship: function(target, label){
-      var relationship = this.relationships[target.id];
-
-      if (!label || _.contains(renderingRelationships[label], relationship)) {
-        return relationship;
-      }
-    },
-
-    getPosition: function(label){
-      var renderings = this.get('renderings');
-
-      return _.clone(renderings[label]);
-    },
-
-    setPosition: function(label, position, save){
-      var renderings = _.clone(this.get('renderings')), evnt;
-
-      if (position) {
-        if (!_.has(renderings, label)) {
-          evnt = 'add';
-        } else if (_.isEqual(renderings[label], position)) {
-          return;
-        }
-        renderings[label] = position;
-      } else {
-        evnt = 'remove';
-        delete renderings[label];
-      }
-
-      this[save ? 'save' : 'set']({renderings: renderings});
-
-      if (evnt) {
-        this.trigger('rendering:' + evnt, this);
-      }
-    },
-
-    connectTo: function(target, label){
-      if (!_.has(this.relationships, target.id)) {
-        this.relationships[target.id] = label;
+    connectTo: function(target, rel){
+      if (!_.has(this.relationships, target.cid)) {
+        this.relationships[target.cid] = rel;
 
         this.incoming.add(target);
         target.outgoing.add(this);
@@ -96,42 +55,58 @@ define([
     },
 
     disconnectFrom: function(target){
-      if (_.has(this.relationships, target.id) && _.size(this.relationships) > 1) {
-        delete this.relationships[target.id];
+      if (_.has(this.relationships, target.cid) && _.size(this.relationships) > 1) {
+        delete this.relationships[target.cid];
 
         this.incoming.remove(target);
         target.outgoing.remove(this);
       }
     },
 
-    hasChild: function(child, relationship){
-      var rel = child.relationships[this.id];
+    getRelationship: function(target){
+      return this.relationships[target.cid];
+    },
 
-      if (rel && (!relationship || relationship === rel)) {
-        return true;
+    hasChild: function(target, rel){
+      return this.outgoing.any(function(device){
+        if (device.getRelationship(this) === rel) {
+          return device === target || device.hasChild(target, rel);
+        }
+      }, this);
+    },
+
+    getPosition: function(label){
+      var renderings = this.get('renderings');
+
+      return renderings && _.clone(renderings[label]);
+    },
+
+    setPosition: function(label, position, save){
+      var renderings = _.clone(this.get('renderings')) || {}, evnt;
+
+      if (position) {
+        if (!_.has(renderings, label)) {
+          evnt = 'rendering:add';
+        } else if (_.isEqual(renderings[label], position)) {
+          return;
+        }
+        renderings[label] = position;
       } else {
-        return this.outgoing.any(function(model){
-          return model.hasChild(child, relationship);
-        });
+        evnt = 'rendering:remove';
+        delete renderings[label];
+      }
+
+      this[save ? 'save' : 'set']({renderings: renderings});
+
+      if (evnt) {
+        this.trigger(evnt, this);
       }
     }
   });
 
   Device.Collection = Backbone.Collection.extend({
-    model: Device.Model,
-
-    next: function(model){
-      var index = this.indexOf(model);
-      return (index !== -1 && this.at(index + 1)) || this.first();
-    },
-
-    previous: function(model){
-      var index = this.indexOf(model);
-      return this.at(index - 1) || this.last();
-    }
+    model: Device.Model
   });
-
-  Device.views.Canvas = Canvas;
 
   Device.views.DeviceListItem = Marionette.ItemView.extend({
     tagName: 'li',

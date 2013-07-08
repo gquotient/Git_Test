@@ -13,6 +13,10 @@ function(
     return result;
   };
 
+  Handlebars.registerHelper('roundNumber', function(value, decimal) {
+    return roundNumber(value, decimal);
+  });
+
   Handlebars.registerHelper('unitConversion', function(value, factor) {
     var factors = {
       M: 1000000,
@@ -29,8 +33,16 @@ function(
     }
   });
 
-  Handlebars.registerHelper('percent', function(value, max){
-    return value / max * 100;
+  Handlebars.registerHelper('percent', function(value, max, peak, floor){
+    var percent = value / max * 100;
+
+    return (typeof peak === 'number') ?
+      Math.min(percent, peak)
+      :
+      (typeof floor === 'number') ?
+        Math.max(percent, floor)
+        :
+        percent;
   });
 
   Handlebars.registerHelper('equal', function(argLeft, argRight, options) {
@@ -69,12 +81,6 @@ function(
     retSelect+='</select>';
 
     return retSelect;
-  });
-
-  _.mixin({
-    take: function(obj, interceptor){
-      return interceptor(obj);
-    }
   });
 
 });

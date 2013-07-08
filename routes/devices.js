@@ -2,15 +2,16 @@ var _ = require('lodash');
 
 module.exports = function(app){
 
-  var helpers = require('./helpers')(app),
-  makeRequest = helpers.makeRequest,
-  separateProperties = helpers.separateProperties;
+  var helpers = require('./helpers')(app)
+  , ensureAuthorized = helpers.ensureAuthorized
+  , makeRequest = helpers.makeRequest
+  , separateProperties = helpers.separateProperties;
 
   //////
   // DEVICES
   //////
 
-  app.post('/api/devices',
+  app.post('/api/devices', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/devices',
       setup: separateProperties([
@@ -34,7 +35,7 @@ module.exports = function(app){
       }
     }));
 
-  app.put('/api/devices',
+  app.put('/api/devices', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/devices',
       setup: separateProperties([
@@ -58,7 +59,17 @@ module.exports = function(app){
       }
     }));
 
-  app.all('/api/relationships',
+  app.del('/api/devices', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/devices'
+    }));
+
+
+  //////
+  // DEVICE RELATIONSHIPS
+  //////
+
+  app.all('/api/relationships', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/relationships'
     }));

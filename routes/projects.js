@@ -1,11 +1,11 @@
 var _ = require('lodash')
-  , request = require('request');
+, request = require('request');
 
 module.exports = function(app){
 
   var helpers = require('./helpers')(app)
-  , makeRequest = helpers.makeRequest
   , ensureAuthorized = helpers.ensureAuthorized
+  , makeRequest = helpers.makeRequest
   , separateProperties = helpers.separateProperties;
 
   //////
@@ -41,33 +41,34 @@ module.exports = function(app){
           } else if (resp.statusCode === 200) {
             body = JSON.parse(body);
 
-            _.each(body.devices, function(device){
+            _.each(body.devices, function(node){
+              if (/^PV[ASC]/.test(node.did)) {
+                _.extend(project, _.omit(node, 'devices', 'rels'));
 
-              if (/^PV[ASC]/.test(device.did)) {
-                _.extend(project, _.omit(device, 'devices'));
+              } else if (!/^EQT/.test(node.did)) {
+                node.project_label = project_label;
 
-              } else {
-                device.project_label = project_label;
-
-                if (device.renderings) {
-                  device.renderings = JSON.parse(device.renderings);
+                if (node.renderings) {
+                  node.renderings = JSON.parse(node.renderings);
                 }
 
-                project.devices.push(device);
+                project.devices.push(node);
               }
             });
 
-            if (body.rels) {
-              project.rels = body.rels;
-            }
-
-            res.send(project);
+            _.each(body.rels, function(rel){
+              if (rel[1] !== 'SPEC') {
+                project.rels.push(rel);
+              }
+            });
           }
+
+          res.send(project);
         });
       }
     });
 
-  app.post('/api/projects',
+  app.post('/api/projects', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/projects',
       setup: function(req, res, next){
@@ -90,7 +91,7 @@ module.exports = function(app){
       }
     }));
 
-  app.put('/api/projects',
+  app.put('/api/projects', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/projects',
       setup: separateProperties([
@@ -101,7 +102,9 @@ module.exports = function(app){
         'latitude',
         'longitude',
         'elevation',
-        'index_name'
+        'index_name',
+        'type',
+        'kpis'
       ]),
       translate: function(body, next){
         next(_.extend({},
