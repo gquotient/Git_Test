@@ -58,7 +58,7 @@ define([
           modeled: 0
         }
       },
-      preferredEnergySource: [
+      energySources: [
         'pgen-acm',
         'pgen-rm',
         'pgen-util'
@@ -159,6 +159,38 @@ define([
         that.trigger('data:done', data);
         that.set('ddls', data.ddls);
       });
+    },
+
+    // Method for finding which power type is available
+    whichEnergy: function(){
+      var
+        that = this,
+        defer = $.Deferred(),
+        ddls = this.get('ddls'),
+        whichEnergy = function(){
+          var sources = that.get('energySources');
+
+          for(var source=0, sourcesLength=sources.length; source<=sourcesLength; source++){
+            // Add '_300' to the string for now since that's how it is in the ddls
+            if (_.has(ddls, sources[source] + '_300')) {
+              return sources[source];
+            }
+          }
+        }
+      ;
+
+      if (ddls) {
+        // Model already has DDLs, resolve the defer with the correct energy
+        defer.resolve(whichEnergy());
+      } else {
+        // Else, fetch the DDLs and resolve the chain
+        this.fetchDDLs().done(function(data){
+          ddls = data.ddls;
+          defer.resolve(whichEnergy());
+        });
+      }
+
+      return defer;
     },
 
     parse: function(resp, options){
