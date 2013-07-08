@@ -37,6 +37,9 @@ define(
       getUsers: function(){
         this.users.fetch();
       },
+      getProjects: function(){
+        this.projects.fetch();
+      },
       addUser: function(user){
         if(!this.users.contains(user)){
 
