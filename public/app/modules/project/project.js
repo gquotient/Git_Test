@@ -426,7 +426,7 @@ define([
     },
 
     layerControls: function(){
-      var $controls = $('<div class="layerControls"><ul></ul></div>');
+      var $controls = $('<div class="layerControls leaflet-control"><ul></ul></div>');
 
       _.each(this.layers, function(layer, index){
         if (layer.layer) {
