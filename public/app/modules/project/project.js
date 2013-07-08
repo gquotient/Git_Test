@@ -18,7 +18,8 @@ define([
   'hbs!project/templates/projectList',
   'hbs!project/templates/markerPopUp',
   'hbs!project/templates/kpis',
-  'hbs!project/templates/changelog'
+  'hbs!project/templates/changelog',
+  'hbs!project/templates/item'
 ], function(
   $,
   _,
@@ -39,7 +40,8 @@ define([
   navigationListTemplate,
   markerPopUpTemplate,
   kpisTemplate,
-  changelogTemplate
+  changelogTemplate,
+  itemTemplate
 ){
   var Project = { views: {Editor: Editor} };
 
@@ -201,6 +203,32 @@ define([
 
   Project.Collection = Backbone.Collection.extend({
     model: Project.Model
+  });
+
+  Project.OrganizationProjects = Project.Collection.extend({
+    url: '/api/orgprojects/'
+  });
+
+  Project.TeamProjects = Project.Collection.extend({
+    initialize: function(options){
+      this.url = '/api/teamprojects/' + options.team.id;
+    }
+  });
+
+  Project.views.itemView = Backbone.Marionette.ItemView.extend({
+    template: {
+      type: 'handlebars',
+      template: itemTemplate
+    },
+    triggers: {
+      'click': 'select:project'
+    },
+    tagName: 'li'
+  });
+
+  Project.views.listView = Backbone.Marionette.CollectionView.extend({
+    itemView: Project.views.itemView,
+    tagName: 'ul'
   });
 
   Project.views.DataListItem = Marionette.ItemView.extend({

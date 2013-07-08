@@ -6,10 +6,13 @@ define(
     'backbone.marionette',
 
     'user',
+    'project',
 
     'form',
 
-    'hbs!team/templates/team_detail'
+    'hbs!team/templates/team_user_detail',
+    'hbs!team/templates/team_project_detail'
+
   ],
   function(
     $,
@@ -18,10 +21,12 @@ define(
     Marionette,
 
     User,
+    Project,
 
     Forms,
 
-    teamDetailTemplate
+    teamUserDetailTemplate,
+    teamProjectDetailTemplate
   ){
 
     var Team = { models: {}, collections: {}, views: {} };
@@ -58,8 +63,35 @@ define(
           }
         });
       },
+      addProject: function(project){
+        if(!this.projects.contains(project)){
+
+          this.projects.add(project);
+
+          $.ajax('/api/teamprojects', {
+            type: 'POST',
+            data: {
+              projects: project.get('project_label'),
+              org_label: this.get('org_label'),
+              team_label: this.get('team_label')
+            }
+          });
+        }
+      },
+      removeProject: function(project){
+        this.projects.remove(project);
+        $.ajax('/api/teamprojects', {
+          type: 'DELETE',
+          data: {
+            project_label: project.get('project_label'),
+            org_label: this.get('org_label'),
+            team_label: this.get('team_label')
+          }
+        });
+      },      
       initialize: function(){
         this.users = new User.TeamUsers({team: this});
+        this.projects = new Project.TeamProjects({team: this});
       }
     }, {
       schema: {
@@ -89,14 +121,24 @@ define(
       url: '/api/teams?org_label=ALL'
     });
 
-    Team.views.TeamDetail = Marionette.CompositeView.extend({
+    Team.views.TeamUserDetail = Marionette.CompositeView.extend({
       model: Team.models.Team,
       template: {
-        template: teamDetailTemplate,
+        template: teamUserDetailTemplate,
         type: 'handlebars'
       },
       itemViewContainer: '#users',
       itemView: User.views.itemView
+    });
+
+    Team.views.TeamProjectDetail = Marionette.CompositeView.extend({
+      model: Team.models.Team,
+      template: {
+        template: teamProjectDetailTemplate,
+        type: 'handlebars'
+      },
+      itemViewContainer: '#projects',
+      itemView: Project.views.itemView
     });
 
     // Table CompositeView extended from form
