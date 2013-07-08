@@ -35,6 +35,11 @@ function(
     template: {
       type: 'handlebars',
       template: tableRowTemplate
+    },
+    events: {
+      'click': function(){
+        Backbone.trigger('click:issue', this.model);
+      }
     }
   });
 

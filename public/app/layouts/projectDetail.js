@@ -211,9 +211,10 @@ define([
       });
 
       this.listenTo(Backbone, 'click:issue', function(issue){
-        var issuePath = (issue === 'all') ? '' : issue.id;
+        console.log('clicked issue');
+        var issueId = (issue === 'all') ? '' : '/' + issue.id;
 
-        Backbone.history.navigate('/project/' + this.model.id + '/issues' + issuePath, true);
+        Backbone.history.navigate('/project/' + this.model.id + '/issues' + issueId, true);
       });
     }
   });
