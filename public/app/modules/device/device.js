@@ -15,6 +15,7 @@ define([
   'backbone.marionette',
 
   './canvas',
+  './table',
 
   'hbs!device/templates/li',
   'hbs!device/templates/ul'
@@ -25,11 +26,12 @@ define([
   Marionette,
 
   Canvas,
+  Table,
 
   deviceListItemViewTemplate,
   deviceListViewTemplate
 ){
-  var Device = { views: {Canvas: Canvas} };
+  var Device = { views: {Canvas: Canvas, Table: Table} };
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',

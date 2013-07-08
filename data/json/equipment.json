@@ -2,6 +2,7 @@
   {
     "label": "DSS",
     "name": "Base Station",
+    "order": 1,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "PVA"},
       {"label": "HAS", "direction": "INCOMING", "target": "PVS"},
@@ -16,6 +17,7 @@
   {
     "label": "DSC",
     "name": "Computer",
+    "order": 2,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "DSS"},
 
@@ -32,6 +34,7 @@
   {
     "label": "ESI",
     "name": "Env Suite",
+    "order": 3,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "DSS"},
 
@@ -53,6 +56,7 @@
   {
     "label": "IRRA",
     "name": "POA Pyranometer",
+    "order": 4,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
@@ -63,6 +67,7 @@
   {
     "label": "IRRZ",
     "name": "Horiz Pyranometer",
+    "order": 5,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
@@ -73,6 +78,7 @@
   {
     "label": "TMPC",
     "name": "Cell Temp",
+    "order": 6,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
@@ -83,6 +89,7 @@
   {
     "label": "TMPA",
     "name": "Ambient Temp",
+    "order": 7,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
@@ -93,6 +100,7 @@
   {
     "label": "WSPD",
     "name": "Anemometor",
+    "order": 8,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
@@ -103,6 +111,7 @@
   {
     "label": "WDIR",
     "name": "Wind Vane",
+    "order": 9,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
@@ -113,6 +122,7 @@
   {
     "label": "BARO",
     "name": "Barometer",
+    "order": 10,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
@@ -123,6 +133,7 @@
   {
     "label": "RAIN",
     "name": "Rain Sensor",
+    "order": 11,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
@@ -131,8 +142,24 @@
     ]
   },
   {
+    "label": "RM",
+    "name": "Meter",
+    "order": 12,
+    "relationships": [
+      {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"},
+
+      {"label": "MEASURED_BY", "direction": "INCOMING", "target": "INV"},
+      {"label": "MEASURED_BY", "direction": "INCOMING", "target": "ACB"}
+    ],
+    "renderings": [
+      {"label": "COMMUNICATION", "offset": {"x": 700, "y": 100}},
+      {"label": "ELECTRICAL", "offset": {"x": 100, "y": -100}}
+    ]
+  },
+  {
     "label": "INV",
     "name": "Inverter",
+    "order": 13,
     "relationships": [
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVA"},
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVS"},
@@ -154,22 +181,9 @@
     ]
   },
   {
-    "label": "RM",
-    "name": "Meter",
-    "relationships": [
-      {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"},
-
-      {"label": "MEASURED_BY", "direction": "INCOMING", "target": "INV"},
-      {"label": "MEASURED_BY", "direction": "INCOMING", "target": "ACB"}
-    ],
-    "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 700, "y": 100}},
-      {"label": "ELECTRICAL", "offset": {"x": 100, "y": -100}}
-    ]
-  },
-  {
     "label": "LD",
     "name": "Load",
+    "order": 14,
     "relationships": [
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVA"},
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVS"},
@@ -186,6 +200,7 @@
   {
     "label": "ACB",
     "name": "AC Bus",
+    "order": 15,
     "relationships": [
       {"label": "MEASURED_BY", "direction": "OUTGOING", "target": "RM"},
 
@@ -205,6 +220,7 @@
   {
     "label": "XFR",
     "name": "Transformer",
+    "order": 16,
     "relationships": [
       {"label": "FLOWS", "direction": "INCOMING", "target": "INV"},
       {"label": "FLOWS", "direction": "INCOMING", "target": "LD"},
@@ -222,6 +238,7 @@
   {
     "label": "IC",
     "name": "Interconnect",
+    "order": 17,
     "relationships": [
       {"label": "FLOWS", "direction": "INCOMING", "target": "INV"},
       {"label": "FLOWS", "direction": "INCOMING", "target": "LD"},
@@ -235,6 +252,7 @@
   {
     "label": "DCB",
     "name": "DC Bus",
+    "order": 18,
     "relationships": [
       {"label": "COLLECTS", "direction": "INCOMING", "target": "INV"},
 
@@ -250,6 +268,7 @@
   {
     "label": "APH",
     "name": "Array",
+    "order": 19,
     "relationships": [
       {"label": "COLLECTS", "direction": "INCOMING", "target": "DCB"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "RCB"},
@@ -263,6 +282,7 @@
   {
     "label": "RCB",
     "name": "Recombiner",
+    "order": 20,
     "relationships": [
       {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"},
 
@@ -280,6 +300,7 @@
   {
     "label": "CMB",
     "name": "Combiner",
+    "order": 21,
     "relationships": [
       {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"},
 
@@ -297,6 +318,7 @@
   {
     "label": "S",
     "name": "String",
+    "order": 22,
     "relationships": [
       {"label": "COLLECTS", "direction": "INCOMING", "target": "DCB"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "CMB"},
@@ -311,6 +333,7 @@
   {
     "label": "P",
     "name": "Panel",
+    "order": 23,
     "relationships": [
       {"label": "COLLECTS", "direction": "INCOMING", "target": "S"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "P"},

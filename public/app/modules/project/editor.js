@@ -170,6 +170,9 @@ define([
       views.push({
         name: 'Change Log',
         model: this.model
+      }, {
+        name: 'Device Table',
+        collection: this.model.devices
       });
 
       this.viewCollection.reset(views);

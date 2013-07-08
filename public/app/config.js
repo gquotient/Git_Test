@@ -118,7 +118,8 @@ require.config({
     messageformat: 'bower_components/messageformat.js/messageformat',
     paper: 'bower_components/paper/dist/paper',
     'jquery.mousewheel': 'bower_components/jquery-mousewheel/jquery.mousewheel',
-    highcharts: 'bower_components/highcharts/highcharts'
+    highcharts: 'bower_components/highcharts/highcharts',
+    handsontable: 'bower_components/handsontable/dist/jquery.handsontable'
   },
   shim: {
     backbone: {
@@ -140,6 +141,10 @@ require.config({
     highcharts: {
       deps: ['jquery'],
       exports: 'Highcharts'
+    },
+    handsontable: {
+      deps: ['jquery'],
+      exports: 'Handsontable'
     }
   },
   // hbs config
