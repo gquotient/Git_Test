@@ -186,7 +186,13 @@ define([
         // Else, fetch the DDLs and resolve the chain
         this.fetchDDLs().done(function(data){
           ddls = data.ddls;
-          defer.resolve(whichEnergy());
+
+          if (ddls) {
+            defer.resolve(whichEnergy());
+          } else {
+            console.warn('No DDLs found. Call Thadeus');
+            defer.reject();
+          }
         });
       }
 
