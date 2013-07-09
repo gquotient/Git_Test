@@ -89,6 +89,11 @@ require.config({
       name: 'equipment',
       main: 'equipment',
       location: 'modules/equipment'
+    },
+    {
+      name: 'table',
+      main: 'table',
+      location: 'modules/table'
     }
   ],
   paths: {
