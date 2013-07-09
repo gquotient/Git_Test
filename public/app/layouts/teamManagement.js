@@ -58,11 +58,15 @@ define([
       });
 
       this.listenTo(this.currentProjectsView, 'itemview:select:project', function(triggerArgs){
-        this.team.removeProject(triggerArgs.model);
+        if(this.team.get('team_label') !== 'ADMIN'){
+          this.team.removeProject(triggerArgs.model);        
+        }
       });
 
       this.listenTo(this.allProjectsView, 'itemview:select:project', function(triggerArgs){
-        this.team.addProject(triggerArgs.model);
+        if(this.team.get('team_label') !== 'ADMIN'){
+          this.team.addProject(triggerArgs.model);        
+        }
       });
 
       this.allUsers.fetch();
