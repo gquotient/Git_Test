@@ -82,6 +82,8 @@ define([
     },
 
     selectProject: function(project) {
+      var that = this;
+
       this.model = project;
 
       Backbone.trigger('set:breadcrumbs', {model: project, state: 'project', display_name: project.get('display_name')});
@@ -90,69 +92,71 @@ define([
       this.mapView.collection.set([project]);
       this.mapView.fitToBounds();
 
-      // Build charts
-      var chart_powerHistory = new Chart.views.Line({
-        model: new Chart.models.timeSeries().set({
-          'timezone': this.model.get('timezone'),
-          'dataType': [
-            {
-              'project_label': project.id,
-              'ddl': 'pgen-env',
-              'dtstart': 'today',
-              'dtstop': 'now',
-              'columns': ['freezetime', 'irradiance']
-            },
-            {
-              'project_label': project.id,
-              'ddl': 'pgen-rm',
-              'dtstart': 'today',
-              'dtstop': 'now',
-              'columns': ['freezetime', 'ac_power']
-            }
+      that.model.whichEnergy().done(function(whichEnergy){
+        // Build charts
+        var chart_powerHistory = new Chart.views.Line({
+          model: new Chart.models.timeSeries().set({
+            'timezone': that.model.get('timezone'),
+            'dataType': [
+              {
+                'project_label': project.id,
+                'ddl': 'pgen-env',
+                'dtstart': 'today',
+                'dtstop': 'now',
+                'columns': ['freezetime', 'irradiance']
+              },
+              {
+                'project_label': project.id,
+                'ddl': whichEnergy,
+                'dtstart': 'today',
+                'dtstop': 'now',
+                'columns': ['freezetime', 'ac_power']
+              }
+            ]
+          }),
+          series: [
+            Chart.seriesDefaults.irradiance,
+            Chart.seriesDefaults.power
           ]
-        }),
-        series: [
-          Chart.seriesDefaults.irradiance,
-          Chart.seriesDefaults.power
-        ]
-      });
+        });
 
-      var chart_healthAndSoiling = new Chart.views.Line({
-        model: new Chart.models.timeSeries().set({
-          'timezone': this.model.get('timezone'),
-          'dataType': [
-            {
-              'project_label': project.id,
-              'ddl': 'env_300',
-              'dtstart': 'today',
-              'dtstop': 'now',
-              'columns': ['freezetime', 'value_mean'],
-              'filters': [
-                {'column': 'attribute', 'in_set': ['irradiance']},
-                {'column': 'identifier', 'in_set': ['IRR-1']}
-              ]
-            },
-            {
-              'project_label': project.id,
-              'ddl': 'pgen-rm_300',
-              'dtstart': 'today',
-              'dtstop': 'now',
-              'columns': ['freezetime', 'value_mean'],
-              'filters': [
-                {'column': 'attribute', 'in_set': ['ac_power']}
-              ]
-            }
+        var chart_healthAndSoiling = new Chart.views.Line({
+          model: new Chart.models.timeSeries().set({
+            'timezone': that.model.get('timezone'),
+            'dataType': [
+              {
+                'project_label': project.id,
+                'ddl': 'env_300',
+                'dtstart': 'today',
+                'dtstop': 'now',
+                'columns': ['freezetime', 'value_mean'],
+                'filters': [
+                  {'column': 'attribute', 'in_set': ['irradiance']},
+                  {'column': 'identifier', 'in_set': ['IRR-1']}
+                ]
+              },
+              {
+                'project_label': project.id,
+                'ddl': 'pgen-rm_300',
+                'dtstart': 'today',
+                'dtstop': 'now',
+                'columns': ['freezetime', 'value_mean'],
+                'filters': [
+                  {'column': 'attribute', 'in_set': ['ac_power']}
+                ]
+              }
+            ]
+          }),
+          series: [
+            Chart.seriesDefaults.health,
+            Chart.seriesDefaults.soiling
           ]
-        }),
-        series: [
-          Chart.seriesDefaults.health,
-          Chart.seriesDefaults.soiling
-        ]
+        });
+
+        that.chart_powerHistory.show(chart_powerHistory);
+
+        that.chart_healthAndSoiling.show(chart_healthAndSoiling);
       });
-
-      this.chart_powerHistory.show(chart_powerHistory);
-
-      this.chart_healthAndSoiling.show(chart_healthAndSoiling);
 
       // Build issues
       var issueView = new Issue.views.Table({
@@ -164,16 +168,10 @@ define([
 
       issueView.collection.fetch();
 
-
-
-
+      // Build kpi view
       var kpisView = new Project.views.Kpis({model: this.model});
 
       this.kpis.show(kpisView);
-
-
-
-
 
       // Reset active indicator
       $('.nav_content').find('.active').removeClass('active');
@@ -193,8 +191,6 @@ define([
     },
 
     initialize: function(options){
-
-      console.log(this.model);
       // Instantiate map
       this.mapView = new Project.views.Map({
         collection: new Project.Collection()
@@ -211,7 +207,6 @@ define([
       });
 
       this.listenTo(Backbone, 'click:issue', function(issue){
-        console.log('clicked issue');
         var issueId = (issue === 'all') ? '' : '/' + issue.id;
 
         Backbone.history.navigate('/project/' + this.model.id + '/issues' + issueId, true);
