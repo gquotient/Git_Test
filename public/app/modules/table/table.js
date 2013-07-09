@@ -124,7 +124,8 @@ define([
         this.$el.handsontable(_.extend({
           columns: this._columns,
           colHeaders: _.pluck(this.columns, 'name'),
-          data: this._rows
+          data: this._rows,
+          height: _.bind(this.$el.height, this.$el)
         }, this.tableOptions));
 
         this.table = this.$el.handsontable('getInstance');
