@@ -124,6 +124,7 @@ require.config({
     paper: 'bower_components/paper/dist/paper',
     'jquery.mousewheel': 'bower_components/jquery-mousewheel/jquery.mousewheel',
     highcharts: 'bower_components/highcharts/highcharts',
+    contextmenu: 'bower_components/handsontable/lib/jQuery-contextMenu/jquery.contextMenu',
     handsontable: 'bower_components/handsontable/dist/jquery.handsontable'
   },
   shim: {
@@ -148,7 +149,7 @@ require.config({
       exports: 'Highcharts'
     },
     handsontable: {
-      deps: ['jquery'],
+      deps: ['jquery', 'contextmenu'],
       exports: 'Handsontable'
     }
   },
