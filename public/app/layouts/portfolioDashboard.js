@@ -37,6 +37,7 @@ define([
 
     initialize: function(options){
       var portfolio = options.model;
+
       Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolioDashboard', display_name: portfolio.get('display_name')});
 
       if (this.currentState !== 'portfolioDashboard') {
