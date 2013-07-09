@@ -19,6 +19,12 @@ define([
       id: 'device-table'
     },
 
+    collectionEvents: {
+      'change': function(model) {
+        model.save();
+      }
+    },
+
     tableOptions: {
       columnSorting: true,
       stretchH: 'all'
