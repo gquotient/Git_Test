@@ -31,7 +31,7 @@ define([
 
     portfolioDashboard: function(id){
       var portfolio = this.findPortfolio(id);
-      this.mainLayout.showPortfolioDashboard(this.contentLayout);
+      this.mainLayout.showPortfolioDashboard(portfolio);
     },
 
     portfolioDetail: function(id){
