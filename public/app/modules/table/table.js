@@ -5,7 +5,7 @@ define([
   'backbone.marionette',
 
   'handsontable',
-  'css!bower_components/handsontable/dist/jquery.handsontable.css'
+  'css!bower_components/handsontable/dist/jquery.handsontable.full.css'
 ], function(
   $,
   _,
