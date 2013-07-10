@@ -189,14 +189,14 @@ define([
       return _.keys(renderings);
     },
 
-    findForDevice: function(device){
+    findOrCreateForDevice: function(device){
       var label = device.get('equipment_label');
 
       if (!label) {
         label = device.get('did').replace(/-\d*$/, '');
       }
 
-      return this.get(label);
+      return this.get(label) || this.push({label: label});
     }
   });
 

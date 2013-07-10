@@ -205,12 +205,10 @@ define([
 
         if (options.equipment) {
           this.devices.each(function(device){
-            var equip = options.equipment.findForDevice(device);
+            var equip = options.equipment.findOrCreateForDevice(device);
 
-            if (equip) {
-              device.equipment = equip;
-              device.trigger('equipment:add', device);
-            }
+            device.equipment = equip;
+            device.trigger('equipment:add', device);
           });
         }
 

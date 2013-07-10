@@ -57,7 +57,7 @@ define([
       return [order, model.get('name')];
     },
 
-    getEquipment: function(model) {
+    getEquipment: function(model){
       return model.equipment.get('name');
     }
   });
