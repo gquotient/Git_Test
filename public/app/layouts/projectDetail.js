@@ -125,25 +125,10 @@ define([
             'timezone': that.model.get('timezone'),
             'dataType': [
               {
-                'project_label': project.id,
-                'ddl': 'env_300',
-                'dtstart': 'today',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'value_mean'],
-                'filters': [
-                  {'column': 'attribute', 'in_set': ['irradiance']},
-                  {'column': 'identifier', 'in_set': ['IRR-1']}
-                ]
+                'project_label': project.id
               },
               {
-                'project_label': project.id,
-                'ddl': 'pgen-rm_300',
-                'dtstart': 'today',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'value_mean'],
-                'filters': [
-                  {'column': 'attribute', 'in_set': ['ac_power']}
-                ]
+                'project_label': project.id
               }
             ]
           }),

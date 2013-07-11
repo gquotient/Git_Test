@@ -9,10 +9,14 @@ module.exports = function(app){
     function(req, res){
       request({
         method: 'GET',
-        uri: app.get('dataUrl') + '/data/discovery/' + req.params.id + '/ddls'
-      }, function(err, response, body){
-        res.end(body);
-      });
+        uri: app.get('dataUrl') + '/data/discovery/' + req.params.id + '/ddls',
+        headers: {
+          'accept-encoding' : 'gzip,deflate'
+        }
+      }, function(error, response){
+        console.log(response.headers);
+      })
+      .pipe(res);
     }
   );
 
@@ -23,12 +27,11 @@ module.exports = function(app){
         uri: app.get('dataUrl') + '/data/timeline',
         body: JSON.stringify(req.body),
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'accept-encoding' : 'gzip,deflate'
         }
-      }, function(err, response, body){
-        console.log(body);
-        res.end(body);
-      });
+      })
+      .pipe(res);
     }
   );
 
@@ -39,11 +42,11 @@ module.exports = function(app){
         uri: app.get('dataUrl') + '/data/snapshot',
         body: JSON.stringify(req.body),
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'accept-encoding' : 'gzip,deflate'
         }
-      }, function(err, response, body){
-        res.end(body);
-      });
+      })
+      .pipe(res);
     }
   );
 };
