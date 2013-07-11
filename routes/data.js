@@ -13,8 +13,6 @@ module.exports = function(app){
         headers: {
           'accept-encoding' : 'gzip,deflate'
         }
-      }, function(error, response){
-        console.log(response.headers);
       })
       .pipe(res);
     }

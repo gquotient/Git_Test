@@ -96,8 +96,6 @@ module.exports = function(app){
             console.log('error!:', response.statusCode, body);
             res.send(response.statusCode);
           } else {
-            console.log(body);
-
             if (opts.translate) {
               opts.translate(JSON.parse(body), function(translatedData){
                 res.end(JSON.stringify(translatedData));
