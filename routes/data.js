@@ -9,7 +9,7 @@ module.exports = function(app){
     function(req, res){
       request({
         method: 'GET',
-        uri: app.get('dataUrl') + '/api/discovery/' + req.params.id + '/ddls'
+        uri: app.get('dataUrl') + '/data/discovery/' + req.params.id + '/ddls'
       }, function(err, response, body){
         res.end(body);
       });
@@ -20,7 +20,7 @@ module.exports = function(app){
     function(req, res){
       request({
         method: 'POST',
-        uri: app.get('dataUrl') + '/api/timeline',
+        uri: app.get('dataUrl') + '/data/timeline',
         body: JSON.stringify(req.body),
         headers: {
           'Content-Type': 'application/json'
@@ -36,7 +36,7 @@ module.exports = function(app){
     function(req, res){
       request({
         method: 'POST',
-        uri: app.get('dataUrl') + '/api/snapshot',
+        uri: app.get('dataUrl') + '/data/snapshot',
         body: JSON.stringify(req.body),
         headers: {
           'Content-Type': 'application/json'
