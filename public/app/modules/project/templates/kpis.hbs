@@ -17,12 +17,12 @@
   <h3>Performance Snapshot</h3>
   <div class="snapshot power">
     <div class="label">Power</div>
-    <div class="value">{{ unitConversion kpis.power 'k' }} <span class="unit">kWh</span></div>
+    <div class="value">{{ unitConversion kpis.power 'k' }} <span class="unit">kW</span></div>
     <div class="indicator">
-      <div class="bar"><span style="width:{{ percent kpis.power dc_capacity null 0 }}%;"></span></div>
+      <div class="bar"><span style="width:{{ percent kpis.power ac_capacity null 0 }}%;"></span></div>
       <div class="legend">
         <span class="min">0</span>
-        <span class="max">{{ unitConversion dc_capacity 'k' }} kWh</span>
+        <span class="max">{{ unitConversion ac_capacity 'k' }} kW</span>
       </div>
     </div>
   </div>
