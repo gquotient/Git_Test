@@ -89,6 +89,11 @@ require.config({
       name: 'equipment',
       main: 'equipment',
       location: 'modules/equipment'
+    },
+    {
+      name: 'table',
+      main: 'table',
+      location: 'modules/table'
     }
   ],
   paths: {
@@ -118,7 +123,9 @@ require.config({
     messageformat: 'bower_components/messageformat.js/messageformat',
     paper: 'bower_components/paper/dist/paper',
     'jquery.mousewheel': 'bower_components/jquery-mousewheel/jquery.mousewheel',
-    highcharts: 'bower_components/highcharts/highcharts'
+    highcharts: 'bower_components/highcharts/highcharts',
+    contextmenu: 'bower_components/handsontable/lib/jQuery-contextMenu/jquery.contextMenu',
+    handsontable: 'bower_components/handsontable/dist/jquery.handsontable'
   },
   shim: {
     backbone: {
@@ -140,6 +147,10 @@ require.config({
     highcharts: {
       deps: ['jquery'],
       exports: 'Highcharts'
+    },
+    handsontable: {
+      deps: ['jquery', 'contextmenu'],
+      exports: 'Handsontable'
     }
   },
   // hbs config
