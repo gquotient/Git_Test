@@ -34,7 +34,6 @@ function(
   });
 
   Handlebars.registerHelper('percent', function(value, max, peak, floor){
-    console.log(arguments);
     var percent = value / max * 100;
 
     return (typeof peak === 'number') ?
