@@ -124,7 +124,7 @@ require.config({
     paper: 'bower_components/paper/dist/paper',
     'jquery.mousewheel': 'bower_components/jquery-mousewheel/jquery.mousewheel',
     highcharts: 'bower_components/highcharts/highcharts',
-    handsontable: 'bower_components/handsontable/dist/jquery.handsontable.full'
+    handsontable: 'bower_components/handsontable/dist/jquery.handsontable'
   },
   shim: {
     backbone: {

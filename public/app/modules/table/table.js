@@ -3,16 +3,16 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
-
   'handsontable',
-  'css!bower_components/handsontable/dist/jquery.handsontable.full.css'
+
+  'css!bower_components/handsontable/dist/jquery.handsontable.css'
 ], function(
   $,
   _,
   Backbone,
   Marionette,
+  Handsontable,
 
-  handsontable,
   handsontableCSS
 ){
   return Marionette.View.extend({
@@ -139,6 +139,12 @@ define([
 
     closeTable: function(){
       if (this.table) {
+
+        // Hack to avoid errors when $.contextMenu plugin doesn't exist
+        if (!_.isFunction($.contextMenu)) {
+          $.contextMenu = function() {};
+        }
+
         this.table.destroy();
       }
     }
