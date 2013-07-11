@@ -161,10 +161,12 @@ define([
       // Build issues
       var issueView = new Issue.views.Table({
         project: this.model,
-        collection: new Issue.Collection()
+        collection: new Issue.Collection({projectId: this.model.id})
       });
 
       this.issues.show(issueView);
+
+      console.log(issueView);
 
       issueView.collection.fetch();
 

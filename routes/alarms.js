@@ -1,31 +1,19 @@
-var fs = require('fs');
+var request = require('request');
 
 module.exports = function(app){
     ///////
   // Alarms
   /////
 
-  app.get('/api/issues',
+  app.get('/api/alarms/active/:id?',
     function(req, res){
-      fs.readFile('./data/json/issues.json', 'utf8', function (err, data) {
-        if (err) {
-          return console.log(err);
-        }
-        res.end(data);
+      request({
+        method: 'GET',
+        uri: app.get('dataUrl') + '/alarms/active/' + req.params.id
+      }, function(err, response, body){
+        console.log('alarms', body.alarms);
+        res.end(body.alarms);
       });
-    });
-
-  ///////
-  // Alarms
-  /////
-
-  app.get('/api/issues',
-    function(req, res){
-      fs.readFile('./data/json/issues.json', 'utf8', function (err, data) {
-        if (err) {
-          return console.log(err);
-        }
-        res.end(data);
-      });
-    });
+    }
+  );
 };

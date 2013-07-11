@@ -9,6 +9,7 @@ define([
 
   'device',
   './editor',
+  'issue',
 
   'hbs!project/templates/dataList',
   'hbs!project/templates/dataListItem',
@@ -30,6 +31,7 @@ define([
 
   Device,
   Editor,
+  Issue,
 
   dataListTemplate,
   dataListItemTemplate,
@@ -70,6 +72,8 @@ define([
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
     },
+
+    issues: new Issue.Collection({projectId: this.id}),
 
     fetchKpis: function(){
       var that = this;
@@ -140,7 +144,7 @@ define([
 
       // DPI cheat
       if (kpis.power > 0 && kpis.irradiance) {
-        kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000);
+        kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity')) * 100;
       }
 
       this.set('kpis', kpis);
