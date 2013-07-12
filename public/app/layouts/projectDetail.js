@@ -123,16 +123,10 @@ define([
 
         that.chart_powerHistory.show(chart_powerHistory);
 
-        /*
         var chart_healthAndSoiling = new Chart.views.Line({
           model: new Chart.models.timeSeries().set({
             'dataType': [
-              {
-                'project_label': project.id
-              },
-              {
-                'project_label': project.id
-              }
+
             ]
           }),
           series: [
@@ -142,7 +136,6 @@ define([
         });
 
         that.chart_healthAndSoiling.show(chart_healthAndSoiling);
-        */
       });
 
       // Build issues
