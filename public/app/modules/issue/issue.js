@@ -23,12 +23,13 @@ function(
   var Issue = { views: {} };
 
   Issue.Model = Backbone.Model.extend({
-
+    idAttribute: 'uid'
   });
 
   Issue.Collection = Backbone.Collection.extend({
-    parse: function(data){
-      console.log('parse', data);
+    model: Issue.Model,
+    parse: function(response){
+      return response.alarms;
     },
     initialize: function(options){
       this.url = '/api/alarms/active/' + options.projectId;

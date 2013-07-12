@@ -42,13 +42,13 @@ define([
     },
 
     selectIssue: function(issue){
-      Backbone.trigger('set:breadcrumbs', {model: issue, state: 'issue', display_name: issue.get('title')});
+      Backbone.trigger('set:breadcrumbs', {model: issue, state: 'issue', display_name: issue.get('display_name')});
 
       // this.app.state = 'issue';
 
       Backbone.history.navigate('/project/' + this.model.id + '/issues/' + issue.id);
 
-      this.issueDetail.show(new Marionette.Layout({template: _.template('Issue: <%= id %> <br> Description: <%= title %>'), model: issue}));
+      this.issueDetail.show(new Marionette.Layout({template: _.template('Issue: <%= uid %> <br> Description: <%= alarm_type %>'), model: issue}));
 
       $('.nav_content').find('.active').removeClass('active');
 
@@ -68,18 +68,18 @@ define([
       // Set the project model to this layout's model
       this.model = options.model;
 
-      this.model.issues = new Issue.Collection();
+
 
       // Instantiate devices collection view
       this.issueNavigation = new Issue.views.NavigationListView({collection: this.model.issues});
 
       this.model.issues.fetch().done(function(){
         if (options.currentIssue) {
-          console.log(that.model.issues, options.currentIssue);
-          var myIssue = that.model.issues.findWhere({id: options.currentIssue});
-          console.log(myIssue);
+          var myIssue = that.model.issues.findWhere({uid: options.currentIssue});
 
           that.selectIssue(myIssue);
+        } else if (that.model.issues.models.length) {
+          that.selectIssue(that.model.issues.models[0]);
         }
       });
 
