@@ -68,18 +68,26 @@ define([
       // Set the project model to this layout's model
       this.model = options.model;
 
-
-
       // Instantiate devices collection view
       this.issueNavigation = new Issue.views.NavigationListView({collection: this.model.issues});
 
+      // Fetch issues and update view
       this.model.issues.fetch().done(function(){
         if (options.currentIssue) {
+          // Find issue with correct id
           var myIssue = that.model.issues.findWhere({uid: options.currentIssue});
 
-          that.selectIssue(myIssue);
+          if (myIssue) {
+            // If issue was found, change context
+            that.selectIssue(myIssue);
+          } else {
+            // Handle issue not found
+            console.warn('That issue does not exist');
+          }
         } else if (that.model.issues.models.length) {
           that.selectIssue(that.model.issues.models[0]);
+        } else {
+          // Handle 'no issues' view
         }
       });
 
