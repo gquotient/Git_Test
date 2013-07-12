@@ -90,13 +90,12 @@ define([
 
       // Set up view listener.
       this.listenTo(Backbone, 'editor:change:view', function(model){
-        var View;
+        var name = model.get('name'),
 
-        if (model.get('name') === 'Change Log') {
-          View = Project.views.ChangeLog;
-        } else {
-          View = Device.views.Canvas;
-        }
+          View = {
+            'Change Log': Project.views.ChangeLog,
+            'Device Table': Device.views.Table
+          }[name] || Device.views.Canvas;
 
         this.content.show( new View(model.toJSON()) );
       });

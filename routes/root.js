@@ -70,7 +70,7 @@ module.exports = function(app){
       .then( function(myPortfolios){
         var myProjectsDef = Q.defer();
         // console.log('projects');
-        requestOptions.uri = app.get('modelUrl') + '/res/teamprojects?team_label'+req.session.team_label+'&org_label='+req.session.org_label; ;
+        requestOptions.uri = app.get('modelUrl') + '/res/teamprojects?team_label'+req.session.team_label+'&org_label='+req.session.org_label;
         request(requestOptions, function(error, response, projects){
           myProjects = JSON.stringify(JSON.parse(projects).projects || []);
           console.log(req.session.team_label, projects);

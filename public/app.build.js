@@ -15,9 +15,13 @@
         'bower_components/requirejs/require',
         'paper'
       ]
+    },
+    {
+      name: 'paper'
     }
   ],
 
-  optimizeCss: 'none', //Stylus does this for us
-  optimize: 'none' //Use for debugging
+  skipDirOptimize: true, // Only minifies modules in the build
+  optimizeCss: 'none'//ß, //Stylus does this for us
+  //optimize: 'none' //Use for debugging
 })

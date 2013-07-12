@@ -23,11 +23,17 @@ function(
   var Issue = { views: {} };
 
   Issue.Model = Backbone.Model.extend({
-    url: '/api/issues'
+    idAttribute: 'uid'
   });
 
   Issue.Collection = Backbone.Collection.extend({
-    url: '/api/issues'
+    model: Issue.Model,
+    parse: function(response){
+      return response.alarms;
+    },
+    initialize: function(options){
+      this.url = '/api/alarms/active/' + options.projectId;
+    }
   });
 
   Issue.views.TableRow = Marionette.ItemView.extend({

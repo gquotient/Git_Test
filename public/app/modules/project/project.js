@@ -9,6 +9,7 @@ define([
 
   'device',
   './editor',
+  'issue',
 
   'hbs!project/templates/dataList',
   'hbs!project/templates/dataListItem',
@@ -31,6 +32,7 @@ define([
 
   Device,
   Editor,
+  Issue,
 
   dataListTemplate,
   dataListItemTemplate,
@@ -60,12 +62,23 @@ define([
           modeled: 0
         }
       },
+      energySources: [
+        'pgen-acm',
+        'pgen-rm',
+        'pgen-util'
+      ],
       changelog: ''
     },
 
     initialize: function(){
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
+
+      this.issues = new Issue.Collection({projectId: this.id});
+
+      // Convert capacities to watts until model service is updated
+      this.set('ac_capacity', this.get('ac_capacity') * 1000);
+      this.set('dc_capacity', this.get('dc_capacity') * 1000);
     },
 
     fetchKpis: function(){
@@ -102,7 +115,7 @@ define([
         }
       })
       .done(function(data){
-        that.trigger('data:done');
+        that.trigger('data:done', data);
         that.parseKpis(data.response);
       });
     },
@@ -137,10 +150,63 @@ define([
 
       // DPI cheat
       if (kpis.power > 0 && kpis.irradiance) {
-        kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000);
+        kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000) * 100;
       }
 
       this.set('kpis', kpis);
+    },
+
+    fetchDDLs: function(){
+      var that = this;
+
+      return $.ajax({
+        url: '/api/discovery/' + this.id + '/ddls',
+        cache: false,
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done(function(data){
+        that.trigger('data:done', data);
+        that.set('ddls', data.ddls);
+      });
+    },
+
+    // Method for finding which power type is available
+    whichEnergy: function(){
+      var
+        that = this,
+        defer = $.Deferred(),
+        ddls = this.get('ddls'),
+        whichEnergy = function(){
+          var sources = that.get('energySources');
+
+          for(var source=0, sourcesLength=sources.length; source<=sourcesLength; source++){
+            // Add '_300' to the string for now since that's how it is in the ddls
+            if (_.has(ddls, sources[source] + '_300')) {
+              return sources[source];
+            }
+          }
+        }
+      ;
+
+      if (ddls) {
+        // Model already has DDLs, resolve the defer with the correct energy
+        defer.resolve(whichEnergy());
+      } else {
+        // Else, fetch the DDLs and resolve the chain
+        this.fetchDDLs().done(function(data){
+          ddls = data.ddls;
+
+          if (ddls) {
+            defer.resolve(whichEnergy());
+          } else {
+            console.warn('No DDLs found. Call Thadeus');
+            defer.reject();
+          }
+        });
+      }
+
+      return defer;
     },
 
     parse: function(resp, options){
@@ -149,12 +215,10 @@ define([
 
         if (options.equipment) {
           this.devices.each(function(device){
-            var equip = options.equipment.findForDevice(device);
+            var equip = options.equipment.findOrCreateForDevice(device);
 
-            if (equip) {
-              device.equipment = equip;
-              device.trigger('equipment:add', device);
-            }
+            device.equipment = equip;
+            device.trigger('equipment:add', device);
           });
         }
 

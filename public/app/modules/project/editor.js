@@ -85,15 +85,21 @@ define([
     },
 
     checkName: function(device){
-      var did, index;
+      var name, did, index;
 
       if (!device.has('name')) {
         did = device.get('did');
-        index = did && parseInt(did.replace(/^.*-/, ''), 10);
 
-        if (index) {
-          device.set({name: device.equipment.get('name') + ' ' + index});
+        if (did) {
+          name = device.equipment.get('name');
+          index = parseInt(did.replace(/^.*-/, ''), 10);
+
+          name = name && index ? name + ' ' + index : did;
+        } else {
+          name = 'undefined';
         }
+
+        device.set({name: name});
       }
     },
 
@@ -170,6 +176,9 @@ define([
       views.push({
         name: 'Change Log',
         model: this.model
+      }, {
+        name: 'Device Table',
+        collection: this.model.devices
       });
 
       this.viewCollection.reset(views);

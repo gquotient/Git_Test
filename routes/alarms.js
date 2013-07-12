@@ -1,31 +1,19 @@
-var fs = require('fs');
+var request = require('request');
 
 module.exports = function(app){
     ///////
   // Alarms
   /////
 
-  app.get('/api/issues',
+  app.get('/api/alarms/active/:projectId?',
     function(req, res){
-      fs.readFile('./data/json/issues.json', 'utf8', function (err, data) {
-        if (err) {
-          return console.log(err);
+      request({
+        method: 'GET',
+        uri: app.get('dataUrl') + '/alarms/active/' + req.params.projectId,
+        headers: {
+          'accept-encoding' : 'gzip,deflate'
         }
-        res.end(data);
-      });
-    });
-
-  ///////
-  // Alarms
-  /////
-
-  app.get('/api/issues',
-    function(req, res){
-      fs.readFile('./data/json/issues.json', 'utf8', function (err, data) {
-        if (err) {
-          return console.log(err);
-        }
-        res.end(data);
-      });
-    });
+      }).pipe(res);
+    }
+  );
 };

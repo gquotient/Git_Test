@@ -23,6 +23,7 @@
     "leaflet": "latest",
     "paper": "latest",
     "jquery-mousewheel": "latest",
-    "highcharts": "latest"
+    "highcharts": "latest",
+    "handsontable": "latest"
   }
 }
