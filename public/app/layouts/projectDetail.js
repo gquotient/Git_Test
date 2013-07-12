@@ -141,7 +141,7 @@ define([
       // Build issues
       var issueView = new Issue.views.Table({
         project: this.model,
-        collection: new Issue.Collection()
+        collection: this.model.issues
       });
 
       this.issues.show(issueView);

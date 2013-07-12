@@ -9,6 +9,7 @@ define([
 
   'device',
   './editor',
+  'issue',
 
   'hbs!project/templates/dataList',
   'hbs!project/templates/dataListItem',
@@ -30,6 +31,7 @@ define([
 
   Device,
   Editor,
+  Issue,
 
   dataListTemplate,
   dataListItemTemplate,
@@ -69,6 +71,8 @@ define([
     initialize: function(){
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
+
+      this.issues = new Issue.Collection({projectId: this.id});
 
       // Convert capacities to watts until model service is updated
       this.set('ac_capacity', this.get('ac_capacity') * 1000);
