@@ -69,7 +69,7 @@ function(
     })
   };
 
-  Chart.dataDefaults = function(project, device, dataType) {
+  Chart.dataDefaults = function(project, device, dataType, timezone) {
     var
       ddl = {
         'Panel': 'pnl',
@@ -104,7 +104,8 @@ function(
         'ddl': 'pgen-env',
         'dtstart': 'today',
         'dtstop': 'now',
-        'columns': ['freezetime', 'irradiance']
+        'columns': ['freezetime', 'irradiance'],
+        timezone: timezone || null
       };
       /*
       dataDefinition = {
@@ -131,7 +132,8 @@ function(
             'column': 'identifier',
             'in_set': [device.get('graph_key')]
           }
-        ]
+        ],
+        timezone: timezone || null
       };
     }
 
@@ -167,7 +169,9 @@ function(
         cache: false,
         type: 'POST',
         dataType: 'json',
-        data: { traces: that.get('dataType') }
+        data: {
+          traces: this.get('dataType')
+        }
       })
       .done(function(data){
         that.trigger('data:done');

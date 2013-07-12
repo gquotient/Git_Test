@@ -75,10 +75,9 @@ define([
 
       var chart_powerAndIrradiance = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
-          'timezone': this.model.get('timezone'),
           'dataType': [
-            Chart.dataDefaults(this.model, device, 'irradiance'),
-            Chart.dataDefaults(this.model, device, 'power')
+            Chart.dataDefaults(this.model, device, 'irradiance', this.model.get('timezone')),
+            Chart.dataDefaults(this.model, device, 'power', this.model.get('timezone'))
           ]
         }),
         series: [
@@ -89,10 +88,9 @@ define([
 
       var chart_currentAndVoltage = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
-          'timezone': this.model.get('timezone'),
           'dataType': [
-            Chart.dataDefaults(this.model, device, 'current'),
-            Chart.dataDefaults(this.model, device, 'voltage')
+            Chart.dataDefaults(this.model, device, 'current', this.model.get('timezone')),
+            Chart.dataDefaults(this.model, device, 'voltage', this.model.get('timezone'))
           ]
         }),
         series: [

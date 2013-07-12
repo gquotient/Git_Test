@@ -96,21 +96,22 @@ define([
         // Build charts
         var chart_powerHistory = new Chart.views.Line({
           model: new Chart.models.timeSeries().set({
-            'timezone': that.model.get('timezone'),
             'dataType': [
               {
                 'project_label': project.id,
                 'ddl': 'pgen-env',
                 'dtstart': 'today',
                 'dtstop': 'now',
-                'columns': ['freezetime', 'irradiance']
+                'columns': ['freezetime', 'irradiance'],
+                'timezone': that.model.get('timezone')
               },
               {
                 'project_label': project.id,
                 'ddl': whichEnergy,
                 'dtstart': 'today',
                 'dtstop': 'now',
-                'columns': ['freezetime', 'ac_power']
+                'columns': ['freezetime', 'ac_power'],
+                'timezone': that.model.get('timezone')
               }
             ]
           }),
@@ -120,31 +121,12 @@ define([
           ]
         });
 
+        that.chart_powerHistory.show(chart_powerHistory);
+
         var chart_healthAndSoiling = new Chart.views.Line({
           model: new Chart.models.timeSeries().set({
-            'timezone': that.model.get('timezone'),
             'dataType': [
-              {
-                'project_label': project.id,
-                'ddl': 'env_300',
-                'dtstart': 'today',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'value_mean'],
-                'filters': [
-                  {'column': 'attribute', 'in_set': ['irradiance']},
-                  {'column': 'identifier', 'in_set': ['IRR-1']}
-                ]
-              },
-              {
-                'project_label': project.id,
-                'ddl': 'pgen-rm_300',
-                'dtstart': 'today',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'value_mean'],
-                'filters': [
-                  {'column': 'attribute', 'in_set': ['ac_power']}
-                ]
-              }
+
             ]
           }),
           series: [
@@ -152,8 +134,6 @@ define([
             Chart.seriesDefaults.soiling
           ]
         });
-
-        that.chart_powerHistory.show(chart_powerHistory);
 
         that.chart_healthAndSoiling.show(chart_healthAndSoiling);
       });

@@ -71,6 +71,10 @@ define([
     initialize: function(){
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
+
+      // Convert capacities to watts until model service is updated
+      this.set('ac_capacity', this.get('ac_capacity') * 1000);
+      this.set('dc_capacity', this.get('dc_capacity') * 1000);
     },
 
     issues: new Issue.Collection({projectId: this.id}),
@@ -144,7 +148,7 @@ define([
 
       // DPI cheat
       if (kpis.power > 0 && kpis.irradiance) {
-        kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity')) * 100;
+        kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000) * 100;
       }
 
       this.set('kpis', kpis);
