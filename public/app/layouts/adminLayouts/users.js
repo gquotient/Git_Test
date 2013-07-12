@@ -8,14 +8,10 @@ define([
   'ia',
 
   'user',
-  'team',
-  'organization',
+  // 'team',
+  // 'organization',
 
-  'layouts/adminLayouts/users',
-  'layouts/adminLayouts/teamManagement',
-  'layouts/adminLayouts/alarmManagement',
-
-  'hbs!layouts/adminLayouts/templates/admin'
+  'hbs!layouts/adminLayouts/templates/user'
 ], function(
   _,
   $,
@@ -26,77 +22,18 @@ define([
   ia,
 
   User,
-  Team,
-  Organization,
+  // Team,
+  // Organization,
 
-  UsersLayout,
-  TeamManagementLayout,
-  AlarmManagementTemplate,
-
-  adminTemplate
+  userTemplate
 ){
-
-  var config = {
-    views: {
-      'users': {
-        collection: User.Collection,
-        view: User.views.EditTable,
-        title: 'Users'
-      },
-      'teams': {
-        collection: Team.collections.Teams,
-        view: Team.views.EditTable,
-        title: 'Teams',
-        detail: function(options){
-          var layout = new TeamManagementLayout({ team: options.model });
-          return layout;
-        }
-      },
-      'all_users': {
-        collection: User.AllUsers,
-        view: User.views.VendorEditTable,
-        title: 'All Users'
-      },
-      'all_teams': {
-        collection: Team.collections.AllTeams,
-        view: Team.views.EditAllTable,
-        title: 'All Teams',
-        detail: function(options){
-          var layout = new TeamManagementLayout({ team: options.model });
-          return layout;
-        }
-      },
-      'organizations': {
-        collection: Organization.collections.Organizations,
-        view: Organization.views.EditTable,
-        title: 'All Organizations'
-      },
-      'alarms': {
-
-      }
-    }
-  };
 
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',
-      template: adminTemplate
+      template: userTemplate
     },
-    templateHelpers: function(){
-      var viewList = this.options.currentUser.get('role').admin.views;
-      var views = _.pick(config.views, viewList);
-      return {
-        views: views
-      };
-    },
-    attributes: {
-      id: 'page-admin'
-    },
-    regions: {
-      pageContent: '.pageContent',
-      pageNav: '.column_left'
-    },
-
+    
     getView: function(page){
       var
         viewConfig = config.views[page],
@@ -133,9 +70,7 @@ define([
     },
 
     showUsers: function(){
-      var userAdminLayout = new UserLayout();
-      this.pageContent.show(userAdminLayout);
-      return userAdminLayout;
+      this.renderView('users');
     },
 
     showTeams: function(){

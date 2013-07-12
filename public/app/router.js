@@ -78,8 +78,20 @@ define([
       this.mainLayout.showProfile();
     },
 
-    admin: function(page, detail){
-      this.mainLayout.showAdmin(page, detail);
+    admin: function(){
+      this.userAdmin();
+    },
+
+    userAdmin: function(){
+      this.mainLayout.showAdmin().showUsers();
+    },
+
+    teamAdmin: function(){
+      this.mainLayout.showAdmin().showTeams();
+    },
+
+    alarmAdmin: function(){
+      this.mainLayout.showAdmin().showAlarms();
     },
 
     initialize: function(){
