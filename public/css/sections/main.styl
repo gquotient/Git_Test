@@ -505,12 +505,6 @@ header {
     .kpis {
       padding: 6px;
     }
-    .issues {
-      table {
-        width: 100%;
-        border-top: none;
-      }
-    }
   }
 
   #page-admin, #page-projectDevices {
@@ -729,9 +723,17 @@ header {
 .module {
   &.issues {
     table {
+      width: 100%;
       border: none;
-      tr {
-        cursor: pointer;
+      tbody {
+        tr {
+          cursor: pointer;
+          td {
+            &.status {
+              width: 12px;
+            }
+          }
+        }
       }
     }
     > div {
