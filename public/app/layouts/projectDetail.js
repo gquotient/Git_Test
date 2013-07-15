@@ -103,7 +103,7 @@ define([
                 'dtstart': 'today',
                 'dtstop': 'now',
                 'columns': ['freezetime', 'irradiance'],
-                'timezone': that.model.get('timezone')
+                'project_timezone': that.model.get('timezone')
               },
               {
                 'project_label': project.id,
@@ -111,7 +111,7 @@ define([
                 'dtstart': 'today',
                 'dtstop': 'now',
                 'columns': ['freezetime', 'ac_power'],
-                'timezone': that.model.get('timezone')
+                'project_timezone': that.model.get('timezone')
               }
             ]
           }),

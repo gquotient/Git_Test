@@ -105,7 +105,7 @@ function(
         'dtstart': 'today',
         'dtstop': 'now',
         'columns': ['freezetime', 'irradiance'],
-        timezone: timezone || null
+        project_timezone: timezone || null
       };
       /*
       dataDefinition = {
@@ -133,7 +133,7 @@ function(
             'in_set': [device.get('graph_key')]
           }
         ],
-        timezone: timezone || null
+        project_timezone: timezone || null
       };
     }
 
