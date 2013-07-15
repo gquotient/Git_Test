@@ -47,7 +47,6 @@ define([
 
   Project.Model = Backbone.Model.extend({
     idAttribute: 'project_label',
-    url: '/api/projects',
     defaults: {
       type: 'project',
       kpis: {
@@ -264,7 +263,8 @@ define([
   });
 
   Project.Collection = Backbone.Collection.extend({
-    model: Project.Model
+    model: Project.Model,
+    url: '/api/projects'
   });
 
   Project.views.DataListItem = Marionette.ItemView.extend({
