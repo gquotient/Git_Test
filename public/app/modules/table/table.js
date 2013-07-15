@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
   'handsontable',
 
+  './dropdown',
+
   'css!bower_components/handsontable/dist/jquery.handsontable.css'
 ], function(
   $,
@@ -12,6 +14,8 @@ define([
   Backbone,
   Marionette,
   Handsontable,
+
+  Dropdown,
 
   handsontableCSS
 ){

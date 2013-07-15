@@ -24,6 +24,6 @@
     "paper": "latest",
     "jquery-mousewheel": "latest",
     "highcharts": "latest",
-    "handsontable": "latest"
+    "handsontable": "git://github.com/ianmetcalf/jquery-handsontable.git#master"
   }
 }

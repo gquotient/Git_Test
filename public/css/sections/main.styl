@@ -623,21 +623,60 @@ header {
     height: 100%;
     overflow: auto;
     padding-right: 400px;
+    color: black;
 
     th {
       font-weight: bold;
       background-color: transparent;
-      border-color: #000;
+      border-color: black;
     }
 
     td {
-      color: #000;
       background-color: rgba(255, 255, 255, 0.8);
-      border-color: #000;
+      border-color: black;
 
       &.htDimmed {
-        color: #000;
+        color: black;
         font-style: normal;
+      }
+
+      .htAutocompleteArrow {
+        color: #bbb;
+
+        &:hover {
+          color: black;
+        }
+      }
+    }
+  }
+}
+
+ul.handsontableDropdown {
+  position: absolute;
+  top: 0;
+  left: 2px;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  background-color: white;
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+
+  li {
+    padding: 0;
+    margin: 0;
+
+    a {
+      display: block;
+      padding-left: 2px;
+      line-height: 21px;
+      font-size: 12px;
+      text-decoration: none;
+      color: black;
+
+      &:hover {
+        background-color: colorDrakerOrange;
       }
     }
   }

@@ -146,10 +146,6 @@ require.config({
     highcharts: {
       deps: ['jquery'],
       exports: 'Highcharts'
-    },
-    handsontable: {
-      deps: ['jquery'],
-      exports: 'Handsontable'
     }
   },
   // hbs config
