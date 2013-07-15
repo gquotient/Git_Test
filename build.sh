@@ -15,6 +15,8 @@ echo "*************************************"
 echo ""
 
 cd public/app
+# Remove existing components because bower is having issues
+rm -r bower_components/
 bower install -f
 
 # Compile client app
