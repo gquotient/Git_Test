@@ -621,19 +621,21 @@ define([
     },
 
     onSubmit: function(){
-      var project = this.model;
+      var user = this.options.user;
 
-      project.save({
+      this.collection.create({
         name: this.ui.name.val().trim(),
         site_label: this.ui.label.val().replace(/\W|_/g, ''),
         latitude: parseFloat(this.ui.latitude.val()),
         longitude: parseFloat(this.ui.longitude.val()),
         elevation: parseFloat(this.ui.elevation.val()) || 0
-      }).done(_.bind(function(){
-        Backbone.trigger('create:project', project);
-
-        project.log('created project', this.options.user);
-      }, this));
+      }, {
+        wait: true,
+        success: function(model){
+          model.log('created project', user);
+          Backbone.history.navigate('/project/' + model.id + '/edit', true);
+        }
+      });
     },
 
     onReset: function(){

@@ -1,5 +1,6 @@
 define([
   'jquery',
+  'underscore',
   'backbone',
   'backbone.marionette',
   'handlebars',
@@ -21,6 +22,7 @@ define([
   'hbs!layouts/templates/index'
 ], function(
   $,
+  _,
   Backbone,
   Marionette,
   Handlebars,
@@ -97,12 +99,16 @@ define([
 
     showProjectCreate: function(){
       this.mainContent.show( new ProjectCreatorLayout({
-        projects: this.app.projects,
+        collection: this.app.projects,
         user: this.app.currentUser
       }));
     },
 
     showProjectEdit: function(project){
+      if (_.isString(project)) {
+        project = this.app.projects.push({project_label: project});
+      }
+
       this.mainContent.show( new ProjectEditorLayout({
         model: project,
         user: this.app.currentUser
