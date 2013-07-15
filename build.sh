@@ -15,9 +15,7 @@ echo "*************************************"
 echo ""
 
 cd public/app
-rm -r ~/.bower
-rm -r bower_components/
-bower install -f
+bower install
 
 # Compile client app
 echo ""
