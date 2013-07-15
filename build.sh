@@ -33,4 +33,4 @@ echo "************************"
 echo "* Restarting server... *"
 echo "************************"
 
-/etc/init.d/app.stage.intelligentarray.com restart
+/etc/init.d/intelligentarray restart
