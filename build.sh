@@ -15,7 +15,7 @@ echo "*************************************"
 echo ""
 
 cd public/app
-rm -r ~/.bower/cache
+rm -r ~/.bower
 rm -r bower_components/
 bower install -f
 
