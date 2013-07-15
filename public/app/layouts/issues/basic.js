@@ -47,7 +47,7 @@ define([
     },
 
     initialize: function(options){
-      console.log(options.model);
+
     }
   });
 });

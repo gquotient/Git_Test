@@ -183,7 +183,7 @@ define([
     initialize: function(options){
       // Add the dev type for targeted styles
       this.$el.addClass(options.model.get('devtype').replace(' ', '_'));
-      this.$el.attr('id', this.model.id);
+      this.$el.attr('id', this.model.get('graph_key'));
     }
   });
 

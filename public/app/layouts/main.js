@@ -11,7 +11,7 @@ define([
   'layouts/portfolioDetail',
   'layouts/projectDetail',
   'layouts/issues',
-  'layouts/projectDevices',
+  'layouts/devices',
   'layouts/portfolioDashboard',
   'layouts/projectCreator',
   'layouts/projectEditor',
@@ -32,7 +32,7 @@ define([
   PortfolioDetailLayout,
   ProjectDetailLayout,
   IssuesLayout,
-  ProjectDevicesLayout,
+  DevicesLayout,
   PortfolioDashboardLayout,
   ProjectCreatorLayout,
   ProjectEditorLayout,
@@ -130,7 +130,7 @@ define([
         model: project
       });
 
-      this.mainContent.show( new ProjectDevicesLayout({
+      this.mainContent.show( new DevicesLayout({
         model: project,
         currentDevice: deviceId
       }));
