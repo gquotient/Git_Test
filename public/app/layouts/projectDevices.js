@@ -41,7 +41,7 @@ define([
 
     selectDevice: function(device){
       Backbone.trigger('set:breadcrumbs', {model: device, state: 'device', display_name: device.get('devtype')+' '+device.get('did')});
-      Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.id);
+      Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'));
 
       this.deviceInfo.show(new Marionette.Layout({template: _.template('Device: <%= id %> <br> Graphkey: <%= graph_key %>'), model: device}));
 
@@ -125,7 +125,7 @@ define([
 
         // If router passes a device, build detail view
         if (options.currentDevice) {
-          var myDevice = that.model.devices.findWhere({id: options.currentDevice});
+          var myDevice = that.model.devices.findWhere({graph_key: options.currentDevice});
           that.selectDevice(myDevice);
         }
       });

@@ -163,7 +163,7 @@ function(
           // Adjust time to milliseconds
           point[0] = point[0] * 1000;
           // Round watts to integers
-          point[1] = roundNumber(point[1], 0);
+          point[1] = roundNumber(point[1], 2);
         });
 
         // Push updated trace to series array
