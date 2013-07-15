@@ -16,6 +16,7 @@ echo ""
 
 cd public/app
 rm -r ~/.bower/cache
+rm -r bower_components/
 bower install -f
 
 # Compile client app
