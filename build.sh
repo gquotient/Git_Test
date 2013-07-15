@@ -15,7 +15,7 @@ echo "*************************************"
 echo ""
 
 cd public/app
-bower install
+bower install -f
 
 # Compile client app
 echo ""
