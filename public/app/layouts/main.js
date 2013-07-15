@@ -146,9 +146,11 @@ define([
       var adminLayout = new AdminLayout({
         currentUser: this.app.currentUser
       });
+
       this.mainContent.show(
         adminLayout
       );
+
       return adminLayout;
     },
 

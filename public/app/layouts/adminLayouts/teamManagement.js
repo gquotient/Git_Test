@@ -33,6 +33,7 @@ define([
 
     },
     initialize: function(){
+
       this.model = this.team = this.options.team;
       this.allUsers = new User.OrganizationUsers({ org_label: this.team.get('org_label') });
 
@@ -49,6 +50,8 @@ define([
 
       this.allUsers.fetch();
       this.team.getUsers();
+
+      Backbone.history.navigate('/admin/teams/' + this.team.id);
     }
   });
 

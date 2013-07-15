@@ -79,15 +79,19 @@ define([
     },
 
     admin: function(){
-      this.userAdmin();
+      this.usersAdmin();
     },
 
-    userAdmin: function(){
+    usersAdmin: function(){
       this.mainLayout.showAdmin().showUsers();
     },
 
-    teamAdmin: function(){
+    teamsAdmin: function(){
       this.mainLayout.showAdmin().showTeams();
+    },
+
+    teamAdminDetail: function(teamID){
+      this.mainLayout.showAdmin().showTeams().showTeam(teamID);
     },
 
     alarmAdmin: function(){
@@ -122,7 +126,9 @@ define([
 
       //Admin Routes
       'admin': 'admin',
-      'admin/:page': 'admin'
+      'admin/users': 'usersAdmin',
+      'admin/teams': 'teamsAdmin',
+      'admin/teams/:id': 'teamAdminDetail'
     }
   });
 

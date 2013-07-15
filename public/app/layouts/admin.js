@@ -12,7 +12,7 @@ define([
   'organization',
 
   'layouts/adminLayouts/users',
-  'layouts/adminLayouts/teamManagement',
+  'layouts/adminLayouts/teams',
   'layouts/adminLayouts/alarmManagement',
 
   'hbs!layouts/adminLayouts/templates/admin'
@@ -30,7 +30,7 @@ define([
   Organization,
 
   UsersLayout,
-  TeamManagementLayout,
+  TeamsLayout,
   AlarmManagementTemplate,
 
   adminTemplate
@@ -39,18 +39,12 @@ define([
   var config = {
     views: {
       'users': {
-        collection: User.Collection,
-        view: User.views.EditTable,
-        title: 'Users'
+        title: 'Users',
+        trigger: 'show:users'
       },
       'teams': {
-        collection: Team.collections.Teams,
-        view: Team.views.EditTable,
         title: 'Teams',
-        detail: function(options){
-          var layout = new TeamManagementLayout({ team: options.model });
-          return layout;
-        }
+        trigger: 'show:teams'
       },
       'all_users': {
         collection: User.AllUsers,
@@ -60,11 +54,7 @@ define([
       'all_teams': {
         collection: Team.collections.AllTeams,
         view: Team.views.EditAllTable,
-        title: 'All Teams',
-        detail: function(options){
-          var layout = new TeamManagementLayout({ team: options.model });
-          return layout;
-        }
+        title: 'All Teams'
       },
       'organizations': {
         collection: Organization.collections.Organizations,
@@ -93,53 +83,32 @@ define([
       id: 'page-admin'
     },
     regions: {
-      pageContent: '.pageContent',
+      pageContent: '.column_right',
       pageNav: '.column_left'
     },
 
-    getView: function(page){
-      var
-        viewConfig = config.views[page],
-        collection = new viewConfig.collection(),
-        view = new viewConfig.view({collection: collection})
-      ;
-
-      collection.fetch();
-
-      return view;
-    },
-
     renderView: function(view){
-      var myView = this.getView(view);
-
       // Set active nav element
       this.$el.find('.nav_content li').removeClass('active');
       this.$el.find('.nav_content li.' + view).addClass('active');
 
       // Display view
-      this.pageContent.show(myView);
-
-      // Update history
-      Backbone.history.navigate('/admin/' + view);
     },
 
-    renderDetailView: function(options){
-      var viewConfig = config.views[options.page];
-      this.pageContent.show( viewConfig.detail(options) );
-    },
-
-    onShow: function(){
-      this.renderView(this.initialView, this.page_id);
-    },
+    // onShow: function(){
+    //   this.renderView(this.initialView, this.page_id);
+    // },
 
     showUsers: function(){
-      var userAdminLayout = new UserLayout();
+      var userAdminLayout = new UsersLayout();
       this.pageContent.show(userAdminLayout);
       return userAdminLayout;
     },
 
     showTeams: function(){
-      this.renderView('teams');
+      var teamAdminLayout = new TeamsLayout();
+      this.pageContent.show(teamAdminLayout);
+      return teamAdminLayout;
     },
 
     showAlarms: function(){
@@ -153,28 +122,25 @@ define([
         // This seems kind of hacky, but (shrug)
         var route = event.target.hash.replace('#', '');
 
-        // Build view
-        this.renderView(route);
-
-        // Keep track of current view.
-        this.view = route;
+        Backbone.trigger(config.views[route].trigger);
       }
     },
 
     initialize: function(options){
-      this.view = this.initialView = options.initialView || 'users';
 
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
         display_name: 'Admin'
       });
 
-      this.detail = this.options.detail;
+      // this.listenTo(Backbone, 'detail', function(model){
+      //   this.renderDetailView({ model: model, page: this.view });
+      //   Backbone.history.navigate('/admin/'+ this.view + '/' + model.id);
+      // }, this);
 
-      this.listenTo(Backbone, 'detail', function(model){
-        this.renderDetailView({ model: model, page: this.view });
-        Backbone.history.navigate('/admin/'+ this.view + '/' + model.id);
-      }, this);
+      this.listenTo(Backbone, 'show:users', this.showUsers);
+      this.listenTo(Backbone, 'show:teams', this.showTeams);
+
     }
   });
 
