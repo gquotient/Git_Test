@@ -78,8 +78,27 @@ define([
       this.mainLayout.showProfile();
     },
 
-    admin: function(page, detail){
-      this.mainLayout.showAdmin(page, detail);
+    admin: function(){
+      this.usersAdmin();
+    },
+
+    usersAdmin: function(){
+      this.mainLayout.showAdmin().showUsers();
+    },
+
+    teamsAdmin: function(){
+      this.mainLayout.showAdmin().showTeams();
+    },
+
+    teamAdminDetail: function(teamID){
+      var teamLayout = this.mainLayout.showAdmin().showTeams();
+      teamLayout.listenTo(teamLayout.collection, 'reset', function(){
+        teamLayout.showTeam(teamLayout.collection.get(teamID));
+      });
+    },
+
+    alarmAdmin: function(){
+      // this.mainLayout.showAdmin().showAlarms();
     },
 
     initialize: function(){
@@ -110,7 +129,9 @@ define([
 
       //Admin Routes
       'admin': 'admin',
-      'admin/:page': 'admin'
+      'admin/users': 'usersAdmin',
+      'admin/teams': 'teamsAdmin',
+      'admin/teams/:id': 'teamAdminDetail'
     }
   });
 
