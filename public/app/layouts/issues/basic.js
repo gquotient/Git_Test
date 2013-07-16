@@ -46,8 +46,34 @@ define([
       );
     },
 
-    initialize: function(options){
+    buildChart: function(){
+      var project = this.options.project,
+        device = project.devices.findWhere({graph_key: this.model.get('identifier')});
 
+      var chart_powerAndIrradiance = new Chart.views.Line({
+        model: new Chart.models.timeSeries().set({
+          'dataType': [
+            Chart.dataDefaults(project, device, 'irradiance', project.get('timezone')),
+            Chart.dataDefaults(project, device, 'power', project.get('timezone'))
+          ]
+        }),
+        series: [
+          Chart.seriesDefaults.irradiance,
+          Chart.seriesDefaults.power
+        ]
+      });
+
+      this.chart.show(chart_powerAndIrradiance);
+    },
+
+    initialize: function(options){
+      console.log(options);
+      var that = this;
+
+      // Fetch project to get devices
+      this.options.project.fetch({data: {project_label: options.project.id}}).done(function(){
+        that.buildChart();
+      });
     }
   });
 });
