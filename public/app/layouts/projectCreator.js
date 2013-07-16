@@ -31,7 +31,7 @@ define([
     },
 
     onShow: function(){
-      this.createProject.show( new Project.views.Create({
+      this.createProject.show( new Project.views.AdminCreate({
         collection: this.collection,
         user: this.options.user
       }));
