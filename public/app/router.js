@@ -46,10 +46,6 @@ define([
       this.mainLayout.showPortfolio(portfolio);
     },
 
-    projectCreate: function(){
-      this.mainLayout.showProjectCreate();
-    },
-
     projectEdit: function(id){
       this.mainLayout.showProjectEdit(id);
     },
@@ -120,7 +116,6 @@ define([
       'portfolio/:id': 'portfolioDetail',
       'portfolio': 'index',
 
-      'project/create': 'projectCreate',
       'project/:id/edit': 'projectEdit',
       'project/:id': 'projectDetail',
       'project/:id/devices': 'projectDevices',

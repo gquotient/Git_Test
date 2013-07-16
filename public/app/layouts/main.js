@@ -14,7 +14,6 @@ define([
   'layouts/issues',
   'layouts/devices',
   'layouts/portfolioDashboard',
-  'layouts/projectCreator',
   'layouts/projectEditor',
   'layouts/profile',
   'layouts/admin',
@@ -36,7 +35,6 @@ define([
   IssuesLayout,
   DevicesLayout,
   PortfolioDashboardLayout,
-  ProjectCreatorLayout,
   ProjectEditorLayout,
   ProfileLayout,
   AdminLayout,
@@ -94,13 +92,6 @@ define([
         model: project,
         collection: this.activePortfolio.projects,
         settingsRegion: this.pageSettings
-      }));
-    },
-
-    showProjectCreate: function(){
-      this.mainContent.show( new ProjectCreatorLayout({
-        collection: this.app.alignedProjects,
-        user: this.app.currentUser
       }));
     },
 
