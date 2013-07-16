@@ -11,12 +11,12 @@ define([
   'team',
   'organization',
 
-  'layouts/adminLayouts/users',
-  'layouts/adminLayouts/teams',
-  'layouts/adminLayouts/projects',
-  'layouts/adminLayouts/alarmManagement',
+  'layouts/admin/users',
+  'layouts/admin/teams',
+  'layouts/admin/projects',
+  'layouts/admin/alarmManagement',
 
-  'hbs!layouts/adminLayouts/templates/admin'
+  'hbs!layouts/templates/admin'
 ], function(
   _,
   $,

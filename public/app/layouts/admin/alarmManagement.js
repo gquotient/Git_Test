@@ -6,7 +6,7 @@ define([
   'team',
   'user',
 
-  'hbs!layouts/adminLayouts/templates/alarmManagement'
+  'hbs!layouts/admin/templates/alarmManagement'
 ], function(
   Backbone,
   Marionette,
