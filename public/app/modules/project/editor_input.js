@@ -63,8 +63,7 @@ define([
     triggers: {
       'focus input': 'focus',
       'blur input': 'blur',
-      'input input': 'input',
-      'click button': 'apply'
+      'input input': 'input'
     },
 
     keydownEvents: {
