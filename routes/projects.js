@@ -130,4 +130,17 @@ module.exports = function(app){
       ]),
       translate: combineProperties
     }));
+
+  app.del('/api/projects/:label', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/projects',
+      setup: function(req, res, next){
+        _.extend(req.body, {
+          project_label: req.params.label,
+          verify: 'delete'
+        });
+
+        next(req, res);
+      }
+    }));
 };

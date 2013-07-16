@@ -692,6 +692,21 @@ define([
     template: {
       type: 'handlebars',
       template: adminListItemTemplate
+    },
+
+    triggers: {
+      'click button.edit': 'edit',
+      'click button.delete': 'delete'
+    },
+
+    onEdit: function(){
+      Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
+    },
+
+    onDelete: function(){
+      this.model.destroy({
+        wait: true
+      });
     }
   });
 
