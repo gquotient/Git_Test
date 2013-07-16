@@ -89,6 +89,10 @@ define([
       this.mainLayout.showAdmin().showTeams();
     },
 
+    projectsAdmin: function(){
+      this.mainLayout.showAdmin().showProjects();
+    },
+
     teamAdminDetail: function(teamID){
       var teamLayout = this.mainLayout.showAdmin().showTeams();
       teamLayout.listenTo(teamLayout.collection, 'reset', function(){
@@ -130,6 +134,7 @@ define([
       'admin': 'admin',
       'admin/users': 'usersAdmin',
       'admin/teams': 'teamsAdmin',
+      'admin/projects': 'projectsAdmin',
       'admin/teams/:id': 'teamAdminDetail'
     }
   });

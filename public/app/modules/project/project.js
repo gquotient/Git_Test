@@ -19,6 +19,9 @@ define([
   'hbs!project/templates/projectList',
   'hbs!project/templates/markerPopUp',
   'hbs!project/templates/kpis',
+
+  'hbs!project/templates/adminList',
+  'hbs!project/templates/adminListItem',
   'hbs!project/templates/changelog'
 ], function(
   $,
@@ -41,6 +44,9 @@ define([
   navigationListTemplate,
   markerPopUpTemplate,
   kpisTemplate,
+
+  adminListTemplate,
+  adminListItemTemplate,
   changelogTemplate
 ){
   var Project = { views: {Editor: Editor} };
@@ -719,6 +725,25 @@ define([
       this.model.fetchKpis();
       this.listenTo(this.model, 'change:kpis', this.render);
     }
+  });
+
+  Project.views.AdminListItem = Marionette.ItemView.extend({
+    tagName: 'tr',
+    template: {
+      type: 'handlebars',
+      template: adminListItemTemplate
+    }
+  });
+
+  Project.views.AdminList = Marionette.CompositeView.extend({
+    tagName: 'form',
+    template: {
+      type: 'handlebars',
+      template: adminListTemplate
+    },
+
+    itemView: Project.views.AdminListItem,
+    itemViewContainer: 'tbody'
   });
 
   Project.views.ChangeLog = Marionette.ItemView.extend({

@@ -24,6 +24,7 @@
   "Type": "Type",
   "Name": "Name",
   "Email": "Email",
+  "Actions": "Actions",
 
   "Label": "Label",
   "Latitude": "Latitude",
@@ -45,5 +46,6 @@
   "Apply": "Apply",
   "Cancel": "Cancel",
   "Reset": "Reset",
-  "Save": "Save"
+  "Save": "Save",
+  "Delete": "Delete"
 }
