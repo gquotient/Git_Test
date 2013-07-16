@@ -84,23 +84,27 @@ define([
       pageNav: '.column_left'
     },
 
-    renderView: function(view){
+    highlightLink: function(view){
       // Set active nav element
       this.$el.find('.nav_content li').removeClass('active');
       this.$el.find('.nav_content li.' + view).addClass('active');
-
-      // Display view
     },
 
     showUsers: function(){
       var userAdminLayout = new UsersLayout();
       this.pageContent.show(userAdminLayout);
+
+      this.highlightLink('users');
+
       return userAdminLayout;
     },
 
     showTeams: function(){
       var teamAdminLayout = new TeamsLayout();
       this.pageContent.show(teamAdminLayout);
+
+      this.highlightLink('teams');
+
       return teamAdminLayout;
     },
 
