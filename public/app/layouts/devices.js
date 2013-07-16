@@ -9,7 +9,7 @@ define([
   'device',
   'chart',
 
-  'layouts/devices/basic',
+  'layouts/devices/core',
 
   'hbs!layouts/templates/devices'
 ], function(
@@ -23,7 +23,7 @@ define([
   Device,
   Chart,
 
-  BasicLayout,
+  CoreLayout,
 
   devicesTemplate
 ){
@@ -45,11 +45,12 @@ define([
     selectDevice: function(device){
       Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'));
 
-      this.deviceDetail.show(new BasicLayout({model: device, project: this.model}));
+      this.deviceDetail.show(new CoreLayout({model: device, project: this.model}));
 
       $('.nav_content').find('.active').removeClass('active');
 
-      $('.nav_content').find('#' + device.id).addClass('active');
+      // This is a nightmare - we need to come up with something less hacky
+      $('.nav_content').find('#' + device.get('graph_key').replace(':', '\\:')).addClass('active');
     },
 
     onShow: function(){

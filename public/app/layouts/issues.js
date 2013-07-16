@@ -10,7 +10,7 @@ define([
   'chart',
   'issue',
 
-  'layouts/issues/basic',
+  'layouts/issues/core',
 
   'hbs!layouts/templates/issues'
 ], function(
@@ -25,7 +25,7 @@ define([
   Chart,
   Issue,
 
-  BasicLayout,
+  CoreLayout,
 
   projectIssuesTemplate
 ){
@@ -48,7 +48,7 @@ define([
     selectIssue: function(issue){
       Backbone.history.navigate('/project/' + this.model.id + '/issues/' + issue.id);
 
-      this.issueDetail.show(new BasicLayout({model: issue, project: this.model}));
+      this.issueDetail.show(new CoreLayout({model: issue, project: this.model}));
 
       $('.nav_content').find('.active').removeClass('active');
 

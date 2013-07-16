@@ -10,7 +10,7 @@ define([
   'chart',
   'issue',
 
-  'hbs!layouts/issues/templates/basic'
+  'hbs!layouts/issues/templates/core'
 ], function(
   $,
   _,
@@ -23,12 +23,12 @@ define([
   Chart,
   Issue,
 
-  BasicTemplate
+  CoreTemplate
 ){
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',
-      template: BasicTemplate
+      template: CoreTemplate
     },
 
     regions: {
@@ -67,7 +67,6 @@ define([
     },
 
     initialize: function(options){
-      console.log(options);
       var that = this;
 
       // Fetch project to get devices
