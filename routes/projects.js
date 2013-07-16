@@ -100,7 +100,7 @@ module.exports = function(app){
       path: '/res/projects',
       setup: function(req, res, next){
         req.body = _.pick(req.body, [
-          'name',
+          'display_name',
           'site_label',
           'latitude',
           'longitude',

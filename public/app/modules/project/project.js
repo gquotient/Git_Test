@@ -752,7 +752,7 @@ define([
       var user = this.options.user;
 
       this.collection.create({
-        name: this.ui.name.val().trim(),
+        display_name: this.ui.name.val().trim(),
         site_label: this.ui.label.val().replace(/\W|_/g, ''),
         latitude: parseFloat(this.ui.latitude.val()),
         longitude: parseFloat(this.ui.longitude.val()),
