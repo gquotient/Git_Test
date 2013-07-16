@@ -47,19 +47,16 @@ define([
         trigger: 'show:teams'
       },
       'all_users': {
-        collection: User.AllUsers,
-        view: User.views.VendorEditTable,
-        title: 'All Users'
+        title: 'All Users',
+        trigger: 'show:allUsers'
       },
       'all_teams': {
-        collection: Team.collections.AllTeams,
-        view: Team.views.EditAllTable,
-        title: 'All Teams'
+        title: 'All Teams',
+        trigger: 'show:allTeams'
       },
       'organizations': {
-        collection: Organization.collections.Organizations,
-        view: Organization.views.EditTable,
-        title: 'All Organizations'
+        title: 'All Organizations',
+        trigger: 'show:allOrganizations'
       },
       'alarms': {
 
@@ -94,10 +91,6 @@ define([
 
       // Display view
     },
-
-    // onShow: function(){
-    //   this.renderView(this.initialView, this.page_id);
-    // },
 
     showUsers: function(){
       var userAdminLayout = new UsersLayout();

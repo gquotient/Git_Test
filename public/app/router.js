@@ -91,11 +91,14 @@ define([
     },
 
     teamAdminDetail: function(teamID){
-      this.mainLayout.showAdmin().showTeams().showTeam(teamID);
+      var teamLayout = this.mainLayout.showAdmin().showTeams();
+      teamLayout.listenTo(teamLayout.collection, 'reset', function(){
+        teamLayout.showTeam(teamLayout.collection.get(teamID));
+      });
     },
 
     alarmAdmin: function(){
-      this.mainLayout.showAdmin().showAlarms();
+      // this.mainLayout.showAdmin().showAlarms();
     },
 
     initialize: function(){

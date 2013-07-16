@@ -43,7 +43,7 @@ define([
     initialize: function(options){
       this.collection = new Team.collections.Teams();
       this.view = new Team.views.EditTable({ collection: this.collection });
-      this.collection.fetch();
+      this.collection.fetch({reset: true});
 
       this.listenTo(Backbone, 'detail', function(model){
         this.showTeam(model);
