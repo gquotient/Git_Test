@@ -25,6 +25,9 @@ define([
           index_name: 'AlignedProjects'
         }
       });
+
+      // Update history
+      Backbone.history.navigate('/admin/projects');
     },
 
     onShow: function(){
