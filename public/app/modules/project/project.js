@@ -179,7 +179,7 @@ define([
 
           for(var source=0, sourcesLength=sources.length; source<=sourcesLength; source++){
             // Add '_300' to the string for now since that's how it is in the ddls
-            if (_.has(ddls, sources[source] + '_300')) {
+            if (_.indexOf(ddls, sources[source]) >= 0) {
               return sources[source];
             }
           }
@@ -310,6 +310,9 @@ define([
       'click': function(){
         Backbone.history.navigate('/project/'+this.model.id, true);
       }
+    },
+    onShow: function(){
+      this.model.fetchKpis().done(this.render);
     }
   });
 

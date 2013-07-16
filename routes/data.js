@@ -9,7 +9,7 @@ module.exports = function(app){
     function(req, res){
       request({
         method: 'GET',
-        uri: app.get('dataUrl') + '/data/discovery/' + req.params.id + '/ddls',
+        uri: app.get('dataUrl') + '/data/discovery/' + req.params.id + '/ddls-types',
         headers: {
           'accept-encoding' : 'gzip,deflate'
         }

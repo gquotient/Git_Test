@@ -10,7 +10,9 @@ define([
   'chart',
   'issue',
 
-  'hbs!layouts/templates/projectIssues'
+  'layouts/issues/basic',
+
+  'hbs!layouts/templates/issues'
 ], function(
   $,
   _,
@@ -22,6 +24,8 @@ define([
   Device,
   Chart,
   Issue,
+
+  BasicLayout,
 
   projectIssuesTemplate
 ){
@@ -42,17 +46,17 @@ define([
     },
 
     selectIssue: function(issue){
-      Backbone.trigger('set:breadcrumbs', {model: issue, state: 'issue', display_name: issue.get('display_name')});
-
-      // this.app.state = 'issue';
-
       Backbone.history.navigate('/project/' + this.model.id + '/issues/' + issue.id);
 
-      this.issueDetail.show(new Marionette.Layout({template: _.template('Issue: <%= uid %> <br> Description: <%= alarm_type %>'), model: issue}));
+      this.issueDetail.show(new BasicLayout({model: issue}));
 
       $('.nav_content').find('.active').removeClass('active');
 
       $('.nav_content').find('#' + issue.id).addClass('active');
+    },
+
+    noIssues: function(){
+      this.issueDetail.show(new Marionette.Layout({ template: _.template('There are currently no active alarms') }));
     },
 
     onShow: function(){
@@ -60,7 +64,6 @@ define([
     },
 
     initialize: function(options){
-      this.app = options.app;
       var that = this;
 
       Backbone.trigger('set:breadcrumbs', {state: 'issue', display_name: 'Issues'});
@@ -88,6 +91,7 @@ define([
           that.selectIssue(that.model.issues.models[0]);
         } else {
           // Handle 'no issues' view
+          that.noIssues();
         }
       });
 
