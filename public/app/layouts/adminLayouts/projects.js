@@ -18,11 +18,6 @@ define([
   BaseLayout
 ){
   return BaseLayout.extend({
-    onShow: function(){
-      this.pageContent.show( new Project.views.AdminList({
-        collection: this.collection
-      }));
-    },
 
     initialize: function(options){
       this.collection.fetch({
@@ -30,6 +25,29 @@ define([
           index_name: 'AlignedProjects'
         }
       });
+    },
+
+    onShow: function(){
+      this.showList();
+    },
+
+    showList: function(){
+      var view = new Project.views.AdminList({
+        collection: this.collection
+      });
+
+      this.listenToOnce(view, 'create', this.showCreate);
+      this.pageContent.show(view);
+    },
+
+    showCreate: function(){
+      var view = new Project.views.AdminCreate({
+        collection: this.collection,
+        user: this.options.user
+      });
+
+      this.listenToOnce(view, 'close', this.showList);
+      this.pageContent.show(view);
     }
   });
 });

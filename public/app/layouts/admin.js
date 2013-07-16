@@ -116,7 +116,8 @@ define([
 
     showProjects: function(){
       var layout = new ProjectsLayout({
-        collection: ia.alignedProjects
+        collection: ia.alignedProjects,
+        user: ia.currentUser
       });
 
       this.pageContent.show(layout);

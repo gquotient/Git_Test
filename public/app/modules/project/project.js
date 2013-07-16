@@ -718,7 +718,11 @@ define([
     },
 
     itemView: Project.views.AdminListItem,
-    itemViewContainer: 'tbody'
+    itemViewContainer: 'tbody',
+
+    triggers: {
+      'click button.add': 'create'
+    }
   });
 
   Project.views.AdminCreate = Marionette.ItemView.extend({
@@ -738,7 +742,8 @@ define([
 
     triggers: {
       'submit': 'submit',
-      'reset': 'reset'
+      'reset': 'reset',
+      'click button.cancel': 'cancel'
     },
 
     onSubmit: function(){
@@ -754,13 +759,18 @@ define([
         wait: true,
         success: function(model){
           model.log('created project', user);
-          Backbone.history.navigate('/project/' + model.id + '/edit', true);
         }
       });
+
+      this.close();
     },
 
     onReset: function(){
       this.render();
+    },
+
+    onCancel: function(){
+      this.close();
     }
   });
 
