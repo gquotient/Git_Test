@@ -317,8 +317,8 @@ define([
     },
 
     keypressEvents: {
-      43: 'zoom:out',
-      45: 'zoom:in',
+      43: 'zoom:in',
+      45: 'zoom:out',
       61: 'zoom:reset'
     },
 
@@ -359,9 +359,9 @@ define([
     },
 
     handleWheelEvent: function(e, delta){
-      if (delta < 0) {
+      if (delta > 0) {
         this.triggerMethod('zoom:in');
-      } else if (delta > 0) {
+      } else if (delta < 0) {
         this.triggerMethod('zoom:out');
       }
     },
@@ -430,11 +430,15 @@ define([
     },
 
     onZoomIn: function(){
-      this.paper.view.zoom /= 1.1;
+      if (this.paper.view.zoom < 2) {
+        this.paper.view.zoom *= 1.1;
+      }
     },
 
     onZoomOut: function(){
-      this.paper.view.zoom *= 1.1;
+      if (this.paper.view.zoom > 0.25) {
+        this.paper.view.zoom /= 1.1;
+      }
     },
 
     onZoomReset: function(){
