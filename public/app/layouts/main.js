@@ -143,10 +143,15 @@ define([
     },
 
     showAdmin: function(page, detail){
-      this.mainContent.show( new AdminLayout({
-        initialView: page,
+      var adminLayout = new AdminLayout({
         currentUser: this.app.currentUser
-      }));
+      });
+
+      this.mainContent.show(
+        adminLayout
+      );
+
+      return adminLayout;
     },
 
     switchTeam: function(teamLabel){

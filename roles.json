@@ -5,16 +5,16 @@
       "views": ["users", "teams"]
     },
     "header": {
-      "showAdmin": true  
+      "showAdmin": true
     }
   },
-  
+
   "vendor_admin": {
     "admin": {
-      "views": ["users", "teams", "all_users", "all_teams", "organizations"]
+      "views": ["users", "teams"]
     },
     "header": {
-      "showAdmin": true  
+      "showAdmin": true
     }
   }
 

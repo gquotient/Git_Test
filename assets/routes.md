@@ -16,3 +16,6 @@
 index_name=StagedProjects
 
 GET /api/project/devices/:project_label 
+
+
+GET /res/alarms org_label, admin
