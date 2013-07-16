@@ -310,6 +310,13 @@ define([
       'click': function(){
         Backbone.history.navigate('/project/'+this.model.id, true);
       }
+    },
+    onShow: function(){
+      console.log('show', this);
+      this.model.fetchKpis().done(this.render);
+    },
+    initialize: function(){
+
     }
   });
 
