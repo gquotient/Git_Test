@@ -73,10 +73,6 @@ define([
       this.outgoing = new Device.Collection();
 
       this.issues = new Issue.Collection({projectId: this.id});
-
-      // Convert capacities to watts until model service is updated
-      this.set('ac_capacity', this.get('ac_capacity') * 1000);
-      this.set('dc_capacity', this.get('dc_capacity') * 1000);
     },
 
     fetchKpis: function(){
