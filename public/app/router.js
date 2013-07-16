@@ -116,12 +116,12 @@ define([
       'portfolio/:id': 'portfolioDetail',
       'portfolio': 'index',
 
+      'project/:id/devices/:deviceId': 'projectDevices',
+      'project/:id/devices': 'projectDevices',
+      'project/:id/issues/:issueId': 'projectIssues',
+      'project/:id/issues': 'projectIssues',
       'project/:id/edit': 'projectEdit',
       'project/:id': 'projectDetail',
-      'project/:id/devices': 'projectDevices',
-      'project/:id/devices/:deviceId': 'projectDevices',
-      'project/:id/issues': 'projectIssues',
-      'project/:id/issues/:issueId': 'projectIssues',
 
       'profile': 'profile',
 
