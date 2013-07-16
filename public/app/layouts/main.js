@@ -99,18 +99,14 @@ define([
 
     showProjectCreate: function(){
       this.mainContent.show( new ProjectCreatorLayout({
-        collection: this.app.projects,
+        collection: this.app.alignedProjects,
         user: this.app.currentUser
       }));
     },
 
-    showProjectEdit: function(project){
-      if (_.isString(project)) {
-        project = this.app.projects.push({project_label: project});
-      }
-
+    showProjectEdit: function(id){
       this.mainContent.show( new ProjectEditorLayout({
-        model: project,
+        model: this.app.alignedProjects.getOrCreate(id),
         user: this.app.currentUser
       }));
     },

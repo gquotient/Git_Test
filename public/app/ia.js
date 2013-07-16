@@ -40,6 +40,8 @@ define([
   ia.currentTeam = ia.currentUser.get('currentTeam');
 
   ia.projects = new Project.Collection( JSON.parse($('#bootstrapProjects').html()) );
+  ia.alignedProjects = new Project.Collection();
+
   ia.portfolios = new Portfolio.Collection( JSON.parse($('#bootstrapPortfolios').html()), {
     projects: ia.projects,
     comparator: 'display_name'

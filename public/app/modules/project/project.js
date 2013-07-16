@@ -264,7 +264,11 @@ define([
 
   Project.Collection = Backbone.Collection.extend({
     model: Project.Model,
-    url: '/api/projects'
+    url: '/api/projects',
+
+    getOrCreate: function(label){
+      return this.get(label) || this.push({project_label: label});
+    }
   });
 
   Project.views.DataListItem = Marionette.ItemView.extend({

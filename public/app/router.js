@@ -46,17 +46,16 @@ define([
       this.mainLayout.showPortfolio(portfolio);
     },
 
-    findProject: function(id){
-      return ia.projects.get(id);
-    },
-
     projectCreate: function(){
       this.mainLayout.showProjectCreate();
     },
 
     projectEdit: function(id){
-      var project = this.findProject(id);
-      this.mainLayout.showProjectEdit(project || id);
+      this.mainLayout.showProjectEdit(id);
+    },
+
+    findProject: function(id){
+      return ia.projects.get(id);
     },
 
     projectDetail: function(id){
