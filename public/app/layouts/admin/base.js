@@ -5,7 +5,7 @@ define([
   'backbone.marionette',
   'handlebars',
 
-  'hbs!layouts/adminLayouts/templates/base'
+  'hbs!layouts/admin/templates/base'
 ], function(
   _,
   $,
