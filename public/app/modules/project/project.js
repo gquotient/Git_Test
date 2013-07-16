@@ -535,6 +535,7 @@ define([
         myLayer.layer.setOpacity(0);
       } else {
         myLayer.active = true;
+        myLayer.layer.redraw();
         myLayer.layer.setOpacity(0.5);
       }
     },
@@ -577,7 +578,10 @@ define([
       // Update layers
       var fetchLayerTiles = function(){
         _.each(that.layers, function(layer){
-          layer.layer.redraw();
+          // Only bother refetching if it's currently visible
+          if (layer.active) {
+            layer.layer.redraw();
+          }
         });
       };
 
