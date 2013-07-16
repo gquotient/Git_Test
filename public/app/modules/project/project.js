@@ -313,9 +313,6 @@ define([
     },
     onShow: function(){
       this.model.fetchKpis().done(this.render);
-    },
-    initialize: function(){
-
     }
   });
 
