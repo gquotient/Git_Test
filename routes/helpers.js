@@ -5,7 +5,10 @@ module.exports = function(app){
   return {
     ensureAuthenticated: function (req, res, next) {
       if (req.isAuthenticated()) { return next(); }
-      else {
+
+      if (req.url.split('/')[1] === 'api') {
+        res.send(401, 'Not Authorized');
+      } else {
         if(req.url !== '/reset' || req.url !== '/login') { req.session.redirectUrl = req.url; }
         res.redirect('/login');
       }

@@ -155,22 +155,30 @@ function(
       };
 
       // Loop through each trace
-      _.each(data.response, function(res, index){
-        var data = res.data;
+      _.each(data, function(trace, index){
+        var seriesData = [];
 
-        // Loop through each point on the trace
-        _.each(data, function(point, index){
-          // Adjust time to milliseconds
-          point[0] = point[0] * 1000;
-          // Round watts to integers
-          point[1] = roundNumber(point[1], 2);
-        });
+        if (trace && trace.data) {
+          // Loop through each point on the trace
+          _.each(trace.data, function(point, index){
+            // Adjust time to milliseconds
+            point[0] = point[0] * 1000;
+            // Round watts to integers
+            point[1] = roundNumber(point[1], 0);
+          });
+
+          seriesData = trace.data;
+        } else if (trace && trace.errmsg) {
+          console.warn(trace.errmsg);
+        } else {
+          console.warn('Something bad happend', this);
+        }
 
         // Push updated trace to series array
         series.push({
-          data: res.data
+          data: seriesData
         });
-      });
+      }, this);
 
       // Set the data on the model
       this.set('series', series);
@@ -192,7 +200,7 @@ function(
         }
       })
       .done(function(data){
-        that.parse(data);
+        that.parse(data.response);
       });
     },
     initialize: function(options){
