@@ -709,6 +709,12 @@ define([
       type: 'handlebars',
       template: kpisTemplate
     },
+    events: {
+      'click a.viewDevices': function(event){
+        event.preventDefault();
+        Backbone.trigger('click:device');
+      }
+    },
     initialize: function(){
       this.model.fetchKpis();
       this.listenTo(this.model, 'change:kpis', this.render);
