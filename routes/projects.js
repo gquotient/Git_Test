@@ -8,14 +8,39 @@ module.exports = function(app){
   , makeRequest = helpers.makeRequest
   , separateProperties = helpers.separateProperties;
 
+  function combineProperties(obj, callback){
+    obj = _.extend({}, obj.properties, _.omit(obj, 'properties'));
+
+    if (_.isFunction(callback)) {
+      callback(obj);
+    }
+
+    return obj;
+  }
+
   //////
   // PROJECTS
   //////
 
   app.get('/api/projects',
+    makeRequest({
+      path: '/res/projects',
+      setup: function(req, res, next){
+        _.defaults(req.query, {
+          project_label: 'ALL',
+          index_name: 'StagedProjects'
+        });
+
+        next(req, res);
+      },
+      translate: function(body, next){
+        next(_.map(body, combineProperties));
+      }
+    }));
+
+  app.get('/api/projects/:label',
     function(req, res){
-      var project_label = req.query.project_label,
-        project = {devices: [], rels: []};
+      var project_label = req.params.label;
 
       if (project_label) {
         request({
@@ -24,7 +49,7 @@ module.exports = function(app){
             app.get('modelUrl'),
             'api/project/devices',
             project_label,
-            req.query.index || 'StagedProjects'
+            req.query.index_name || 'StagedProjects'
           ].join('/'),
           headers: {
             currentUser: req.user.email,
@@ -33,6 +58,8 @@ module.exports = function(app){
           }
         },
         function(err, resp, body){
+          var project = {devices: [], rels: []};
+
           if (err) {
             req.flash('error', err.message);
             console.log('error!:', err);
@@ -83,15 +110,10 @@ module.exports = function(app){
 
         next(req, res);
       },
-      translate: function(body, next){
-        next(_.extend({},
-          body.properties,
-          _.omit(body, 'properties')
-        ));
-      }
+      translate: combineProperties
     }));
 
-  app.put('/api/projects', ensureAuthorized(['vendor_admin', 'admin']),
+  app.put('/api/projects/:label', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/projects',
       setup: separateProperties([
@@ -106,11 +128,19 @@ module.exports = function(app){
         'type',
         'kpis'
       ]),
-      translate: function(body, next){
-        next(_.extend({},
-          body.properties,
-          _.omit(body, 'properties')
-        ));
+      translate: combineProperties
+    }));
+
+  app.del('/api/projects/:label', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/projects',
+      setup: function(req, res, next){
+        _.extend(req.body, {
+          project_label: req.params.label,
+          verify: 'delete'
+        });
+
+        next(req, res);
       }
     }));
 };

@@ -11,11 +11,12 @@ define([
   'team',
   'organization',
 
-  'layouts/adminLayouts/users',
-  'layouts/adminLayouts/teams',
-  'layouts/adminLayouts/alarmManagement',
+  'layouts/admin/users',
+  'layouts/admin/teams',
+  'layouts/admin/projects',
+  'layouts/admin/alarmManagement',
 
-  'hbs!layouts/adminLayouts/templates/admin'
+  'hbs!layouts/templates/admin'
 ], function(
   _,
   $,
@@ -31,6 +32,7 @@ define([
 
   UsersLayout,
   TeamsLayout,
+  ProjectsLayout,
   AlarmManagementTemplate,
 
   adminTemplate
@@ -45,6 +47,10 @@ define([
       'teams': {
         title: 'Teams',
         trigger: 'show:teams'
+      },
+      'projects': {
+        title: 'Projects',
+        trigger: 'show:projects'
       },
       'all_users': {
         title: 'All Users',
@@ -108,6 +114,18 @@ define([
       return teamAdminLayout;
     },
 
+    showProjects: function(){
+      var layout = new ProjectsLayout({
+        collection: ia.alignedProjects,
+        user: ia.currentUser
+      });
+
+      this.pageContent.show(layout);
+      this.highlightLink('projects');
+
+      return layout;
+    },
+
     showAlarms: function(){
 
     },
@@ -137,6 +155,7 @@ define([
 
       this.listenTo(Backbone, 'show:users', this.showUsers);
       this.listenTo(Backbone, 'show:teams', this.showTeams);
+      this.listenTo(Backbone, 'show:projects', this.showProjects);
 
     }
   });

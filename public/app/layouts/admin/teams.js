@@ -8,12 +8,10 @@ define([
   'ia',
 
   'team',
-  // 'team',
   // 'organization',
 
   './base',
-  'layouts/adminLayouts/teamManagement'
-
+  'layouts/admin/teamManagement'
 ], function(
   _,
   $,

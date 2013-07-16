@@ -60,22 +60,16 @@ define([
     },
 
     initialize: function(options){
-      var equipment = new Equipment.Collection(),
-        model = options.model;
+      var model = this.model = options.model,
+        equipment = new Equipment.Collection();
 
-      if (_.isString(model)) {
-        model = new Project.Model({project_label: model});
-      }
-
-      this.model = model;
       this.$doc = $(document);
 
       // Fetch equipment and project from server.
       equipment.fetch().done(function(){
         model.fetch({
           data: {
-            project_label: model.id,
-            index: 'AlignedProjects/no'
+            index_name: 'AlignedProjects/no'
           },
           equipment: equipment
         });
