@@ -2,15 +2,15 @@
   <div class="name">{{ display_name }}</div>
   <div class="resource">
       <div class="irradiance">
-        <div class="indicator" style="width: {{ percent kpis.irradiance_now 1000 }} %"></div>
+        <div class="indicator" style="width: {{ percent kpis.irradiance 1000 }}%"></div>
       </div>
     <div class="power">
-      <div class="indicator" style="width:{{ percent kpis.power_now kpis.ac_capacity }}%"></div>
+      <div class="indicator" style="width:{{ percent kpis.power ac_capacity null 0 }}%"></div>
     </div>
   </div>
-  
+
   <div class="performanceRatio">
-    <span class="value">{{ percent kpis.power_now kpis.ac_capacity }}</span>
+    <span class="value">{{ roundNumber kpis.dpi 0 }}</span>
     <span class="unit">%</span>
   </div>
 
@@ -39,9 +39,9 @@
       <span class="value"><%= Math.round(p.get('dpi_now')) %></span>
       <span class="unit">%</span>
     <% } %>
-  </div>  
+  </div>
   <% } %>
-  
+
   <div class="alarm <% if( p.get('alarm') && p.get('alarm').alarm['acknowledged?'] ){ %><%= 'acknowledged' %><%} else if(p.get('alarm') && !p.get('alarm').alarm['acknowledged?']){ %><%= 'unacknowledged' %><% } %>">
     <span class="icon <% if( p.get('alarm') && !p.get('alarm').alarm.type) { %><%= p.get('alarm').alarm.name %><% } else if( p.get('alarm') ) { %><%= p.get('alarm').alarm.type %><% } %>">
       <% if( p.get('alarm') && !p.get('alarm').alarm.type) { %>

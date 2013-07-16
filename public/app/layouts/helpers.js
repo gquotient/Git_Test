@@ -34,15 +34,18 @@ function(
   });
 
   Handlebars.registerHelper('percent', function(value, max, peak, floor){
-    var percent = value / max * 100;
+    var percent = value / max * 100,
+      result = (typeof peak === 'number') ?
+                Math.min(percent, peak)
+                :
+                (typeof floor === 'number') ?
+                  Math.max(percent, floor)
+                  :
+                  percent;
 
-    return (typeof peak === 'number') ?
-      Math.min(percent, peak)
-      :
-      (typeof floor === 'number') ?
-        Math.max(percent, floor)
-        :
-        percent;
+    // Returning 0 is probably not the best action, but it makes some things
+    // look less messed up for now
+    return (!isNaN(result)) ? result : 0;
   });
 
   Handlebars.registerHelper('equal', function(argLeft, argRight, options) {
