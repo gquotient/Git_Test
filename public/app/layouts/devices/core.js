@@ -8,7 +8,7 @@ define([
   'device',
   'chart',
 
-  'hbs!layouts/devices/templates/basic'
+  'hbs!layouts/devices/templates/core'
 ], function(
   $,
   _,
@@ -19,12 +19,12 @@ define([
   Device,
   Chart,
 
-  BasicTemplate
+  CoreTemplate
 ){
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',
-      template: BasicTemplate
+      template: CoreTemplate
     },
 
     regions: {

@@ -191,6 +191,10 @@ define([
 
         Backbone.history.navigate('/project/' + this.model.id + '/issues' + issueId, true);
       });
+
+      this.listenTo(Backbone, 'click:device', function(){
+        Backbone.history.navigate('/project/' + this.model.id + '/devices', true);
+      });
     }
   });
 });
