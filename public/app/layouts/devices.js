@@ -68,7 +68,7 @@ define([
       this.devicesTree = new Device.views.NavigationList({collection: new Device.Collection()});
 
       // Fetch project to get devices
-      this.model.fetch({data: {project_label: this.model.id}}).done(function(){
+      this.model.fetch().done(function(){
         // Update collection once data is retrieved
         that.devicesTree.collection.reset(that.model.devices.where({devtype: 'Inverter'}));
 
