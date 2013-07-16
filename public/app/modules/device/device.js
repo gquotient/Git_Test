@@ -98,12 +98,18 @@ define([
         delete renderings[label];
       }
 
-      this[save ? 'save' : 'set']({renderings: renderings});
+      this.set({renderings: renderings});
+
+      if (save) {
+        this.lazySave();
+      }
 
       if (evnt) {
         this.trigger(evnt, this);
       }
-    }
+    },
+
+    lazySave: _.debounce(Backbone.Model.prototype.save, 1000)
   });
 
   Device.Collection = Backbone.Collection.extend({
