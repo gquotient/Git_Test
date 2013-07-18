@@ -187,54 +187,54 @@ table.basic {
   padding: 0;
   border: borderBasicDark;
   thead {
-  height: 24px;
-  background: colorBGDarkGrey;
-  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
-  background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-  border-top: borderBasicMedium;
-  border-bottom: borderBasicDark;
-  tr {
-    th {
-    line-height: 24px;
-    padding: 0 6px;
-    font-weight: bold;
-    text-align: left;
-    text-shadow: 0 1px 0 #222;
-    &:first-child {
-      //border-left: none;
+    height: 24px;
+    background: colorBGDarkGrey;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
+    background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+    border-top: borderBasicMedium;
+    border-bottom: borderBasicDark;
+    tr {
+      th {
+        line-height: 24px;
+        padding: 0 6px;
+        font-weight: bold;
+        text-align: left;
+        text-shadow: 0 1px 0 #222;
+        &:first-child {
+          //border-left: none;
+        }
+        &:last-child {
+          //border-right: none;
+        }
+      }
     }
-    &:last-child {
-      //border-right: none;
-    }
-    }
-  }
   }
   tbody {
-  color: #aaa;
-  tr {
-    border-bottom: 1px solid #202020;
-    &:nth-child(odd) {
-    background-color: colorBGMediumGrey;
+    color: #aaa;
+    tr {
+      border-bottom: 1px solid #202020;
+      &:nth-child(odd) {
+        background-color: colorBGMediumGrey;
+      }
+      &:hover {
+        background-color: colorBGLightGrey;
+      }
+      &:last-child {
+        border-bottom: none;
+      }
+      td {
+        padding: 3px 6px;
+        &.label {
+          font-weight: bold;
+        }
+      }
     }
-    &:hover {
-    background-color: colorBGLightGrey;
-    }
-    &:last-child {
-    border-bottom: none;
-    }
-    td {
-    padding: 3px 6px;
-    &.label {
-      font-weight: bold;
-    }
-    }
-  }
   }
   input[type="checkbox"],
   input[type="radio"] {
-  padding: 0;
-  margin: 0;
-  vertical-align: middle;
+    padding: 0;
+    margin: 0;
+    vertical-align: middle;
   }
 
   input:disabled {
