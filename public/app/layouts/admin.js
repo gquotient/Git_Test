@@ -11,7 +11,10 @@ define([
   'team',
   'organization',
 
-  'layouts/teamManagement',
+  'layouts/admin/users',
+  'layouts/admin/teams',
+  'layouts/admin/projects',
+  'layouts/admin/alarmManagement',
 
   'hbs!layouts/templates/admin'
 ], function(
@@ -27,7 +30,10 @@ define([
   Team,
   Organization,
 
-  TeamManagementLayout,
+  UsersLayout,
+  TeamsLayout,
+  ProjectsLayout,
+  AlarmManagementTemplate,
 
   adminTemplate
 ){
@@ -35,37 +41,31 @@ define([
   var config = {
     views: {
       'users': {
-        collection: User.Collection,
-        view: User.views.EditTable,
-        title: 'Users'
+        title: 'Users',
+        trigger: 'show:users'
       },
       'teams': {
-        collection: Team.collections.Teams,
-        view: Team.views.EditTable,
         title: 'Teams',
-        detail: function(options){
-          var layout = new TeamManagementLayout({ team: options.model });
-          return layout;
-        }
+        trigger: 'show:teams'
+      },
+      'projects': {
+        title: 'Projects',
+        trigger: 'show:projects'
       },
       'all_users': {
-        collection: User.AllUsers,
-        view: User.views.VendorEditTable,
-        title: 'All Users'
+        title: 'All Users',
+        trigger: 'show:allUsers'
       },
       'all_teams': {
-        collection: Team.collections.AllTeams,
-        view: Team.views.EditAllTable,
         title: 'All Teams',
-        detail: function(options){
-          var layout = new TeamManagementLayout({ team: options.model });
-          return layout;
-        }
+        trigger: 'show:allTeams'
       },
       'organizations': {
-        collection: Organization.collections.Organizations,
-        view: Organization.views.EditTable,
-        title: 'All Organizations'
+        title: 'All Organizations',
+        trigger: 'show:allOrganizations'
+      },
+      'alarms': {
+
       }
     }
   };
@@ -86,43 +86,48 @@ define([
       id: 'page-admin'
     },
     regions: {
-      pageContent: '.pageContent',
+      pageContent: '.column_right',
       pageNav: '.column_left'
     },
 
-    getView: function(page){
-      var
-        viewConfig = config.views[page],
-        collection = new viewConfig.collection(),
-        view = new viewConfig.view({collection: collection})
-      ;
-
-      collection.fetch();
-
-      return view;
-    },
-
-    renderView: function(view){
-      var myView = this.getView(view);
-
+    highlightLink: function(view){
       // Set active nav element
       this.$el.find('.nav_content li').removeClass('active');
       this.$el.find('.nav_content li.' + view).addClass('active');
-
-      // Display view
-      this.pageContent.show(myView);
-
-      // Update history
-      Backbone.history.navigate('/admin/' + view);
     },
 
-    renderDetailView: function(options){
-      var viewConfig = config.views[options.page];
-      this.pageContent.show( viewConfig.detail(options) );
+    showUsers: function(){
+      var userAdminLayout = new UsersLayout();
+      this.pageContent.show(userAdminLayout);
+
+      this.highlightLink('users');
+
+      return userAdminLayout;
     },
 
-    onShow: function(){
-      this.renderView(this.initialView, this.page_id);
+    showTeams: function(){
+      var teamAdminLayout = new TeamsLayout();
+      this.pageContent.show(teamAdminLayout);
+
+      this.highlightLink('teams');
+
+      return teamAdminLayout;
+    },
+
+    showProjects: function(){
+      var layout = new ProjectsLayout({
+        collection: ia.alignedProjects,
+        user: ia.currentUser
+      });
+
+      this.pageContent.show(layout);
+      this.highlightLink('projects');
+
+      return layout;
+    },
+
+    showAlarms: function(){
+
     },
 
     events: {
@@ -132,28 +137,26 @@ define([
         // This seems kind of hacky, but (shrug)
         var route = event.target.hash.replace('#', '');
 
-        // Build view
-        this.renderView(route);
-
-        // Keep track of current view.
-        this.view = route;
+        Backbone.trigger(config.views[route].trigger);
       }
     },
 
     initialize: function(options){
-      this.view = this.initialView = options.initialView || 'users';
 
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
         display_name: 'Admin'
       });
 
-      this.detail = this.options.detail;
+      // this.listenTo(Backbone, 'detail', function(model){
+      //   this.renderDetailView({ model: model, page: this.view });
+      //   Backbone.history.navigate('/admin/'+ this.view + '/' + model.id);
+      // }, this);
 
-      this.listenTo(Backbone, 'detail', function(model){
-        this.renderDetailView({ model: model, page: this.view });
-        Backbone.history.navigate('/admin/'+ this.view + '/' + model.id);
-      }, this);
+      this.listenTo(Backbone, 'show:users', this.showUsers);
+      this.listenTo(Backbone, 'show:teams', this.showTeams);
+      this.listenTo(Backbone, 'show:projects', this.showProjects);
+
     }
   });
 

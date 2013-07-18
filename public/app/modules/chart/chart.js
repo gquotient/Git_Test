@@ -143,28 +143,54 @@ function(
   Chart.models.timeSeries = Backbone.Model.extend({
     url: '/api/timeline',
     parse: function(data){
-      // console.log('parse', data);
+      /*
+        This is pretty simple minded at the moment and assumes duples of points on
+        individual traces
+      */
       var series = [];
 
-      _.each(data.response, function(res, index){
-        var data = res.data;
+      var roundNumber = function(num, dec) {
+        var result = (num !== null)?Math.round(num*Math.pow(10,dec))/Math.pow(10,dec):null;
+        return result;
+      };
 
-        //Adjust time to milliseconds
-        _.each(data, function(point, index){
-          point[0] = point[0] * 1000;
-        });
+      // Loop through each trace
+      _.each(data, function(trace, index){
+        var seriesData = [];
 
+        if (trace && trace.data) {
+          // Loop through each point on the trace
+          _.each(trace.data, function(point, index){
+            // Adjust time to milliseconds
+            point[0] = point[0] * 1000;
+            // Round watts to integers
+            point[1] = roundNumber(point[1], 0);
+          });
+
+          seriesData = trace.data;
+        } else if (trace && trace.errmsg) {
+          console.warn(trace.errmsg);
+        } else {
+          console.warn('Something bad happend', this);
+        }
+
+        // Push updated trace to series array
         series.push({
-          data: res.data
+          data: seriesData
         });
-      });
+      }, this);
 
+      // Set the data on the model
       this.set('series', series);
     },
-    getData: function(){
+    fetch: function(){
+      /*
+        Opted to use a custom data fetch method in lieu of the
+        default backbone fetch() to have a little more control
+      */
       var that = this;
 
-      $.ajax({
+      return $.ajax({
         url: this.url,
         cache: false,
         type: 'POST',
@@ -174,8 +200,7 @@ function(
         }
       })
       .done(function(data){
-        that.trigger('data:done');
-        that.parse(data);
+        that.parse(data.response);
       });
     },
     initialize: function(options){
@@ -341,7 +366,7 @@ function(
     },
     render: function(){
       //Fetch data
-      this.model.getData();
+      this.model.fetch();
     },
     onClose: function(){
       // Clear the auto update when view is closed
@@ -383,7 +408,7 @@ function(
       });
 
       var fetch = function(){
-        that.model.getData();
+        that.model.fetch();
       };
 
       // Using set timeout for now so it only updates once

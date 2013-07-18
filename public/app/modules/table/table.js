@@ -65,6 +65,10 @@ define([
       }
     },
 
+    onShowCalled: function(){
+      this.update();
+    },
+
     addRow: function(row){
       var index;
 
@@ -75,10 +79,7 @@ define([
       }
 
       this._rows.splice(index, 0, row);
-
-      if (this.table) {
-        this.table.render();
-      }
+      this.update();
     },
 
     removeRow: function(row){
@@ -86,10 +87,7 @@ define([
 
       if (index !== -1) {
         this._rows.splice(index, 1);
-      }
-
-      if (this.table) {
-        this.table.render();
+        this.update();
       }
     },
 
@@ -100,21 +98,25 @@ define([
         this.collection.each(this.addRow, this);
       }
 
-      if (this.table) {
-        this.table.render();
-      }
+      this.renderTable();
     },
 
-    onShowCalled: function(){
-      if (this.table) {
+    update: function(){
+      if (this._rows.length === 0) {
+        this.closeTable();
+
+      } else if (this.table) {
         this.table.render();
+
+      } else {
+        this.renderTable();
       }
     },
 
     render: function(){
       this.isClosed = false;
       this.triggerMethod('before:render', this);
-      this.renderTable();
+      this.resetRows();
       this.triggerMethod('render', this);
 
       return this;
@@ -122,7 +124,6 @@ define([
 
     renderTable: function(){
       this.closeTable();
-      this.resetRows();
 
       if (this._rows.length > 0) {
         this.$el.handsontable(_.extend({
