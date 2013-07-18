@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "dependencies": {
     "es5-shim": "latest",
-    "underscore": "~1.4.x",
+    "underscore": "latest",
     "requirejs": "latest",
     "jquery": "~1.9.x",
     "modernizr": "latest",
@@ -18,8 +18,7 @@
     "backbone.marionette.handlebars": "latest",
     "backbone.babysitter": "latest",
     "backbone.wreqr": "latest",
-    "underscore": "latest",
-    "leaflet": "latest",
+    "leaflet": "0.6.2",
     "paper": "latest",
     "jquery-mousewheel": "latest",
     "highcharts": "latest",
