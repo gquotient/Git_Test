@@ -146,7 +146,11 @@ define([
 
       this.issues.show(issueView);
 
+
+
       issueView.collection.fetch();
+
+      console.log(issueView);
 
       // Build kpi view
       var kpisView = new Project.views.Kpis({model: this.model});

@@ -80,7 +80,7 @@ define([
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
 
-      this.issues = new Issue.Collection({projectId: this.id});
+      this.issues = new Issue.Collection([], {projectId: this.id});
     },
 
     fetchKpis: function(){

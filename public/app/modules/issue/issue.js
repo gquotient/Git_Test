@@ -32,6 +32,7 @@ function(
       return response.alarms;
     },
     initialize: function(options){
+      console.log(options);
       this.url = '/api/alarms/active/' + options.projectId;
     }
   });
