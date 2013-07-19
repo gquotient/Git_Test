@@ -48,7 +48,7 @@ define([
       this.allUsersView = new User.views.listView({ collection: this.allUsers });
 
       this.currentProjectsView = new Team.views.TeamProjectDetail({ model: this.team, collection: this.team.projects });
-      this.allProjectsView = new Project.views.listView({ collection: this.allProjects });
+      this.allProjectsView = new Project.views.List({ collection: this.allProjects });
 
       this.listenTo(this.currentMembersView, 'itemview:select:user', function(triggerArgs){
         this.team.removeUser(triggerArgs.model);

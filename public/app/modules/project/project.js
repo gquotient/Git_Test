@@ -290,7 +290,7 @@ define([
     }
   });
 
-  Project.views.itemView = Backbone.Marionette.ItemView.extend({
+  Project.views.Item = Backbone.Marionette.ItemView.extend({
     template: {
       type: 'handlebars',
       template: itemTemplate
@@ -301,8 +301,8 @@ define([
     tagName: 'li'
   });
 
-  Project.views.listView = Backbone.Marionette.CollectionView.extend({
-    itemView: Project.views.itemView,
+  Project.views.List = Backbone.Marionette.CollectionView.extend({
+    itemView: Project.views.Item,
     tagName: 'ul'
   });
 

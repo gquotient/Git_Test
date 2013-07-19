@@ -156,7 +156,7 @@ module.exports = function(app){
         if(req.user.org_label === teamId[0] || req.user.role === 'vendor_admin'){
           next(req, res);
         } else {
-          console.log('You\'re not allowed to look at that team.');
+          res.send(403, 'Not authorized to see this team.');
         }
       },
       translate: function(data, next){

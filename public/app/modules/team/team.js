@@ -91,7 +91,7 @@ define(
             team_label: this.get('team_label')
           }
         });
-      },      
+      },
       initialize: function(){
         this.users = new User.TeamUsers({team: this});
         this.projects = new Project.TeamProjects({team: this});
@@ -141,7 +141,7 @@ define(
         type: 'handlebars'
       },
       itemViewContainer: '#projects',
-      itemView: Project.views.itemView
+      itemView: Project.views.Item
     });
 
     // Table CompositeView extended from form
