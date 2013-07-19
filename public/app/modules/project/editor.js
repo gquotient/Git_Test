@@ -123,7 +123,7 @@ define([
             match = re.exec(input),
             times = match && parseInt(match[0], 10);
 
-          this.times = times > 1 ? times : 1;
+          this.times = times < 1 ? 1 : times > 100 ? 100 : times;
 
           return input.replace(re, '');
         },

@@ -4,10 +4,9 @@
   "version": "0.0.1",
   "dependencies": {
     "es5-shim": "latest",
-    "lodash": "latest",
     "underscore": "latest",
     "requirejs": "latest",
-    "jquery": "latest",
+    "jquery": "~1.9.x",
     "modernizr": "latest",
     "backbone": "latest",
     "requirejs-text": "latest",
@@ -19,11 +18,10 @@
     "backbone.marionette.handlebars": "latest",
     "backbone.babysitter": "latest",
     "backbone.wreqr": "latest",
-    "underscore": "latest",
-    "leaflet": "latest",
+    "leaflet": "0.6.2",
     "paper": "latest",
     "jquery-mousewheel": "latest",
     "highcharts": "latest",
-    "handsontable": "latest"
+    "handsontable": "git://github.com/ianmetcalf/jquery-handsontable.git#master"
   }
 }

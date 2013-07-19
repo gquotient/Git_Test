@@ -73,7 +73,7 @@ module.exports = function(app){
     });
 
   /* Logout */
-  app.get('/logout',
+  app.get('/logout', ensureAuthenticated,
     function(req, res){
       DrakerIA6Strategy.logout(req, res, app, function(req, res, post_res) {
       });

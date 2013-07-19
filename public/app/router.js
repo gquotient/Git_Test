@@ -46,17 +46,12 @@ define([
       this.mainLayout.showPortfolio(portfolio);
     },
 
+    projectEdit: function(id){
+      this.mainLayout.showProjectEdit(id);
+    },
+
     findProject: function(id){
       return ia.projects.get(id);
-    },
-
-    projectCreate: function(){
-      this.mainLayout.showProjectCreate();
-    },
-
-    projectEdit: function(id){
-      var project = this.findProject(id);
-      this.mainLayout.showProjectEdit(project || id);
     },
 
     projectDetail: function(id){
@@ -78,8 +73,31 @@ define([
       this.mainLayout.showProfile();
     },
 
-    admin: function(page, detail){
-      this.mainLayout.showAdmin(page, detail);
+    admin: function(){
+      this.usersAdmin();
+    },
+
+    usersAdmin: function(){
+      this.mainLayout.showAdmin().showUsers();
+    },
+
+    teamsAdmin: function(){
+      this.mainLayout.showAdmin().showTeams();
+    },
+
+    projectsAdmin: function(){
+      this.mainLayout.showAdmin().showProjects();
+    },
+
+    teamAdminDetail: function(teamID){
+      var teamLayout = this.mainLayout.showAdmin().showTeams();
+      teamLayout.listenTo(teamLayout.collection, 'reset', function(){
+        teamLayout.showTeam(teamLayout.collection.get(teamID));
+      });
+    },
+
+    alarmAdmin: function(){
+      // this.mainLayout.showAdmin().showAlarms();
     },
 
     initialize: function(){
@@ -98,19 +116,21 @@ define([
       'portfolio/:id': 'portfolioDetail',
       'portfolio': 'index',
 
-      'project/create': 'projectCreate',
+      'project/:id/devices/:deviceId': 'projectDevices',
+      'project/:id/devices': 'projectDevices',
+      'project/:id/issues/:issueId': 'projectIssues',
+      'project/:id/issues': 'projectIssues',
       'project/:id/edit': 'projectEdit',
       'project/:id': 'projectDetail',
-      'project/:id/devices': 'projectDevices',
-      'project/:id/devices/:deviceId': 'projectDevices',
-      'project/:id/issues': 'projectIssues',
-      'project/:id/issues/:issueId': 'projectIssues',
 
       'profile': 'profile',
 
       //Admin Routes
       'admin': 'admin',
-      'admin/:page': 'admin'
+      'admin/users': 'usersAdmin',
+      'admin/teams': 'teamsAdmin',
+      'admin/projects': 'projectsAdmin',
+      'admin/teams/:id': 'teamAdminDetail'
     }
   });
 

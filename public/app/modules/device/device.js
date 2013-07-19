@@ -98,12 +98,18 @@ define([
         delete renderings[label];
       }
 
-      this[save ? 'save' : 'set']({renderings: renderings});
+      this.set({renderings: renderings});
+
+      if (save) {
+        this.lazySave();
+      }
 
       if (evnt) {
         this.trigger(evnt, this);
       }
-    }
+    },
+
+    lazySave: _.debounce(Backbone.Model.prototype.save, 1000)
   });
 
   Device.Collection = Backbone.Collection.extend({
@@ -183,7 +189,7 @@ define([
     initialize: function(options){
       // Add the dev type for targeted styles
       this.$el.addClass(options.model.get('devtype').replace(' ', '_'));
-      this.$el.attr('id', this.model.id);
+      this.$el.attr('id', this.model.get('graph_key'));
     }
   });
 

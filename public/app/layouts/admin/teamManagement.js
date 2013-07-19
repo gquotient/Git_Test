@@ -7,7 +7,7 @@ define([
   'user',
   'project',
 
-  'hbs!layouts/templates/teamManagement'
+  'hbs!layouts/admin/templates/teamManagement'
 ], function(
   Backbone,
   Marionette,
@@ -39,6 +39,7 @@ define([
 
     },
     initialize: function(){
+
       this.model = this.team = this.options.team;
       this.allUsers = new User.OrganizationUsers({ org_label: this.team.get('org_label') });
       this.allProjects = new Project.OrganizationProjects();
@@ -59,13 +60,13 @@ define([
 
       this.listenTo(this.currentProjectsView, 'itemview:select:project', function(triggerArgs){
         if(this.team.get('team_label') !== 'ADMIN'){
-          this.team.removeProject(triggerArgs.model);        
+          this.team.removeProject(triggerArgs.model);
         }
       });
 
       this.listenTo(this.allProjectsView, 'itemview:select:project', function(triggerArgs){
         if(this.team.get('team_label') !== 'ADMIN'){
-          this.team.addProject(triggerArgs.model);        
+          this.team.addProject(triggerArgs.model);
         }
       });
 
@@ -73,6 +74,8 @@ define([
       this.allProjects.fetch();
       this.team.getUsers();
       this.team.getProjects();
+      Backbone.history.navigate('/admin/teams/' + this.team.id);
+
     }
   });
 

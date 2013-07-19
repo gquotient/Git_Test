@@ -21,7 +21,7 @@ define([
 
     collectionEvents: {
       'change': function(model) {
-        model.save();
+        model.lazySave();
       }
     },
 

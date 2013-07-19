@@ -1,5 +1,6 @@
 define([
   'jquery',
+  'underscore',
   'backbone',
   'backbone.marionette',
   'handlebars',
@@ -10,10 +11,9 @@ define([
   'layouts/navigation',
   'layouts/portfolioDetail',
   'layouts/projectDetail',
-  'layouts/projectIssues',
-  'layouts/projectDevices',
+  'layouts/issues',
+  'layouts/devices',
   'layouts/portfolioDashboard',
-  'layouts/projectCreator',
   'layouts/projectEditor',
   'layouts/profile',
   'layouts/admin',
@@ -21,6 +21,7 @@ define([
   'hbs!layouts/templates/index'
 ], function(
   $,
+  _,
   Backbone,
   Marionette,
   Handlebars,
@@ -31,10 +32,9 @@ define([
   Navigation,
   PortfolioDetailLayout,
   ProjectDetailLayout,
-  ProjectIssuesLayout,
-  ProjectDevicesLayout,
+  IssuesLayout,
+  DevicesLayout,
   PortfolioDashboardLayout,
-  ProjectCreatorLayout,
   ProjectEditorLayout,
   ProfileLayout,
   AdminLayout,
@@ -95,16 +95,9 @@ define([
       }));
     },
 
-    showProjectCreate: function(){
-      this.mainContent.show( new ProjectCreatorLayout({
-        projects: this.app.projects,
-        user: this.app.currentUser
-      }));
-    },
-
-    showProjectEdit: function(project){
+    showProjectEdit: function(id){
       this.mainContent.show( new ProjectEditorLayout({
-        model: project,
+        model: this.app.alignedProjects.getOrCreate(id),
         user: this.app.currentUser
       }));
     },
@@ -116,7 +109,7 @@ define([
         model: project
       });
 
-      this.mainContent.show( new ProjectIssuesLayout({
+      this.mainContent.show( new IssuesLayout({
         model: project,
         currentIssue: issueId,
         app: this.app
@@ -130,7 +123,7 @@ define([
         model: project
       });
 
-      this.mainContent.show( new ProjectDevicesLayout({
+      this.mainContent.show( new DevicesLayout({
         model: project,
         currentDevice: deviceId
       }));
@@ -143,10 +136,15 @@ define([
     },
 
     showAdmin: function(page, detail){
-      this.mainContent.show( new AdminLayout({
-        initialView: page,
+      var adminLayout = new AdminLayout({
         currentUser: this.app.currentUser
-      }));
+      });
+
+      this.mainContent.show(
+        adminLayout
+      );
+
+      return adminLayout;
     },
 
     switchTeam: function(teamLabel){

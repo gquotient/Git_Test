@@ -8,19 +8,21 @@ define([
   'css!leaflet.css', //This seems silly but also seems to work, sooooo...
 
   'device',
-  './editor',
   'issue',
+
+  './editor',
 
   'hbs!project/templates/dataList',
   'hbs!project/templates/dataListItem',
-  'hbs!project/templates/dashboardItem',
-  'hbs!project/templates/create',
-  'hbs!project/templates/navigationItemView',
-  'hbs!project/templates/projectList',
+  'hbs!project/templates/dashboard',
   'hbs!project/templates/markerPopUp',
+  'hbs!project/templates/navigationList',
+  'hbs!project/templates/navigationListItem',
   'hbs!project/templates/kpis',
-  'hbs!project/templates/changelog',
-  'hbs!project/templates/item'
+  'hbs!project/templates/adminList',
+  'hbs!project/templates/adminListItem',
+  'hbs!project/templates/adminCreate',
+  'hbs!project/templates/changelog'
 ], function(
   $,
   _,
@@ -31,25 +33,27 @@ define([
   leafletCSS,
 
   Device,
-  Editor,
   Issue,
+
+  Editor,
 
   dataListTemplate,
   dataListItemTemplate,
-  dashboardItemTemplate,
-  createTemplate,
-  navigationItemViewTemplate,
-  navigationListTemplate,
+  dashboardTemplate,
   markerPopUpTemplate,
+  navigationListTemplate,
+  navigationListItemTemplate,
   kpisTemplate,
-  changelogTemplate,
-  itemTemplate
+  adminListTemplate,
+  adminListItemTemplate,
+  adminCreateTemplate,
+  changelogTemplate
 ){
   var Project = { views: {Editor: Editor} };
 
   Project.Model = Backbone.Model.extend({
     idAttribute: 'project_label',
-    url: '/api/projects',
+
     defaults: {
       type: 'project',
       kpis: {
@@ -75,10 +79,6 @@ define([
       this.outgoing = new Device.Collection();
 
       this.issues = new Issue.Collection({projectId: this.id});
-
-      // Convert capacities to watts until model service is updated
-      this.set('ac_capacity', this.get('ac_capacity') * 1000);
-      this.set('dc_capacity', this.get('dc_capacity') * 1000);
     },
 
     fetchKpis: function(){
@@ -182,7 +182,7 @@ define([
 
           for(var source=0, sourcesLength=sources.length; source<=sourcesLength; source++){
             // Add '_300' to the string for now since that's how it is in the ddls
-            if (_.has(ddls, sources[source] + '_300')) {
+            if (_.indexOf(ddls, sources[source]) >= 0) {
               return sources[source];
             }
           }
@@ -266,7 +266,12 @@ define([
   });
 
   Project.Collection = Backbone.Collection.extend({
-    model: Project.Model
+    model: Project.Model,
+    url: '/api/projects',
+
+    getOrCreate: function(label){
+      return this.get(label) || this.push({project_label: label});
+    }
   });
 
   Project.OrganizationProjects = Project.Collection.extend({
@@ -332,12 +337,15 @@ define([
   Project.views.DashboardItemView = Marionette.ItemView.extend({
     template: {
       type: 'handlebars',
-      template: dashboardItemTemplate
+      template: dashboardTemplate
     },
     events: {
       'click': function(){
         Backbone.history.navigate('/project/'+this.model.id, true);
       }
+    },
+    onShow: function(){
+      this.model.fetchKpis().done(this.render);
     }
   });
 
@@ -551,6 +559,7 @@ define([
         myLayer.layer.setOpacity(0);
       } else {
         myLayer.active = true;
+        myLayer.layer.redraw();
         myLayer.layer.setOpacity(0.5);
       }
     },
@@ -593,7 +602,10 @@ define([
       // Update layers
       var fetchLayerTiles = function(){
         _.each(that.layers, function(layer){
-          layer.layer.redraw();
+          // Only bother refetching if it's currently visible
+          if (layer.active) {
+            layer.layer.redraw();
+          }
         });
       };
 
@@ -628,53 +640,12 @@ define([
     }
   });
 
-  Project.views.Create = Marionette.ItemView.extend({
-    tagName: 'form',
-    template: {
-      type: 'handlebars',
-      template: createTemplate
-    },
-
-    ui: {
-      'name': '#name',
-      'label': '#site_label',
-      'latitude': '#latitude',
-      'longitude': '#longitude',
-      'elevation': '#elevation'
-    },
-
-    triggers: {
-      'submit': 'submit',
-      'reset': 'reset'
-    },
-
-    onSubmit: function(){
-      var project = this.model;
-
-      project.save({
-        name: this.ui.name.val().trim(),
-        site_label: this.ui.label.val().replace(/\W|_/g, ''),
-        latitude: parseFloat(this.ui.latitude.val()),
-        longitude: parseFloat(this.ui.longitude.val()),
-        elevation: parseFloat(this.ui.elevation.val()) || 0
-      }).done(_.bind(function(){
-        Backbone.trigger('create:project', project);
-
-        project.log('created project', this.options.user);
-      }, this));
-    },
-
-    onReset: function(){
-      this.render();
-    }
-  });
-
    /* The item view is the view for the individual portfolios in the navigation. */
   Project.views.NavigationItemView = Marionette.ItemView.extend({
     tagName: 'li',
     template: {
       type: 'handlebars',
-      template: navigationItemViewTemplate
+      template: navigationListItemTemplate
     },
     attributes: {
       class: 'nav-item hidden'
@@ -734,9 +705,102 @@ define([
       type: 'handlebars',
       template: kpisTemplate
     },
+    events: {
+      'click a.viewDevices': function(event){
+        event.preventDefault();
+        Backbone.trigger('click:device');
+      }
+    },
     initialize: function(){
       this.model.fetchKpis();
       this.listenTo(this.model, 'change:kpis', this.render);
+    }
+  });
+
+  Project.views.AdminListItem = Marionette.ItemView.extend({
+    tagName: 'tr',
+    template: {
+      type: 'handlebars',
+      template: adminListItemTemplate
+    },
+
+    triggers: {
+      'click button.edit': 'edit',
+      'click button.delete': 'delete'
+    },
+
+    onEdit: function(){
+      Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
+    },
+
+    onDelete: function(){
+      this.model.destroy({
+        wait: true
+      });
+    }
+  });
+
+  Project.views.AdminList = Marionette.CompositeView.extend({
+    tagName: 'form',
+    template: {
+      type: 'handlebars',
+      template: adminListTemplate
+    },
+
+    itemView: Project.views.AdminListItem,
+    itemViewContainer: 'tbody',
+
+    triggers: {
+      'click button.add': 'create'
+    }
+  });
+
+  Project.views.AdminCreate = Marionette.ItemView.extend({
+    tagName: 'form',
+    template: {
+      type: 'handlebars',
+      template: adminCreateTemplate
+    },
+
+    ui: {
+      'name': '#name',
+      'label': '#site_label',
+      'latitude': '#latitude',
+      'longitude': '#longitude',
+      'elevation': '#elevation'
+    },
+
+    triggers: {
+      'submit': 'submit',
+      'reset': 'reset',
+      'click button.cancel': 'cancel'
+    },
+
+    onSubmit: function(){
+      var user = this.options.user;
+
+      this.collection.create({
+        display_name: this.ui.name.val().trim(),
+        site_label: this.ui.label.val().replace(/\W|_/g, ''),
+        latitude: parseFloat(this.ui.latitude.val()),
+        longitude: parseFloat(this.ui.longitude.val()),
+        elevation: parseFloat(this.ui.elevation.val()) || 0
+      }, {
+        wait: true,
+        success: function(model){
+          model.log('created project', user);
+        }
+      });
+
+      this.close();
+    },
+
+    onReset: function(){
+      this.render();
+    },
+
+    onCancel: function(){
+      this.close();
     }
   });
 
