@@ -19,6 +19,9 @@ define([
   'hbs!project/templates/navigationList',
   'hbs!project/templates/navigationListItem',
   'hbs!project/templates/kpis',
+
+  'hbs!project/templates/item',
+
   'hbs!project/templates/adminList',
   'hbs!project/templates/adminListItem',
   'hbs!project/templates/adminCreate',
@@ -44,6 +47,9 @@ define([
   navigationListTemplate,
   navigationListItemTemplate,
   kpisTemplate,
+
+  itemTemplate,
+
   adminListTemplate,
   adminListItemTemplate,
   adminCreateTemplate,
