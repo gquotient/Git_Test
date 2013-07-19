@@ -36,29 +36,6 @@ define([
       overlay: '#overlay'
     },
 
-    delegateEditorEvents: function(){
-      this.undelegateEditorEvents();
-
-      _.each(['keydown', 'keypress', 'mousemove', 'mouseup'], function(eventName){
-        this.$doc.on(eventName + '.editorEvent' + this.cid, function(e){
-          Backbone.trigger('editor:' + eventName, e);
-        });
-      }, this);
-    },
-
-    undelegateEditorEvents: function(){
-      this.$doc.off('.editorEvent' + this.cid);
-    },
-
-    onShow: function(){
-      this.delegateEditorEvents();
-      this.overlay.show(this.editor);
-    },
-
-    onClose: function(){
-      this.undelegateEditorEvents();
-    },
-
     initialize: function(options){
       var model = this.model = options.model,
         equipment = new Equipment.Collection();
@@ -93,6 +70,29 @@ define([
 
         this.content.show( new View(model.toJSON()) );
       });
+    },
+
+    onShow: function(){
+      this.delegateEditorEvents();
+      this.overlay.show(this.editor);
+    },
+
+    onClose: function(){
+      this.undelegateEditorEvents();
+    },
+
+    delegateEditorEvents: function(){
+      this.undelegateEditorEvents();
+
+      _.each(['keydown', 'keypress', 'mousemove', 'mouseup'], function(eventName){
+        this.$doc.on(eventName + '.editorEvent' + this.cid, function(e){
+          Backbone.trigger('editor:' + eventName, e);
+        });
+      }, this);
+    },
+
+    undelegateEditorEvents: function(){
+      this.$doc.off('.editorEvent' + this.cid);
     }
   });
 });
