@@ -280,16 +280,6 @@ define([
     }
   });
 
-  Project.OrganizationProjects = Project.Collection.extend({
-    url: '/api/orgprojects/'
-  });
-
-  Project.TeamProjects = Project.Collection.extend({
-    initialize: function(options){
-      this.url = '/api/teamprojects/' + options.team.id;
-    }
-  });
-
   Project.views.Item = Backbone.Marionette.ItemView.extend({
     template: {
       type: 'handlebars',

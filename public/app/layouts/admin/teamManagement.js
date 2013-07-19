@@ -42,7 +42,7 @@ define([
 
       this.model = this.team = this.options.team;
       this.allUsers = new User.OrganizationUsers({ org_label: this.team.get('org_label') });
-      this.allProjects = new Project.OrganizationProjects();
+      this.allProjects =  new Project.Collection([], { url: '/api/orgprojects/' });
 
       this.currentMembersView = new Team.views.TeamUserDetail({ model: this.team, collection: this.team.users });
       this.allUsersView = new User.views.listView({ collection: this.allUsers });

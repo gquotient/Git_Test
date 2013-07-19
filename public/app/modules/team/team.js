@@ -94,7 +94,7 @@ define(
       },
       initialize: function(){
         this.users = new User.TeamUsers({team: this});
-        this.projects = new Project.TeamProjects({team: this});
+        this.projects = new Project.Collection([],{ url: '/api/teamprojects/' + this.id });
       }
     }, {
       schema: {
