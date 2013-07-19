@@ -37,32 +37,24 @@ define([
     },
 
     initialize: function(options){
-      var model = this.model = options.model,
-        equipment = new Equipment.Collection();
+      var that = this;
 
       this.$doc = $(document);
+      this.equipment = new Equipment.Collection();
 
       // Fetch equipment and project from server.
-      equipment.fetch().done(function(){
-        model.fetch({
+      this.equipment.fetch().done(function(){
+        that.model.fetch({
           data: {
             index_name: 'AlignedProjects/no'
           },
-          equipment: equipment
+          equipment: that.equipment
         });
-      });
-
-      // Create editor view.
-      this.editor = new Project.views.Editor({
-        model: model,
-        equipment: equipment,
-        user: options.user
       });
 
       // Set up view listener.
       this.listenTo(Backbone, 'editor:change:view', function(model){
         var name = model.get('name'),
-
           View = {
             'Change Log': Project.views.ChangeLog,
             'Device Table': Device.views.Table
@@ -73,11 +65,26 @@ define([
     },
 
     onShow: function(){
+      var that = this;
+
+      // Try to get a lock for this project before editing.
+      this.model.setLock().always(function(data, stat){
+        that.overlay.show( new Project.views.Editor({
+          model: that.model,
+          equipment: that.equipment,
+          user: that.options.user,
+          editable: stat === 'success' && JSON.parse(data).locked
+        }));
+      });
+
       this.delegateEditorEvents();
-      this.overlay.show(this.editor);
     },
 
     onClose: function(){
+
+      // Release the lock for this project
+      this.model.setLock(false);
+
       this.undelegateEditorEvents();
     },
 

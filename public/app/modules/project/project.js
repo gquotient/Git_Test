@@ -83,6 +83,16 @@ define([
       this.issues = new Issue.Collection({projectId: this.id});
     },
 
+    setLock: function(lock){
+      return $.ajax(_.result(this, 'url') + '/edit', {
+        type: 'PUT',
+        data: {
+          project_label: this.id,
+          lock: arguments.length > 0 ? lock : true
+        }
+      });
+    },
+
     fetchKpis: function(){
       var that = this;
 

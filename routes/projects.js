@@ -143,4 +143,17 @@ module.exports = function(app){
         next(req, res);
       }
     }));
+
+  app.put('/api/projects/:label/edit', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/edit',
+      setup: function(req, res, next){
+        _.extend(req.body, {
+          project_label: req.params.label,
+          lock: req.body.lock ? 'true' : 'false'
+        });
+
+        next(req, res);
+      }
+    }));
 };
