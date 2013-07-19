@@ -40,24 +40,27 @@ module.exports = function(app){
 
   app.get('/api/projects/:label',
     function(req, res){
-      var project_label = req.params.label;
+      var project_label = req.params.label,
+        index_name = req.query.index_name || 'StagedProjects';
 
-      if (project_label) {
+      if (!project_label) {
+        res.send(301);
+
+      } else {
         request({
           method: 'GET',
           uri: [
             app.get('modelUrl'),
             'api/project/devices',
             project_label,
-            req.query.index_name || 'StagedProjects'
+            index_name
           ].join('/'),
           headers: {
             currentUser: req.user.email,
             access_token: req.user.access_token,
             clientSecret: app.get('clientSecret')
           }
-        },
-        function(err, resp, body){
+        }, function(err, resp, body){
           var project = {devices: [], rels: []};
 
           if (err) {
@@ -65,7 +68,11 @@ module.exports = function(app){
             console.log('error!:', err);
             res.redirect('/ia');
 
-          } else if (resp.statusCode === 200) {
+          } else if (resp.statusCode < 200 || resp.statusCode > 299) {
+            console.log(resp.statusCode, body);
+            res.send(resp.statusCode);
+
+          } else {
             body = JSON.parse(body);
 
             _.each(body.devices, function(node){
@@ -88,9 +95,9 @@ module.exports = function(app){
                 project.rels.push(rel);
               }
             });
-          }
 
-          res.send(project);
+            res.send(project);
+          }
         });
       }
     });
@@ -142,6 +149,11 @@ module.exports = function(app){
 
         next(req, res);
       }
+    }));
+
+  app.post('/api/projects/edit', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/edit'
     }));
 
   app.put('/api/projects/:label/edit', ensureAuthorized(['vendor_admin', 'admin']),

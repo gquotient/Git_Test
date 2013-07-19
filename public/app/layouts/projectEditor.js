@@ -44,11 +44,11 @@ define([
 
       // Fetch equipment and project from server.
       this.equipment.fetch().done(function(){
-        that.model.fetch({
-          data: {
-            index_name: 'AlignedProjects/no'
-          },
-          equipment: that.equipment
+
+        that.updateModel().fail(function(){
+          that.model.makeEditable().done(function(){
+            that.updateModel();
+          });
         });
       });
 
@@ -61,6 +61,15 @@ define([
           }[name] || Device.views.Canvas;
 
         this.content.show( new View(model.toJSON()) );
+      });
+    },
+
+    updateModel: function(){
+      return this.model.fetch({
+        data: {
+          index_name: 'AlignedProjects/no'
+        },
+        equipment: this.equipment
       });
     },
 

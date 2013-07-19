@@ -93,6 +93,15 @@ define([
       });
     },
 
+    makeEditable: function(){
+      return $.ajax(_.result(this.collection, 'url') + '/edit', {
+        type: 'POST',
+        data: {
+          project_label: this.id
+        }
+      });
+    },
+
     fetchKpis: function(){
       var that = this;
 
