@@ -5,6 +5,8 @@ module.exports = function(app){
 
   var helpers = require('./helpers')(app)
   , ensureAuthorized = helpers.ensureAuthorized
+  , ensureCurrentOrganization = helpers.ensureCurrentOrganization
+  , ensureCurrentTeam = helpers.ensureCurrentTeam
   , makeRequest = helpers.makeRequest
   , separateProperties = helpers.separateProperties;
 
@@ -168,4 +170,49 @@ module.exports = function(app){
         next(req, res);
       }
     }));
+
+  app.get('/api/teamprojects/:team_id', ensureCurrentOrganization, ensureCurrentTeam,
+    makeRequest({
+      path: '/res/teamprojects',
+      setup: function(req, res, next){
+        var teamId = req.params.team_id.split('_');
+        req.query.org_label = teamId[0];
+        req.query.team_label = teamId[1];
+        if(req.user.org_label === teamId[0] || req.user.role === 'vendor_admin'){
+          next(req, res);
+        } else {
+          res.send(403, 'Not authorized to see this team.');
+        }
+      },
+      translate: function(data, next){
+        console.log('PROOOOOOOOJECTS', data);
+        next(data.projects);
+      }
+    })
+  );
+
+  app.post('/api/teamprojects', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/teamprojects'
+    })
+  );
+
+  app.del('/api/teamprojects', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/teamprojects'
+    })
+  );
+
+  app.get('/api/orgprojects/', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/teamprojects',
+      setup: function(req, res, next){
+        req.query.team_label = 'ADMIN';
+        next(req, res);
+      },
+      translate: function(data, next){
+        next(data.projects);
+      }
+    })
+  );
 };

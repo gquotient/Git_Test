@@ -20,6 +20,8 @@ define([
   'hbs!project/templates/navigationListItem',
   'hbs!project/templates/kpis',
 
+  'hbs!project/templates/item',
+
   'hbs!project/templates/adminList',
   'hbs!project/templates/adminListItem',
   'hbs!project/templates/adminCreate',
@@ -45,6 +47,8 @@ define([
   navigationListTemplate,
   navigationListItemTemplate,
   kpisTemplate,
+
+  itemTemplate,
 
   adminListTemplate,
   adminListItemTemplate,
@@ -293,6 +297,22 @@ define([
     getOrCreate: function(label){
       return this.get(label) || this.push({project_label: label});
     }
+  });
+
+  Project.views.Item = Backbone.Marionette.ItemView.extend({
+    template: {
+      type: 'handlebars',
+      template: itemTemplate
+    },
+    triggers: {
+      'click': 'select:project'
+    },
+    tagName: 'li'
+  });
+
+  Project.views.List = Backbone.Marionette.CollectionView.extend({
+    itemView: Project.views.Item,
+    tagName: 'ul'
   });
 
   Project.views.DataListItem = Marionette.ItemView.extend({
