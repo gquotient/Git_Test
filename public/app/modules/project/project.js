@@ -83,8 +83,9 @@ define([
     initialize: function(){
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
-
       this.issues = new Issue.Collection({projectId: this.id});
+
+      this.lazySave = _.debounce(Backbone.Model.prototype.save, 1000);
     },
 
     setLock: function(lock){
@@ -285,9 +286,7 @@ define([
 
       this.set({changelog: when + who + msg + '\n' + log});
       this.lazySave();
-    },
-
-    lazySave: _.debounce(Backbone.Model.prototype.save, 1000)
+    }
   });
 
   Project.Collection = Backbone.Collection.extend({
