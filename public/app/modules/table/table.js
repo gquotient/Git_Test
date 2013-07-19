@@ -36,7 +36,13 @@ define([
       var name = options.name,
         getter = _.bind(this['get' + name] || this.defaultGet, this),
         setter = _.bind(this['set' + name] || this.defaultSet, this),
-        col = _.omit(options, 'name', 'attr');
+        omit = ['name', 'attr'],
+        col = {};
+
+      _.each(options, function(value, key) {
+        if (_.contains(omit, key)) { return; }
+        col[key] = _.isFunction(value) ? _.bind(value, this) : value;
+      }, this);
 
       col.data = function(row, value){
         if (arguments.length < 2) {
