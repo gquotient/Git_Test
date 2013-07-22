@@ -28,7 +28,8 @@ define([
     },
 
     regions: {
-      charts: '.charts'
+      chart_powerAndIrradiance: '.chart_powerAndIrradiance',
+      chart_currentAndVoltage: '.chart_currentAndVoltage'
     },
 
     onShow: function(){
@@ -45,21 +46,7 @@ define([
     },
 
     buildCharts: function(){
-      var
-        project = this.options.project,
-        template = [
-          '<div class="chart_powerAndIrradiance"></div>',
-          '<div class="chart_currentAndVoltage"></div>'
-        ].join(''),
-        chartsLayout = new Marionette.Layout({template: _.template(template)})
-      ;
-
-      this.charts.show(chartsLayout);
-
-      chartsLayout.addRegions({
-        chart_powerAndIrradiance: '.chart_powerAndIrradiance',
-        chart_currentAndVoltage: '.chart_currentAndVoltage'
-      });
+      var project = this.options.project;
 
       var chart_powerAndIrradiance = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
@@ -87,12 +74,8 @@ define([
         ]
       });
 
-      chartsLayout.chart_powerAndIrradiance.show(chart_powerAndIrradiance);
-      chartsLayout.chart_currentAndVoltage.show(chart_currentAndVoltage);
-    },
-
-    initialize: function(options){
-
+      this.chart_powerAndIrradiance.show(chart_powerAndIrradiance);
+      this.chart_currentAndVoltage.show(chart_currentAndVoltage);
     }
   });
 });
