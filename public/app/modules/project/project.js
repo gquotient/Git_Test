@@ -193,8 +193,6 @@ define([
       .done(function(data){
         that.trigger('data:done', data);
         that.set('ddls', data.ddls);
-
-        console.log(data.ddls);
       });
     },
 
@@ -214,7 +212,7 @@ define([
             dataSources = {
               energy: '',
               inverter: {
-                power: false
+                power: 'ac_power'
               }
             }
           ;
@@ -227,8 +225,8 @@ define([
             }
           }
 
-          if (_.indexOf(ddls, 'inv') >= 0) {
-            dataSources.inverter.ac_power = true;
+          if (_.indexOf(ddls, 'inv') < 0) {
+            dataSources.inverter.power = 'dc_power';
           }
 
           return dataSources;

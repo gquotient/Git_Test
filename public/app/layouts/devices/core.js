@@ -44,19 +44,14 @@ define([
       this.buildCharts();
     },
 
-    buildCharts: function(device){
+    buildCharts: function(){
       var
         project = this.options.project,
         template = [
           '<div class="chart_powerAndIrradiance"></div>',
           '<div class="chart_currentAndVoltage"></div>'
         ].join(''),
-        chartsLayout = new Marionette.Layout({template: _.template(template)}),
-        ddl = {
-          'Panel': 'pnl',
-          'String': 'str-pnl-calc',
-          'Inverter': 'inv-pnl-calc'
-        }
+        chartsLayout = new Marionette.Layout({template: _.template(template)})
       ;
 
       this.charts.show(chartsLayout);
