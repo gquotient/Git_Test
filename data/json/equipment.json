@@ -181,23 +181,6 @@
     ]
   },
   {
-    "label": "LD",
-    "name": "Load",
-    "order": 14,
-    "relationships": [
-      {"label": "COMPRISES", "direction": "INCOMING", "target": "PVA"},
-      {"label": "COMPRISES", "direction": "INCOMING", "target": "PVS"},
-      {"label": "COMPRISES", "direction": "INCOMING", "target": "PVC"},
-
-      {"label": "FLOWS", "direction": "OUTGOING", "target": "ACB"},
-      {"label": "FLOWS", "direction": "OUTGOING", "target": "XFR"},
-      {"label": "FLOWS", "direction": "OUTGOING", "target": "IC"}
-    ],
-    "renderings": [
-      {"label": "ELECTRICAL", "position": {"x": 700, "y": 200}, "root": true}
-    ]
-  },
-  {
     "label": "ACB",
     "name": "AC Bus",
     "order": 15,
@@ -205,13 +188,13 @@
       {"label": "MEASURED_BY", "direction": "OUTGOING", "target": "RM"},
 
       {"label": "FLOWS", "direction": "INCOMING", "target": "INV"},
-      {"label": "FLOWS", "direction": "INCOMING", "target": "LD"},
       {"label": "FLOWS", "direction": "INCOMING", "target": "ACB"},
       {"label": "FLOWS", "direction": "INCOMING", "target": "XFR"},
 
       {"label": "FLOWS", "direction": "OUTGOING", "target": "ACB"},
       {"label": "FLOWS", "direction": "OUTGOING", "target": "XFR"},
-      {"label": "FLOWS", "direction": "OUTGOING", "target": "IC"}
+      {"label": "FLOWS", "direction": "OUTGOING", "target": "IC"},
+      {"label": "FLOWS", "direction": "OUTGOING", "target": "LD"}
     ],
     "renderings": [
       {"label": "ELECTRICAL", "offset": {"x": 200, "y": 0}}
@@ -223,7 +206,6 @@
     "order": 16,
     "relationships": [
       {"label": "FLOWS", "direction": "INCOMING", "target": "INV"},
-      {"label": "FLOWS", "direction": "INCOMING", "target": "LD"},
       {"label": "FLOWS", "direction": "INCOMING", "target": "ACB"},
       {"label": "FLOWS", "direction": "INCOMING", "target": "XFR"},
 
@@ -241,12 +223,26 @@
     "order": 17,
     "relationships": [
       {"label": "FLOWS", "direction": "INCOMING", "target": "INV"},
-      {"label": "FLOWS", "direction": "INCOMING", "target": "LD"},
       {"label": "FLOWS", "direction": "INCOMING", "target": "ACB"},
       {"label": "FLOWS", "direction": "INCOMING", "target": "XFR"}
     ],
     "renderings": [
       {"label": "ELECTRICAL", "offset": {"x": 200, "y": 0}}
+    ]
+  },
+  {
+    "label": "LD",
+    "name": "Load",
+    "order": 14,
+    "relationships": [
+      {"label": "COMPRISES", "direction": "INCOMING", "target": "PVA"},
+      {"label": "COMPRISES", "direction": "INCOMING", "target": "PVS"},
+      {"label": "COMPRISES", "direction": "INCOMING", "target": "PVC"},
+
+      {"label": "FLOWS", "direction": "INCOMING", "target": "ACB"}
+    ],
+    "renderings": [
+      {"label": "ELECTRICAL", "position": {"x": 700, "y": 200}, "root": true}
     ]
   },
   {
