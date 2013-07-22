@@ -107,19 +107,6 @@ function(
         'columns': ['freezetime', 'irradiance'],
         project_timezone: project.timezone || null
       };
-      /*
-      dataDefinition = {
-        'project_label': project.id,
-        'ddl': 'env',
-        'dtstart': 'today',
-        'dtstop': 'now',
-        'columns': ['freezetime', 'value_mean'],
-        'filters': [
-          {'column': 'attribute', 'in_set': ['irradiance']},
-          {'column': 'identifier', 'in_set': [project.id + ':IRRA-1']}
-        ]
-      };
-      */
     } else {
       dataDefinition = {
         'project_label': project.id,
@@ -150,7 +137,7 @@ function(
       var series = [];
 
       var roundNumber = function(num, dec) {
-        var result = (num !== null)?Math.round(num*Math.pow(10,dec))/Math.pow(10,dec):null;
+        var result = (num !== null) ? Math.round(num*Math.pow(10,dec)) / Math.pow(10,dec) : null;
         return result;
       };
 
@@ -196,7 +183,7 @@ function(
         type: 'POST',
         dataType: 'json',
         data: {
-          traces: this.get('dataType')
+          traces: this.get('traces')
         }
       })
       .done(function(data){
@@ -328,6 +315,17 @@ function(
         this.chart.destroy();
       }
     },
+    smartSeriesBuilder: function(){
+      var series = [];
+
+      _.each(this.model.get('traces'), function(trace){
+        series.push({
+          name: trace.columns[1]
+        });
+      });
+
+      return series;
+    },
     smartAxesSelector: function(series){
       var axes = [];
 
@@ -375,6 +373,11 @@ function(
     initialize: function(options){
       //console.log('init', this, this.model);
       var that = this;
+
+      // If no series defs provided, build basic series for traces
+      if (!options.series) {
+        this.options.series = this.smartSeriesBuilder();
+      }
 
       // Run series through axis selector
       this.options.series = this.smartAxesSelector(this.options.series);

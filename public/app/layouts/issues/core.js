@@ -52,7 +52,7 @@ define([
 
       var chart_powerAndIrradiance = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
-          'dataType': [
+          'traces': [
             Chart.dataDefaults(project, device, 'irradiance', project.get('timezone')),
             Chart.dataDefaults(project, device, 'power', project.get('timezone'))
           ]

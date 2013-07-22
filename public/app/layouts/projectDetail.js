@@ -95,8 +95,8 @@ define([
       that.model.whichEnergy().done(function(whichEnergy){
         // Build charts
         var chart_powerHistory = new Chart.views.Line({
-          model: new Chart.models.timeSeries().set({
-            'dataType': [
+          model: new Chart.models.timeSeries({
+            'traces': [
               {
                 'project_label': project.id,
                 'ddl': 'pgen-env',
@@ -146,11 +146,7 @@ define([
 
       this.issues.show(issueView);
 
-
-
       issueView.collection.fetch();
-
-      console.log(issueView);
 
       // Build kpi view
       var kpisView = new Project.views.Kpis({model: this.model});

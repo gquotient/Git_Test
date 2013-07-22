@@ -50,7 +50,7 @@ define([
       $('.nav_content').find('.active').removeClass('active');
 
       // This is a nightmare - we need to come up with something less hacky
-      $('.nav_content').find('#' + device.get('graph_key').replace(':', '\\:')).addClass('active');
+      $('.nav_content').find('[id="' + device.get('graph_key') + '"]').addClass('active');
     },
 
     onShow: function(){
