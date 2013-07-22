@@ -72,11 +72,10 @@ define([
           modeled: 0
         }
       },
-      energySources: [
-        'pgen-acm',
-        'pgen-rm',
-        'pgen-util'
-      ],
+      dataSources: {
+        energy: '',
+        inverter: ''
+      },
       changelog: ''
     },
 
@@ -194,37 +193,58 @@ define([
       .done(function(data){
         that.trigger('data:done', data);
         that.set('ddls', data.ddls);
+
+        console.log(data.ddls);
       });
     },
 
     // Method for finding which power type is available
-    whichEnergy: function(){
+    findDataSources: function(){
       var
         that = this,
         defer = $.Deferred(),
         ddls = this.get('ddls'),
-        whichEnergy = function(){
-          var sources = that.get('energySources');
+        selectDataSources = function(){
+          var
+            energySources = [
+              'pgen-acm',
+              'pgen-rm',
+              'pgen-util'
+            ],
+            dataSources = {
+              energy: '',
+              inverter: {
+                power: false
+              }
+            }
+          ;
 
-          for(var source=0, sourcesLength=sources.length; source<=sourcesLength; source++){
+          for(var source=0, sourcesLength=energySources.length; source<=sourcesLength; source++){
             // Add '_300' to the string for now since that's how it is in the ddls
-            if (_.indexOf(ddls, sources[source]) >= 0) {
-              return sources[source];
+            if (_.indexOf(ddls, energySources[source]) >= 0) {
+              dataSources.energy = energySources[source];
+              break;
             }
           }
+
+          if (_.indexOf(ddls, 'inv') >= 0) {
+            dataSources.inverter.ac_power = true;
+          }
+
+          return dataSources;
         }
       ;
 
       if (ddls) {
         // Model already has DDLs, resolve the defer with the correct energy
-        defer.resolve(whichEnergy());
+        defer.resolve(selectDataSources());
       } else {
         // Else, fetch the DDLs and resolve the chain
         this.fetchDDLs().done(function(data){
           ddls = data.ddls;
 
           if (ddls) {
-            defer.resolve(whichEnergy());
+            defer.resolve(selectDataSources());
           } else {
             console.warn('No DDLs found. Call Thadeus');
             defer.reject();
