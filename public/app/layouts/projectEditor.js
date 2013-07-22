@@ -53,14 +53,12 @@ define([
       });
 
       // Set up view listener.
-      this.listenTo(Backbone, 'editor:change:view', function(model){
-        var name = model.get('name'),
-          View = {
-            'Device Table': Device.views.Table,
-            'Notes': Project.views.Notes
-          }[name] || Device.views.Canvas;
+      this.listenTo(Backbone, 'editor:change:view', function(args){
+        var View = Project.views[args.view] || Device.views[args.view];
 
-        this.content.show( new View(model.toJSON()) );
+        if (View) {
+          this.content.show( new View(args) );
+        }
       });
     },
 

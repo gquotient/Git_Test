@@ -11,7 +11,7 @@
       {"label": "HAS", "direction": "OUTGOING", "target": "DSC"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "position": {"x": 100, "y": 100}, "root": true}
+      {"label": "DAQ", "position": {"x": 100, "y": 100}, "root": true}
     ]
   },
   {
@@ -28,7 +28,7 @@
       {"label": "MANAGES", "direction": "OUTGOING", "target": "CMB"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 100, "y": 0}}
+      {"label": "DAQ", "offset": {"x": 100, "y": 0}}
     ]
   },
   {
@@ -50,7 +50,7 @@
       {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 200, "y": 100}}
+      {"label": "DAQ", "offset": {"x": 200, "y": 100}}
     ]
   },
   {
@@ -61,7 +61,7 @@
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 100, "y": 100}}
+      {"label": "DAQ", "offset": {"x": 100, "y": 100}}
     ]
   },
   {
@@ -72,7 +72,7 @@
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 100, "y": 100}}
+      {"label": "DAQ", "offset": {"x": 100, "y": 100}}
     ]
   },
   {
@@ -83,7 +83,7 @@
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 100, "y": 100}}
+      {"label": "DAQ", "offset": {"x": 100, "y": 100}}
     ]
   },
   {
@@ -94,7 +94,7 @@
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 100, "y": 100}}
+      {"label": "DAQ", "offset": {"x": 100, "y": 100}}
     ]
   },
   {
@@ -105,7 +105,7 @@
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 100, "y": 100}}
+      {"label": "DAQ", "offset": {"x": 100, "y": 100}}
     ]
   },
   {
@@ -116,7 +116,7 @@
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 100, "y": 100}}
+      {"label": "DAQ", "offset": {"x": 100, "y": 100}}
     ]
   },
   {
@@ -127,7 +127,7 @@
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 100, "y": 100}}
+      {"label": "DAQ", "offset": {"x": 100, "y": 100}}
     ]
   },
   {
@@ -138,7 +138,7 @@
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 100, "y": 100}}
+      {"label": "DAQ", "offset": {"x": 100, "y": 100}}
     ]
   },
   {
@@ -152,8 +152,8 @@
       {"label": "MEASURED_BY", "direction": "INCOMING", "target": "ACB"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 700, "y": 100}},
-      {"label": "ELECTRICAL", "offset": {"x": 100, "y": -100}}
+      {"label": "DAQ", "offset": {"x": 700, "y": 100}},
+      {"label": "POWER", "offset": {"x": 100, "y": -100}}
     ]
   },
   {
@@ -176,8 +176,8 @@
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "DCB"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 500, "y": 100}},
-      {"label": "ELECTRICAL", "position": {"x": 700, "y": 200}, "root": true}
+      {"label": "DAQ", "offset": {"x": 500, "y": 100}},
+      {"label": "POWER", "position": {"x": 700, "y": 200}, "root": true}
     ]
   },
   {
@@ -197,7 +197,7 @@
       {"label": "FLOWS", "direction": "OUTGOING", "target": "LD"}
     ],
     "renderings": [
-      {"label": "ELECTRICAL", "offset": {"x": 200, "y": 0}}
+      {"label": "POWER", "offset": {"x": 200, "y": 0}}
     ]
   },
   {
@@ -214,7 +214,7 @@
       {"label": "FLOWS", "direction": "OUTGOING", "target": "IC"}
     ],
     "renderings": [
-      {"label": "ELECTRICAL", "offset": {"x": 200, "y": 0}}
+      {"label": "POWER", "offset": {"x": 200, "y": 0}}
     ]
   },
   {
@@ -227,7 +227,7 @@
       {"label": "FLOWS", "direction": "INCOMING", "target": "XFR"}
     ],
     "renderings": [
-      {"label": "ELECTRICAL", "offset": {"x": 200, "y": 0}}
+      {"label": "POWER", "offset": {"x": 200, "y": 0}}
     ]
   },
   {
@@ -242,7 +242,7 @@
       {"label": "FLOWS", "direction": "INCOMING", "target": "ACB"}
     ],
     "renderings": [
-      {"label": "ELECTRICAL", "position": {"x": 700, "y": 200}, "root": true}
+      {"label": "POWER", "position": {"x": 700, "y": 200}, "root": true}
     ]
   },
   {
@@ -258,7 +258,7 @@
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "S"}
     ],
     "renderings": [
-      {"label": "ELECTRICAL", "offset": {"x": -200, "y": 0}}
+      {"label": "POWER", "offset": {"x": -200, "y": 0}}
     ]
   },
   {
@@ -272,7 +272,7 @@
       {"label": "COLLECTS", "direction": "INCOMING", "target": "S"}
     ],
     "renderings": [
-      {"label": "ELECTRICAL", "offset": {"x": -200, "y": 0}}
+      {"label": "POWER", "offset": {"x": -200, "y": 0}}
     ]
   },
   {
@@ -289,8 +289,8 @@
 
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 900, "y": 0}},
-      {"label": "ELECTRICAL", "offset": {"x": -200, "y": 0}}
+      {"label": "DAQ", "offset": {"x": 900, "y": 0}},
+      {"label": "POWER", "offset": {"x": -200, "y": 0}}
     ]
   },
   {
@@ -307,8 +307,8 @@
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "S"}
     ],
     "renderings": [
-      {"label": "COMMUNICATION", "offset": {"x": 1100, "y": 0}},
-      {"label": "ELECTRICAL", "offset": {"x": -200, "y": 0}}
+      {"label": "DAQ", "offset": {"x": 1100, "y": 0}},
+      {"label": "POWER", "offset": {"x": -200, "y": 0}}
     ]
   },
   {
@@ -323,7 +323,7 @@
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "P"}
     ],
     "renderings": [
-      {"label": "ELECTRICAL", "offset": {"x": -200, "y": 0}}
+      {"label": "POWER", "offset": {"x": -200, "y": 0}}
     ]
   },
   {
@@ -337,7 +337,7 @@
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "P"}
     ],
     "renderings": [
-      {"label": "ELECTRICAL", "offset": {"x": -100, "y": 0}}
+      {"label": "POWER", "offset": {"x": -100, "y": 0}}
     ]
   }
 ]
