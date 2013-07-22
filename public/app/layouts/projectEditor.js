@@ -56,8 +56,8 @@ define([
       this.listenTo(Backbone, 'editor:change:view', function(model){
         var name = model.get('name'),
           View = {
-            'Change Log': Project.views.ChangeLog,
-            'Device Table': Device.views.Table
+            'Device Table': Device.views.Table,
+            'Notes': Project.views.Notes
           }[name] || Device.views.Canvas;
 
         this.content.show( new View(model.toJSON()) );
