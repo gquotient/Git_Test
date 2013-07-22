@@ -45,6 +45,8 @@ define([
       this.listenTo(this.incoming, 'remove', function(model){
         delete this.relationships[model.cid];
       });
+
+      this.lazySave = _.debounce(Backbone.Model.prototype.save, 1000);
     },
 
     connectTo: function(target, rel){
@@ -107,9 +109,7 @@ define([
       if (evnt) {
         this.trigger(evnt, this);
       }
-    },
-
-    lazySave: _.debounce(Backbone.Model.prototype.save, 1000)
+    }
   });
 
   Device.Collection = Backbone.Collection.extend({

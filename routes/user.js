@@ -25,12 +25,12 @@ module.exports = function(app){
       path: '/res/user'
     }));
 
-  app.put('/api/users/current', ensureCurrentUser,
+  app.put('/api/users/current', ensureCurrentUser, ensureCurrentOrganization,
     makeRequest({
       path: '/res/user'
     }));
 
-  app.post('/api/users', ensureAuthorized(['vendor_admin', 'admin']),
+  app.post('/api/users', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
     makeRequest({
       path: '/res/usermgt'
     }));

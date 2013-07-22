@@ -20,6 +20,8 @@ define([
   'hbs!project/templates/navigationListItem',
   'hbs!project/templates/kpis',
 
+  'hbs!project/templates/item',
+
   'hbs!project/templates/adminList',
   'hbs!project/templates/adminListItem',
   'hbs!project/templates/adminCreate',
@@ -45,6 +47,8 @@ define([
   navigationListTemplate,
   navigationListItemTemplate,
   kpisTemplate,
+
+  itemTemplate,
 
   adminListTemplate,
   adminListItemTemplate,
@@ -79,8 +83,28 @@ define([
     initialize: function(){
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
-
       this.issues = new Issue.Collection([], {projectId: this.id});
+
+      this.lazySave = _.debounce(Backbone.Model.prototype.save, 1000);
+    },
+
+    setLock: function(lock){
+      return $.ajax(_.result(this, 'url') + '/edit', {
+        type: 'PUT',
+        data: {
+          project_label: this.id,
+          lock: arguments.length > 0 ? lock : true
+        }
+      });
+    },
+
+    makeEditable: function(){
+      return $.ajax(_.result(this.collection, 'url') + '/edit', {
+        type: 'POST',
+        data: {
+          project_label: this.id
+        }
+      });
     },
 
     fetchKpis: function(){
@@ -262,9 +286,7 @@ define([
 
       this.set({changelog: when + who + msg + '\n' + log});
       this.lazySave();
-    },
-
-    lazySave: _.debounce(Backbone.Model.prototype.save, 1000)
+    }
   });
 
   Project.Collection = Backbone.Collection.extend({
@@ -274,6 +296,22 @@ define([
     getOrCreate: function(label){
       return this.get(label) || this.push({project_label: label});
     }
+  });
+
+  Project.views.Item = Backbone.Marionette.ItemView.extend({
+    template: {
+      type: 'handlebars',
+      template: itemTemplate
+    },
+    triggers: {
+      'click': 'select:project'
+    },
+    tagName: 'li'
+  });
+
+  Project.views.List = Backbone.Marionette.CollectionView.extend({
+    itemView: Project.views.Item,
+    tagName: 'ul'
   });
 
   Project.views.DataListItem = Marionette.ItemView.extend({

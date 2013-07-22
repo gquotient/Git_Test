@@ -16,6 +16,7 @@ echo ""
 
 cd public/app
 bower install
+bower update
 
 # Compile client app
 echo ""

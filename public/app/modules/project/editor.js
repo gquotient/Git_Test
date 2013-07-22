@@ -169,7 +169,7 @@ define([
           name: label[0].toUpperCase() + label.slice(1).toLowerCase(),
           rendering: label,
           collection: this.model.devices,
-          editable: true
+          editable: this.options.editable
         });
       }, this);
 

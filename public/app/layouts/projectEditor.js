@@ -36,6 +36,67 @@ define([
       overlay: '#overlay'
     },
 
+    initialize: function(options){
+      var that = this;
+
+      this.$doc = $(document);
+      this.equipment = new Equipment.Collection();
+
+      // Fetch equipment and project from server.
+      this.equipment.fetch().done(function(){
+
+        that.updateModel().fail(function(){
+          that.model.makeEditable().done(function(){
+            that.updateModel();
+          });
+        });
+      });
+
+      // Set up view listener.
+      this.listenTo(Backbone, 'editor:change:view', function(model){
+        var name = model.get('name'),
+          View = {
+            'Change Log': Project.views.ChangeLog,
+            'Device Table': Device.views.Table
+          }[name] || Device.views.Canvas;
+
+        this.content.show( new View(model.toJSON()) );
+      });
+    },
+
+    updateModel: function(){
+      return this.model.fetch({
+        data: {
+          index_name: 'AlignedProjects/no'
+        },
+        equipment: this.equipment
+      });
+    },
+
+    onShow: function(){
+      var that = this;
+
+      // Try to get a lock for this project before editing.
+      this.model.setLock().always(function(data, stat){
+        that.overlay.show( new Project.views.Editor({
+          model: that.model,
+          equipment: that.equipment,
+          user: that.options.user,
+          editable: stat === 'success' && JSON.parse(data).locked
+        }));
+      });
+
+      this.delegateEditorEvents();
+    },
+
+    onClose: function(){
+
+      // Release the lock for this project
+      this.model.setLock(false);
+
+      this.undelegateEditorEvents();
+    },
+
     delegateEditorEvents: function(){
       this.undelegateEditorEvents();
 
@@ -48,51 +109,6 @@ define([
 
     undelegateEditorEvents: function(){
       this.$doc.off('.editorEvent' + this.cid);
-    },
-
-    onShow: function(){
-      this.delegateEditorEvents();
-      this.overlay.show(this.editor);
-    },
-
-    onClose: function(){
-      this.undelegateEditorEvents();
-    },
-
-    initialize: function(options){
-      var model = this.model = options.model,
-        equipment = new Equipment.Collection();
-
-      this.$doc = $(document);
-
-      // Fetch equipment and project from server.
-      equipment.fetch().done(function(){
-        model.fetch({
-          data: {
-            index_name: 'AlignedProjects/no'
-          },
-          equipment: equipment
-        });
-      });
-
-      // Create editor view.
-      this.editor = new Project.views.Editor({
-        model: model,
-        equipment: equipment,
-        user: options.user
-      });
-
-      // Set up view listener.
-      this.listenTo(Backbone, 'editor:change:view', function(model){
-        var name = model.get('name'),
-
-          View = {
-            'Change Log': Project.views.ChangeLog,
-            'Device Table': Device.views.Table
-          }[name] || Device.views.Canvas;
-
-        this.content.show( new View(model.toJSON()) );
-      });
     }
   });
 });
