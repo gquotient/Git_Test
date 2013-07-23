@@ -30,6 +30,8 @@ define([
         series = []
       ;
 
+      console.log('model', this.model);
+
       project.findDataSources().done(function(dataSources){
         // Add irradiance trace
         traces.push(Chart.dataDefaults(project, that.model, 'irradiance'));
@@ -49,10 +51,37 @@ define([
                 'in_set': [that.model.get('graph_key')]
               }
             ],
-            project_timezone: project.timezone || null
+            project_timezone: project.get('timezone')
           });
 
           series.push(Chart.seriesDefaults.power);
+        }
+
+        if (dataSources.inverter.bus) {
+          that.model.outgoing.each(function(device){
+            if (device.get('devtype') === 'DC Bus') {
+              traces.push({
+                'project_label': project.id,
+                'ddl': 'bus-str-calc',
+                'dtstart': 'today',
+                'dtstop': 'now',
+                'columns': ['freezetime', 'dc_power'],
+                'filters': [
+                  {
+                    'column': 'identifier',
+                    'in_set': [device.get('graph_key')]
+                  }
+                ],
+                project_timezone: project.get('timezone')
+              });
+
+              series.push({
+                name: 'Power ' + device.get('did'),
+                unit: 'W',
+                color: null
+              });
+            }
+          });
         }
 
         var chart_powerAndIrradiance = new Chart.views.Line({
@@ -62,21 +91,7 @@ define([
           series: series
         });
 
-        var chart_currentAndVoltage = new Chart.views.Line({
-          model: new Chart.models.timeSeries().set({
-            'traces': [
-              Chart.dataDefaults(project, that.model, 'current'),
-              Chart.dataDefaults(project, that.model, 'voltage')
-            ]
-          }),
-          series: [
-            Chart.seriesDefaults.current,
-            Chart.seriesDefaults.voltage
-          ]
-        });
-
         that.chart_powerAndIrradiance.show(chart_powerAndIrradiance);
-        that.chart_currentAndVoltage.show(chart_currentAndVoltage);
       });
     }
   });

@@ -74,7 +74,8 @@ function(
       ddl = {
         'Panel': 'pnl',
         'String': 'str-pnl-calc',
-        'Inverter': 'bus-str-calc'
+        'DC Bus': 'bus-str-calc',
+        'Generation Meter': 'acm'
       },
       column = {
         'Panel': {
@@ -89,10 +90,13 @@ function(
           voltage: 'dc_voltage',
           panel_power_mean: 'dc_power_output_mean'
         },
-        'Inverter': {
+        'DC Bus': {
           power: 'dc_power',
           current: 'dc_current',
           voltage: 'dc_voltage'
+        },
+        'Generation Meter': {
+          power: 'ac_power_mean'
         }
       },
       dataDefinition
@@ -105,7 +109,7 @@ function(
         'dtstart': 'today',
         'dtstop': 'now',
         'columns': ['freezetime', 'irradiance'],
-        project_timezone: project.timezone || null
+        project_timezone: project.get('timezone')
       };
     } else {
       dataDefinition = {
@@ -120,7 +124,7 @@ function(
             'in_set': [device.get('graph_key')]
           }
         ],
-        project_timezone: project.timezone || null
+        project_timezone: project.get('timezone')
       };
     }
 

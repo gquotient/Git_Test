@@ -65,6 +65,8 @@ module.exports = function(app){
         }, function(err, resp, body){
           var project = {devices: [], rels: []};
 
+          console.log(project);
+
           if (err) {
             req.flash('error', err.message);
             console.log('error!:', err);
@@ -79,6 +81,7 @@ module.exports = function(app){
 
             _.each(body.devices, function(node){
               if (/^PV[ASC]/.test(node.did)) {
+                console.log('Project: ', node);
                 _.extend(project, _.omit(node, 'devices', 'rels'));
 
               } else if (!/^EQT/.test(node.did)) {

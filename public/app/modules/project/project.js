@@ -175,6 +175,8 @@ define([
 
       // DPI cheat
       if (kpis.power > 0 && kpis.irradiance) {
+        console.log(kpis);
+        console.log(this);
         kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000) * 100;
       }
 
@@ -212,7 +214,9 @@ define([
             dataSources = {
               energy: '',
               inverter: {
-                power: 'ac_power'
+                ac_power: false,
+                dc_power: false,
+                bus: false // bus-str-calc loop through child busses and build traces
               }
             }
           ;
@@ -225,8 +229,13 @@ define([
             }
           }
 
-          if (_.indexOf(ddls, 'inv') < 0) {
-            dataSources.inverter.power = 'dc_power';
+          if (_.indexOf(ddls, 'inv') >= 0) {
+            dataSources.inverter.ac_power = true;
+            dataSources.inverter.dc_power = true;
+          }
+
+          if (_.indexOf(ddls, 'bus-str-calc') >= 0) {
+            dataSources.inverter.bus = true;
           }
 
           return dataSources;
