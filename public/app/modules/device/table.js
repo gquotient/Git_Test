@@ -19,17 +19,6 @@ define([
       id: 'device-table'
     },
 
-    collectionEvents: {
-      'change': function(model) {
-        model.lazySave();
-      }
-    },
-
-    tableOptions: {
-      columnSorting: true,
-      stretchH: 'all'
-    },
-
     columns: [
       {
         name: 'ID',
@@ -45,6 +34,25 @@ define([
         readOnly: true
       }
     ],
+
+    tableOptions: {
+      columnSorting: true,
+      stretchH: 'all'
+    },
+
+    initialize: function(options){
+      if (!options.editable) {
+        this.tableOptions.readOnly = true;
+      }
+    },
+
+    collectionEvents: {
+      'change': function(model) {
+        if (this.options.editable) {
+          model.lazySave();
+        }
+      }
+    },
 
     comparator: function(model){
       var equip = model.equipment,
