@@ -11,7 +11,7 @@ module.exports = function(app){
   // DEVICES
   //////
 
-  app.post('/api/devices', ensureAuthorized(['vendor_admin', 'admin']),
+  app.post('/api/devices', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/devices',
       setup: separateProperties([
@@ -35,7 +35,7 @@ module.exports = function(app){
       }
     }));
 
-  app.put('/api/devices', ensureAuthorized(['vendor_admin', 'admin']),
+  app.put('/api/devices', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/devices',
       setup: separateProperties([
@@ -59,7 +59,7 @@ module.exports = function(app){
       }
     }));
 
-  app.del('/api/devices', ensureAuthorized(['vendor_admin', 'admin']),
+  app.del('/api/devices', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/devices'
     }));
@@ -69,7 +69,7 @@ module.exports = function(app){
   // DEVICE RELATIONSHIPS
   //////
 
-  app.all('/api/relationships', ensureAuthorized(['vendor_admin', 'admin']),
+  app.all('/api/relationships', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/relationships'
     }));

@@ -104,7 +104,7 @@ module.exports = function(app){
       }
     });
 
-  app.post('/api/projects', ensureAuthorized(['vendor_admin', 'admin']),
+  app.post('/api/projects', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/projects',
       setup: function(req, res, next){
@@ -122,7 +122,7 @@ module.exports = function(app){
       translate: combineProperties
     }));
 
-  app.put('/api/projects/:label', ensureAuthorized(['vendor_admin', 'admin']),
+  app.put('/api/projects/:label', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/projects',
       setup: separateProperties([
@@ -140,7 +140,7 @@ module.exports = function(app){
       translate: combineProperties
     }));
 
-  app.del('/api/projects/:label', ensureAuthorized(['vendor_admin', 'admin']),
+  app.del('/api/projects/:label', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/projects',
       setup: function(req, res, next){
@@ -153,12 +153,12 @@ module.exports = function(app){
       }
     }));
 
-  app.post('/api/projects/edit', ensureAuthorized(['vendor_admin', 'admin']),
+  app.post('/api/projects/edit', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/edit'
     }));
 
-  app.put('/api/projects/:label/edit', ensureAuthorized(['vendor_admin', 'admin']),
+  app.put('/api/projects/:label/edit', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/edit',
       setup: function(req, res, next){
@@ -170,6 +170,10 @@ module.exports = function(app){
         next(req, res);
       }
     }));
+
+  //////
+  // TEAM PROJECTS
+  //////
 
   app.get('/api/teamprojects/:team_id', ensureCurrentOrganization, ensureCurrentTeam,
     makeRequest({
@@ -202,6 +206,10 @@ module.exports = function(app){
       path: '/res/teamprojects'
     })
   );
+
+  //////
+  // ORG PROJECTS
+  //////
 
   app.get('/api/orgprojects/', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
