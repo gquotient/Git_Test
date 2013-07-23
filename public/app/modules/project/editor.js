@@ -137,11 +137,13 @@ define([
     },
 
     lockMessage: function(){
-      if (this.editable) {
-        return 'You have this project locked';
-      } else {
-        return (this.model.get('editor') || 'Someone') + ' has this project locked';
+      var msg = '';
+
+      if (!this.editable) {
+        msg = (this.model.get('editor') || 'Someone') + ' has this project locked';
       }
+
+      return msg;
     },
 
     checkRenderings: function(devices, target){
