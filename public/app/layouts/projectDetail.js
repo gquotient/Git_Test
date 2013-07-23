@@ -92,6 +92,11 @@ define([
       this.mapView.collection.set([project]);
       this.mapView.fitToBounds();
 
+      // This is ugly but I'm not sure of a better way to do it with the leaflet API
+      _.each(this.mapView.markers._layers, function(marker){
+        marker.togglePopup();
+      });
+
       that.model.findDataSources().done(function(dataSources){
         // Build charts
         var chart_powerHistory = new Chart.views.Line({
