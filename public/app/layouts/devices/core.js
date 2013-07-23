@@ -28,7 +28,8 @@ define([
     },
 
     regions: {
-      charts: '.charts'
+      chart_powerAndIrradiance: '.chart_powerAndIrradiance',
+      chart_currentAndVoltage: '.chart_currentAndVoltage'
     },
 
     onShow: function(){
@@ -44,33 +45,14 @@ define([
       this.buildCharts();
     },
 
-    buildCharts: function(device){
-      var
-        project = this.options.project,
-        template = [
-          '<div class="chart_powerAndIrradiance"></div>',
-          '<div class="chart_currentAndVoltage"></div>'
-        ].join(''),
-        chartsLayout = new Marionette.Layout({template: _.template(template)}),
-        ddl = {
-          'Panel': 'pnl',
-          'String': 'str-pnl-calc',
-          'Inverter': 'inv-pnl-calc'
-        }
-      ;
-
-      this.charts.show(chartsLayout);
-
-      chartsLayout.addRegions({
-        chart_powerAndIrradiance: '.chart_powerAndIrradiance',
-        chart_currentAndVoltage: '.chart_currentAndVoltage'
-      });
+    buildCharts: function(){
+      var project = this.options.project;
 
       var chart_powerAndIrradiance = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
-          'dataType': [
-            Chart.dataDefaults(project, this.model, 'irradiance', project.get('timezone')),
-            Chart.dataDefaults(project, this.model, 'power', project.get('timezone'))
+          'traces': [
+            Chart.dataDefaults(project, this.model, 'irradiance'),
+            Chart.dataDefaults(project, this.model, 'power')
           ]
         }),
         series: [
@@ -81,9 +63,9 @@ define([
 
       var chart_currentAndVoltage = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
-          'dataType': [
-            Chart.dataDefaults(project, this.model, 'current', project.get('timezone')),
-            Chart.dataDefaults(project, this.model, 'voltage', project.get('timezone'))
+          'traces': [
+            Chart.dataDefaults(project, this.model, 'current'),
+            Chart.dataDefaults(project, this.model, 'voltage')
           ]
         }),
         series: [
@@ -92,12 +74,8 @@ define([
         ]
       });
 
-      chartsLayout.chart_powerAndIrradiance.show(chart_powerAndIrradiance);
-      chartsLayout.chart_currentAndVoltage.show(chart_currentAndVoltage);
-    },
-
-    initialize: function(options){
-
+      this.chart_powerAndIrradiance.show(chart_powerAndIrradiance);
+      this.chart_currentAndVoltage.show(chart_currentAndVoltage);
     }
   });
 });

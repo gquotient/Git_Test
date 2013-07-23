@@ -31,7 +31,7 @@ function(
     parse: function(response){
       return response.alarms;
     },
-    initialize: function(options){
+    initialize: function(models, options){
       this.url = '/api/alarms/active/' + options.projectId;
     }
   });

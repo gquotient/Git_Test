@@ -10,6 +10,7 @@ define([
   'chart',
 
   'layouts/devices/core',
+  'layouts/devices/inverter',
 
   'hbs!layouts/templates/devices'
 ], function(
@@ -24,6 +25,7 @@ define([
   Chart,
 
   CoreLayout,
+  InverterLayout,
 
   devicesTemplate
 ){
@@ -34,7 +36,7 @@ define([
     },
 
     attributes: {
-      id: 'page-projectDevices'
+      id: 'page-devices'
     },
 
     regions: {
@@ -42,15 +44,22 @@ define([
       deviceDetail: '.deviceDetail'
     },
 
+    deviceLayouts: {
+      core: CoreLayout,
+      Inverter: InverterLayout
+    },
+
     selectDevice: function(device){
       Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'));
 
-      this.deviceDetail.show(new CoreLayout({model: device, project: this.model}));
+      var SubLayout = (this.deviceLayouts[device.get('devtype')]) ? this.deviceLayouts[device.get('devtype')] : this.deviceLayouts.core;
+
+      this.deviceDetail.show(new SubLayout({model: device, project: this.model}));
 
       $('.nav_content').find('.active').removeClass('active');
 
       // This is a nightmare - we need to come up with something less hacky
-      $('.nav_content').find('#' + device.get('graph_key').replace(':', '\\:')).addClass('active');
+      $('.nav_content').find('[id="' + device.get('graph_key') + '"]').addClass('active');
     },
 
     onShow: function(){

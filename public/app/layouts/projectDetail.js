@@ -92,11 +92,11 @@ define([
       this.mapView.collection.set([project]);
       this.mapView.fitToBounds();
 
-      that.model.whichEnergy().done(function(whichEnergy){
+      that.model.findDataSources().done(function(dataSources){
         // Build charts
         var chart_powerHistory = new Chart.views.Line({
-          model: new Chart.models.timeSeries().set({
-            'dataType': [
+          model: new Chart.models.timeSeries({
+            'traces': [
               {
                 'project_label': project.id,
                 'ddl': 'pgen-env',
@@ -107,7 +107,7 @@ define([
               },
               {
                 'project_label': project.id,
-                'ddl': whichEnergy,
+                'ddl': dataSources.energy,
                 'dtstart': 'today',
                 'dtstop': 'now',
                 'columns': ['freezetime', 'ac_power'],
