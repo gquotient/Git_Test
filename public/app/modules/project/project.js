@@ -843,7 +843,9 @@ define([
       },
 
       'blur textarea': function(){
-        this.model.save();
+        if (this.options.editable) {
+          this.model.save();
+        }
       }
     },
 
@@ -853,8 +855,14 @@ define([
       }
     },
 
+    onShow: function(){
+      this.ui.textarea.attr('disabled', !this.options.editable);
+    },
+
     onClose: function(){
-      this.model.save();
+      if (this.options.editable) {
+        this.model.save();
+      }
     }
   });
 
