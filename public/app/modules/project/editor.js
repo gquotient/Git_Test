@@ -98,6 +98,7 @@ define([
     initialize: function(options){
       this.equipment = options.equipment;
       this.user = options.user;
+      this.editable = options.editable;
 
       this.listenTo(Backbone, 'editor:selection', function(selection){
         this.selection = selection.length > 0 ? selection : null;
@@ -120,8 +121,26 @@ define([
     },
 
     modelEvents: {
-      sync: function(project){
+      'sync': function(project){
         this.checkRenderings(project.outgoing);
+      },
+
+      'change:editor': function(project, value){
+        this.editable = value === this.user.get('email');
+        this.toggleEditable();
+      }
+    },
+
+    toggleEditable: function(){
+      this.$el.find('input:not(.nav)').attr('disabled', !this.editable);
+      this.$('#lock-message').html(this.lockMessage());
+    },
+
+    lockMessage: function(){
+      if (this.editable) {
+        return 'You have this project locked';
+      } else {
+        return (this.model.get('editor') || 'Someone') + ' has this project locked';
       }
     },
 
@@ -183,6 +202,8 @@ define([
 
         Marionette.triggerMethod.call(view, 'show');
       }, this);
+
+      this.toggleEditable();
     },
 
     onAddFocus: function(view){
@@ -282,7 +303,7 @@ define([
         Backbone.trigger('editor:change:view', _.extend(model.toJSON(), {
           model: this.model,
           collection: this.model.devices,
-          editable: this.options.editable
+          editable: this.editable
         }));
       }
     },

@@ -530,6 +530,14 @@ header {
     background: colorBGDarkGrey;
     border-left: primaryBorderStyle;
     opacity: 0.8;
+
+
+    #lock-message {
+      width: 100%
+      text-align: center;
+      color: colorDrakerOrange;
+      border-bottom: 0;
+    }
   }
 
   #editor > div {
@@ -554,6 +562,10 @@ header {
 
       &:focus {
         color: black;
+      }
+
+      &:disabled {
+        background-color: #bbb;
       }
     }
 
