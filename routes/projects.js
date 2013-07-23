@@ -65,8 +65,6 @@ module.exports = function(app){
         }, function(err, resp, body){
           var project = {devices: [], rels: []};
 
-          console.log(project);
-
           if (err) {
             req.flash('error', err.message);
             console.log('error!:', err);
