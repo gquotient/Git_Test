@@ -175,8 +175,6 @@ define([
 
       // DPI cheat
       if (kpis.power > 0 && kpis.irradiance) {
-        console.log(kpis);
-        console.log(this);
         kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000) * 100;
       }
 

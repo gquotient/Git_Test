@@ -30,8 +30,6 @@ define([
         series = []
       ;
 
-      console.log('model', this.model);
-
       project.findDataSources().done(function(dataSources){
         // Add irradiance trace
         traces.push(Chart.dataDefaults(project, that.model, 'irradiance'));
