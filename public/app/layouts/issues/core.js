@@ -32,7 +32,8 @@ define([
     },
 
     regions: {
-      chart: '.chart'
+      chart: '.chart',
+      deviceName: '.deviceName'
     },
 
     onShow: function(){
@@ -50,11 +51,26 @@ define([
       var project = this.options.project,
         device = project.devices.findWhere({graph_key: this.model.get('identifier')});
 
+      this.$el.find('.deviceName').text(device.get('did'));
+
       var chart_powerAndIrradiance = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
           'traces': [
             Chart.dataDefaults(project, device, 'irradiance', project.get('timezone')),
-            Chart.dataDefaults(project, device, 'power', project.get('timezone'))
+            {
+              'project_label': project.id,
+              'ddl': this.model.get('device_type'),
+              'dtstart': this.model.get('fault_start'),
+              'dtstop': this.model.get('fault_stop'),
+              'columns': ['freezetime', this.model.get('device_column')],
+              'filters': [
+                {
+                  'column': 'identifier',
+                  'in_set': [device.get('graph_key')]
+                }
+              ],
+              project_timezone: project.get('timezone')
+            }
           ]
         }),
         series: [

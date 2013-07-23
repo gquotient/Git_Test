@@ -36,7 +36,7 @@ define([
     },
 
     attributes: {
-      id: 'page-projectDevices'
+      id: 'page-issues'
     },
 
     regions: {
