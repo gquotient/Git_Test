@@ -59,7 +59,7 @@ define([
       this.$el.find('.deviceName').text(device.get('did'));
 
       var chart_powerAndIrradiance = new Chart.views.Line({
-        model: new Chart.models.timeSeries().set({
+        model: new Chart.models.timeSeries({
           'traces': [
             {
               'project_label': project.id,
