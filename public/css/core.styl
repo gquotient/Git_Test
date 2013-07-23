@@ -135,29 +135,30 @@ button.button, a.button {
   text-shadow: 0 1px 0 #eee;
   box-shadow: inset 0 1px 0 #eee;
   &.primary {
-  background-color: colorDrakerOrange;
-  background-image: linear-gradient(#f57a2a, #f0501c);
-  border: 1px solid colorDrakerOrange;
-  color: #fff;
-  text-shadow: 0 1px 0 #d84515;
-  box-shadow: inset 0 1px 0 #f8ad7c;
+    background-color: colorDrakerOrange;
+    background-image: linear-gradient(#f57a2a, #f0501c);
+    border: 1px solid colorDrakerOrange;
+    color: #fff;
+    text-shadow: 0 1px 0 #d84515;
+    box-shadow: inset 0 1px 0 #f8ad7c;
   }
   &.disabled,
   &.disabled:hover {
-  border: 1px solid #ccc;
-  background-color: #eee;
-  background-position: 0 -600px;
-  color: #999;
-  text-shadow: 0 1px 0 #fff;
+    border: 1px solid #ccc;
+    background-color: #eee;
+    background-position: 0 -600px;
+    color: #999;
+    text-shadow: 0 1px 0 #fff;
   }
   &.sml {
-  line-height: 16px;
-  min-height: 16px; /* FireFox doesn't like line-height in its buttons */
-  padding: 0 .75em;
-  margin: 0 3px 0 0;
-  font-size: .75em;
-  vertical-align: text-bottom;
-  border-radius: 2px;
+    line-height: 16px;
+    min-height: 16px; /* FireFox doesn't like line-height in its buttons */
+    padding: 0 .75em;
+    margin: 0 3px 0 0;
+    font-size: .75em;
+    vertical-align: text-bottom;
+    border-radius: 2px;
+    color: #333;
   }
 }
 
@@ -369,8 +370,6 @@ leftColumnWidth = 240px;
   }
 }
 
-
-
 .dropdown {
   position: relative;
   &:hover {
@@ -434,6 +433,12 @@ leftColumnWidth = 240px;
     &.alert {
       background-image: url(../img/marker_alert.png);
     }
+  }
+  .fullscreen {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 6px;
   }
 }
 

@@ -69,12 +69,13 @@ function(
     })
   };
 
-  Chart.dataDefaults = function(project, device, dataType, timezone) {
+  Chart.dataDefaults = function(project, device, dataType) {
     var
       ddl = {
         'Panel': 'pnl',
         'String': 'str-pnl-calc',
-        'Inverter': 'bus-str-calc'
+        'DC Bus': 'bus-str-calc',
+        'Generation Meter': 'acm'
       },
       column = {
         'Panel': {
@@ -89,10 +90,13 @@ function(
           voltage: 'dc_voltage',
           panel_power_mean: 'dc_power_output_mean'
         },
-        'Inverter': {
+        'DC Bus': {
           power: 'dc_power',
           current: 'dc_current',
           voltage: 'dc_voltage'
+        },
+        'Generation Meter': {
+          power: 'ac_power_mean'
         }
       },
       dataDefinition
@@ -105,21 +109,8 @@ function(
         'dtstart': 'today',
         'dtstop': 'now',
         'columns': ['freezetime', 'irradiance'],
-        project_timezone: timezone || null
+        project_timezone: project.get('timezone')
       };
-      /*
-      dataDefinition = {
-        'project_label': project.id,
-        'ddl': 'env',
-        'dtstart': 'today',
-        'dtstop': 'now',
-        'columns': ['freezetime', 'value_mean'],
-        'filters': [
-          {'column': 'attribute', 'in_set': ['irradiance']},
-          {'column': 'identifier', 'in_set': [project.id + ':IRRA-1']}
-        ]
-      };
-      */
     } else {
       dataDefinition = {
         'project_label': project.id,
@@ -133,7 +124,7 @@ function(
             'in_set': [device.get('graph_key')]
           }
         ],
-        project_timezone: timezone || null
+        project_timezone: project.get('timezone')
       };
     }
 
@@ -150,7 +141,7 @@ function(
       var series = [];
 
       var roundNumber = function(num, dec) {
-        var result = (num !== null)?Math.round(num*Math.pow(10,dec))/Math.pow(10,dec):null;
+        var result = (num !== null) ? Math.round(num*Math.pow(10,dec)) / Math.pow(10,dec) : null;
         return result;
       };
 
@@ -164,7 +155,7 @@ function(
             // Adjust time to milliseconds
             point[0] = point[0] * 1000;
             // Round watts to integers
-            point[1] = roundNumber(point[1], 0);
+            point[1] = roundNumber(point[1], 2);
           });
 
           seriesData = trace.data;
@@ -196,7 +187,7 @@ function(
         type: 'POST',
         dataType: 'json',
         data: {
-          traces: this.get('dataType')
+          traces: this.get('traces')
         }
       })
       .done(function(data){
@@ -328,6 +319,17 @@ function(
         this.chart.destroy();
       }
     },
+    smartSeriesBuilder: function(){
+      var series = [];
+
+      _.each(this.model.get('traces'), function(trace){
+        series.push({
+          name: trace.columns[1]
+        });
+      });
+
+      return series;
+    },
     smartAxesSelector: function(series){
       var axes = [];
 
@@ -375,6 +377,11 @@ function(
     initialize: function(options){
       //console.log('init', this, this.model);
       var that = this;
+
+      // If no series defs provided, build basic series for traces
+      if (!options.series) {
+        this.options.series = this.smartSeriesBuilder();
+      }
 
       // Run series through axis selector
       this.options.series = this.smartAxesSelector(this.options.series);
