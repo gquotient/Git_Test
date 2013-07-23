@@ -48,8 +48,13 @@ define([
     },
 
     buildChart: function(){
-      var project = this.options.project,
-        device = project.devices.findWhere({graph_key: this.model.get('identifier')});
+      var
+        project = this.options.project,
+        device = project.devices.findWhere({graph_key: this.model.get('identifier')}),
+        // Add an hour to either side of time range
+        startTime = this.model.get('fault_start') - (60 * 60),
+        stopTime = this.model.get('fault_stop') + (60 * 60)
+      ;
 
       this.$el.find('.deviceName').text(device.get('did'));
 
@@ -59,16 +64,16 @@ define([
             {
               'project_label': project.id,
               'ddl': 'pgen-env',
-              'dtstart': this.model.get('fault_start'),
-              'dtstop': this.model.get('fault_stop'),
+              'dtstart': startTime,
+              'dtstop': stopTime,
               'columns': ['freezetime', 'irradiance'],
               project_timezone: project.get('timezone')
             },
             {
               'project_label': project.id,
               'ddl': this.model.get('device_type'),
-              'dtstart': this.model.get('fault_start'),
-              'dtstop': this.model.get('fault_stop'),
+              'dtstart': startTime,
+              'dtstop': stopTime,
               'columns': ['freezetime', this.model.get('device_column')],
               'filters': [
                 {
