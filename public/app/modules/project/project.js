@@ -25,7 +25,7 @@ define([
   'hbs!project/templates/adminList',
   'hbs!project/templates/adminListItem',
   'hbs!project/templates/adminCreate',
-  'hbs!project/templates/changelog'
+  'hbs!project/templates/notes'
 ], function(
   $,
   _,
@@ -53,7 +53,7 @@ define([
   adminListTemplate,
   adminListItemTemplate,
   adminCreateTemplate,
-  changelogTemplate
+  notesTemplate
 ){
   var Project = { views: {Editor: Editor} };
 
@@ -76,7 +76,7 @@ define([
         energy: '',
         inverter: ''
       },
-      changelog: ''
+      notes: ''
     },
 
     initialize: function(){
@@ -304,12 +304,12 @@ define([
     },
 
     log: function(msg, user){
-      var log = this.get('changelog'),
+      var notes = this.get('notes'),
         now = new Date(),
         when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ',
         who = user ? user.get('name') + ' ' : '';
 
-      this.set({changelog: when + who + msg + '\n' + log});
+      this.set({notes: when + who + msg + '\n' + notes});
       this.lazySave();
     }
   });
@@ -879,15 +879,15 @@ define([
     }
   });
 
-  Project.views.ChangeLog = Marionette.ItemView.extend({
+  Project.views.Notes = Marionette.ItemView.extend({
     tagName: 'form',
     template: {
       type: 'handlebars',
-      template: changelogTemplate
+      template: notesTemplate
     },
 
     attributes: {
-      id: 'changelog'
+      id: 'notes'
     },
 
     ui: {
@@ -896,7 +896,7 @@ define([
 
     events: {
       'keyup textarea': function(e){
-        this.model.set('changelog', this.ui.textarea.val());
+        this.model.set('notes', this.ui.textarea.val());
 
         if (e.which === 27) {
           this.ui.textarea.blur();
@@ -904,18 +904,26 @@ define([
       },
 
       'blur textarea': function(){
-        this.model.save();
+        if (this.options.editable) {
+          this.model.save();
+        }
       }
     },
 
     modelEvents: {
-      'change:changelog': function(){
-        this.ui.textarea.val(this.model.get('changelog'));
+      'change:notes': function(){
+        this.ui.textarea.val(this.model.get('notes'));
       }
     },
 
+    onShow: function(){
+      this.ui.textarea.attr('disabled', !this.options.editable);
+    },
+
     onClose: function(){
-      this.model.save();
+      if (this.options.editable) {
+        this.model.save();
+      }
     }
   });
 

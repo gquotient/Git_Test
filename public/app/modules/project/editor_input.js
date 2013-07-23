@@ -53,8 +53,7 @@ define([
       this.dropdown = new Dropdown({collection: this.collection});
 
       this.listenTo(this.dropdown, 'itemview:select', function(view){
-        this.ui.input.val(view.model.get('name'));
-        this.trigger('apply');
+        this.triggerMethod('key:enter', view.model);
       });
 
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
@@ -68,10 +67,10 @@ define([
 
     keydownEvents: {
       9: 'key:tab',
+      13: 'key:enter',
       27: 'key:esc',
       38: 'key:up',
-      40: 'key:down',
-      13: 'apply'
+      40: 'key:down'
     },
 
     handleKeyEvent: function(e){
@@ -137,6 +136,17 @@ define([
 
       if (value) {
         this.ui.input.val(value);
+      }
+    },
+
+    onKeyEnter: function(model){
+      if (!model) {
+        model = this.collection.findWhere({name: this.parseInput()});
+      }
+
+      if (model) {
+        this.triggerMethod('apply', model);
+        this.ui.input.blur();
       }
     },
 

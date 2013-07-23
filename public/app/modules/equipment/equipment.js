@@ -16,8 +16,8 @@ define([
   var Equip = { views: {} },
 
     renderings = {
-      ELECTRICAL: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
-      COMMUNICATION: ['MANAGES', 'HAS']
+      POWER: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
+      DAQ: ['MANAGES', 'HAS']
     };
 
 

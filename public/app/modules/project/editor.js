@@ -13,7 +13,7 @@ define([
   Backbone,
   Marionette,
 
-  InputView,
+  InputField,
 
   editorTemplate
 ){
@@ -28,14 +28,77 @@ define([
       id: 'editor'
     },
 
+    inputFields: {
+      view: {
+        hotKey: 118,
+        collection: new Backbone.Collection([
+          {
+            name: 'Power Flow',
+            view: 'Canvas',
+            rendering: 'POWER'
+          }, {
+            name: 'Data Acquisition',
+            view: 'Canvas',
+            rendering: 'DAQ'
+          }, {
+            name: 'Device Table',
+            view: 'Table'
+          }, {
+            name: 'Notes',
+            view: 'Notes'
+          }
+        ]),
+
+        onShow: function(){
+          this.triggerMethod('key:enter', this.collection.first());
+        },
+
+        onApply: function(model){
+          this.placeholder = model.get('name');
+        }
+      },
+
+      add: {
+        hotKey: 97,
+        collection: new Backbone.Collection([], {comparator: 'name'}),
+
+        parseInput: function(){
+          var input = InputField.prototype.parseInput.call(this),
+            re = /^\d+\s*/,
+            match = re.exec(input),
+            times = match && parseInt(match[0], 10);
+
+          this.times = times < 1 ? 1 : times > 100 ? 100 : times;
+
+          return input.replace(re, '');
+        },
+
+        getAutocomplete: function(){
+          var value = InputField.prototype.getAutocomplete.call(this);
+
+          return value && this.times > 1 ? this.times + ' ' + value : value;
+        }
+      },
+
+      connect: {
+        hotKey: 99,
+        collection: new Backbone.Collection([], {comparator: 'name'})
+      },
+
+      disconnect: {
+        hotKey: 100,
+        collection: new Backbone.Collection([], {comparator: 'name'})
+      },
+
+      import: {
+        hotKey: 105
+      }
+    },
+
     initialize: function(options){
       this.equipment = options.equipment;
       this.user = options.user;
-
-      this.viewCollection = new Backbone.Collection();
-      this.addCollection = new Backbone.Collection([], {comparator: 'name'});
-      this.connectCollection = new Backbone.Collection([], {comparator: 'name'});
-      this.disconnectCollection = new Backbone.Collection([], {comparator: 'name'});
+      this.editable = options.editable;
 
       this.listenTo(Backbone, 'editor:selection', function(selection){
         this.selection = selection.length > 0 ? selection : null;
@@ -58,9 +121,29 @@ define([
     },
 
     modelEvents: {
-      sync: function(project){
+      'sync': function(project){
         this.checkRenderings(project.outgoing);
+      },
+
+      'change:editor': function(project, value){
+        this.editable = value === this.user.get('email');
+        this.toggleEditable();
       }
+    },
+
+    toggleEditable: function(){
+      this.$el.find('input:not(.nav)').attr('disabled', !this.editable);
+      this.$('#lock-message').html(this.lockMessage());
+    },
+
+    lockMessage: function(){
+      var msg = '';
+
+      if (!this.editable) {
+        msg = (this.model.get('editor') || 'Someone') + ' has this project locked';
+      }
+
+      return msg;
     },
 
     checkRenderings: function(devices, target){
@@ -104,105 +187,47 @@ define([
     },
 
     onShow: function(){
-      this.buildInputViews();
-
-      this.onViewFocus();
-      this.onViewApply();
-    },
-
-    inputViews: {
-      view: {
-        hotKey: 118
-      },
-      add: {
-        hotKey: 97,
-
-        parseInput: function(){
-          var input = InputView.prototype.parseInput.call(this),
-            re = /^\d+\s*/,
-            match = re.exec(input),
-            times = match && parseInt(match[0], 10);
-
-          this.times = times < 1 ? 1 : times > 100 ? 100 : times;
-
-          return input.replace(re, '');
-        },
-
-        getAutocomplete: function(){
-          var value = InputView.prototype.getAutocomplete.call(this);
-
-          return value && this.times > 1 ? this.times + ' ' + value : value;
-        }
-      },
-      connect: {
-        hotKey: 99
-      },
-      disconnect: {
-        hotKey: 100
-      },
-      import: {
-        hotKey: 105
-      }
-    },
-
-    buildInputViews: function(){
-      _.each(this.inputViews, function(options, name){
-        var collection = this[name + 'Collection'],
-          view = this[name + 'View'] = _.extend( new InputView({
-            el: this.$('#' + name),
-            collection: collection
-          }), options);
+      _.each(this.inputFields, function(options, name){
+        var view = _.extend( new InputField({
+          collection: options.collection,
+          el: this.$('#' + name)
+        }), _.omit(options, 'collection'));
 
         _.each(['focus', 'apply'], function(evnt){
           this.listenTo(view, evnt, function(){
-            this.triggerMethod(name + ':' + evnt);
+            var args = Array.prototype.slice.apply(arguments);
+
+            args.unshift(name + ':' + evnt, view);
+            Marionette.triggerMethod.apply(this, args);
           });
         }, this);
-      }, this);
-    },
 
-    onViewFocus: function(){
-      var views = [];
-
-      _.each(this.equipment.getRenderingLabels(), function(label){
-        views.push({
-          name: label[0].toUpperCase() + label.slice(1).toLowerCase(),
-          rendering: label,
-          collection: this.model.devices,
-          editable: this.options.editable
-        });
+        Marionette.triggerMethod.call(view, 'show');
       }, this);
 
-      views.push({
-        name: 'Change Log',
-        model: this.model
-      }, {
-        name: 'Device Table',
-        collection: this.model.devices
-      });
-
-      this.viewCollection.reset(views);
+      this.toggleEditable();
     },
 
-    onAddFocus: function(){
-      var equipment = [];
+    onAddFocus: function(view){
+      var rendering = this.currentView.get('rendering'),
+        equipment = [];
 
       this.equipment.each(function(equip){
 
         // Don't include equipment that can't be rendered.
-        if (!equip.hasRendering(this.currentView)) { return; }
+        if (!equip.hasRendering(rendering)) { return; }
 
         if (!this.selection) {
 
           // Don't include equipment that isn't root for the current view.
-          if (!equip.isRoot(this.currentView)) { return; }
+          if (!equip.isRoot(rendering)) { return; }
 
         } else {
 
           // Don't include equipment that doesn't have a relationship in the
-          // current view or that can't be added to the selected devices.
+          // current rendering or that can't be added to the selected devices.
           if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, this.currentView);
+            var rel = equip.getRelationship(select.equipment, rendering);
 
             return !rel || !select.equipment.outgoing.contains(equip);
           }, this)) { return; }
@@ -211,11 +236,12 @@ define([
         equipment.push(equip);
       }, this);
 
-      this.addCollection.reset(equipment);
+      view.collection.reset(equipment);
     },
 
-    onConnectFocus: function(){
-      var devices = [];
+    onConnectFocus: function(view){
+      var rendering = this.currentView.get('rendering'),
+        devices = [];
 
       if (this.selection) {
         this.model.devices.each(function(device){
@@ -225,12 +251,12 @@ define([
           if (this.selection.contains(device)) { return; }
 
           // Don't include devices that can't be rendered.
-          if (!equip.hasRendering(this.currentView)) { return; }
+          if (!equip.hasRendering(rendering)) { return; }
 
-          // Don't include devices that don't have a relationship in the
-          // current view or are already children of the selected devices.
+          // Don't include devices that don't have a relationship in the current
+          // rendering or are already children of the selected devices.
           if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, this.currentView);
+            var rel = equip.getRelationship(select.equipment, rendering);
 
             return !rel || select.hasChild(device, rel);
           }, this)) { return; }
@@ -239,11 +265,12 @@ define([
         }, this);
       }
 
-      this.connectCollection.reset(devices);
+      view.collection.reset(devices);
     },
 
-    onDisconnectFocus: function(){
-      var devices = [];
+    onDisconnectFocus: function(view){
+      var rendering = this.currentView.get('rendering'),
+        devices = [];
 
       if (this.selection) {
         this.model.devices.each(function(device){
@@ -253,9 +280,9 @@ define([
           if (this.selection.contains(device)) { return; }
 
           // Don't include devices that don't have a relationship in the current
-          // view or that don't share a connection with the selected devices.
+          // rendering or that don't share a connection with the selected devices.
           if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, this.currentView);
+            var rel = equip.getRelationship(select.equipment, rendering);
 
             return !rel || !select.outgoing.contains(device);
           }, this)) { return; }
@@ -267,74 +294,51 @@ define([
         }, this);
       }
 
-      this.disconnectCollection.reset(devices);
+      view.collection.reset(devices);
     },
 
-    onViewApply: function(){
-      var name = this.viewView.parseInput(),
-        view = this.viewCollection.findWhere({name: name});
+    onViewApply: function(view, model){
+      if (this.currentView !== model) {
+        this.currentView = model;
+        this.selection = null;
 
-      if (view) {
-        if (this.currentView !== name) {
-          this.currentView = view.get('rendering') || name;
-          this.selection = null;
-          Backbone.trigger('editor:change:view', view);
-        }
-
-        this.viewView.placeholder = name;
-        this.viewView.ui.input.blur();
+        Backbone.trigger('editor:change:view', _.extend(model.toJSON(), {
+          model: this.model,
+          collection: this.model.devices,
+          editable: this.editable
+        }));
       }
     },
 
-    onAddApply: function(){
-      var times = this.addView.times || 1,
-        name = this.addView.parseInput(),
-        equip = this.addCollection.findWhere({name: name});
+    onAddApply: function(view, model){
+      var times = view.times || 1;
 
-      if (equip) {
-        if (this.selection && this.selection.length > 0) {
-          this.selection.each(function(target){
-            _.times(times, function(){
-              this.addDevice(equip, target);
-            }, this);
-          }, this);
-        } else {
+      if (this.selection && this.selection.length > 0) {
+        this.selection.each(function(target){
           _.times(times, function(){
-            this.addDevice(equip);
+            this.addDevice(model, target);
           }, this);
-        }
-
-        this.addView.ui.input.blur();
+        }, this);
+      } else {
+        _.times(times, function(){
+          this.addDevice(model);
+        }, this);
       }
     },
 
-    onConnectApply: function(){
-      var name = this.connectView.parseInput(),
-        device = this.connectCollection.findWhere({name: name});
-
-      if (device) {
-        if (this.selection) {
-          this.selection.each(function(target){
-            this.connectDevice(device, target);
-          }, this);
-        }
-
-        this.connectView.ui.input.blur();
+    onConnectApply: function(view, model){
+      if (this.selection) {
+        this.selection.each(function(target){
+          this.connectDevice(model, target);
+        }, this);
       }
     },
 
-    onDisconnectApply: function(){
-      var name = this.disconnectView.parseInput(),
-        device = this.disconnectCollection.findWhere({name: name});
-
-      if (device) {
-        if (this.selection) {
-          this.selection.each(function(target){
-            this.disconnectDevice(device, target);
-          }, this);
-        }
-
-        this.disconnectView.ui.input.blur();
+    onDisconnectApply: function(view, model){
+      if (this.selection) {
+        this.selection.each(function(target){
+          this.disconnectDevice(model, target);
+        }, this);
       }
     },
 
@@ -348,6 +352,7 @@ define([
 
     addDevice: function(equip, target){
       var project = this.model,
+        rendering = this.currentView.get('rendering'),
         device = equip.factory(project),
         parnt, rel;
 
@@ -356,8 +361,8 @@ define([
         parnt = project;
       }
 
-      if (target && equip.hasRendering(this.currentView)) {
-        equip.addRelativeRendering(device, project, this.currentView, target);
+      if (target && equip.hasRendering(rendering)) {
+        equip.addRelativeRendering(device, project, rendering, target);
         parnt = parnt || target;
       }
 
@@ -392,6 +397,7 @@ define([
 
     deleteDevice: function(device){
       var project = this.model,
+        rendering = this.currentView.get('rendering'),
         equip = device.equipment,
         targets;
 
@@ -414,12 +420,12 @@ define([
       // Otherwise, if the device has no outgoing relationships in the current
       // view.
       } else if (!device.outgoing.any(function(other){
-        return equip.getRelationship(other, this.currentView);
+        return equip.getRelationship(other, rendering);
       }, this)) {
 
         // Then find all of the incoming relationship for the current view.
         targets = device.incoming.filter(function(other){
-          return equip.getRelationship(other, this.currentView);
+          return equip.getRelationship(other, rendering);
         }, this);
 
         // And if the device has at least one incoming relationship in another
@@ -434,10 +440,11 @@ define([
 
     connectDevice: function(device, target){
       var project = this.model,
+        rendering = this.currentView.get('rendering'),
         equip = device.equipment,
         rel = equip.getRelationship(target);
 
-      if (rel && equip.hasRendering(this.currentView)) {
+      if (rel && equip.hasRendering(rendering)) {
         $.ajax('/api/relationships', {
           type: 'POST',
           data: {
@@ -447,8 +454,8 @@ define([
             to_id: device.get('id')
           }
         }).done(_.bind(function(){
-          if (!device.getPosition(this.currentView)) {
-            equip.addRelativeRendering(device, project, this.currentView, target);
+          if (!device.getPosition(rendering)) {
+            equip.addRelativeRendering(device, project, rendering, target);
             device.save();
           }
 
@@ -468,6 +475,7 @@ define([
 
     disconnectDevice: function(device, target){
       var project = this.model,
+        rendering = this.currentView.get('rendering'),
         equip = device.equipment,
         rel = equip.getRelationship(target);
 
@@ -485,9 +493,9 @@ define([
           device.disconnectFrom(target);
 
           if (device.incoming.all(function(other){
-            return !equip.getRelationship(other, this.currentView);
+            return !equip.getRelationship(other, rendering);
           }, this)) {
-            device.setPosition(this.currentView, null, true);
+            device.setPosition(rendering, null, true);
           }
 
           project.log([
