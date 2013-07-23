@@ -529,6 +529,12 @@ define([
       id: 'leafletContainer'
     },
 
+    fullscreen: {
+      active: false,
+      activate: false,
+      close: false
+    },
+
     fitToBounds: function(bounds){
       if (!bounds && this.collection.length === 0) { return; }
 
@@ -562,6 +568,33 @@ define([
 
       this.triggerRendered();
       return this;
+    },
+
+    initFullscreen: function(){
+      // Save fullscreen method
+      if (this.el.webkitRequestFullscreen) { this.fullscreen.activate = this.el.webkitRequestFullscreen; }
+      else if (this.el.mozRequestFullScreen) { this.fullscreen.activate = this.el.mozRequestFullScreen; }
+      else if (this.el.requestFullscreen) { this.fullscreen.activate = this.el.requestFullscreen; }// Opera
+
+      // Save exit fullscreen method
+      if (document.webkitExitFullscreen) { this.fullscreen.close = document.webkitExitFullscreen; }
+      else if (document.mozCancelFullscreen) { this.fullscreen.close = document.mozCancelFullscreen; }
+      else if (document.exitFullscreen) { this.fullscreen.close = document.exitFullscreen; }
+
+      // Add button only if fullscreen API is available
+      if (this.fullscreen.activate) {
+        this.$el.append('<button class="fullscreen button sml">Fullscreen</button>');
+      }
+    },
+
+    toggleFullscreen: function(){
+      if (!this.fullscreen.active) {
+        this.fullscreen.active = true;
+        this.fullscreen.activate.call(this.el);
+      } else {
+        this.fullscreen.active = false;
+        this.fullscreen.close.call(document);
+      }
     },
 
     layerControls: function(){
@@ -669,13 +702,16 @@ define([
 
       this.fitToBounds();
 
+      this.initFullscreen();
+
       this.listenTo(Backbone, 'window:resize', this.map.viewreset);
     },
 
     events: {
       'click .layerControl': function(event){
         this.toggleLayer(event.target.id.split('_')[1]);
-      }
+      },
+      'click .fullscreen': 'toggleFullscreen'
     }
   });
 
