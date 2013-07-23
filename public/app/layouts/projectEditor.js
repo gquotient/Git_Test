@@ -60,6 +60,17 @@ define([
           this.content.show( new View(args) );
         }
       });
+
+      // Close the editor and release the lock after 5min of inactivity
+      this.listenTo(Backbone, 'editor', _.throttle(function(){
+        if (this.timer) {
+          clearTimeout(this.timer);
+        }
+
+        this.timer = setTimeout(function(){
+          Backbone.history.navigate('/admin/projects', true);
+        }, 5 * 60 * 1000);
+      }, 1000));
     },
 
     updateModel: function(){
