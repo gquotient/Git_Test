@@ -56,7 +56,14 @@ define([
       var chart_powerAndIrradiance = new Chart.views.Line({
         model: new Chart.models.timeSeries().set({
           'traces': [
-            Chart.dataDefaults(project, device, 'irradiance', project.get('timezone')),
+            {
+              'project_label': project.id,
+              'ddl': 'pgen-env',
+              'dtstart': this.model.get('fault_start'),
+              'dtstop': this.model.get('fault_stop'),
+              'columns': ['freezetime', 'irradiance'],
+              project_timezone: project.get('timezone')
+            },
             {
               'project_label': project.id,
               'ddl': this.model.get('device_type'),
