@@ -36,6 +36,13 @@ define([
       deviceName: '.deviceName'
     },
 
+    events: {
+      'click .device': function(event){
+        event.preventDefault();
+        Backbone.history.navigate('/project/' + this.project.id + '/devices/' + this.device.get('graph_key'), true);
+      }
+    },
+
     onShow: function(){
       Backbone.trigger(
         'set:breadcrumbs',
@@ -49,14 +56,14 @@ define([
 
     buildChart: function(){
       var
-        project = this.options.project,
-        device = project.devices.findWhere({graph_key: this.model.get('identifier')}),
+        project = this.project,
+        device = this.device,
         // Add an hour to either side of time range
         startTime = this.model.get('fault_start') - (60 * 60),
         stopTime = this.model.get('fault_stop') + (60 * 60)
       ;
 
-      this.$el.find('.deviceName').text(device.get('did'));
+      this.$el.find('.deviceName').html('<a href="#' + device.get('graph_key') + '" class="device">' + device.get('did') + '</a>');
 
       var chart_powerAndIrradiance = new Chart.views.Line({
         model: new Chart.models.timeSeries({
@@ -97,8 +104,11 @@ define([
     initialize: function(options){
       var that = this;
 
+      this.project = options.project;
+
       // Fetch project to get devices
       this.options.project.fetch({data: {project_label: options.project.id}}).done(function(){
+        that.device = that.project.devices.findWhere({graph_key: that.model.get('identifier')});
         that.buildChart();
       });
     }
