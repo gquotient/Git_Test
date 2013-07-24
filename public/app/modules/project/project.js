@@ -76,7 +76,8 @@ define([
         energy: '',
         inverter: ''
       },
-      notes: ''
+      notes: '',
+      status: 'OK'
     },
 
     initialize: function(){
@@ -85,6 +86,23 @@ define([
       this.issues = new Issue.Collection([], {projectId: this.id});
 
       this.lazySave = _.debounce(Backbone.Model.prototype.save, 1000);
+
+      this.listenTo(this.issues, 'reset', this.setStatus);
+    },
+
+    setStatus: function(issues){
+      var statusLevels = ['OK', 'Warning', 'Alert'],
+          status = 'OK';
+
+      issues.each(function(issue){
+        var priority = issue.get('active_conditions')[0].priority;
+
+        if (_.indexOf(statusLevels, priority) > _.indexOf(statusLevels, status)) {
+          status = priority;
+        }
+      });
+
+      this.set('status', status);
     },
 
     setLock: function(lock){
@@ -344,9 +362,7 @@ define([
       type: 'handlebars',
       template: dataListItemTemplate
     },
-    render: function(){
-      this.setElement(this.template.template(this.model.attributes));
-    },
+    tagName: 'tr',
     events: {
       mouseover: function(){
         Backbone.trigger('mouseover:project', this.model);
@@ -357,6 +373,9 @@ define([
       click: function(){
         Backbone.trigger('select:project', this.model);
       }
+    },
+    initialize: function(options){
+      this.listenTo(this.model, 'change:status', this.render);
     }
   });
 
@@ -367,7 +386,6 @@ define([
     },
     itemViewContainer: 'tbody',
     itemView: Project.views.DataListItem,
-
     onClose: function(){
       this.collection = null;
     }
@@ -432,6 +450,10 @@ define([
       var highlightTimeout = function() {
         that.highlightTimeout = setTimeout(highlight, 200);
       };
+
+      this.listenTo(this.model, 'change:status', function(model){
+        this.marker.setIcon(this.markerStyles[model.get('status')]);
+      });
 
       this.listenTo(Backbone, 'mouseover:project', this.highlight);
       this.listenTo(Backbone, 'mouseout:project', highlightTimeout);

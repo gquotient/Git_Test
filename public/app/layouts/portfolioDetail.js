@@ -70,6 +70,8 @@ define([
     },
 
     selectPortfolio: function(model) {
+      model.fetchIssues();
+
       // Build KPIs
       var kpis = new Portfolio.views.AggregateKpis({ model: model });
       this.kpis.show(kpis);
