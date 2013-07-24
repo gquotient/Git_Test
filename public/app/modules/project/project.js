@@ -10,6 +10,7 @@ define([
   'device',
   'issue',
 
+  './admin',
   './editor',
 
   'hbs!project/templates/dataList',
@@ -19,13 +20,7 @@ define([
   'hbs!project/templates/navigationList',
   'hbs!project/templates/navigationListItem',
   'hbs!project/templates/kpis',
-
-  'hbs!project/templates/item',
-
-  'hbs!project/templates/adminList',
-  'hbs!project/templates/adminListItem',
-  'hbs!project/templates/adminCreate',
-  'hbs!project/templates/notes'
+  'hbs!project/templates/item'
 ], function(
   $,
   _,
@@ -38,7 +33,8 @@ define([
   Device,
   Issue,
 
-  Editor,
+  adminViews,
+  editorViews,
 
   dataListTemplate,
   dataListItemTemplate,
@@ -47,15 +43,9 @@ define([
   navigationListTemplate,
   navigationListItemTemplate,
   kpisTemplate,
-
-  itemTemplate,
-
-  adminListTemplate,
-  adminListItemTemplate,
-  adminCreateTemplate,
-  notesTemplate
+  itemTemplate
 ){
-  var Project = { views: {Editor: Editor} };
+  var Project = { views: {} };
 
   Project.Model = Backbone.Model.extend({
     idAttribute: 'project_label',
@@ -814,140 +804,7 @@ define([
     }
   });
 
-  Project.views.AdminListItem = Marionette.ItemView.extend({
-    tagName: 'tr',
-    template: {
-      type: 'handlebars',
-      template: adminListItemTemplate
-    },
-
-    triggers: {
-      'click button.edit': 'edit',
-      'click button.delete': 'delete'
-    },
-
-    onEdit: function(){
-      Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
-    },
-
-    onDelete: function(){
-      this.model.destroy({
-        wait: true
-      });
-    }
-  });
-
-  Project.views.AdminList = Marionette.CompositeView.extend({
-    tagName: 'form',
-    template: {
-      type: 'handlebars',
-      template: adminListTemplate
-    },
-
-    itemView: Project.views.AdminListItem,
-    itemViewContainer: 'tbody',
-
-    triggers: {
-      'click button.add': 'create'
-    }
-  });
-
-  Project.views.AdminCreate = Marionette.ItemView.extend({
-    tagName: 'form',
-    template: {
-      type: 'handlebars',
-      template: adminCreateTemplate
-    },
-
-    ui: {
-      'name': '#name',
-      'label': '#site_label',
-      'latitude': '#latitude',
-      'longitude': '#longitude',
-      'elevation': '#elevation'
-    },
-
-    triggers: {
-      'submit': 'submit',
-      'reset': 'reset',
-      'click button.cancel': 'cancel'
-    },
-
-    onSubmit: function(){
-      var user = this.options.user;
-
-      this.collection.create({
-        display_name: this.ui.name.val().trim(),
-        site_label: this.ui.label.val().replace(/\W|_/g, ''),
-        latitude: parseFloat(this.ui.latitude.val()),
-        longitude: parseFloat(this.ui.longitude.val()),
-        elevation: parseFloat(this.ui.elevation.val()) || 0
-      }, {
-        wait: true,
-        success: function(model){
-          model.log('created project', user);
-        }
-      });
-
-      this.close();
-    },
-
-    onReset: function(){
-      this.render();
-    },
-
-    onCancel: function(){
-      this.close();
-    }
-  });
-
-  Project.views.Notes = Marionette.ItemView.extend({
-    tagName: 'form',
-    template: {
-      type: 'handlebars',
-      template: notesTemplate
-    },
-
-    attributes: {
-      id: 'notes'
-    },
-
-    ui: {
-      textarea: 'textarea'
-    },
-
-    events: {
-      'keyup textarea': function(e){
-        this.model.set('notes', this.ui.textarea.val());
-
-        if (e.which === 27) {
-          this.ui.textarea.blur();
-        }
-      },
-
-      'blur textarea': function(){
-        if (this.options.editable) {
-          this.model.save();
-        }
-      }
-    },
-
-    modelEvents: {
-      'change:notes': function(){
-        this.ui.textarea.val(this.model.get('notes'));
-      }
-    },
-
-    onShow: function(){
-      this.ui.textarea.attr('disabled', !this.options.editable);
-    },
-
-    onClose: function(){
-      if (this.options.editable) {
-        this.model.save();
-      }
-    }
-  });
+  _.extend(Project.views, adminViews, editorViews);
 
   return Project;
 });

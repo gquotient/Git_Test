@@ -4,9 +4,10 @@ define([
   'backbone',
   'backbone.marionette',
 
-  './editor_input',
+  './inputField',
 
-  'hbs!project/templates/editor'
+  'hbs!project/templates/editor',
+  'hbs!project/templates/notes'
 ], function(
   $,
   _,
@@ -15,9 +16,12 @@ define([
 
   InputField,
 
-  editorTemplate
+  editorTemplate,
+  notesTemplate
 ){
-  return Marionette.ItemView.extend({
+  var views = {};
+
+  views.Editor = Marionette.ItemView.extend({
     tagName: 'form',
     template: {
       type: 'handlebars',
@@ -502,4 +506,54 @@ define([
       }
     }
   });
+
+  views.Notes = Marionette.ItemView.extend({
+    tagName: 'form',
+    template: {
+      type: 'handlebars',
+      template: notesTemplate
+    },
+
+    attributes: {
+      id: 'notes'
+    },
+
+    ui: {
+      textarea: 'textarea'
+    },
+
+    events: {
+      'keyup textarea': function(e){
+        this.model.set('notes', this.ui.textarea.val());
+
+        if (e.which === 27) {
+          this.ui.textarea.blur();
+        }
+      },
+
+      'blur textarea': function(){
+        if (this.options.editable) {
+          this.model.save();
+        }
+      }
+    },
+
+    modelEvents: {
+      'change:notes': function(){
+        this.ui.textarea.val(this.model.get('notes'));
+      }
+    },
+
+    onShow: function(){
+      this.ui.textarea.attr('disabled', !this.options.editable);
+    },
+
+    onClose: function(){
+      if (this.options.editable) {
+        this.model.save();
+      }
+    }
+  });
+
+  return views;
 });

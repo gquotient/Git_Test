@@ -4,7 +4,7 @@ define([
   'backbone',
   'backbone.marionette',
 
-  'hbs!project/templates/editorInputItem'
+  'hbs!project/templates/inputFieldItem'
 ], function(
   $,
   _,
@@ -24,6 +24,7 @@ define([
           type: 'handlebars',
           template: inputItemTemplate
         },
+
         triggers: {
           'mousedown a': 'select'
         }
