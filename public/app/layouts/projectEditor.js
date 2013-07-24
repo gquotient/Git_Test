@@ -43,12 +43,12 @@ define([
       this.equipment = new Equipment.Collection();
 
       // Fetch equipment and project from server.
-      this.equipment.fetch().done(function(){
-
-        that.updateModel().fail(function(){
-          that.model.makeEditable().done(function(){
-            that.updateModel();
-          });
+      $.when(this.equipment.fetch(), this.model.setLock()).always(function(){
+        that.model.fetch({
+          data: {
+            index_name: 'AlignedProjects/no'
+          },
+          equipment: that.equipment
         });
       });
 
@@ -73,29 +73,12 @@ define([
       }, 1000));
     },
 
-    updateModel: function(){
-      return this.model.fetch({
-        data: {
-          index_name: 'AlignedProjects/no'
-        },
-        equipment: this.equipment
-      });
-    },
-
     onShow: function(){
-      var that = this;
-
-      // Try to get a lock for this project before editing.
-      this.model.setLock().always(function(data, stat){
-        that.overlay.show( new Project.views.Editor({
-          model: that.model,
-          equipment: that.equipment,
-          user: that.options.user,
-          editable: stat === 'success' && JSON.parse(data).locked
-        }));
-      });
-
-      this.delegateEditorEvents();
+      this.overlay.show( new Project.views.Editor({
+        model: this.model,
+        equipment: this.equipment,
+        user: this.options.user
+      }));
     },
 
     onClose: function(){
