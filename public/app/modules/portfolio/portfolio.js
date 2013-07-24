@@ -55,6 +55,42 @@ define([
       this.set(this.aggregateKpis());
     },
 
+    fetchIssues: function(){
+      var that = this,
+          projectIds = [];
+
+      this.projects.each(function(project){
+        projectIds.push(project.id);
+      });
+
+      return $.ajax({
+        url: '/api/alarms/active/' + projectIds.join(','),
+        cache: false,
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done(function(data){
+        that.trigger('data:done', data);
+        that.parseIssues(data);
+      });
+    },
+
+    parseIssues: function(data){
+      var issues = data.alarms;
+
+      this.projects.each(function(project){
+        var projectIssues = [];
+
+        _.each(issues, function(issue){
+          if (issue.project_label === project.id) {
+            projectIssues.push(issue);
+          }
+        });
+
+        project.issues.reset(projectIssues);
+      });
+    },
+
     aggregateKpis: function(){
       var that = this;
 
@@ -76,7 +112,6 @@ define([
     initialize: function(models, options){
       this.projects = options.projects;
     }
-
     // comparator: 'display_name'
   });
 
