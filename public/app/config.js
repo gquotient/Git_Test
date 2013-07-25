@@ -149,9 +149,8 @@ require.config({
       deps: ['jquery'],
       exports: 'Highcharts'
     },
-    walltime: {
-      deps: ['walltimeData'],
-      exports: ['Walltime']
+    walltimeData: {
+      exports: 'WallTime.data'
     }
   },
   // hbs config

@@ -17,7 +17,9 @@ define(
   'backbone.marionette',
 
   'highcharts',
-  'walltime'
+
+  'walltime',
+  'walltimeData'
 ],
 function(
   $,
@@ -25,8 +27,14 @@ function(
   Backbone,
   Marionette,
 
-  Highcharts
+  Highcharts,
+
+  WallTime,
+  walltimeData
 ){
+  // This is ugly, the lib author is working on something better
+  WallTime.init(walltimeData.rules, walltimeData.zones);
+
   var Chart = { models: {}, views: {} };
 
   // NOTE: This isn't particularly useful at the moment
@@ -149,14 +157,15 @@ function(
       // Loop through each trace
       _.each(data, function(trace, index){
         var seriesData = [],
-            timezone = trace.project_timezone;
+            timezone = this.get('traces')[index].project_timezone;
 
         if (trace && trace.data) {
           // Loop through each point on the trace
           _.each(trace.data, function(point, index){
-            // Adjust time to milliseconds
-            //point[0] = WallTime.UTCToWallTime(new Date(point[0]*1000), timezone);
-            point[0] = point[0] * 1000;
+            var localTime = new Date(WallTime.UTCToWallTime(new Date(point[0]*1000), timezone).wallTime).getTime();
+
+            // Change point to local js epoch time
+            point[0] = localTime;
             // Round watts to integers
             point[1] = roundNumber(point[1], 2);
           });
