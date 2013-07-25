@@ -16,7 +16,8 @@ define(
   'backbone',
   'backbone.marionette',
 
-  'highcharts'
+  'highcharts',
+  'walltime'
 ],
 function(
   $,
@@ -147,12 +148,14 @@ function(
 
       // Loop through each trace
       _.each(data, function(trace, index){
-        var seriesData = [];
+        var seriesData = [],
+            timezone = trace.project_timezone;
 
         if (trace && trace.data) {
           // Loop through each point on the trace
           _.each(trace.data, function(point, index){
             // Adjust time to milliseconds
+            //point[0] = WallTime.UTCToWallTime(new Date(point[0]*1000), timezone);
             point[0] = point[0] * 1000;
             // Round watts to integers
             point[1] = roundNumber(point[1], 2);
