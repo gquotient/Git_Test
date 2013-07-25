@@ -33,9 +33,9 @@ define([
     },
 
     _configureColumn: function(options){
-      var name = options.name,
-        getter = _.bind(this['get' + name] || this.defaultGet, this),
-        setter = _.bind(this['set' + name] || this.defaultSet, this),
+      var method = options.name.replace(/\W+/g, ''),
+        getter = _.bind(this['get' + method] || this.defaultGet, this),
+        setter = _.bind(this['set' + method] || this.defaultSet, this),
         omit = ['name', 'attr'],
         col = {};
 
