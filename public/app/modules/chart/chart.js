@@ -162,7 +162,7 @@ function(
         if (trace && trace.data) {
           // Loop through each point on the trace
           _.each(trace.data, function(point, index){
-            var localTime = new Date(WallTime.UTCToWallTime(new Date(point[0]*1000), timezone).wallTime).getTime();
+            var localTime = new Date(WallTime.UTCToWallTime(point[0]*1000, timezone).wallTime).getTime();
 
             // Change point to local js epoch time
             point[0] = localTime;
