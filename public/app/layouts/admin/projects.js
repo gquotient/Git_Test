@@ -43,6 +43,8 @@ define([
     },
 
     initialize: function(options){
+      this.markers = {};
+
       this.collection.fetch({
         data: {
           index_name: 'AlignedProjects'
@@ -80,6 +82,12 @@ define([
       Backbone.history.navigate('/admin/projects');
     },
 
+    collectionEvents: {
+      'add': 'setMarker',
+      'remove': 'removeMarker',
+      'reset': 'resetMarkers'
+    },
+
     onShow: function(){
       this.map = L.map(this.ui.map[0]).setView([0, 0], 1);
 
@@ -90,22 +98,72 @@ define([
 
       this.ui.map.append( this.geosearch.render().el );
       this.list.show(this.listView);
+      this.resetMarkers();
     },
 
     showEdit: function(model){
-      this.model = model;
-
-      this.edit.show( new Project.views.AdminEdit({
+      var view = new Project.views.AdminEdit({
         collection: this.collection,
         model: model,
         user: this.options.user
-      }));
+      });
+
+      if (!this.collection.contains(model)) {
+        this.listenToOnce(view, 'close', function(){
+          this.removeMarker(model);
+          this.model = null;
+        });
+      }
+
+      this.model = model;
+      this.edit.show(view);
     },
 
     onNewLocation: function(attr){
+      if (!this.model) {
+        this.showEdit( new Project.Model() );
+      }
+
       if (this.model && this.model.isNew()) {
         this.model.set(attr);
+        this.setMarker(this.model);
       }
+    },
+
+    setMarker: function(model){
+      var marker = this.markers[model.cid],
+        lat = model.get('latitude'),
+        lng = model.get('longitude');
+
+      if (!lat || !lng) { return; }
+
+      if (marker) {
+        marker.setLatLng([lat, lng]);
+
+      } else if (this.map) {
+        this.markers[model.cid] = L.marker([lat, lng]).addTo(this.map);
+      }
+    },
+
+    removeMarker: function(model){
+      var marker = this.markers[model.cid];
+
+      if (marker) {
+        this.map.removeLayer(marker);
+        delete this.markers[model.cid];
+      }
+    },
+
+    resetMarkers: function(){
+      _.each(this.markers, function(marker, cid){
+        if (this.collection.get(cid)) { return; }
+        if (this.model && this.model.cid === cid) { return; }
+        this.removeMarker({cid: cid});
+      }, this);
+
+      this.collection.each(function(model){
+        this.setMarker(model);
+      }, this);
     }
   });
 });
