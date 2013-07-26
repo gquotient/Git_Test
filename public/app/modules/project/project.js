@@ -301,16 +301,6 @@ define([
       return _.omit(resp, 'devices', 'rels');
     },
 
-    validate: function(attrs){
-      if (
-        attrs.name === '' ||
-        attrs.site_label === '' ||
-        isNaN(attrs.latitude) ||
-        isNaN(attrs.longitude) ||
-        isNaN(attrs.elevation)
-      ) { return 'error'; }
-    },
-
     log: function(msg, user){
       var notes = this.get('notes'),
         now = new Date(),

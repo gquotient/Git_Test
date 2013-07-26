@@ -64,51 +64,114 @@ define([
       template: adminEditTemplate
     },
 
-    ui: {
-      'name': '#name',
-      'label': '#site_label',
-      'latitude': '#latitude',
-      'longitude': '#longitude',
-      'elevation': '#elevation'
+    schema: {
+      display_name: {
+        el: '#name',
+        parse: function(value) {
+          return value.trim();
+        },
+        validate: function(value){
+          return value && value !== '';
+        }
+      },
+
+      site_label: {
+        el: '#site_label',
+        parse: function(value) {
+          return value.replace(/\W|_/g, '');
+        },
+        validate: function(value){
+          return value && value !== '';
+        }
+      },
+
+      latitude: {
+        el: '#latitude',
+        parse: function(value){
+          return parseFloat(value);
+        },
+        validate: function(value){
+          return !isNaN(value);
+        }
+      },
+
+      longitude: {
+        el: '#longitude',
+        parse: function(value){
+          return parseFloat(value);
+        },
+        validate: function(value){
+          return !isNaN(value);
+        }
+      }
+    },
+
+    ui: {},
+
+    events: function(){
+      var result = {};
+
+      _.each(this.schema, function(obj, key){
+        this.ui[key] = obj.el;
+
+        result['blur ' + obj.el] = function(){
+          var value = this.ui[key].val();
+
+          if (obj.parse) {
+            value = obj.parse.call(this, value);
+          }
+
+          if (obj.validate.call(this, value)) {
+            this.model.set(key, value);
+          } else {
+            this.ui[key].addClass('invalid');
+          }
+        };
+      }, this);
+
+      return result;
     },
 
     triggers: {
-      'submit': 'submit',
-      'reset': 'reset',
+      'submit': 'save',
+      'click button.edit': 'edit',
       'click button.cancel': 'cancel'
     },
 
     modelEvents: {
-      'change': 'render'
+      'change': 'update',
+      'destroy': 'close'
     },
 
-    onSubmit: function(){
-      var that = this;
+    onSave: function(){
+      this.$('input').blur();
+      if (this.$('.invalid').length > 0) { return; }
 
-      this.model.set({
-        display_name: this.ui.name.val().trim(),
-        site_label: this.ui.label.val().replace(/\W|_/g, ''),
-        latitude: parseFloat(this.ui.latitude.val()),
-        longitude: parseFloat(this.ui.longitude.val()),
-        elevation: parseFloat(this.ui.elevation.val()) || 0
-      });
+      this.model.set({elevation: 0});
 
-      this.collection.create(this.model, {
-        wait: true,
-        success: function(model){
-          model.log('created project', that.options.user);
-        }
-      });
-
-      this.close();
+      if (!this.collection.contains(this.model)) {
+        this.collection.create(this.model, {
+          wait: true
+        });
+      }
     },
 
-    onReset: function(){
-      this.render();
+    onEdit: function(){
+      if (this.collection.contains(this.model)) {
+        Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
+      }
     },
 
     onCancel: function(){
       this.close();
+    },
+
+    update: function(){
+      _.each(this.model.changed, function(value, key){
+        if (_.has(this.ui, key)) {
+          this.ui[key].val(value).removeClass('invalid');
+        }
+      }, this);
     }
   });
 

@@ -59,11 +59,9 @@ define([
           city: loc.address.city,
           state: loc.address.state,
           zipcode: loc.address.postcode,
-          latitude: loc.lat,
-          longitude: loc.lon
+          latitude: parseFloat(loc.lat),
+          longitude: parseFloat(loc.lon)
         });
-
-        this.map.setView([loc.lat, loc.lon], 18);
       });
 
       this.listView = new Project.views.AdminList({
@@ -71,11 +69,11 @@ define([
       });
 
       this.listenTo(this.listView, 'create', function(){
-        this.showEdit( new Project.Model() );
+        this.editProject();
       });
 
       this.listenTo(this.listView, 'itemview:edit', function(view, args){
-        this.showEdit(args.model);
+        this.editProject(args.model);
       });
 
       // Update history
@@ -89,7 +87,7 @@ define([
     },
 
     onShow: function(){
-      this.map = L.map(this.ui.map[0]).setView([0, 0], 1);
+      this.map = L.map(this.ui.map[0]).setView([35, 0], 3);
 
       // add an OpenStreetMap tile layer
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -97,51 +95,59 @@ define([
       }).addTo(this.map).setOpacity(0.99);
 
       this.ui.map.append( this.geosearch.render().el );
-      this.list.show(this.listView);
       this.resetMarkers();
+
+      this.list.show(this.listView);
     },
 
-    showEdit: function(model){
-      var view = new Project.views.AdminEdit({
-        collection: this.collection,
-        model: model,
-        user: this.options.user
-      });
-
-      if (!this.collection.contains(model)) {
-        this.listenToOnce(view, 'close', function(){
-          this.removeMarker(model);
-          this.model = null;
-        });
-      }
-
-      this.model = model;
-      this.edit.show(view);
+    onClose: function(){
+      this.map.remove();
     },
 
     onNewLocation: function(attr){
       if (!this.model) {
-        this.showEdit( new Project.Model() );
-      }
+        this.editProject(attr);
 
-      if (this.model && this.model.isNew()) {
+      } else if (this.model && this.model.isNew()) {
         this.model.set(attr);
-        this.setMarker(this.model);
+
+      } else {
+        this.focusView([attr.latitude, attr.longitude]);
       }
     },
 
     setMarker: function(model){
       var marker = this.markers[model.cid],
-        lat = model.get('latitude'),
-        lng = model.get('longitude');
+        loc = this.getLocation(model);
 
-      if (!lat || !lng) { return; }
+      if (!loc || !this.map) { return; }
 
       if (marker) {
-        marker.setLatLng([lat, lng]);
+        marker.setLatLng(loc);
 
-      } else if (this.map) {
-        this.markers[model.cid] = L.marker([lat, lng]).addTo(this.map);
+      } else {
+        marker = this.markers[model.cid] = L.marker(loc, {
+          title: model.get('display_name'),
+          draggable: model.isNew()
+        });
+
+        marker.on('click', function(){
+          if (model !== this.model) {
+            this.editProject(model);
+          }
+        }, this);
+
+        marker.on('dragend', function(){
+          if (model === this.model && model.isNew()) {
+            this.setLocation(model, marker.getLatLng());
+          }
+        }, this);
+
+        marker.addTo(this.map);
+      }
+
+      if (model === this.model) {
+        this.focusView(loc);
       }
     },
 
@@ -156,14 +162,71 @@ define([
 
     resetMarkers: function(){
       _.each(this.markers, function(marker, cid){
+        // Don't remove markers for projects still in the collection.
         if (this.collection.get(cid)) { return; }
+
+        // Don't remove the marker for the current project.
         if (this.model && this.model.cid === cid) { return; }
+
         this.removeMarker({cid: cid});
       }, this);
 
       this.collection.each(function(model){
         this.setMarker(model);
       }, this);
+    },
+
+    focusView: function(loc){
+      if (loc instanceof Backbone.Model) {
+        loc = this.getLocation(loc);
+      }
+
+      if (loc) {
+        this.map.setView(loc, 18);
+      }
+    },
+
+    editProject: function(model){
+      var view;
+
+      if (!(model instanceof Backbone.Model)) {
+        model = new Project.Model(model, {silent: false});
+        this.listenTo(model, 'change:latitude change:longitude', this.setMarker);
+        this.setMarker(model);
+      }
+
+      view = new Project.views.AdminEdit({
+        collection: this.collection,
+        model: model,
+        user: this.options.user
+      });
+
+      this.listenToOnce(view, 'close', function(){
+        if (!this.collection.contains(model)) {
+          this.stopListening(model);
+          this.removeMarker(model);
+        }
+
+        this.model = null;
+      });
+
+      this.model = model;
+      this.focusView(model);
+
+      this.edit.show(view);
+    },
+
+    getLocation: function(model){
+      if (model.has('latitude') && model.has('longitude')) {
+        return [model.get('latitude'), model.get('longitude')];
+      }
+    },
+
+    setLocation: function(model, loc){
+      model.set({
+        latitude: loc.lat,
+        longitude: loc.lng
+      });
     }
   });
 });

@@ -578,8 +578,20 @@ header {
   }
 
   #projectEdit {
+    position: relative;
     float: left;
-    padding: 12px;
+    width: 80%;
+    height: 100%;
+
+    ul {
+      list-style-type: none;
+      padding: 12px;
+      margin: 0;
+    }
+
+    input.invalid {
+      background: pink;
+    }
   }
 
   .actions {
