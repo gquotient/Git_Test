@@ -18,8 +18,7 @@ define(
 
   'highcharts',
 
-  'walltime',
-  'walltimeData'
+  'walltime'
 ],
 function(
   $,
@@ -29,11 +28,9 @@ function(
 
   Highcharts,
 
-  WallTime,
-  walltimeData
+  WallTime
 ){
-  // This is ugly, the lib author is working on something better
-  WallTime.init(walltimeData.rules, walltimeData.zones);
+
 
   var Chart = { models: {}, views: {} };
 

@@ -23,6 +23,6 @@
     "jquery-mousewheel": "latest",
     "highcharts": "latest",
     "handsontable": "git://github.com/ianmetcalf/jquery-handsontable.git#master",
-    "walltime": "git@github.com:sproutsocial/walltime-js.git"
+    "walltime-js": "latest"
   }
 }
