@@ -6,7 +6,8 @@ define([
 
   'hbs!project/templates/adminList',
   'hbs!project/templates/adminListItem',
-  'hbs!project/templates/adminCreate'
+  'hbs!project/templates/adminEdit',
+  'hbs!project/templates/adminGeosearch'
 ], function(
   $,
   _,
@@ -15,30 +16,29 @@ define([
 
   adminListTemplate,
   adminListItemTemplate,
-  adminCreateTemplate
+  adminEditTemplate,
+  adminGeosearchTemplate
 ){
   var views = {};
 
   views.AdminListItem = Marionette.ItemView.extend({
-    tagName: 'tr',
+    tagName: 'li',
     template: {
       type: 'handlebars',
       template: adminListItemTemplate
     },
 
     triggers: {
-      'click button.edit': 'edit',
+      'click a': 'edit',
       'click button.delete': 'delete'
     },
 
-    onEdit: function(){
-      Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
-    },
-
     onDelete: function(){
-      this.model.destroy({
-        wait: true
-      });
+      if (window.confirm('Are you sure you want to delete this prject?')) {
+        this.model.destroy({
+          wait: true
+        });
+      }
     }
   });
 
@@ -50,18 +50,18 @@ define([
     },
 
     itemView: views.AdminListItem,
-    itemViewContainer: 'tbody',
+    itemViewContainer: 'ul',
 
     triggers: {
-      'click button.add': 'create'
+      'click button.create': 'create'
     }
   });
 
-  views.AdminCreate = Marionette.ItemView.extend({
+  views.AdminEdit = Marionette.ItemView.extend({
     tagName: 'form',
     template: {
       type: 'handlebars',
-      template: adminCreateTemplate
+      template: adminEditTemplate
     },
 
     ui: {
@@ -78,19 +78,25 @@ define([
       'click button.cancel': 'cancel'
     },
 
-    onSubmit: function(){
-      var user = this.options.user;
+    modelEvents: {
+      'change': 'render'
+    },
 
-      this.collection.create({
+    onSubmit: function(){
+      var that = this;
+
+      this.model.set({
         display_name: this.ui.name.val().trim(),
         site_label: this.ui.label.val().replace(/\W|_/g, ''),
         latitude: parseFloat(this.ui.latitude.val()),
         longitude: parseFloat(this.ui.longitude.val()),
         elevation: parseFloat(this.ui.elevation.val()) || 0
-      }, {
+      });
+
+      this.collection.create(this.model, {
         wait: true,
         success: function(model){
-          model.log('created project', user);
+          model.log('created project', that.options.user);
         }
       });
 
@@ -103,6 +109,55 @@ define([
 
     onCancel: function(){
       this.close();
+    }
+  });
+
+  views.AdminGeosearch = Marionette.ItemView.extend({
+    template: {
+      type: 'handlebars',
+      template: adminGeosearchTemplate
+    },
+
+    attributes: {
+      id: 'geosearch'
+    },
+
+    ui: {
+      input: 'input'
+    },
+
+    events: {
+      'keyup': function(e){
+        switch (e.which) {
+        case 13:
+          this.geosearch(this.ui.input.val());
+          break;
+
+        case 27:
+          this.ui.input.val('');
+          this.ui.input.blur();
+          break;
+        }
+      },
+
+      'mousedown input': function(e){
+        e.stopPropagation();
+      }
+    },
+
+    geosearch: function(query){
+      var that = this;
+
+      $.getJSON('http://nominatim.openstreetmap.org/search', {
+        q: query,
+        limit: 1,
+        format: 'json',
+        addressdetails: true
+      }).done(function(data){
+        if (data.length > 0) {
+          that.triggerMethod('found', data[0]);
+        }
+      });
     }
   });
 

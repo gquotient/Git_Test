@@ -515,9 +515,81 @@ header {
     }
   }
   #page-admin, #page-devices {
-    .column_right {
+    .column_right > div {
+      height: 100%;
       padding: 6px;
     }
+  }
+}
+
+#page-projectsAdmin {
+  padding: 0 !important;
+
+  #map {
+    width: 100%;
+    height: 100%;
+  }
+
+  #geosearch {
+    position: absolute;
+    top: 12px;
+    width: 100%;
+
+    .leaflet-control {
+      width: 40%;
+      margin 0 auto;
+      float: none;
+      padding: 5px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 7px;
+    }
+
+    input {
+      width: 100%;
+      height: 28px;
+      padding: 0;
+      text-indent: 6px;
+      border-radius: 4px;
+      border: none;
+    }
+  }
+
+  #projectList {
+    position: relative;
+    float: left;
+    width: 20%;
+    min-width: 240px;
+    height: 100%;
+    border-right: borderBasicDark;
+
+    li {
+      position: relative;
+
+      a {
+        color: #ccc;
+      }
+
+      .delete {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+      }
+    }
+  }
+
+  #projectEdit {
+    float: left;
+    padding: 12px;
+  }
+
+  .actions {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    padding: 6px;
+    border-top: borderBasicMedium;
+    border-bottom: borderBasicDark;
+    background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
   }
 }
 
