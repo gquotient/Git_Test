@@ -30,8 +30,6 @@ function(
 
   WallTime
 ){
-
-
   var Chart = { models: {}, views: {} };
 
   // NOTE: This isn't particularly useful at the moment

@@ -126,7 +126,7 @@ require.config({
     highcharts: 'bower_components/highcharts/highcharts',
     handsontable: 'bower_components/handsontable/dist/jquery.handsontable',
     walltime: 'bower_components/walltime-js/client/walltime',
-    walltimeData: 'bower_components/walltime-js/client/walltime-data'
+    'walltime-data': 'bower_components/walltime-js/client/walltime-data'
   },
   shim: {
     backbone: {
@@ -150,7 +150,7 @@ require.config({
       exports: 'Highcharts'
     },
     walltime: {
-      deps: ['walltimeData']
+      deps: ['walltime-data']
     }
   },
   // hbs config
