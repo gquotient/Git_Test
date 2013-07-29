@@ -208,7 +208,7 @@ define([
       }
     },
 
-    geosearch: function(query){
+    geosearch: _.throttle(function(query){
       var that = this;
 
       $.getJSON('http://nominatim.openstreetmap.org/search', {
@@ -221,7 +221,7 @@ define([
           that.triggerMethod('found', data[0]);
         }
       });
-    }
+    }, 1000)
   });
 
   return views;
