@@ -141,10 +141,10 @@ define([
       },
       'click': function(){
         Backbone.trigger('click:portfolio', this.model);
-      },
-      'dblclick': function(){
-        Backbone.trigger('select:portfolio', this.model);
-      }
+      }//, This shouldn't be needed anymore
+      //'dblclick': function(){
+      //  Backbone.trigger('select:portfolio', this.model);
+      //}
     }
   });
 
