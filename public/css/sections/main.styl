@@ -554,13 +554,28 @@ header {
     }
   }
 
+  .verticalPane {
+    overflow: hidden;
+
+    &.bottom .buttons {
+      position: fixed;
+      bottom: 1px;
+      padding: 6px;
+      z-index: 200;
+    }
+  }
+
+  .nav_content {
+    padding-bottom: 38px;
+
+    .actions {
+      height: 38px;
+    }
+  }
+
   #projectList {
-    position: relative;
-    float: left;
-    width: 20%;
-    min-width: 240px;
     height: 100%;
-    border-right: borderBasicDark;
+    overflow-y: scroll;
 
     li {
       position: relative;
@@ -578,30 +593,34 @@ header {
   }
 
   #projectEdit {
-    position: relative;
-    float: left;
-    width: 80%;
     height: 100%;
+    overflow-y: auto;
 
-    ul {
-      list-style-type: none;
+    .container {
+      float: left;
       padding: 12px;
-      margin: 0;
+
+      &.left {
+        width: 50%;
+      }
     }
 
-    input.invalid {
-      background: pink;
+    label {
+      display: block;
     }
-  }
 
-  .actions {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    padding: 6px;
-    border-top: borderBasicMedium;
-    border-bottom: borderBasicDark;
-    background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+    input {
+      width: 100%;
+      margin: 3px 0 12px 0;
+
+      &.invalid {
+        background: pink;
+      }
+    }
+
+    .buttons {
+      margin-left: -201px;
+    }
   }
 }
 

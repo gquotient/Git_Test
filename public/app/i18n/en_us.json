@@ -29,6 +29,10 @@
   "New Project": "New Project",
 
   "Label": "Label",
+  "Address": "Address",
+  "City": "City",
+  "State": "State",
+  "Zip Code": "Zip Code",
   "Latitude": "Latitude",
   "Longitude": "Longitude",
   "Elevation": "Elevation",

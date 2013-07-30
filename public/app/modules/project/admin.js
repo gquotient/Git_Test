@@ -66,23 +66,30 @@ define([
 
     schema: {
       display_name: {
-        el: '#name',
-        parse: function(value) {
-          return value.trim();
-        },
-        validate: function(value){
-          return value && value !== '';
-        }
+        el: '#name'
       },
 
       site_label: {
         el: '#site_label',
         parse: function(value) {
           return value.replace(/\W|_/g, '');
-        },
-        validate: function(value){
-          return value && value !== '';
         }
+      },
+
+      address: {
+        el: '#address'
+      },
+
+      city: {
+        el: '#city'
+      },
+
+      state: {
+        el: '#state'
+      },
+
+      zipcode: {
+        el: '#zipcode'
       },
 
       latitude: {
@@ -115,13 +122,19 @@ define([
         this.ui[key] = obj.el;
 
         result['blur ' + obj.el] = function(){
-          var value = this.ui[key].val();
+          var value = this.ui[key].val().trim(), valid;
 
           if (obj.parse) {
             value = obj.parse.call(this, value);
           }
 
-          if (obj.validate.call(this, value)) {
+          if (obj.validate) {
+            valid = obj.validate.call(this, value);
+          } else {
+            valid = value && value !== '';
+          }
+
+          if (valid) {
             this.model.set(key, value);
           } else {
             this.ui[key].addClass('invalid');

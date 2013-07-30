@@ -1,23 +1,48 @@
-<ul>
-  <li>
+<div>
+  <div class="container left">
     <label for="name">{{$ 'Name' }}</label>
     <input id="name" name="name" type="text" value="{{ display_name }}">
-  </li>
-  <li>
+  </div>
+
+  <div class="container right">
     <label for="site_label">{{$ 'Label' }}</label>
     <input id="site_label" name="site_label" type="text" value="{{ site_label }}">
-  </li>
-  <li>
-    <label for="latitude">{{$ 'Latitude' }}</label>
-    <input id="latitude" name="latitude" type="text" value="{{ latitude }}">
-  </li>
-  <li>
-    <label for="longitude">{{$ 'Longitude' }}</label>
-    <input id="longitude" name="longitude" type="text" value="{{ longitude }}">
-  </li>
-</ul>
+  </div>
+</div>
 
-<div class="actions">
+<div>
+  <div class="container left">
+    <div>
+      <label for="address">{{$ 'Address' }}</label>
+      <input id="address" name="address" type="text" value="{{ address }}">
+    </div>
+    <div>
+      <label for="city">{{$ 'City' }}</label>
+      <input id="city" name="city" type="text" value="{{ city }}">
+    </div>
+    <div>
+      <label for="state">{{$ 'State' }}</label>
+      <input id="state" name="state" type="text" value="{{ state }}">
+    </div>
+    <div>
+      <label for="zipcode">{{$ 'Zip Code' }}</label>
+      <input id="zipcode" name="zipcode" type="text" value="{{ zipcode }}">
+    </div>
+  </div>
+
+  <div class="container right">
+    <div>
+      <label for="latitude">{{$ 'Latitude' }}</label>
+      <input id="latitude" name="latitude" type="text" value="{{ latitude }}">
+    </div>
+    <div>
+      <label for="longitude">{{$ 'Longitude' }}</label>
+      <input id="longitude" name="longitude" type="text" value="{{ longitude }}">
+    </div>
+  </div>
+</div>
+
+<div class="buttons">
   <button type="submit" class="button primary">{{$ 'Save' }}</button>
   <button type="button" class="button edit">{{$ 'Edit' }}</button>
   <button type="button" class="button cancel">{{$ 'Cancel' }}</button>
