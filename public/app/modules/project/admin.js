@@ -110,6 +110,16 @@ define([
         validate: function(value){
           return !isNaN(value);
         }
+      },
+
+      elevation: {
+        el: '#elevation',
+        parse: function(value){
+          return value !== '' ? parseFloat(value) : 0;
+        },
+        validate: function(value){
+          return !isNaN(value);
+        }
       }
     },
 
@@ -162,8 +172,6 @@ define([
 
       this.$('input').blur();
       if (this.$('.invalid').length > 0) { return; }
-
-      this.model.set({elevation: 0});
 
       if (!this.collection.contains(this.model)) {
         this.collection.create(this.model, {
