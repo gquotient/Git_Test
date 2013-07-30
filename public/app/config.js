@@ -124,7 +124,9 @@ require.config({
     paper: 'bower_components/paper/dist/paper',
     'jquery.mousewheel': 'bower_components/jquery-mousewheel/jquery.mousewheel',
     highcharts: 'bower_components/highcharts/highcharts',
-    handsontable: 'bower_components/handsontable/dist/jquery.handsontable'
+    handsontable: 'bower_components/handsontable/dist/jquery.handsontable',
+    walltime: 'bower_components/walltime-js/client/walltime',
+    'walltime-data': 'bower_components/walltime-js/client/walltime-data'
   },
   shim: {
     backbone: {
@@ -146,6 +148,9 @@ require.config({
     highcharts: {
       deps: ['jquery'],
       exports: 'Highcharts'
+    },
+    walltime: {
+      deps: ['walltime-data']
     }
   },
   // hbs config

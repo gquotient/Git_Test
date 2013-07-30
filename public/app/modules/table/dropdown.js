@@ -56,6 +56,8 @@ define([
     this.source = cellProperties.source;
 
     this.lookup();
+
+    this.ulStyle.display = 'block';
   };
 
   Dropdown.prototype.lookup = function(){
@@ -99,6 +101,8 @@ define([
 
   Dropdown.prototype.finishEditing = function(isCancelled){
     this.instance.textEditor.finishEditing(isCancelled);
+
+    this.ulStyle.display = 'none';
   };
 
   DropdownCell.editor = function(instance, td, row, col, prop, value, cellProperties){

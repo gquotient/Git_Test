@@ -42,7 +42,7 @@ define([
             'ddl': 'inv',
             'dtstart': 'today',
             'dtstop': 'now',
-            'columns': ['freezetime', 'ac_power'],
+            'columns': ['freezetime', 'ac_power_mean'],
             'filters': [
               {
                 'column': 'identifier',
