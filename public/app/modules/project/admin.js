@@ -153,6 +153,7 @@ define([
 
     modelEvents: {
       'change': 'update',
+      'change:display_name': 'generateLabel',
       'destroy': 'close'
     },
 
@@ -185,6 +186,20 @@ define([
           this.ui[key].val(value).removeClass('invalid');
         }
       }, this);
+    },
+
+    generateLabel: function(){
+      var parts, label = '';
+
+      if (this.ui.site_label.val() !== '') { return; }
+
+      parts = this.model.get('display_name').toUpperCase().split(' ');
+
+      do {
+        label += parts.shift();
+      } while (label.length < 8 && parts.length > 0);
+
+      this.ui.site_label.val(label);
     }
   });
 
