@@ -71,8 +71,8 @@ define([
 
       site_label: {
         el: '#site_label',
-        parse: function(value) {
-          return value.replace(/\W|_/g, '');
+        validate: function(value) {
+          return (/^[A-Z]{3,}$/).test(value);
         }
       },
 
@@ -202,17 +202,17 @@ define([
     },
 
     generateLabel: function(){
-      var parts, label = '';
-
       if (this.ui.site_label.val() !== '') { return; }
 
-      parts = this.model.get('display_name').toUpperCase().split(' ');
+      var parts = this.model.get('display_name').split(' ');
 
-      do {
-        label += parts.shift();
-      } while (label.length < 8 && parts.length > 0);
+      this.ui.site_label.val(_.reduce(parts, function(memo, part){
+        if (memo.length < 8) {
+          memo += part.replace(/[\W_]+/g, '').toUpperCase();
+        }
 
-      this.ui.site_label.val(label);
+        return memo;
+      }, ''));
     }
   });
 
