@@ -158,6 +158,8 @@ define([
     },
 
     onSave: function(){
+      var that = this;
+
       this.$('input').blur();
       if (this.$('.invalid').length > 0) { return; }
 
@@ -165,7 +167,10 @@ define([
 
       if (!this.collection.contains(this.model)) {
         this.collection.create(this.model, {
-          wait: true
+          wait: true,
+          success: function(){
+            that.model.addNote('created project', that.options.user);
+          }
         });
       }
     },

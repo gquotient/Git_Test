@@ -373,7 +373,7 @@ define([
             parent_id: parnt.get('id'),
             relationship_label: rel
           }).done(_.bind(function(){
-            project.log([
+            project.addNote([
               'added',
               equip.get('name').toLowerCase(),
               device.get('did'),
@@ -406,7 +406,7 @@ define([
           },
           processData: true
         }).done(_.bind(function(){
-          project.log([
+          project.addNote([
             'deleted',
             equip.get('name').toLowerCase(),
             device.get('did')
@@ -457,7 +457,7 @@ define([
 
           device.connectTo(target, rel);
 
-          project.log([
+          project.addNote([
             'connected',
             equip.get('name').toLowerCase(),
             device.get('did'),
@@ -494,7 +494,7 @@ define([
             device.setPosition(rendering, null, true);
           }
 
-          project.log([
+          project.addNote([
             'disconnected',
             equip.get('name').toLowerCase(),
             device.get('did'),

@@ -301,14 +301,17 @@ define([
       return _.omit(resp, 'devices', 'rels');
     },
 
-    log: function(msg, user){
-      var notes = this.get('notes'),
-        now = new Date(),
+    addNote: function(note, user){
+      this.set({notes: this.formatNote(note, user) + this.get('notes')});
+      this.lazySave();
+    },
+
+    formatNote: function(msg, user){
+      var now = new Date(),
         when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ',
         who = user ? user.get('name') + ' ' : '';
 
-      this.set({notes: when + who + msg + '\n' + notes});
-      this.lazySave();
+      return when + who + msg + '\n';
     }
   });
 
