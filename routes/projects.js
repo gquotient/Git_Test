@@ -107,18 +107,19 @@ module.exports = function(app){
   app.post('/api/projects', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/projects',
-      setup: function(req, res, next){
-        req.body = _.pick(req.body, [
-          'display_name',
-          'site_label',
-          'latitude',
-          'longitude',
-          'elevation',
-          'index_name'
-        ]);
-
-        next(req, res);
-      },
+      setup: separateProperties([
+        'display_name',
+        'site_label',
+        'latitude',
+        'longitude',
+        'elevation',
+        'index_name'
+      ], [
+        'dataSources',
+        'kpis',
+        'status',
+        'type'
+      ]),
       translate: combineProperties
     }));
 
@@ -134,8 +135,14 @@ module.exports = function(app){
         'longitude',
         'elevation',
         'index_name',
-        'type',
-        'kpis'
+
+        'editor',
+        'locked',
+
+        'dataSources',
+        'kpis',
+        'status',
+        'type'
       ]),
       translate: combineProperties
     }));
