@@ -252,15 +252,23 @@ define([
     geosearch: _.throttle(function(query){
       var that = this;
 
-      $.getJSON('http://nominatim.openstreetmap.org/search', {
-        q: query,
-        limit: 1,
-        format: 'json',
-        addressdetails: true
+      $.ajax('http://nominatim.openstreetmap.org/search', {
+        dataType: 'json',
+        data: {
+          q: query,
+          limit: 1,
+          format: 'json',
+          addressdetails: true
+        },
+        timeout: 3000
       }).done(function(data){
         if (data.length > 0) {
           that.triggerMethod('found', data[0]);
+        } else {
+          window.alert('No address matches your query');
         }
+      }).fail(function(jqxhr, stat){
+        window.alert('Address search failed (' + stat + ')');
       });
     }, 1000)
   });
