@@ -79,6 +79,7 @@ define([
         equipment: this.equipment,
         user: this.options.user
       }));
+      this.delegateEditorEvents();
     },
 
     onClose: function(){
