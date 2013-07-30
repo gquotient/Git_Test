@@ -109,6 +109,12 @@ define([
       if (evnt) {
         this.trigger(evnt, this);
       }
+    },
+
+    parse: function(resp, options){
+
+      // Prevent overwritting client side position data.
+      return _.omit(resp, 'renderings');
     }
   });
 
