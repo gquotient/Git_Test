@@ -34,7 +34,7 @@ define([
     },
 
     onDelete: function(){
-      if (window.confirm('Are you sure you want to delete this prject?')) {
+      if (window.confirm('Are you sure you want to delete this project?')) {
         this.model.destroy({
           wait: true
         });
