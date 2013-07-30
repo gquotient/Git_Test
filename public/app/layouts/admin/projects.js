@@ -128,7 +128,11 @@ define([
       } else {
         marker = this.markers[model.cid] = L.marker(loc, {
           title: model.get('display_name'),
-          draggable: model.isNew()
+          draggable: model.isNew(),
+          icon: L.divIcon({
+            className: 'ok',
+            iconSize: [15,32]
+          })
         });
 
         marker.on('click', function(){
