@@ -6,7 +6,7 @@ define([
 
   'hbs!project/templates/adminList',
   'hbs!project/templates/adminListItem',
-  'hbs!project/templates/adminEdit',
+  'hbs!project/templates/adminDetail',
   'hbs!project/templates/adminGeosearch'
 ], function(
   $,
@@ -16,21 +16,26 @@ define([
 
   adminListTemplate,
   adminListItemTemplate,
-  adminEditTemplate,
+  adminDetailTemplate,
   adminGeosearchTemplate
 ){
   var views = {};
 
   views.AdminListItem = Marionette.ItemView.extend({
-    tagName: 'li',
+    tagName: 'tr',
     template: {
       type: 'handlebars',
       template: adminListItemTemplate
     },
 
     triggers: {
-      'click a': 'edit',
+      'click': 'show:detail',
+      'click button.edit': 'edit',
       'click button.delete': 'delete'
+    },
+
+    onEdit: function(){
+      Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
     },
 
     onDelete: function(){
@@ -50,18 +55,14 @@ define([
     },
 
     itemView: views.AdminListItem,
-    itemViewContainer: 'ul',
-
-    triggers: {
-      'click button.create': 'create'
-    }
+    itemViewContainer: 'tbody'
   });
 
-  views.AdminEdit = Marionette.ItemView.extend({
+  views.AdminDetail = Marionette.ItemView.extend({
     tagName: 'form',
     template: {
       type: 'handlebars',
-      template: adminEditTemplate
+      template: adminDetailTemplate
     },
 
     schema: {
@@ -155,42 +156,10 @@ define([
       return result;
     },
 
-    triggers: {
-      'submit': 'save',
-      'click button.edit': 'edit',
-      'click button.cancel': 'cancel'
-    },
-
     modelEvents: {
       'change': 'update',
       'change:display_name': 'generateLabel',
       'destroy': 'close'
-    },
-
-    onSave: function(){
-      var that = this;
-
-      this.$('input').blur();
-      if (this.$('.invalid').length > 0) { return; }
-
-      if (!this.collection.contains(this.model)) {
-        this.collection.create(this.model, {
-          wait: true,
-          success: function(){
-            that.model.addNote('created project', that.options.user);
-          }
-        });
-      }
-    },
-
-    onEdit: function(){
-      if (this.collection.contains(this.model)) {
-        Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
-      }
-    },
-
-    onCancel: function(){
-      this.close();
     },
 
     update: function(){

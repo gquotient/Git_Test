@@ -39,7 +39,7 @@ define([
 
     regions: {
       list: '#projectList',
-      edit: '#projectEdit'
+      detail: '#projectDetail'
     },
 
     initialize: function(options){
@@ -71,16 +71,18 @@ define([
         collection: this.collection
       });
 
-      this.listenTo(this.listView, 'create', function(){
-        this.editProject();
-      });
-
-      this.listenTo(this.listView, 'itemview:edit', function(view, args){
-        this.editProject(args.model);
+      this.listenTo(this.listView, 'itemview:show:detail', function(view, args){
+        this.showDetail(args.model);
       });
 
       // Update history
       Backbone.history.navigate('/admin/projects');
+    },
+
+    triggers: {
+      'click button.create': 'create',
+      'click button.save': 'save',
+      'click button.cancel': 'cancel'
     },
 
     collectionEvents: {
@@ -103,19 +105,88 @@ define([
       this.list.show(this.listView);
     },
 
+    onCreate: function(){
+      this.showDetail();
+    },
+
+    onSave: function(){
+      var that = this;
+
+      // Don't save if there isn't currently a detail view.
+      if (!this.detail.currentView) { return; }
+
+      this.detail.$el.find('input').blur();
+
+      // Don't save if any data is invalid.
+      if (this.detail.$el.find('.invalid').length > 0) { return; }
+
+      // Don't save if the model already exists.
+      if (this.collection.contains(this.model)) { return; }
+
+      this.collection.create(this.model, {
+        wait: true,
+        success: function(){
+          that.model.addNote('created project', that.options.user);
+        }
+      });
+    },
+
+    onCancel: function(){
+      this.detail.close();
+    },
+
     onClose: function(){
       this.map.remove();
     },
 
     onNewLocation: function(attr){
       if (!this.model) {
-        this.editProject(attr);
+        this.showDetail(attr);
 
       } else if (this.model && this.model.isNew()) {
         this.model.set(attr);
 
       } else {
-        this.focusView([attr.latitude, attr.longitude]);
+        this.focusMap([attr.latitude, attr.longitude]);
+      }
+    },
+
+    showDetail: function(model){
+      var view;
+
+      if (!(model instanceof Backbone.Model)) {
+        model = new Project.Model(model, {silent: false});
+        this.listenTo(model, 'change:latitude change:longitude', this.setMarker);
+        this.setMarker(model);
+      }
+
+      view = new Project.views.AdminDetail({
+        collection: this.collection,
+        model: model
+      });
+
+      this.listenToOnce(view, 'close', function(){
+        if (!this.collection.contains(model)) {
+          this.stopListening(model);
+          this.removeMarker(model);
+        }
+
+        this.model = null;
+      });
+
+      this.model = model;
+      this.focusMap(model);
+
+      this.detail.show(view);
+    },
+
+    focusMap: function(loc){
+      if (loc instanceof Backbone.Model) {
+        loc = this.getLocation(loc);
+      }
+
+      if (loc) {
+        this.map.setView(loc, 18);
       }
     },
 
@@ -140,7 +211,7 @@ define([
 
         marker.on('click', function(){
           if (model !== this.model) {
-            this.editProject(model);
+            this.showDetail(model);
           }
         }, this);
 
@@ -154,7 +225,7 @@ define([
       }
 
       if (model === this.model) {
-        this.focusView(loc);
+        this.focusMap(loc);
       }
     },
 
@@ -181,46 +252,6 @@ define([
       this.collection.each(function(model){
         this.setMarker(model);
       }, this);
-    },
-
-    focusView: function(loc){
-      if (loc instanceof Backbone.Model) {
-        loc = this.getLocation(loc);
-      }
-
-      if (loc) {
-        this.map.setView(loc, 18);
-      }
-    },
-
-    editProject: function(model){
-      var view;
-
-      if (!(model instanceof Backbone.Model)) {
-        model = new Project.Model(model, {silent: false});
-        this.listenTo(model, 'change:latitude change:longitude', this.setMarker);
-        this.setMarker(model);
-      }
-
-      view = new Project.views.AdminEdit({
-        collection: this.collection,
-        model: model,
-        user: this.options.user
-      });
-
-      this.listenToOnce(view, 'close', function(){
-        if (!this.collection.contains(model)) {
-          this.stopListening(model);
-          this.removeMarker(model);
-        }
-
-        this.model = null;
-      });
-
-      this.model = model;
-      this.focusView(model);
-
-      this.edit.show(view);
     },
 
     getLocation: function(model){
