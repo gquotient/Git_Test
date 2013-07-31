@@ -129,13 +129,6 @@ function(
   User.views.EditTable = Forms.views.table.extend({
     fields: ['name', 'email'],
     model: User.Model,
-    actions: ['edit', 'cancel', 'save']
-  });
-
-  User.views.VendorEditTable = Forms.views.table.extend({
-    fields: ['name', 'email', 'org_label'],
-    itemView: User.views.EditRow,
-    model: User.Model,
     actions: ['edit', 'cancel', 'save', 'resetPassword']
   });
 
