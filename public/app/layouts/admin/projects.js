@@ -55,7 +55,10 @@ define([
 
       this.listenTo(this.geosearch, 'found', function(loc){
         this.triggerMethod('new:location', {
-          address: loc.address.house_number + ' ' + loc.address.road,
+          address: _.compact([
+            loc.address.house_number,
+            loc.address.road
+          ]).join(' '),
           city: loc.address.city,
           state: loc.address.state,
           zipcode: loc.address.postcode,
