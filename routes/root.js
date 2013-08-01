@@ -32,8 +32,6 @@ module.exports = function(app){
       uri: app.get('modelUrl') + '/res/user'
     };
 
-
-    // Don't judge me for this. I'll fix it later.
     var myTeams,
         myProjects,
         myPortfolios;
@@ -59,20 +57,25 @@ module.exports = function(app){
         var defer = Q.defer();
 
         requestOptions.uri = app.get('modelUrl') + '/res/teamportfolios?team_label='+req.session.team_label+'&org_label='+req.session.org_label;
+
         request(requestOptions, function(error, response, portfolios){
           myPortfolios = portfolios;
+
           defer.resolve(portfolios);
         });
 
         return defer.promise;
-
       })
       .then( function(myPortfolios){
         var defer = Q.defer();
 
         requestOptions.uri = app.get('modelUrl') + '/res/teamprojects?team_label'+req.session.team_label+'&org_label='+req.session.org_label;
+
         request(requestOptions, function(error, response, projects){
-          myProjects = JSON.parse(projects).projects || [];
+          // Portfolios returns as an array but projects returns as an array inside an object
+          // (i.e. { projects: [] } )
+          // sooooo, we have to do this to keep our stuff consistent
+          myProjects = JSON.stringify(JSON.parse(projects).projects || []);
 
           defer.resolve(projects);
         });
@@ -80,7 +83,6 @@ module.exports = function(app){
         return defer.promise;
       })
       .then( function(obj){
-        // console.log('render');
         res.render('index', {
           user: JSON.stringify({
             name: req.user.name,
@@ -91,7 +93,7 @@ module.exports = function(app){
             role: roles[req.user.role]
           }),
           portfolios: myPortfolios,
-          projects: JSON.stringify(myProjects),
+          projects: myProjects,
           locale: req.user.locale || req.acceptedLanguages[0].toLowerCase(),
           staticDir: app.get('staticDir') || 'app'
         });
