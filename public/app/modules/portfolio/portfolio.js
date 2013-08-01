@@ -182,7 +182,7 @@ define([
     },
 
     initialize: function(options){
-      this.listenTo(Backbone, 'select:portfolio', this.setPortfolio);
+      //this.listenTo(Backbone, 'select:portfolio', this.setPortfolio);
       this.listenTo(this.collection, 'sort', this._renderChildren);
     },
 
@@ -194,13 +194,16 @@ define([
     // },
 
     // Setup the views for the current model.
-    setPortfolio: function(model){
+    //setPortfolio: function(model){
+    //  console.log(model);
       // Set the current collection to be a new navigation list with the subPortfolios.
-      this.collection = model.portfolios;
+    //  this.collection = model.portfolios;
+
+    //  console.log(model.portfolios);
 
       // Trigger a render. This forces the nav header to update, too.
-      this.render();
-    },
+    //  this.render();
+    //},
     serializeData: function(){
       return '{sort_order:'+ this.collection.sort_order+'}';
     }
