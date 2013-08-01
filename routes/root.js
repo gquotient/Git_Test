@@ -40,49 +40,47 @@ module.exports = function(app){
 
     Q.
       fcall( function(){
-        var myUserDef = Q.defer();
-        // console.log('user')
+        var defer = Q.defer();
+
         request(requestOptions, function(error, response, userJSON){
           var user = JSON.parse(userJSON);
           // Until we have a default team option for the user, assume first team or last selected. Or, you know. No team at all.
-          var team = user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
+          var team = user.default_team ? user.default_team : user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
           req.session.team_label = req.session.team_label || team;
           req.session.org_label = user.org_label;
-          myTeams = JSON.stringify(JSON.parse(userJSON).teams);
-          console.log(myTeams);
-          myUserDef.resolve(user);
+          myTeams = user.teams;
+
+          defer.resolve(user);
         });
 
-        return myUserDef.promise;
+        return defer.promise;
       })
       .then( function(){
-        var myPortfoliosDef = Q.defer();
-        // console.log('portfolios');
+        var defer = Q.defer();
+
         requestOptions.uri = app.get('modelUrl') + '/res/teamportfolios?team_label='+req.session.team_label+'&org_label='+req.session.org_label;
         request(requestOptions, function(error, response, portfolios){
           myPortfolios = portfolios;
-          myPortfoliosDef.resolve(portfolios);
+          defer.resolve(portfolios);
         });
 
-        return myPortfoliosDef.promise;
+        return defer.promise;
 
       })
       .then( function(myPortfolios){
-        var myProjectsDef = Q.defer();
-        // console.log('projects');
+        var defer = Q.defer();
+
         requestOptions.uri = app.get('modelUrl') + '/res/teamprojects?team_label'+req.session.team_label+'&org_label='+req.session.org_label;
         request(requestOptions, function(error, response, projects){
-          myProjects = JSON.stringify(JSON.parse(projects).projects || []);
-          console.log(req.session.team_label, projects);
-          // console.log('projects')
-          myProjectsDef.resolve(projects);
+          myProjects = JSON.parse(projects).projects || [];
+
+          defer.resolve(projects);
         });
 
-        return myProjectsDef.promise;
+        return defer.promise;
       })
       .then( function(obj){
         // console.log('render');
-        console.log(req.session);
         res.render('index', {
           user: JSON.stringify({
             name: req.user.name,
@@ -93,7 +91,7 @@ module.exports = function(app){
             role: roles[req.user.role]
           }),
           portfolios: myPortfolios,
-          projects: myProjects,
+          projects: JSON.stringify(myProjects),
           locale: req.user.locale || req.acceptedLanguages[0].toLowerCase(),
           staticDir: app.get('staticDir') || 'app'
         });

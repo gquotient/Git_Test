@@ -26,7 +26,10 @@ function(
 
   User.Model = Backbone.Model.extend({
     url: '/api/users',
-    idAttribute: 'email'
+    idAttribute: 'email',
+    initialize: function(){
+      console.log(this);
+    }
   }, {
     schema: {
       attributes: {
