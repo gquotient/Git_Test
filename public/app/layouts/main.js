@@ -156,7 +156,11 @@ define([
           team_label: teamLabel
         },
         success: function(){
-          that.app.portfolios.fetch();
+          that.app.portfolios.fetch().done(function(portfolios){
+            var myPortfolio = that.app.portfolios.findWhere({label: 'ALL'});
+
+            Backbone.trigger('select:portfolio', myPortfolio);
+          });
 
           // Once more APIs are implemented, we can make sure everything else syncs up with the team.
         }
