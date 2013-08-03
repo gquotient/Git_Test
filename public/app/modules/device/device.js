@@ -119,7 +119,21 @@ define([
   });
 
   Device.Collection = Backbone.Collection.extend({
-    model: Device.Model
+    model: Device.Model,
+    comparator: function(device){
+      var did = device.get('did'),
+          didPieces = did.split('-'),
+          comparator  = did;
+
+      // Use the number in the did for sorting if one exists
+      _.each(didPieces, function(piece){
+        if (typeof +piece === 'number') {
+          comparator = +piece;
+        }
+      });
+
+      return comparator;
+    }
   });
 
   Device.views.DeviceListItem = Marionette.ItemView.extend({

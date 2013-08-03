@@ -70,7 +70,22 @@ define([
     },
 
     selectPortfolio: function(model) {
-      model.fetchIssues();
+      // Clear existing interval
+      // NOTE - I'm not sure how necessary this is
+      if (this.fetchIssuesInterval) {
+        clearInterval(this.fetchIssuesInterval);
+      }
+
+      // Fetch issues on the new portfolio
+      var fetchIssues = function(){
+        model.fetchIssues();
+      };
+
+      // Run initially to get latest data
+      fetchIssues();
+
+      // Fetch issues every five minutes
+      this.fetchIssuesInterval = setInterval(fetchIssues, 300000);
 
       // Build KPIs
       var kpis = new Portfolio.views.AggregateKpis({ model: model });
