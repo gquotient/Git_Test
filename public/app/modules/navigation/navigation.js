@@ -35,16 +35,20 @@ define([
 
   Navigation.views.ListView = Marionette.CompositeView.extend({
     tagName: 'div',
-    attributes: {
-      class: 'navigationList'
-    },
     template: {
       type: 'handlebars',
       template: listTemplate
     },
+    attributes: {
+      class: 'navigationList hidden'
+    },
     itemViewContainer: '> ul',
     itemView: Navigation.views.NavigationItemView,
     active: {},
+    onRender: function(){
+      var that = this;
+      setTimeout(function(){ that.$el.removeClass('hidden'); }, 0);
+    },
     sort: function(comparator){
       // Set new comparator on collection
       this.collection.comparator = comparator;

@@ -142,9 +142,6 @@ define([
   /* This composite view is the wrapper view for the list of portfolios.
      It handles nesting the list while allowing for the navigation header. */
   Portfolio.views.NavigationListView = Navigation.views.ListView.extend({
-    attributes: {
-      class: 'portfolios'
-    },
     template: {
       type: 'handlebars',
       template: navigationListTemplate

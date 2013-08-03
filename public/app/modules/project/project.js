@@ -742,9 +742,6 @@ define([
       template: navigationListTemplate
     },
     itemView: Project.views.NavigationListItemView,
-    attributes: {
-      class: 'projects'
-    },
     events: {
       'change #project-sort': function(event){
         this.sort(event.currentTarget.value);

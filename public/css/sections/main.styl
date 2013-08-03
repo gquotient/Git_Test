@@ -188,16 +188,18 @@ header {
     border-bottom: borderBasicDark;
     background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
   }
+  > div {
+    width: 100%;
+    transition: 0.25s ease-in-out;
+    &.hidden {
+      margin-left: 100%;
+    }
+  }
   ul {
     padding: 0;
     margin: 0;
     list-style-type: none;
     > li {
-
-      perspective: 800px;
-      perspective-origin: 50% 100px;
-      transition: transform 0.25s ease-in-out;
-
       padding: 0px;
       text-shadow: 0 1px 0 #222;
       margin: 0;
@@ -227,9 +229,6 @@ header {
         &:hover {
           background: none;
         }
-      }
-      &.hidden {
-        transform:translate3d(400px,0,0);
       }
       &.nav-item {
         padding: 6px;
@@ -279,6 +278,7 @@ header {
     }
   }
   ul.portfolio-list, ul.project-list {
+    // Add padding so sort/new doesn't cover up an item
     padding-top: 30px;
     padding-bottom: 38px;
     > .active {
