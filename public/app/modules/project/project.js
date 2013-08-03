@@ -7,6 +7,7 @@ define([
   'leaflet',
   'css!leaflet.css', //This seems silly but also seems to work, sooooo...
 
+  'navigation',
   'device',
   'issue',
 
@@ -30,6 +31,7 @@ define([
   L,
   leafletCSS,
 
+  Navigation,
   Device,
   Issue,
 
@@ -720,19 +722,10 @@ define([
     }
   });
 
-   /* The item view is the view for the individual portfolios in the navigation. */
-  Project.views.NavigationItemView = Marionette.ItemView.extend({
-    tagName: 'li',
+  Project.views.NavigationListItemView = Navigation.views.ListItemView.extend({
     template: {
       type: 'handlebars',
       template: navigationListItemTemplate
-    },
-    attributes: {
-      class: 'nav-item hidden'
-    },
-    onRender: function(){
-      var that = this;
-      setTimeout(function(){ that.$el.removeClass('hidden'); }, 0);
     },
     events: {
       'click': function(){
@@ -743,33 +736,20 @@ define([
 
   /* This composite view is the wrapper view for the list of portfolios.
      It handles nesting the list while allowing for the navigation header. */
-  Project.views.NavigationListView = Marionette.CompositeView.extend({
-    tagName: 'div',
-    attributes: {
-      class: 'projects'
-    },
+  Project.views.NavigationListView = Navigation.views.ListView.extend({
     template: {
       type: 'handlebars',
       template: navigationListTemplate
     },
-
-    itemViewContainer: '.project-list',
-
-    // Tell the composite view which view to use as for each portfolio.
-    itemView: Project.views.NavigationItemView,
-
+    itemView: Project.views.NavigationListItemView,
+    attributes: {
+      class: 'projects'
+    },
     events: {
-      'change #project-sort': function(){
-        this.collection.comparator = $('#project-sort').val();
-        this.collection.sort();
+      'change #project-sort': function(event){
+        this.sort(event.currentTarget.value);
       }
     },
-
-    initialize: function(options){
-      this.listenTo(Backbone, 'select:project', this.setProject);
-      this.listenTo(this.collection, 'sort', this._renderChildren);
-    },
-
     // Setup the views for the current model.
     setPortfolio: function(model){
       // Set the current collection to be a new navigation list with the subPortfolios.

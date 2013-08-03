@@ -21,6 +21,11 @@ require.config({
   //baseUrl: '/public',
   packages: [
     {
+      name: 'navigation',
+      main: 'navigation',
+      location: 'modules/navigation'
+    },
+    {
       name: 'user',
       main: 'user',
       location: 'modules/user'

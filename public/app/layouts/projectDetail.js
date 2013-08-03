@@ -162,12 +162,7 @@ define([
       $('.nav_content').find('.active').removeClass('active');
 
       // Find current model view and set active
-      this.projectNavigationListView.children.each(function(view){
-        if (view.model.id === project.id) {
-          view.$el.addClass('active');
-          return;
-        }
-      });
+      this.projectNavigationListView.setActive(this.model.id);
     },
 
     onClose: function(){
