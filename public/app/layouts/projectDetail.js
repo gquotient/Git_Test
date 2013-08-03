@@ -158,10 +158,7 @@ define([
 
       this.kpis.show(kpisView);
 
-      // Reset active indicator
-      $('.nav_content').find('.active').removeClass('active');
-
-      // Find current model view and set active
+      // Update active item
       this.projectNavigationListView.setActive(this.model.id);
     },
 

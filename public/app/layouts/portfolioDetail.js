@@ -95,16 +95,8 @@ define([
       this.projectList.set(model.projects.models);
       Backbone.trigger('set:breadcrumbs', {model: model, state: 'portfolio', display_name: model.get('display_name')});
 
-      // Reset active indicator
-      $('.nav_content').find('.active').removeClass('active');
-
-      // Find current model view and set active
-      this.portfolioNavigationListView.children.each(function(view){
-        if (view.model.id === model.id) {
-          view.$el.addClass('active');
-          return;
-        }
-      });
+      // Update active item
+      this.portfolioNavigationListView.setActive(this.model.id);
     },
 
     initialize: function(options){

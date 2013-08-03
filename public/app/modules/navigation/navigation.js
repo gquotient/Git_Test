@@ -58,9 +58,9 @@ define([
     setActive: function(options){
       var property, value;
 
-      // If options is a string, assume it's an id
+      // If options is a string or number, assume it's an id
       // else, it's a hash with an arbitrary property
-      if (typeof options === 'string') {
+      if (typeof options === 'string' || typeof options === 'number') {
         property = 'id';
         value = options;
       } else if (typeof options === 'object') {
