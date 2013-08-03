@@ -749,14 +749,6 @@ define([
       'change #project-sort': function(event){
         this.sort(event.currentTarget.value);
       }
-    },
-    // Setup the views for the current model.
-    setPortfolio: function(model){
-      // Set the current collection to be a new navigation list with the subPortfolios.
-      this.collection = model.portfolios;
-
-      // Trigger a render. This forces the nav header to update, too.
-      this.render();
     }
   });
 
