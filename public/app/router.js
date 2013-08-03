@@ -46,10 +46,6 @@ define([
       this.mainLayout.showPortfolio(portfolio);
     },
 
-    projectEdit: function(id){
-      this.mainLayout.showProjectEdit(id);
-    },
-
     findProject: function(id){
       return ia.projects.get(id);
     },
@@ -85,10 +81,6 @@ define([
       this.mainLayout.showAdmin().showTeams();
     },
 
-    projectsAdmin: function(){
-      this.mainLayout.showAdmin().showProjects();
-    },
-
     teamAdminDetail: function(teamID){
       var teamLayout = this.mainLayout.showAdmin().showTeams();
       teamLayout.listenTo(teamLayout.collection, 'reset', function(){
@@ -98,6 +90,24 @@ define([
 
     alarmAdmin: function(){
       // this.mainLayout.showAdmin().showAlarms();
+    },
+
+    projectAdmin: function(id){
+      this.mainLayout.showAdmin().showProject(id);
+    },
+
+    projectAdminEdit: function(id, view){
+      this.mainLayout.showProjectEditor(id, {
+        editable: true,
+        view: view
+      });
+    },
+
+    projectAdminView: function(id, view){
+      this.mainLayout.showProjectEditor(id, {
+        editable: false,
+        view: view
+      });
     },
 
     initialize: function(){
@@ -120,7 +130,6 @@ define([
       'project/:id/devices': 'projectDevices',
       'project/:id/issues/:issueId': 'projectIssues',
       'project/:id/issues': 'projectIssues',
-      'project/:id/edit': 'projectEdit',
       'project/:id': 'projectDetail',
 
       'profile': 'profile',
@@ -129,8 +138,14 @@ define([
       'admin': 'admin',
       'admin/users': 'usersAdmin',
       'admin/teams': 'teamsAdmin',
-      'admin/projects': 'projectsAdmin',
-      'admin/teams/:id': 'teamAdminDetail'
+      'admin/teams/:id': 'teamAdminDetail',
+
+      'admin/project/:id/edit/:view': 'projectAdminEdit',
+      'admin/project/:id/edit': 'projectAdminEdit',
+      'admin/project/:id/view/:view': 'projectAdminView',
+      'admin/project/:id/view': 'projectAdminView',
+      'admin/project/:id': 'projectAdmin',
+      'admin/project': 'projectAdmin'
     }
   });
 

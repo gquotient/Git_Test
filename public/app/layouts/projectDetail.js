@@ -46,7 +46,7 @@ define([
 
     events: {
       'click .edit': function(){
-        Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
+        Backbone.history.navigate('/admin/project/' + this.model.id + '/edit', true);
       }
     },
 

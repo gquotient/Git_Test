@@ -31,11 +31,16 @@ define([
     triggers: {
       'click': 'show:detail',
       'click button.edit': 'edit',
+      'click button.view': 'view',
       'click button.delete': 'delete'
     },
 
     onEdit: function(){
-      Backbone.history.navigate('/project/' + this.model.id + '/edit', true);
+      Backbone.history.navigate('/admin/project/' + this.model.id + '/edit', true);
+    },
+
+    onView: function(){
+      Backbone.history.navigate('/admin/project/' + this.model.id + '/view', true);
     },
 
     onDelete: function(){

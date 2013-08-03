@@ -48,7 +48,12 @@ define([
       this.collection.fetch({
         data: {
           index_name: 'AlignedProjects'
-        }
+        },
+        success: _.bind(function(collection){
+          var model = collection.get(options.current);
+
+          if (model) { this.showDetail(model); }
+        }, this)
       });
 
       this.geosearch = new Project.views.AdminGeosearch();
@@ -76,7 +81,7 @@ define([
       });
 
       // Update history
-      Backbone.history.navigate('/admin/projects');
+      Backbone.history.navigate('/admin/project');
     },
 
     triggers: {
@@ -176,8 +181,9 @@ define([
 
       this.model = model;
       this.focusMap(model);
-
       this.detail.show(view);
+
+      Backbone.history.navigate('/admin/project/' + model.id);
     },
 
     focusMap: function(loc){

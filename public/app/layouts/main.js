@@ -95,11 +95,11 @@ define([
       }));
     },
 
-    showProjectEdit: function(id){
-      this.mainContent.show( new ProjectEditorLayout({
+    showProjectEditor: function(id, options){
+      this.mainContent.show( new ProjectEditorLayout(_.extend({
         model: this.app.alignedProjects.getOrCreate(id),
         user: this.app.currentUser
-      }));
+      }, options)));
     },
 
     showProjectIssues: function(project, issueId){
