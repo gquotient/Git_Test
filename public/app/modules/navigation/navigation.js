@@ -86,7 +86,6 @@ define([
 
       // Find view with matching model
       this.children.each(function(view){
-        console.log(view);
         if (property === 'id') {
           if (view.model.id === value) {
             view.setActive();
