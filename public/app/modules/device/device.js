@@ -226,11 +226,9 @@ define([
       'class': 'devices hidden'
     },
     onRender: function(){
-      this.children.each(function(child){
-        this.listenTo(child, 'expand', function(){
-          this.trigger('expand');
-        });
-      }, this);
+      this.listenTo(this, 'itemview:expand', function(){
+        this.trigger('expand');
+      });
     },
     propagateActive: function(options) {
       this.setActive(options);
