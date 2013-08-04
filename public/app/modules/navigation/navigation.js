@@ -67,8 +67,6 @@ define([
       this.setActive(this.activeFilter);
     },
     setActive: function(options){
-      console.log(this.children);
-      console.log(this.children, this.children.length);
       var property, value;
 
       // If options is a string or number, assume it's an id
