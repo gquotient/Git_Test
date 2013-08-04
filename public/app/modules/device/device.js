@@ -134,9 +134,7 @@ define([
       type: 'handlebars',
       template: deviceListItemViewTemplate
     },
-    attributes: {
-      class: 'device collapsed'
-    },
+    className: 'device collapsed',
     expanded: false,
     events: {
       'click a': function(event){
@@ -197,9 +195,7 @@ define([
           // Create a new collection view with this device's chidren
           this.children = new Device.views.NavigationList({
             collection: devices,
-            attributes: {
-              'class': 'devices'
-            }
+            className: 'devices'
           });
 
           // Render the view so the element is available
@@ -222,9 +218,7 @@ define([
 
   Device.views.NavigationList = Navigation.views.List.extend({
     itemView: Device.views.DeviceListItem,
-    attributes: {
-      'class': 'devices hidden'
-    },
+    className: 'devices hidden',
     onRender: function(){
       this.listenTo(this, 'itemview:expand', function(){
         this.trigger('expand');

@@ -23,9 +23,7 @@ define([
       type: 'handlebars',
       template: listItemTemplate
     },
-    attributes: {
-      class: 'nav-item'
-    },
+    className: 'nav-item',
     setActive: function(){
       this.$el.addClass('active');
     },
@@ -42,9 +40,7 @@ define([
       type: 'handlebars',
       template: listTemplate
     },
-    attributes: {
-      class: 'navigationList hidden'
-    },
+    className: 'navigationList hidden',
     itemViewContainer: '> ul',
     itemView: Navigation.views.NavigationItemView,
     activeFilter: {},
@@ -84,7 +80,7 @@ define([
       }
 
       // Remove existing active class
-      this.$el.find('.active').removeClass('active');
+      this.$('.active').removeClass('active');
 
       // Find view with matching model
       this.children.each(function(view){
