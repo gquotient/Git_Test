@@ -300,63 +300,69 @@ header {
       transition:.2s;
     }
   }
-  > ul.devices {
-    border: none;
-    background: none;
-    > li {
-      > a {
-        border-top: borderBasicMedium;
-        border-bottom: borderBasicDark;
-        background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-        &:hover {
-          background: linear-gradient(#252627, #282828);
-        }
-      }
-    }
-    li {
-      width: 100%;
-      position: relative;
-      background: none;
+  > div.devices {
+    > ul {
       border: none;
-      > ul {
-        height: 0;
-        overflow: hidden;
-        transition: all 1s ease-in-out;
-      }
-      &.expanded {
-        > ul {
-          max-height: 10000px; // Not sure, at the moment, why this makes it work but it does
-          height: auto;
-          transition: all 1s ease-in-out;
-        }
-        > a > .expand {
-          background: url(../../img/icon_collapse.png) right center no-repeat;
-        }
-      }
-      a {
-        .expand {
-          background: url(../../img/icon_expand.png) right center no-repeat;
-          opacity: 0;
-          position: absolute;
-          top: 0;
-          right: 0;
-          display: block;
-          width: 30px;
-          height: 30px;
-          padding: 0 30px 0 0;
-          text-indent: -200%;
-          overflow: hidden;
-          border-left: 1px dotted #202020;
-        }
-        &:hover {
-          > .expand {
-            opacity: 1;
+      background: none;
+      > li {
+        > a {
+          border-top: borderBasicMedium;
+          border-bottom: borderBasicDark;
+          background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+          &:hover {
+            background: linear-gradient(#252627, #282828);
           }
         }
       }
-    }
-    ul {
-      padding: 0 0 0 6px;
+      li {
+        width: 100%;
+        position: relative;
+        background: none;
+        border: none;
+        > div {
+          > ul {
+            height: 0;
+            overflow: hidden;
+            transition: all 1s ease-in-out;
+          }
+        }
+        &.expanded {
+          > div {
+            > ul {
+              max-height: 10000px; // Not sure, at the moment, why this makes it work but it does
+              height: auto;
+              transition: all 1s ease-in-out;
+            }
+          }
+          > a > .expand {
+            background: url(../../img/icon_collapse.png) right center no-repeat;
+          }
+        }
+        a {
+          .expand {
+            background: url(../../img/icon_expand.png) right center no-repeat;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: block;
+            width: 30px;
+            height: 30px;
+            padding: 0 30px 0 0;
+            text-indent: -200%;
+            overflow: hidden;
+            border-left: 1px dotted #202020;
+          }
+          &:hover {
+            > .expand {
+              opacity: 1;
+            }
+          }
+        }
+      }
+      ul {
+        padding: 0 0 0 6px;
+      }
     }
   }
 }

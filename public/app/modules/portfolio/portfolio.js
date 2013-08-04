@@ -118,7 +118,7 @@ define([
   });
 
   /* The item view is the view for the individual portfolios in the navigation. */
-  Portfolio.views.NavigationItemView = Navigation.views.ListItemView.extend({
+  Portfolio.views.NavigationItemView = Navigation.views.ListItem.extend({
     template: {
       type: 'handlebars',
       template: navigationItemTemplate
@@ -141,7 +141,7 @@ define([
 
   /* This composite view is the wrapper view for the list of portfolios.
      It handles nesting the list while allowing for the navigation header. */
-  Portfolio.views.NavigationListView = Navigation.views.ListView.extend({
+  Portfolio.views.NavigationListView = Navigation.views.List.extend({
     template: {
       type: 'handlebars',
       template: navigationListTemplate

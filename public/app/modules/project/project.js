@@ -722,7 +722,7 @@ define([
     }
   });
 
-  Project.views.NavigationListItemView = Navigation.views.ListItemView.extend({
+  Project.views.NavigationListItemView = Navigation.views.ListItem.extend({
     template: {
       type: 'handlebars',
       template: navigationListItemTemplate
@@ -736,7 +736,7 @@ define([
 
   /* This composite view is the wrapper view for the list of portfolios.
      It handles nesting the list while allowing for the navigation header. */
-  Project.views.NavigationListView = Navigation.views.ListView.extend({
+  Project.views.NavigationListView = Navigation.views.List.extend({
     template: {
       type: 'handlebars',
       template: navigationListTemplate

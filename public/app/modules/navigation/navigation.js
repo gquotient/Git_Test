@@ -17,7 +17,7 @@ define([
 ){
   var Navigation = { views: {} };
 
-  Navigation.views.ListItemView = Marionette.ItemView.extend({
+  Navigation.views.ListItem = Marionette.ItemView.extend({
     tagName: 'li',
     template: {
       type: 'handlebars',
@@ -33,7 +33,7 @@ define([
     }
   });
 
-  Navigation.views.ListView = Marionette.CompositeView.extend({
+  Navigation.views.List = Marionette.CompositeView.extend({
     tagName: 'div',
     template: {
       type: 'handlebars',
@@ -45,8 +45,9 @@ define([
     itemViewContainer: '> ul',
     itemView: Navigation.views.NavigationItemView,
     active: {},
-    onRender: function(){
+    onShow: function(){
       var that = this;
+      // Triggers css transition
       setTimeout(function(){ that.$el.removeClass('hidden'); }, 0);
     },
     sort: function(comparator){

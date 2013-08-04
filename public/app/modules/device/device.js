@@ -14,6 +14,7 @@ define([
   'backbone',
   'backbone.marionette',
 
+  'navigation',
   './canvas',
   './table',
 
@@ -25,6 +26,7 @@ define([
   Backbone,
   Marionette,
 
+  Navigation,
   Canvas,
   Table,
 
@@ -136,7 +138,7 @@ define([
     }
   });
 
-  Device.views.DeviceListItem = Marionette.ItemView.extend({
+  Device.views.DeviceListItem = Navigation.views.ListItem.extend({
     tagName: 'li',
     template: {
       type: 'handlebars',
@@ -205,20 +207,25 @@ define([
       if (this.children) {
         this.children.close();
       }
-    },
-    initialize: function(options){
-      // Add the dev type for targeted styles
-      this.$el.addClass(options.model.get('devtype').replace(' ', '_'));
-      this.$el.attr('id', this.model.get('graph_key'));
     }
   });
 
-  Device.views.NavigationList = Marionette.CollectionView.extend({
-    tagName: 'ul',
+  Device.views.NavigationList = Navigation.views.List.extend({
+    itemView: Device.views.DeviceListItem,
     attributes: {
-      class: 'devices'
+      'class': 'devices hidden'
     },
-    itemView: Device.views.DeviceListItem
+    propagateActive: function(options) {
+      this.setActive(options);
+
+      if (this.children) {
+        this.children.each(function(child){
+          if (child.children) {
+            child.children.propagateActive(options);
+          }
+        });
+      }
+    }
   });
 
   return Device;
