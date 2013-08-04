@@ -26,6 +26,9 @@ define([
     attributes: {
       class: 'nav-item'
     },
+    setActive: function(){
+      this.$el.addClass('active');
+    },
     events: {
       'click': function(){
         this.trigger('click', this.model);
@@ -44,11 +47,16 @@ define([
     },
     itemViewContainer: '> ul',
     itemView: Navigation.views.NavigationItemView,
-    active: {},
+    activeFilter: {},
     onShow: function(){
       var that = this;
+
       // Triggers css transition
-      setTimeout(function(){ that.$el.removeClass('hidden'); }, 0);
+      var removeHidden = function(){
+        that.$el.removeClass('hidden');
+      };
+
+      setTimeout(removeHidden, 0);
     },
     sort: function(comparator){
       // Set new comparator on collection
@@ -58,7 +66,7 @@ define([
       // Re-render only the child views
       this._renderChildren();
       // Reset the active el since render blows it away
-      this.setActive(this.active);
+      this.setActive(this.activeFilter);
     },
     setActive: function(options){
       var property, value;
@@ -82,15 +90,15 @@ define([
       this.children.each(function(view){
         if (property === 'id') {
           if (view.model.id === value) {
-            view.$el.addClass('active');
+            view.setActive();
           }
         } else if (view.model.get(property) === value) {
-          view.$el.addClass('active');
+          view.setActive();
         }
       });
 
       // Store the current active state in case of sorting or similar event
-      this.active[property] = value;
+      this.activeFilter[property] = value;
     }
   });
 

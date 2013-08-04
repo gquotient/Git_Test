@@ -147,9 +147,7 @@ define([
     attributes: {
       class: 'device collapsed'
     },
-    options: {
-      expanded: false
-    },
+    expanded: false,
     events: {
       'click a': function(event){
         event.preventDefault();
@@ -161,16 +159,31 @@ define([
         event.preventDefault();
         event.stopPropagation();
 
-        if (this.options.expanded) {
-          this.$el.removeClass('expanded');
-          this.$el.addClass('collapsed');
-          this.options.expanded = false;
-        } else {
-          this.$el.removeClass('collapsed');
-          this.$el.addClass('expanded');
-          this.options.expanded = true;
-        }
+        this.toggleExpand();
       }
+    },
+    setActive: function(){
+      this.$el.addClass('active');
+
+      this.propagateExpand();
+    },
+    toggleExpand: function(){
+      if (this.expanded) {
+        this.$el.removeClass('expanded');
+        this.$el.addClass('collapsed');
+        this.expanded = false;
+      } else {
+        this.$el.removeClass('collapsed');
+        this.$el.addClass('expanded');
+        this.expanded = true;
+      }
+    },
+    propagateExpand: function(){
+      if (!this.expanded && !this.$el.hasClass('active')) {
+        this.toggleExpand();
+      }
+
+      this.trigger('expand');
     },
     onRender: function(){
       if (this.model.outgoing.length) {
@@ -192,10 +205,17 @@ define([
           devices.reset(filteredDevices);
 
           // Create a new collection view with this device's chidren
-          this.children = new Device.views.NavigationList({collection: devices});
+          this.children = new Device.views.NavigationList({
+            collection: devices,
+            attributes: {
+              'class': 'devices'
+            }
+          });
 
           // Render the view so the element is available
           this.children.render();
+
+          this.listenTo(this.children, 'expand', this.propagateExpand);
 
           // Append the child element to this view
           this.$el.append(this.children.$el);
@@ -214,6 +234,13 @@ define([
     itemView: Device.views.DeviceListItem,
     attributes: {
       'class': 'devices hidden'
+    },
+    onRender: function(){
+      this.children.each(function(child){
+        this.listenTo(child, 'expand', function(){
+          this.trigger('expand');
+        });
+      }, this);
     },
     propagateActive: function(options) {
       this.setActive(options);
