@@ -1,13 +1,3 @@
-/*
-
-  TODO:
-
-  [ ] Expand device tree if selected device is hidden
-  [x] Add collapse icon and state
-  [ ] Animate expand/collapse (CSS transform?)
-
-*/
-
 define([
   'jquery',
   'underscore',
