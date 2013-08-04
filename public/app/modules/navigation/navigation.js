@@ -67,6 +67,8 @@ define([
       this.setActive(this.activeFilter);
     },
     setActive: function(options){
+      console.log(this.children);
+      console.log(this.children, this.children.length);
       var property, value;
 
       // If options is a string or number, assume it's an id
@@ -86,6 +88,7 @@ define([
 
       // Find view with matching model
       this.children.each(function(view){
+        console.log(view);
         if (property === 'id') {
           if (view.model.id === value) {
             view.setActive();
