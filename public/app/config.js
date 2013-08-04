@@ -122,6 +122,7 @@ require.config({
     'backbone.wreqr': 'bower_components/backbone.wreqr/lib/amd/backbone.wreqr',
     'backbone.marionette': 'bower_components/backbone.marionette/lib/core/amd/backbone.marionette',
     'backbone.marionette.handlebars': 'bower_components/backbone.marionette.handlebars/backbone.marionette.handlebars',
+    'backbone.virtual-collection': 'bower_components/virtual-collection/backbone.virtual-collection',
     handlebars: 'bower_components/handlebars/handlebars',
     modernizr: 'bower_components/modernizr/modernizr',
     leaflet: 'bower_components/leaflet/dist/leaflet',
@@ -137,6 +138,9 @@ require.config({
     backbone: {
       deps: ['underscore', 'jquery'],
       exports: 'Backbone'
+    },
+    'backbone.virtual-collection': {
+      deps: ['backbone']
     },
     underscore: {
       exports: '_'

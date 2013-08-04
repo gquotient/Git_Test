@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'backbone.virtual-collection',
 
   'hbs!navigation/templates/list',
   'hbs!navigation/templates/listItem'
@@ -11,6 +12,7 @@ define([
   _,
   Backbone,
   Marionette,
+  VirtualCollection,
 
   listTemplate,
   listItemTemplate
@@ -95,6 +97,9 @@ define([
 
       // Store the current active state in case of sorting or similar event
       this.activeFilter[property] = value;
+    },
+    initialize: function(options){
+      this.collection = new Backbone.VirtualCollection(options.collection);
     }
   });
 
