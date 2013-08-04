@@ -52,14 +52,15 @@ define([
     selectDevice: function(device){
       Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'));
 
+      // Build device specific detail layout
       var SubLayout = (this.deviceLayouts[device.get('devtype')]) ? this.deviceLayouts[device.get('devtype')] : this.deviceLayouts.core;
 
+      // Show layout
       this.deviceDetail.show(new SubLayout({model: device, project: this.model}));
 
-      $('.nav_content').find('.active').removeClass('active');
-
-      // This is a nightmare - we need to come up with something less hacky
-      $('.nav_content').find('[id="' + device.get('graph_key') + '"]').addClass('active');
+      // Set active nav el
+      //NOTE - this is a special recursive method on the device tree
+      this.devicesTree.propagateActive({graph_key: device.get('graph_key')});
     },
 
     onShow: function(){
