@@ -4,6 +4,7 @@ define([
   'backbone',
   'backbone.marionette',
 
+  'navigation',
   'project',
 
   'hbs!portfolio/templates/navigationList',
@@ -16,6 +17,7 @@ define([
   Backbone,
   Marionette,
 
+  Navigation,
   Project,
 
   navigationListTemplate,
@@ -116,21 +118,13 @@ define([
   });
 
   /* The item view is the view for the individual portfolios in the navigation. */
-  Portfolio.views.NavigationItemView = Marionette.ItemView.extend({
-    tagName: 'li',
+  Portfolio.views.NavigationItemView = Navigation.views.ListItem.extend({
     template: {
       type: 'handlebars',
       template: navigationItemTemplate
     },
     attributes: {
-      class: 'nav-item hidden'
-    },
-    onRender: function(){
-      var that = this;
-      setTimeout(function(){ that.$el.removeClass('hidden'); }, 0);
-    },
-    onBeforeClose: function(){
-      this.$el.removeClass('hidden');
+      class: 'nav-item'
     },
     events: {
       'mouseover': function(){
@@ -141,69 +135,37 @@ define([
       },
       'click': function(){
         Backbone.trigger('click:portfolio', this.model);
-      }//, This shouldn't be needed anymore
-      //'dblclick': function(){
-      //  Backbone.trigger('select:portfolio', this.model);
-      //}
+      }
     }
   });
 
   /* This composite view is the wrapper view for the list of portfolios.
      It handles nesting the list while allowing for the navigation header. */
-  Portfolio.views.NavigationListView = Marionette.CompositeView.extend({
-    tagName: 'div',
-    attributes: {
-      class: 'portfolios'
-    },
+  Portfolio.views.NavigationListView = Navigation.views.List.extend({
     template: {
       type: 'handlebars',
       template: navigationListTemplate
     },
-
-    itemViewContainer: '.portfolio-list',
-
     // Tell the composite view which view to use as for each portfolio.
     itemView: Portfolio.views.NavigationItemView,
 
     events: {
-      'change #portfolio-sort': function(){
-        this.collection.comparator = $('#portfolio-sort').val();
-        this.collection.sort();
+      'change #portfolio-sort': function(event){
+        this.sort(event.currentTarget.value);
       },
       'click #new-portfolio': function(){
-        var newPortfolioView = new Portfolio.views.NewPortfolio({collection: this.collection});
-        $('body').append(newPortfolioView.$el);
+        var newPortfolioView = new Portfolio.views.NewPortfolio({collection: this.options.collection});
+
         newPortfolioView.render();
+        $('body').append(newPortfolioView.obscure);
+        $('body').append(newPortfolioView.$el);
+
         newPortfolioView.$el.css({
           top: this.$el.offset().top,
           left: this.$el.offset().left + this.$el.width()
         }).removeClass('hidden');
       }
     },
-
-    initialize: function(options){
-      //this.listenTo(Backbone, 'select:portfolio', this.setPortfolio);
-      this.listenTo(this.collection, 'sort', this._renderChildren);
-    },
-
-    // onRender: function(){
-    //   // Handle if no sub portfolios exist
-    //   if (this.collection.length === 0) {
-    //     this.$el.append('<li class="empty">No sub portfolios</li>');
-    //   }
-    // },
-
-    // Setup the views for the current model.
-    //setPortfolio: function(model){
-    //  console.log(model);
-      // Set the current collection to be a new navigation list with the subPortfolios.
-    //  this.collection = model.portfolios;
-
-    //  console.log(model.portfolios);
-
-      // Trigger a render. This forces the nav header to update, too.
-    //  this.render();
-    //},
     serializeData: function(){
       return '{sort_order:'+ this.collection.sort_order+'}';
     }
@@ -234,6 +196,7 @@ define([
       type: 'handlebars',
       template: newPortfolioTemplate
     },
+    obscure: $('<div class="obscure"></div>'),
     events: {
       'click button': function(e){
         e.preventDefault();
@@ -246,9 +209,11 @@ define([
           share: share.val()
         });
 
+        this.obscure.detach();
         this.close();
       },
       'click .close': function(e){
+        this.obscure.detach();
         this.close();
       }
     },
