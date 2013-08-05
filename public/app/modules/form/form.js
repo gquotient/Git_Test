@@ -68,7 +68,7 @@ function(
         actions: this.options.actions
       };
     },
-    onShow: function(){
+    onRender: function(){
       // Disable form elements
       this.disableForm();
     },
@@ -157,7 +157,7 @@ function(
       };
     },
     serializeData: function() {
-      return { fields: this.fields, schema: this.model.schema };
+      return { fields: this.fields, schema: this.model.schema, actions: this.actions };
     },
     itemView: Forms.views.tableRow,
     newRowView: Forms.views.newTableRow,
@@ -166,11 +166,6 @@ function(
       name: ''
     },
     actions: false,
-    onRender: function(){
-      if(this.actions){
-        this.$el.find('thead tr').append('<th>Actions</th>');
-      }
-    },
     events: {
       'click button.add': function(event){
         event.preventDefault();
