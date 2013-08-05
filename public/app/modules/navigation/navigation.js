@@ -3,7 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
-  'backbone.virtual-collection',
+  'backbone.virtualCollection',
 
   'hbs!navigation/templates/list',
   'hbs!navigation/templates/listItem'
