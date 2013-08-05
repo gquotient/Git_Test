@@ -37,15 +37,17 @@ define([
 
       // Set up view listener.
       this.listenTo(Backbone, 'editor:change:view', function(options){
+        var isEmpty = !this.content.currentView;
+
         if (options.View) {
           this.content.show( new options.View(_.omit(options, 'View')) );
         }
 
-        this.updateHistory(options.uri);
+        this.updateHistory(options.uri, {replace: isEmpty});
       });
     },
 
-    updateHistory: function(uri){
+    updateHistory: function(uri, options){
       var parts = Backbone.history.fragment.split('/'),
         last = _.last(parts);
 
@@ -57,7 +59,7 @@ define([
         parts.push(uri);
       }
 
-      Backbone.history.navigate(parts.join('/'));
+      Backbone.history.navigate(parts.join('/'), options);
     },
 
     onShow: function(){
