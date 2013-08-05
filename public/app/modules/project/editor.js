@@ -86,79 +86,6 @@ define([
       id: 'editor'
     },
 
-    inputFields: {
-      view: {
-        hotKey: 118,
-        collection: new Backbone.Collection([
-          {
-            name: 'Power Flow',
-            uri: 'power',
-            View: Device.views.Canvas,
-            rendering: 'POWER'
-          }, {
-            name: 'Data Acquisition',
-            uri: 'daq',
-            View: Device.views.Canvas,
-            rendering: 'DAQ'
-          }, {
-            name: 'Device Table',
-            uri: 'table',
-            View: Device.views.Table
-          }, {
-            name: 'Notes',
-            uri: 'notes',
-            View: views.Notes
-          }
-        ]),
-
-        onShow: function(){
-          var model = this.collection.findWhere({uri: this.options.view});
-
-          this.triggerMethod('key:enter', model || this.collection.first());
-        },
-
-        onApply: function(model){
-          this.placeholder = model.get('name');
-        }
-      },
-
-      add: {
-        hotKey: 97,
-        collection: new Backbone.Collection([], {comparator: 'name'}),
-
-        parseInput: function(){
-          var input = InputField.prototype.parseInput.call(this),
-            re = /^\d+\s*/,
-            match = re.exec(input),
-            times = match && parseInt(match[0], 10);
-
-          this.times = times < 1 ? 1 : times > 100 ? 100 : times;
-
-          return input.replace(re, '');
-        },
-
-        getAutocomplete: function(){
-          var value = InputField.prototype.getAutocomplete.call(this);
-
-          return value && this.times > 1 ? this.times + ' ' + value : value;
-        }
-      },
-
-      connect: {
-        hotKey: 99,
-        collection: new Backbone.Collection([], {comparator: 'name'})
-      },
-
-      disconnect: {
-        hotKey: 100,
-        collection: new Backbone.Collection([], {comparator: 'name'})
-      },
-
-      import: {
-        hotKey: 105
-      }
-    },
-
     initialize: function(options){
       this.equipment = new Equipment.Collection();
       this.user = options.user;
@@ -280,6 +207,79 @@ define([
         }
 
         device.set({name: name});
+      }
+    },
+
+    inputFields: {
+      view: {
+        hotKey: 118,
+        collection: new Backbone.Collection([
+          {
+            name: 'Power Flow',
+            uri: 'power',
+            View: Device.views.Canvas,
+            rendering: 'POWER'
+          }, {
+            name: 'Data Acquisition',
+            uri: 'daq',
+            View: Device.views.Canvas,
+            rendering: 'DAQ'
+          }, {
+            name: 'Device Table',
+            uri: 'table',
+            View: Device.views.Table
+          }, {
+            name: 'Notes',
+            uri: 'notes',
+            View: views.Notes
+          }
+        ]),
+
+        onShow: function(){
+          var model = this.collection.findWhere({uri: this.options.view});
+
+          this.triggerMethod('key:enter', model || this.collection.first());
+        },
+
+        onApply: function(model){
+          this.placeholder = model.get('name');
+        }
+      },
+
+      add: {
+        hotKey: 97,
+        collection: new Backbone.Collection([], {comparator: 'name'}),
+
+        parseInput: function(){
+          var input = InputField.prototype.parseInput.call(this),
+            re = /^\d+\s*/,
+            match = re.exec(input),
+            times = match && parseInt(match[0], 10);
+
+          this.times = times < 1 ? 1 : times > 100 ? 100 : times;
+
+          return input.replace(re, '');
+        },
+
+        getAutocomplete: function(){
+          var value = InputField.prototype.getAutocomplete.call(this);
+
+          return value && this.times > 1 ? this.times + ' ' + value : value;
+        }
+      },
+
+      connect: {
+        hotKey: 99,
+        collection: new Backbone.Collection([], {comparator: 'name'})
+      },
+
+      disconnect: {
+        hotKey: 100,
+        collection: new Backbone.Collection([], {comparator: 'name'})
+      },
+
+      import: {
+        hotKey: 105
       }
     },
 
