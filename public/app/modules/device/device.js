@@ -23,7 +23,7 @@ define([
   deviceListItemViewTemplate,
   deviceListViewTemplate
 ){
-  var Device = { views: {Canvas: Canvas, Table: Table} };
+  var Device = { views: {} };
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
@@ -239,6 +239,11 @@ define([
         });
       }
     }
+  });
+
+  _.extend(Device.views, {
+    Canvas: Canvas,
+    Table: Table
   });
 
   return Device;
