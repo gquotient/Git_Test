@@ -209,6 +209,7 @@ define([
           share: share.val()
         });
 
+        this.obscure.detach();
         this.close();
       },
       'click .close': function(e){
