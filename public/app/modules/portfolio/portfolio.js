@@ -154,9 +154,12 @@ define([
         this.sort(event.currentTarget.value);
       },
       'click #new-portfolio': function(){
-        var newPortfolioView = new Portfolio.views.NewPortfolio({collection: this.collection});
-        $('body').append(newPortfolioView.$el);
+        var newPortfolioView = new Portfolio.views.NewPortfolio({collection: this.options.collection});
+
         newPortfolioView.render();
+        $('body').append(newPortfolioView.obscure);
+        $('body').append(newPortfolioView.$el);
+
         newPortfolioView.$el.css({
           top: this.$el.offset().top,
           left: this.$el.offset().left + this.$el.width()
@@ -193,6 +196,7 @@ define([
       type: 'handlebars',
       template: newPortfolioTemplate
     },
+    obscure: $('<div class="obscure"></div>'),
     events: {
       'click button': function(e){
         e.preventDefault();
@@ -208,6 +212,7 @@ define([
         this.close();
       },
       'click .close': function(e){
+        this.obscure.detach();
         this.close();
       }
     },
