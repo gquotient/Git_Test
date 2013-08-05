@@ -1,13 +1,17 @@
-{{ debug }}
-
 <div class="issueInfo">
-  Description: {{ alarm.alarm_type }}<br>
+  <h4>{{ alarm.alarm_type }}</h4>
   Device: <span class="deviceName"></span><br>
   Created on: {{ date alarm.activated_at }}
 </div>
 
-<div class="projectInfo">
-
-</div>
-
 <div class="module chart"></div>
+
+<div class="projectInfo">
+    <h4>{{ project.display_name }}</h4>
+    <p>
+      {{ project.address }}<br>
+      {{ project.city }}, {{ project.state }} {{ project.zipcode }}<br>
+      AC: {{ project.ac_capacity }}kW<br>
+      DC: {{ project.ac_capacity }}kW<br>
+    </p>
+  </div>
