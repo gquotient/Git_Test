@@ -319,6 +319,7 @@ select[disabled], select:disabled {
 /* Misc Layout */
 
 leftColumnWidth = 240px;
+leftColumnWidthSml = 200px;
 
 .column_left {
   width: leftColumnWidth;
@@ -326,10 +327,17 @@ leftColumnWidth = 240px;
   margin-left: -100%;
   height: 100%;
   overflow: auto;
+  @media screen and (max-width: 1024px) {
+    width: leftColumnWidthSml;
+  }
 }
 
 .column_right {
   margin-left: leftColumnWidth;
+  transition: 0.25s ease-in-out;
+  @media screen and (max-width: 1024px) {
+    margin-left: leftColumnWidthSml;
+  }
   height: 100%;
   overflow: auto;
 }
