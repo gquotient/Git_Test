@@ -47,7 +47,6 @@ module.exports = function(app){
       var defer = Q.defer();
 
       request(requestOptions, function(error, response, userJSON){
-        error = {statusCode: 500};
         var user = JSON.parse(userJSON);
         // Until we have a default team option for the user, assume first team or last selected. Or, you know. No team at all.
         var team = user.default_team ? user.default_team : user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
