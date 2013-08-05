@@ -38,7 +38,7 @@ module.exports = function(app){
         everythingLoaded = Q.defer();
 
     var resolveEverythingLoaded = function(){
-      if (myProjects && myTeams) {
+      if (myProjects && myPortfolios) {
         everythingLoaded.resolve();
       }
     };
