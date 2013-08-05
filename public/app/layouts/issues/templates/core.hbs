@@ -1,7 +1,13 @@
-<div class="info">
-  Description: {{ alarm_type }}<br>
+{{ debug }}
+
+<div class="issueInfo">
+  Description: {{ alarm.alarm_type }}<br>
   Device: <span class="deviceName"></span><br>
-  Created on: {{ date activated_at }}
+  Created on: {{ date alarm.activated_at }}
+</div>
+
+<div class="projectInfo">
+
 </div>
 
 <div class="module chart"></div>

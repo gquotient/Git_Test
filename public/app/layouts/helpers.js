@@ -7,6 +7,18 @@ function(
   _,
   Handlebars
 ){
+  Handlebars.registerHelper('debug', function(optionalValue) {
+    console.log('Current Context');
+    console.log('====================');
+    console.log(this);
+
+    if (optionalValue) {
+      console.log('Value');
+      console.log('====================');
+      console.log(optionalValue);
+    }
+  });
+
   // Unit conversion
   var roundNumber = function(num, dec) {
     var result = (num !== null)?Math.round(num*Math.pow(10,dec))/Math.pow(10,dec):null;

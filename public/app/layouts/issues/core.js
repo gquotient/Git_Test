@@ -101,6 +101,15 @@ define([
       this.chart.show(chart_powerAndIrradiance);
     },
 
+    serializeData: function(){
+      // Since we need the project info, we need to return a special context
+      // to our template
+      return {
+        project: this.project.toJSON(),
+        alarm: this.model.toJSON()
+      };
+    },
+
     initialize: function(options){
       var that = this;
 
