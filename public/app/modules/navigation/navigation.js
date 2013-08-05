@@ -100,6 +100,9 @@ define([
     },
     initialize: function(options){
       this.collection = new Backbone.VirtualCollection(options.collection);
+
+      // This is need to kill listeners
+      this.collection.closeWith(this);
     }
   });
 

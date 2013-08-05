@@ -69,7 +69,7 @@ define([
 
     onClose: function(){
       if(this.model.devices && this.model.devices.length){
-        // Clear devices from memory
+        // Clear devices on model from memory
         this.model.devices.reset();
       }
     },
@@ -83,12 +83,13 @@ define([
       this.model = options.model;
 
       // Instantiate devices collection view
-      this.devicesTree = new Device.views.NavigationList({collection: new Device.Collection()});
+      this.devices = new Device.Collection();
+      this.devicesTree = new Device.views.NavigationList({collection: this.devices});
 
       // Fetch project to get devices
       this.model.fetch().done(function(){
         // Update collection once data is retrieved
-        that.devicesTree.collection.reset(that.model.devices.where({devtype: 'Inverter'}));
+        that.devices.set(that.model.devices.where({devtype: 'Inverter'}));
 
         // If router passes a device, build detail view
         if (options.currentDevice) {
