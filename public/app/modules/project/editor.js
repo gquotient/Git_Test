@@ -5,6 +5,7 @@ define([
   'backbone.marionette',
 
   'device',
+  'equipment',
 
   './inputField',
 
@@ -17,6 +18,7 @@ define([
   Marionette,
 
   Device,
+  Equipment,
 
   InputField,
 
@@ -158,14 +160,30 @@ define([
     },
 
     initialize: function(options){
-      this.equipment = options.equipment;
+      this.equipment = new Equipment.Collection();
       this.user = options.user;
+
+      // Fetch equipment and project from server.
+      this.equipment.fetch({success: _.bind(function(){
+        this.model.fetch({
+          data: {
+            index_name: 'AlignedProjects/no'
+          },
+          equipment: this.equipment
+        });
+      }, this)});
+
+      // Attempt to get the lock if editable.
+      if (options.editable) {
+        this.model.setLock(true);
+      }
 
       this.listenTo(Backbone, 'editor:selection', function(selection){
         this.selection = selection.length > 0 ? selection : null;
       });
 
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
+      this.listenTo(Backbone, 'editor', _.throttle(this.updateTimer, 1000));
     },
 
     keydownEvents: {
@@ -182,22 +200,47 @@ define([
     },
 
     modelEvents: {
+      'change:locked': 'updateEditable',
+      'change:editor': 'updateEditable',
+
       'sync': function(project){
         this.checkRenderings(project.outgoing);
-      },
-
-      'change:editor': function(project, value){
-        this.toggleEditable();
       }
     },
 
-    toggleEditable: function(){
-      var who = this.model.get('editor');
+    updateTimer: function(){
+      if (this.timer) { clearTimeout(this.timer); }
 
-      this.editable = !who || who === this.user.get('email');
-      this.$el.find('input:not(.nav)').attr('disabled', !this.editable);
-      this.$('#lock-message').html(this.editable ? '' :
-        (who || 'Someone') + ' has this project locked');
+      if (!this.editable) { return; }
+
+      this.timer = setTimeout(_.bind(function(){
+        Backbone.history.navigate('/admin/project/' + this.model.id, true);
+      }, this), 5 * 60 * 1000);
+    },
+
+    updateEditable: function(){
+      var editable = this.options.editable,
+        who = this.model.get('editor'),
+        user = this.user.get('email'),
+        locked = this.model.get('locked');
+
+      if (!who || who === '' || who === 'unlocked' || who === user) {
+        who = null;
+
+      } else if (locked) {
+        editable = false;
+      }
+
+      if (this.editable !== editable) {
+        this.editable = editable;
+        this.$el.find('input:not(.nav)').attr('disabled', !editable);
+
+        if (who && !editable) {
+          this.$('#lock-message').html(who + ' has this project locked');
+        } else {
+          this.$('#lock-message').empty();
+        }
+      }
     },
 
     checkRenderings: function(devices, target){
@@ -264,7 +307,17 @@ define([
 
     onShow: function(){
       this._initInputFields();
-      this.toggleEditable();
+      this.updateEditable();
+    },
+
+    onClose: function(){
+      if (this.editable) {
+        this.model.setLock(false);
+      }
+
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
     },
 
     onAddFocus: function(view){

@@ -5,7 +5,6 @@ define([
   'backbone.marionette',
 
   'project',
-  'equipment',
 
   'hbs!layouts/templates/projectEditor'
 ], function(
@@ -15,7 +14,6 @@ define([
   Marionette,
 
   Project,
-  Equipment,
 
   projectEditorTemplate
 ){
@@ -34,21 +32,8 @@ define([
       overlay: '#overlay'
     },
 
-    initialize: function(options){
-      var that = this;
-
+    initialize: function(){
       this.$doc = $(document);
-      this.equipment = new Equipment.Collection();
-
-      // Fetch equipment and project from server.
-      $.when(this.equipment.fetch(), this.model.setLock()).always(function(){
-        that.model.fetch({
-          data: {
-            index_name: 'AlignedProjects/no'
-          },
-          equipment: that.equipment
-        });
-      });
 
       // Set up view listener.
       this.listenTo(Backbone, 'editor:change:view', function(options){
@@ -58,17 +43,6 @@ define([
 
         this.updateHistory(options.uri);
       });
-
-      // Close the editor and release the lock after 5min of inactivity
-      this.listenTo(Backbone, 'editor', _.throttle(function(){
-        if (this.timer) {
-          clearTimeout(this.timer);
-        }
-
-        this.timer = setTimeout(function(){
-          Backbone.history.navigate('/admin/projects', true);
-        }, 5 * 60 * 1000);
-      }, 1000));
     },
 
     updateHistory: function(uri){
@@ -87,20 +61,11 @@ define([
     },
 
     onShow: function(){
-      this.overlay.show( new Project.views.Editor({
-        model: this.model,
-        equipment: this.equipment,
-        user: this.options.user,
-        view: this.options.view
-      }));
       this.delegateEditorEvents();
+      this.overlay.show( new Project.views.Editor(this.options) );
     },
 
     onClose: function(){
-
-      // Release the lock for this project
-      this.model.setLock(false);
-
       this.undelegateEditorEvents();
     },
 
