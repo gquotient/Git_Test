@@ -5,7 +5,6 @@ define([
   'backbone.marionette',
 
   'project',
-  'device',
   'equipment',
 
   'hbs!layouts/templates/projectEditor'
@@ -16,7 +15,6 @@ define([
   Marionette,
 
   Project,
-  Device,
   Equipment,
 
   projectEditorTemplate
@@ -53,12 +51,12 @@ define([
       });
 
       // Set up view listener.
-      this.listenTo(Backbone, 'editor:change:view', function(args){
-        var View = Project.views[args.view] || Device.views[args.view];
-
-        if (View) {
-          this.content.show( new View(args) );
+      this.listenTo(Backbone, 'editor:change:view', function(options){
+        if (options.View) {
+          this.content.show( new options.View(_.omit(options, 'View')) );
         }
+
+        this.updateHistory(options.uri);
       });
 
       // Close the editor and release the lock after 5min of inactivity
@@ -73,11 +71,27 @@ define([
       }, 1000));
     },
 
+    updateHistory: function(uri){
+      var parts = Backbone.history.fragment.split('/'),
+        last = _.last(parts);
+
+      if (last !== 'edit' && last !== 'view') {
+        parts.pop();
+      }
+
+      if (uri) {
+        parts.push(uri);
+      }
+
+      Backbone.history.navigate(parts.join('/'));
+    },
+
     onShow: function(){
       this.overlay.show( new Project.views.Editor({
         model: this.model,
         equipment: this.equipment,
-        user: this.options.user
+        user: this.options.user,
+        view: this.options.view
       }));
       this.delegateEditorEvents();
     },

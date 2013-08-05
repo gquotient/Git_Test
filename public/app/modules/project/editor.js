@@ -4,6 +4,8 @@ define([
   'backbone',
   'backbone.marionette',
 
+  'device',
+
   './inputField',
 
   'hbs!project/templates/editor',
@@ -14,12 +16,62 @@ define([
   Backbone,
   Marionette,
 
+  Device,
+
   InputField,
 
   editorTemplate,
   notesTemplate
 ){
   var views = {};
+
+  views.Notes = Marionette.ItemView.extend({
+    tagName: 'form',
+    template: {
+      type: 'handlebars',
+      template: notesTemplate
+    },
+
+    attributes: {
+      id: 'notes'
+    },
+
+    ui: {
+      textarea: 'textarea'
+    },
+
+    events: {
+      'keyup textarea': function(e){
+        this.model.set('notes', this.ui.textarea.val());
+
+        if (e.which === 27) {
+          this.ui.textarea.blur();
+        }
+      },
+
+      'blur textarea': function(){
+        if (this.options.editable) {
+          this.model.save();
+        }
+      }
+    },
+
+    modelEvents: {
+      'change:notes': function(){
+        this.ui.textarea.val(this.model.get('notes'));
+      }
+    },
+
+    onShow: function(){
+      this.ui.textarea.attr('disabled', !this.options.editable);
+    },
+
+    onClose: function(){
+      if (this.options.editable) {
+        this.model.save();
+      }
+    }
+  });
 
   views.Editor = Marionette.ItemView.extend({
     tagName: 'form',
@@ -38,23 +90,29 @@ define([
         collection: new Backbone.Collection([
           {
             name: 'Power Flow',
-            view: 'Canvas',
+            uri: 'power',
+            View: Device.views.Canvas,
             rendering: 'POWER'
           }, {
             name: 'Data Acquisition',
-            view: 'Canvas',
+            uri: 'daq',
+            View: Device.views.Canvas,
             rendering: 'DAQ'
           }, {
             name: 'Device Table',
-            view: 'Table'
+            uri: 'table',
+            View: Device.views.Table
           }, {
             name: 'Notes',
-            view: 'Notes'
+            uri: 'notes',
+            View: views.Notes
           }
         ]),
 
         onShow: function(){
-          this.triggerMethod('key:enter', this.collection.first());
+          var model = this.collection.findWhere({uri: this.options.view});
+
+          this.triggerMethod('key:enter', model || this.collection.first());
         },
 
         onApply: function(model){
@@ -182,14 +240,14 @@ define([
       }
     },
 
-    onShow: function(){
-      this.toggleEditable();
-
-      _.each(this.inputFields, function(options, name){
-        var view = _.extend( new InputField({
-          collection: options.collection,
+    _initInputFields: function(){
+      _.each(this.inputFields, function(obj, name){
+        var view = new InputField(_.extend({}, this.options, {
+          collection: obj.collection,
           el: this.$('#' + name)
-        }), _.omit(options, 'collection'));
+        }));
+
+        _.extend(view, _.omit(obj, 'collection'));
 
         _.each(['focus', 'apply'], function(evnt){
           this.listenTo(view, evnt, function(){
@@ -202,6 +260,11 @@ define([
 
         Marionette.triggerMethod.call(view, 'show');
       }, this);
+    },
+
+    onShow: function(){
+      this._initInputFields();
+      this.toggleEditable();
     },
 
     onAddFocus: function(view){
@@ -503,54 +566,6 @@ define([
             target.get('did')
           ].join(' '), this.user);
         }, this));
-      }
-    }
-  });
-
-  views.Notes = Marionette.ItemView.extend({
-    tagName: 'form',
-    template: {
-      type: 'handlebars',
-      template: notesTemplate
-    },
-
-    attributes: {
-      id: 'notes'
-    },
-
-    ui: {
-      textarea: 'textarea'
-    },
-
-    events: {
-      'keyup textarea': function(e){
-        this.model.set('notes', this.ui.textarea.val());
-
-        if (e.which === 27) {
-          this.ui.textarea.blur();
-        }
-      },
-
-      'blur textarea': function(){
-        if (this.options.editable) {
-          this.model.save();
-        }
-      }
-    },
-
-    modelEvents: {
-      'change:notes': function(){
-        this.ui.textarea.val(this.model.get('notes'));
-      }
-    },
-
-    onShow: function(){
-      this.ui.textarea.attr('disabled', !this.options.editable);
-    },
-
-    onClose: function(){
-      if (this.options.editable) {
-        this.model.save();
       }
     }
   });
