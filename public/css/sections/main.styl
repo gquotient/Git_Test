@@ -158,14 +158,23 @@ header {
   }
 }
 
+// NOTE - This could use a massive clean up after getting all of the nav views unified
 .nav_content {
   height: 100%;
-  overflow: auto;
   position: relative;
   z-index: 200;
   background: colorBGDarkGrey;
   border-right: borderBasicDark;
   color: #aaa;
+  > div {
+    width: 100%;
+    transition: 0.25s ease-in-out;
+    height: 100%;
+    position: relative;
+    &.hidden {
+      margin-left: 100%;
+    }
+  }
   .sort {
     position: absolute;
     z-index: 1;
@@ -181,6 +190,7 @@ header {
   }
   .actions {
     position: absolute;
+    z-index: 1;
     bottom: 0;
     width: 100%;
     padding: 6px;
@@ -188,17 +198,12 @@ header {
     border-bottom: borderBasicDark;
     background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
   }
-  > div {
-    width: 100%;
-    transition: 0.25s ease-in-out;
-    &.hidden {
-      margin-left: 100%;
-    }
-  }
   ul {
     padding: 0;
     margin: 0;
     list-style-type: none;
+    height: 100%;
+    overflow: auto;
     > li {
       padding: 0px;
       text-shadow: 0 1px 0 #222;
