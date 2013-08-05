@@ -84,6 +84,8 @@ define([
           view.setActive();
         }
       });
+
+      this.activeFilter = options;
     },
     initialize: function(options){
       this.collection = new Backbone.VirtualCollection(options.collection);
