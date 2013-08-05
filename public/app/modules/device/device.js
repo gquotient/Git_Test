@@ -1,19 +1,10 @@
-/*
-
-  TODO:
-
-  [ ] Expand device tree if selected device is hidden
-  [x] Add collapse icon and state
-  [ ] Animate expand/collapse (CSS transform?)
-
-*/
-
 define([
   'jquery',
   'underscore',
   'backbone',
   'backbone.marionette',
 
+  'navigation',
   './canvas',
   './table',
 
@@ -25,6 +16,7 @@ define([
   Backbone,
   Marionette,
 
+  Navigation,
   Canvas,
   Table,
 
@@ -122,32 +114,32 @@ define([
     model: Device.Model,
     comparator: function(device){
       var did = device.get('did'),
-          didPieces = did.split('-'),
-          comparator  = did;
+          didPieces, comparator;
 
-      // Use the number in the did for sorting if one exists
-      _.each(didPieces, function(piece){
-        if (typeof +piece === 'number') {
-          comparator = +piece;
-        }
-      });
+      if (did) {
+        comparator = did;
+        didPieces = did.split('-');
+
+        // Use the number in the did for sorting if one exists
+        _.each(didPieces, function(piece){
+          if (typeof +piece === 'number') {
+            comparator = +piece;
+          }
+        });
+      }
 
       return comparator;
     }
   });
 
-  Device.views.DeviceListItem = Marionette.ItemView.extend({
+  Device.views.DeviceListItem = Navigation.views.ListItem.extend({
     tagName: 'li',
     template: {
       type: 'handlebars',
       template: deviceListItemViewTemplate
     },
-    attributes: {
-      class: 'device collapsed'
-    },
-    options: {
-      expanded: false
-    },
+    className: 'device collapsed',
+    expanded: false,
     events: {
       'click a': function(event){
         event.preventDefault();
@@ -159,16 +151,31 @@ define([
         event.preventDefault();
         event.stopPropagation();
 
-        if (this.options.expanded) {
-          this.$el.removeClass('expanded');
-          this.$el.addClass('collapsed');
-          this.options.expanded = false;
-        } else {
-          this.$el.removeClass('collapsed');
-          this.$el.addClass('expanded');
-          this.options.expanded = true;
-        }
+        this.toggleExpand();
       }
+    },
+    setActive: function(){
+      this.$el.addClass('active');
+
+      this.propagateExpand();
+    },
+    toggleExpand: function(){
+      if (this.expanded) {
+        this.$el.removeClass('expanded');
+        this.$el.addClass('collapsed');
+        this.expanded = false;
+      } else {
+        this.$el.removeClass('collapsed');
+        this.$el.addClass('expanded');
+        this.expanded = true;
+      }
+    },
+    propagateExpand: function(){
+      if (!this.expanded && !this.$el.hasClass('active')) {
+        this.toggleExpand();
+      }
+
+      this.trigger('expand');
     },
     onRender: function(){
       if (this.model.outgoing.length) {
@@ -190,10 +197,15 @@ define([
           devices.reset(filteredDevices);
 
           // Create a new collection view with this device's chidren
-          this.children = new Device.views.NavigationList({collection: devices});
+          this.children = new Device.views.NavigationList({
+            collection: devices,
+            className: 'devices'
+          });
 
           // Render the view so the element is available
           this.children.render();
+
+          this.listenTo(this.children, 'expand', this.propagateExpand);
 
           // Append the child element to this view
           this.$el.append(this.children.$el);
@@ -205,20 +217,28 @@ define([
       if (this.children) {
         this.children.close();
       }
-    },
-    initialize: function(options){
-      // Add the dev type for targeted styles
-      this.$el.addClass(options.model.get('devtype').replace(' ', '_'));
-      this.$el.attr('id', this.model.get('graph_key'));
     }
   });
 
-  Device.views.NavigationList = Marionette.CollectionView.extend({
-    tagName: 'ul',
-    attributes: {
-      class: 'devices'
+  Device.views.NavigationList = Navigation.views.List.extend({
+    itemView: Device.views.DeviceListItem,
+    className: 'devices hidden',
+    onRender: function(){
+      this.listenTo(this, 'itemview:expand', function(){
+        this.trigger('expand');
+      });
     },
-    itemView: Device.views.DeviceListItem
+    propagateActive: function(options) {
+      this.setActive(options);
+
+      if (this.children) {
+        this.children.each(function(child){
+          if (child.children) {
+            child.children.propagateActive(options);
+          }
+        });
+      }
+    }
   });
 
   return Device;

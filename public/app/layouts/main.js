@@ -83,7 +83,7 @@ define([
     showPortfolioDashboard: function(portfolio){
       this.mainContent.show( new PortfolioDashboardLayout({
         model: portfolio,
-        app: this.app
+        portfolios: this.app.portfolios
       }));
     },
 

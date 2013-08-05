@@ -69,7 +69,8 @@ define([
       });
     },
 
-    selectPortfolio: function(model) {
+    selectPortfolio: function(portfolio) {
+      this.model = portfolio;
       // Clear existing interval
       // NOTE - I'm not sure how necessary this is
       if (this.fetchIssuesInterval) {
@@ -78,7 +79,7 @@ define([
 
       // Fetch issues on the new portfolio
       var fetchIssues = function(){
-        model.fetchIssues();
+        portfolio.fetchIssues();
       };
 
       // Run initially to get latest data
@@ -88,23 +89,15 @@ define([
       this.fetchIssuesInterval = setInterval(fetchIssues, 300000);
 
       // Build KPIs
-      var kpis = new Portfolio.views.AggregateKpis({ model: model });
+      var kpis = new Portfolio.views.AggregateKpis({ model: portfolio });
       this.kpis.show(kpis);
 
       // Update the collection.
-      this.projectList.set(model.projects.models);
-      Backbone.trigger('set:breadcrumbs', {model: model, state: 'portfolio', display_name: model.get('display_name')});
+      this.projectList.set(portfolio.projects.models);
+      Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolio', display_name: portfolio.get('display_name')});
 
-      // Reset active indicator
-      $('.nav_content').find('.active').removeClass('active');
-
-      // Find current model view and set active
-      this.portfolioNavigationListView.children.each(function(view){
-        if (view.model.id === model.id) {
-          view.$el.addClass('active');
-          return;
-        }
-      });
+      // Update active item
+      this.portfolioNavigationListView.setActive(portfolio.id);
     },
 
     initialize: function(options){

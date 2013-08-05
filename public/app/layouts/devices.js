@@ -52,14 +52,15 @@ define([
     selectDevice: function(device){
       Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'));
 
+      // Build device specific detail layout
       var SubLayout = (this.deviceLayouts[device.get('devtype')]) ? this.deviceLayouts[device.get('devtype')] : this.deviceLayouts.core;
 
+      // Show layout
       this.deviceDetail.show(new SubLayout({model: device, project: this.model}));
 
-      $('.nav_content').find('.active').removeClass('active');
-
-      // This is a nightmare - we need to come up with something less hacky
-      $('.nav_content').find('[id="' + device.get('graph_key') + '"]').addClass('active');
+      // Set active nav el
+      //NOTE - this is a special recursive method on the device tree
+      this.devicesTree.propagateActive({graph_key: device.get('graph_key')});
     },
 
     onShow: function(){
@@ -68,7 +69,7 @@ define([
 
     onClose: function(){
       if(this.model.devices && this.model.devices.length){
-        // Clear devices from memory
+        // Clear devices on model from memory
         this.model.devices.reset();
       }
     },
@@ -82,12 +83,13 @@ define([
       this.model = options.model;
 
       // Instantiate devices collection view
-      this.devicesTree = new Device.views.NavigationList({collection: new Device.Collection()});
+      this.devices = new Device.Collection();
+      this.devicesTree = new Device.views.NavigationList({collection: this.devices});
 
       // Fetch project to get devices
       this.model.fetch().done(function(){
         // Update collection once data is retrieved
-        that.devicesTree.collection.reset(that.model.devices.where({devtype: 'Inverter'}));
+        that.devices.set(that.model.devices.where({devtype: 'Inverter'}));
 
         // If router passes a device, build detail view
         if (options.currentDevice) {
