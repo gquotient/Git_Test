@@ -67,9 +67,7 @@ function(
     return new Handlebars.SafeString(list);
   });
 
-  Handlebars.registerHelper('team_select', function(teamsJSON, currentTeam){
-
-    var teams = JSON.parse(teamsJSON);
+  Handlebars.registerHelper('team_select', function(teams, currentTeam){
     if (teams.length === 1){ return teams[0][2]; }
 
     var retSelect = '<select>';

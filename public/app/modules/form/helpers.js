@@ -14,10 +14,16 @@ function(
   Handlebars.registerHelper('edit_table_header', function(){
     var header = '';
     var that = this;
+
     _.each(this.fields, function(field){
       var attr = that.schema.attributes[field];
       header += '<th>' + attr.title + '</th>';
     });
+
+    if (this.actions) {
+      header += '<th>Actions</th>';
+    }
+
     return new Handlebars.SafeString(header);
   });
 
