@@ -103,8 +103,11 @@ define([
         data: {
           project_label: this.id,
           lock: arguments.length > 0 ? lock : true
-        }
-      });
+        },
+        dataType: 'json'
+      }).done(_.bind(function(body){
+        this.set({locked: body.locked});
+      }, this));
     },
 
     makeEditable: function(){
