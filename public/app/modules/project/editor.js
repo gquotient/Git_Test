@@ -488,21 +488,23 @@ define([
           device.save({
             parent_id: parnt.get('id'),
             relationship_label: rel
-          }).done(_.bind(function(){
-            project.addNote([
-              'added',
-              equip.get('name').toLowerCase(),
-              device.get('did'),
-              'to'
-            ].concat(parnt.equipment ? [
-              parnt.equipment.get('name').toLowerCase(),
-              parnt.get('did')
-            ] : 'project').join(' '), this.user);
+          }, {
+            success: _.bind(function(){
+              project.addNote([
+                'added',
+                equip.get('name').toLowerCase(),
+                device.get('did'),
+                'to'
+              ].concat(parnt.equipment ? [
+                parnt.equipment.get('name').toLowerCase(),
+                parnt.get('did')
+              ] : 'project').join(' '), this.user);
 
-            if (target && target !== parnt) {
-              this.connectDevice(device, target);
-            }
-          }, this));
+              if (target && target !== parnt) {
+                this.connectDevice(device, target);
+              }
+            }, this)
+          });
         }
       }
     },
@@ -520,14 +522,15 @@ define([
             project_label: project.id,
             id: device.get('id')
           },
-          processData: true
-        }).done(_.bind(function(){
-          project.addNote([
-            'deleted',
-            equip.get('name').toLowerCase(),
-            device.get('did')
-          ].join(' '), this.user);
-        }, this));
+          processData: true,
+          success: _.bind(function(){
+            project.addNote([
+              'deleted',
+              equip.get('name').toLowerCase(),
+              device.get('did')
+            ].join(' '), this.user);
+          }, this)
+        });
 
       // Otherwise, if the device has no outgoing relationships in the current
       // view.
