@@ -69,11 +69,10 @@ function(
       };
     },
     onRender: function(){
-      // Disable form elements
       this.disableForm();
-      this.$('.editActions').hide();
     },
     disableForm: function(){
+      // Disable form elements
       this.$el.find(':input:not(button)').attr('disabled', true);
       this.$('.editActions').hide();
       this.$('.defaultActions').show();
@@ -85,6 +84,7 @@ function(
       this.$('.defaultActions').hide();
     },
     validateEmail: function(email) {
+      // Stole this from Stack Overflow, seems to work
       var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
       return re.test(email);
@@ -112,6 +112,7 @@ function(
         }
       }, this);
 
+      // If everything looks good, save the model
       if (save) {
         this.save(values);
       } else {
@@ -126,7 +127,6 @@ function(
     events: {
       'click button.save': function(event){
         event.preventDefault();
-
         this.validate();
       },
       'click button.edit': function(event){
@@ -171,7 +171,6 @@ function(
     events:{
       'click button.create': function(event){
         event.preventDefault();
-
         this.validate();
       },
       'click button.cancel': function(event){
