@@ -148,16 +148,16 @@ define(
     Team.views.EditTable = Forms.views.table.extend({
       fields: ['name', 'team_label'],
       model: Team.models.Team,
-      actions: ['edit', 'cancel', 'save', 'detail']
+      actions: ['edit', 'delete', 'detail']
     });
-
+    /*
     // Table CompositeView extended from form
     Team.views.EditAllTable = Forms.views.table.extend({
       fields: ['name', 'team_label', 'org_label'],
       model: Team.models.Team,
-      actions: ['edit', 'cancel', 'save', 'detail']
+      actions: ['edit', 'detail']
     });
-
+    */
     return Team;
   }
 );
