@@ -77,7 +77,7 @@ function(
       this.$('.editActions').hide();
       this.$('.defaultActions').show();
     },
-    enableForm: function(){
+    onEnableForm: function(){
       // Enable form elements
       this.$el.find(':input:not(button)').attr('disabled', false);
       this.$('.editActions').show();
@@ -124,34 +124,37 @@ function(
       this.model.save();
       this.disableForm();
     },
+    onSave: function(){
+      this.validate();
+    },
+    onEdit: function(){
+      this.enableForm();
+    },
+    onCancel: function(){
+      // Return inputs to existing state
+      this.render();
+      this.disableForm();
+    },
+    onDelete: function(){
+      // Get the name of the model and prompt user on destroying it
+      var name = this.model.get(this.options.fields[0]),
+          prompt = confirm('Are you sure you want to delete ' + name + ' ?');
+
+      // If user clicks ok, destroy this model
+      if (prompt) {
+        this.model.destroy();
+      }
+    },
+    triggers: {
+      'click button.save': 'save',
+      'click button.edit': 'edit',
+      'click button.cancel': 'cancel',
+      'click button.delete': 'delete'
+    },
     events: {
-      'click button.save': function(event){
-        event.preventDefault();
-        this.validate();
-      },
-      'click button.edit': function(event){
-        this.enableForm();
-      },
-      'click button.cancel': function(event){
-        event.preventDefault();
-        this.render();
-        this.disableForm();
-      },
       'click button.detail': function(event){
         event.preventDefault();
         Backbone.trigger('detail', this.model);
-      },
-      'click button.delete': function(event){
-        event.preventDefault();
-
-        // Get the name of the model and prompt user on destroying it
-        var name = this.model.get(this.options.fields[0]),
-            prompt = confirm('Are you sure you want to delete ' + name + ' ?');
-
-        // If user clicks ok, destroy this model
-        if (prompt) {
-          this.model.destroy();
-        }
       }
     }
   });
@@ -168,15 +171,14 @@ function(
       this.collection.add(this.model);
       this.close();
     },
-    events:{
-      'click button.create': function(event){
-        event.preventDefault();
-        this.validate();
-      },
-      'click button.cancel': function(event){
-        event.preventDefault();
-        this.close();
-      }
+    onCreate: function(){
+      this.validate();
+    },
+    onCancel: function(){
+      this.close();
+    },
+    triggers: {
+      'click button.create': 'create'
     }
   });
 

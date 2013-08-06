@@ -65,11 +65,6 @@ function(
     }
   });
 
-  User.CurrentUser = User.Model.extend({
-    url: '/api/users/current',
-    idAttribute: 'email'
-  });
-
   User.Collection = Backbone.Collection.extend({
     url: '/api/users',
     model: User.Model,
@@ -131,15 +126,15 @@ function(
   });
 
   User.views.EditRow = Forms.views.tableRow.extend({
-    events: function(){
-      return _.extend({}, Forms.views.tableRow.prototype.events, {
-        'click button.reset_password': function(event){
-          event.preventDefault();
-          $.ajax('/api/reset_password', {
-            type: 'PUT',
-            data: { email: this.model.get('email') }
-          });
-        }
+    onResetPassword: function(){
+      return $.ajax('/api/reset_password', {
+        type: 'PUT',
+        data: { email: this.model.get('email') }
+      });
+    },
+    triggers: function(){
+      return _.extend({}, Forms.views.tableRow.prototype.triggers, {
+        'click button.reset_password': 'resetPassword'
       });
     }
   });
