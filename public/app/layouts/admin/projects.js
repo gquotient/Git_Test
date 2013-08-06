@@ -137,7 +137,7 @@ define([
     },
 
     onCancel: function(){
-      this.detail.close();
+      this.hideDetail();
       Backbone.history.navigate('/admin/projects');
     },
 
@@ -182,11 +182,18 @@ define([
 
       this.model = model;
       this.focusMap(model);
+
       this.detail.show(view);
+      this.$('.save, .cancel').show();
 
       if (model.id) {
         Backbone.history.navigate('/admin/project/' + model.id);
       }
+    },
+
+    hideDetail: function(){
+      this.detail.close();
+      this.$('.save, .cancel').hide();
     },
 
     focusMap: function(loc){
