@@ -27,8 +27,8 @@ function(
   User.Model = Backbone.Model.extend({
     url: '/api/users',
     idAttribute: 'email',
+    // Overwrite the destroy method because REST is stupid, or something
     destroy: function(options) {
-      // Overwrite the destroy method because REST is stupid, or something
       var model = this;
 
       var destroy = function() {

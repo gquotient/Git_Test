@@ -75,11 +75,18 @@ function(
    */
   Handlebars.registerHelper('edit_action_buttons', function(){
 
-    var cell = '<td class="actions">';
+    var cell = '<td class="actions"><div class="defaultActions">';
 
     _.each(this.actions, function(action){
       cell += actionButtons[action];
     });
+
+    cell += '</div>';
+
+    // If edit is an action, add the edit specific buttons
+    if (_.indexOf(this.actions, 'edit') >= 0) {
+      cell += '<div class="editActions">' + actionButtons.cancel + actionButtons.save + '</div>';
+    }
 
     cell += '</td>';
 

@@ -71,21 +71,19 @@ function(
     onRender: function(){
       // Disable form elements
       this.disableForm();
-      this.defaultActions = this.$('td.actions button');
+      this.$('.editActions').hide();
     },
     disableForm: function(){
       this.$el.find(':input:not(button)').attr('disabled', true);
-      this.$('td.actions').html(this.defaultActions);
+      this.$('.editActions').hide();
+      this.$('.defaultActions').show();
     },
     enableForm: function(){
       // Enable form elements
       this.$el.find(':input:not(button)').attr('disabled', false);
-      this.$('td.actions').html(this.editControls);
+      this.$('.editActions').show();
+      this.$('.defaultActions').hide();
     },
-    editControls: $([
-      '<button type="reset" class="button cancel">Cancel</button>',
-      '<button type="button" class="button primary save">Save</button>'
-    ].join('')),
     events: {
       'click button.save': function(event){
         event.preventDefault();
