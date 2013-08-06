@@ -71,14 +71,21 @@ function(
     onRender: function(){
       // Disable form elements
       this.disableForm();
+      this.defaultActions = this.$('td.actions button');
     },
     disableForm: function(){
       this.$el.find(':input:not(button)').attr('disabled', true);
+      this.$('td.actions').html(this.defaultActions);
     },
     enableForm: function(){
       // Enable form elements
       this.$el.find(':input:not(button)').attr('disabled', false);
+      this.$('td.actions').html(this.editControls);
     },
+    editControls: $([
+      '<button type="reset" class="button cancel">Cancel</button>',
+      '<button type="button" class="button primary save">Save</button>'
+    ].join('')),
     events: {
       'click button.save': function(event){
         event.preventDefault();
@@ -105,6 +112,17 @@ function(
       'click button.detail': function(event){
         event.preventDefault();
         Backbone.trigger('detail', this.model);
+      },
+      'click button.delete': function(event){
+        event.preventDefault();
+
+        var name = this.model.get(this.options.fields[0]),
+            prompt = confirm('Are you sure you want to delete ' + name + ' ?');
+
+        if (prompt) {
+          console.log('delete', this.model);
+          this.model.destroy();
+        }
       }
     }
   });
@@ -116,7 +134,6 @@ function(
       template: newTableRowTemplate
     },
     templateHelpers: function(){
-      console.log(this.options.actions);
       return {
         schema: this.options.schema,
         fields: this.options.fields,

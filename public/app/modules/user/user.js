@@ -26,7 +26,24 @@ function(
 
   User.Model = Backbone.Model.extend({
     url: '/api/users',
-    idAttribute: 'email'
+    idAttribute: 'email',
+    destroy: function(options) {
+      // Overwrite the destroy method because REST is stupid, or something
+      var model = this;
+
+      var destroy = function() {
+        model.trigger('destroy', model, model.collection, options);
+      };
+
+      return $.ajax({
+        url: this.url,
+        type: 'DELETE',
+        dataType: 'json',
+        data: this.toJSON()
+      })
+      .done(destroy)
+      .fail(this.render);
+    }
   }, {
     schema: {
       attributes: {
@@ -129,7 +146,7 @@ function(
   User.views.EditTable = Forms.views.table.extend({
     fields: ['name', 'email'],
     model: User.Model,
-    actions: ['edit', 'cancel', 'save', 'resetPassword']
+    actions: ['edit', 'delete', 'resetPassword']
   });
 
   return User;

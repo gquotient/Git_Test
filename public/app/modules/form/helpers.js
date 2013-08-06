@@ -51,6 +51,7 @@ function(
     edit: '<button type="button" class="button edit">Edit</button>',
     cancel: '<button type="reset" class="button cancel">Cancel</button>',
     save: '<button type="button" class="button save primary">Save</button>',
+    'delete': '<button type=button class="button delete">Delete</button>',
     resetPassword: '<button type=button class="button reset_password">Reset Password</button>',
     detail: '<button type=button class="button detail">Detail</button>'
   };
@@ -74,7 +75,7 @@ function(
    */
   Handlebars.registerHelper('edit_action_buttons', function(){
 
-    var cell = '<td>';
+    var cell = '<td class="actions">';
 
     _.each(this.actions, function(action){
       cell += actionButtons[action];
