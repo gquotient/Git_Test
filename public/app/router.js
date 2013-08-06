@@ -145,6 +145,7 @@ define([
       'admin/project/:id/view/:view': 'projectAdminView',
       'admin/project/:id/view': 'projectAdminView',
       'admin/project/:id': 'projectAdmin',
+      'admin/projects': 'projectAdmin',
       'admin/project': 'projectAdmin'
     }
   });

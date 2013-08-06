@@ -81,7 +81,7 @@ define([
       });
 
       // Update history
-      Backbone.history.navigate('/admin/project');
+      Backbone.history.navigate('/admin/projects');
     },
 
     triggers: {
@@ -138,6 +138,7 @@ define([
 
     onCancel: function(){
       this.detail.close();
+      Backbone.history.navigate('/admin/projects');
     },
 
     onClose: function(){
@@ -183,7 +184,9 @@ define([
       this.focusMap(model);
       this.detail.show(view);
 
-      Backbone.history.navigate('/admin/project/' + model.id);
+      if (model.id) {
+        Backbone.history.navigate('/admin/project/' + model.id);
+      }
     },
 
     focusMap: function(loc){
