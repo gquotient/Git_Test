@@ -98,6 +98,8 @@ define([
     },
 
     setLock: function(lock){
+      var that = this;
+
       return $.ajax(_.result(this, 'url') + '/edit', {
         type: 'PUT',
         data: {
@@ -105,9 +107,9 @@ define([
           lock: arguments.length > 0 ? lock : true
         },
         dataType: 'json'
-      }).done(_.bind(function(body){
-        this.set({locked: body.locked});
-      }, this));
+      }).always(function(data){
+        that.set({locked: _.isBoolean(data.locked) ? data.locked : true});
+      });
     },
 
     makeEditable: function(){
