@@ -90,6 +90,8 @@ function(
           values = {},
           save = true;
 
+      // If field is required and empty, don't save these values and,
+      // handle empty field highlighting
       _.each($formElements, function(el){
         var $el = $(el);
 
@@ -131,9 +133,11 @@ function(
       'click button.delete': function(event){
         event.preventDefault();
 
+        // Get the name of the model and prompt user on destroying it
         var name = this.model.get(this.options.fields[0]),
             prompt = confirm('Are you sure you want to delete ' + name + ' ?');
 
+        // If user clicks ok, destroy this model
         if (prompt) {
           this.model.destroy();
         }
@@ -163,6 +167,8 @@ function(
       _.each($formElements, function(el){
         var $el = $(el);
 
+        // If field is required and empty, don't save these values and,
+        // handle empty field highlighting
         if ($el.attr('required') && $el.val() === '') {
           save = false;
           $el.css({'border-color': '#f00'});
