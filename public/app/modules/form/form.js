@@ -84,9 +84,13 @@ function(
       this.$('.editActions').show();
       this.$('.defaultActions').hide();
     },
-    save: function(){
-      var that = this,
-          $formElements = this.$el.find(':input:not(button)'),
+    validateEmail: function(email) {
+      var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+      return re.test(email);
+    },
+    validate: function(){
+      var $formElements = this.$el.find(':input:not(button)'),
           values = {},
           save = true;
 
@@ -98,25 +102,32 @@ function(
         if ($el.attr('required') && $el.val() === '') {
           save = false;
           $el.css({'border-color': '#f00'});
+        } else if ($el.attr('type') === 'email' && !this.validateEmail($el.val())) {
+          save = false;
+          alert('A valid email is required.');
+          $el.css({'border-color': '#f00'});
         } else {
           values[el.name] = el.value;
           $el.css({'border-color': ''});
         }
-      });
+      }, this);
 
       if (save) {
-        that.model.set(values);
-        this.model.save();
-        this.disableForm();
+        this.save(values);
       } else {
         alert('Required fields are highlighted');
       }
+    },
+    save: function(values){
+      this.model.set(values);
+      this.model.save();
+      this.disableForm();
     },
     events: {
       'click button.save': function(event){
         event.preventDefault();
 
-        this.save();
+        this.validate();
       },
       'click button.edit': function(event){
         this.enableForm();
@@ -145,53 +156,23 @@ function(
     }
   });
 
-  Forms.views.newTableRow = Marionette.ItemView.extend({
-    tagName: 'tr',
+  Forms.views.newTableRow = Forms.views.tableRow.extend({
     template: {
       type: 'handlebars',
       template: newTableRowTemplate
     },
-    templateHelpers: function(){
-      return {
-        schema: this.options.schema,
-        fields: this.options.fields,
-        actions: this.options.actions
-      };
-    },
-    save: function(){
-      var that = this,
-          $formElements = this.$el.find(':input:not(button)'),
-          values = {},
-          save = true;
-
-      _.each($formElements, function(el){
-        var $el = $(el);
-
-        // If field is required and empty, don't save these values and,
-        // handle empty field highlighting
-        if ($el.attr('required') && $el.val() === '') {
-          save = false;
-          $el.css({'border-color': '#f00'});
-        } else {
-          values[el.name] = el.value;
-          $el.css({'border-color': ''});
-        }
-      });
-
-      if (save) {
-        that.model.set(values);
-        Backbone.sync('create', this.model);
-        this.collection.add(this.model);
-        this.close();
-      } else {
-        alert('Required fields are highlighted');
-      }
+    onRender: function(){},// Kill on render function
+    save: function(values){
+      this.model.set(values);
+      Backbone.sync('create', this.model);
+      this.collection.add(this.model);
+      this.close();
     },
     events:{
       'click button.create': function(event){
         event.preventDefault();
 
-        this.save();
+        this.validate();
       },
       'click button.cancel': function(event){
         event.preventDefault();
