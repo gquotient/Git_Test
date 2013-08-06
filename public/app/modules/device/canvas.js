@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'backbone.virtualCollection',
   'jquery.mousewheel',
   'paper',
 
@@ -12,6 +13,7 @@ define([
   _,
   Backbone,
   Marionette,
+  VirtualCollection,
   wheel,
   paper,
 
@@ -130,7 +132,15 @@ define([
       itemView: EdgeView,
 
       initialize: function(options){
-        this.collection = this.model.outgoing;
+        this.collection = new Backbone.VirtualCollection(this.model.outgoing, {
+          filter: function(model){
+            // Only render devices that have position.
+            return model.getPosition(options.rendering) &&
+
+              // And a relationship in the current rendering.
+              model.equipment.getRelationship(options.model, options.rendering);
+          }
+        });
 
         this.paper = options.paper || paper;
         this.rendering = options.rendering;
@@ -148,11 +158,6 @@ define([
         'change:renderings': 'setCenter'
       },
 
-      collectionEvents: {
-        'rendering:add': 'addChildView',
-        'rendering:remove': 'removeItemView'
-      },
-
       itemViewOptions: function(item){
         return {
           device: this.model,
@@ -160,19 +165,6 @@ define([
           rendering: this.rendering,
           relationship: item.getRelationship(this.model)
         };
-      },
-
-      addItemView: function(item){
-        var equip = item.equipment;
-
-        // Only add new items if they have position.
-        if (!this.children.findByModel(item) && item.getPosition(this.rendering)) {
-
-          // And a relationship in the current rendering.
-          if (equip.getRelationship(this.model, this.rendering)) {
-            Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
-          }
-        }
       },
 
       // Prevent item views from being added to the DOM.
@@ -260,6 +252,13 @@ define([
     },
 
     initialize: function(options){
+      this.collection = new Backbone.VirtualCollection(options.collection, {
+        filter: function(model){
+          // Only render devices that have position and equipment.
+          return model.getPosition(options.rendering) && model.equipment;
+        }
+      });
+
       this.paper = paper.setup(this.el);
       this.rendering = options.rendering;
 
@@ -279,25 +278,11 @@ define([
       this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
     },
 
-    collectionEvents: {
-      'equipment:add': 'addChildView',
-      'rendering:add': 'addChildView',
-      'rendering:remove': 'removeItemView'
-    },
-
     itemViewOptions: function(){
       return {
         paper: this.paper,
         rendering: this.rendering
       };
-    },
-
-    addItemView: function(item){
-
-      // Only add new items if they have position and equipment.
-      if (!this.children.findByModel(item) && item.getPosition(this.rendering) && item.equipment) {
-        Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
-      }
     },
 
     // Prevent item views from being added to the DOM.

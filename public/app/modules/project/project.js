@@ -284,7 +284,7 @@ define([
             var equip = options.equipment.findOrCreateForDevice(device);
 
             device.equipment = equip;
-            device.trigger('equipment:add', device);
+            device.trigger('change:equipment change', device);
           });
         }
 
