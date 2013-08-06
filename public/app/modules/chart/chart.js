@@ -177,6 +177,7 @@ function(
 
           seriesData = trace.data;
 
+          // Sort data until APIs sort by default
           seriesData.sort();
         } else if (trace && trace.errmsg) {
           console.warn(trace.errmsg);
