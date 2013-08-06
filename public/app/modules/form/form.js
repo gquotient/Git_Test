@@ -167,8 +167,7 @@ function(
     onRender: function(){},// Kill on render function
     save: function(values){
       this.model.set(values);
-      Backbone.sync('create', this.model);
-      this.collection.add(this.model);
+      this.collection.create(this.model);
       this.close();
     },
     onCreate: function(){
