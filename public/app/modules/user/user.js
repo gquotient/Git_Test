@@ -49,11 +49,13 @@ function(
       attributes: {
         'name': {
           type: 'text',
-          title: 'Name'
+          title: 'Name',
+          required: true
         },
         'email': {
-          type: 'text',
-          title: 'Email'
+          type: 'email',
+          title: 'Email',
+          required: true
         },
         'org_label': {
           type: 'text',

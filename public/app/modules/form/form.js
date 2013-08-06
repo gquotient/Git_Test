@@ -84,20 +84,37 @@ function(
       this.$('.editActions').show();
       this.$('.defaultActions').hide();
     },
+    save: function(){
+      var that = this,
+          $formElements = this.$el.find(':input:not(button)'),
+          values = {},
+          save = true;
+
+      _.each($formElements, function(el){
+        var $el = $(el);
+
+        if ($el.attr('required') && $el.val() === '') {
+          save = false;
+          $el.css({'border-color': '#f00'});
+        } else {
+          values[el.name] = el.value;
+          $el.css({'border-color': ''});
+        }
+      });
+
+      if (save) {
+        that.model.set(values);
+        this.model.save();
+        this.disableForm();
+      } else {
+        alert('Required fields are highlighted');
+      }
+    },
     events: {
       'click button.save': function(event){
         event.preventDefault();
 
-        var that = this;
-
-        var formElements = this.$el.find(':input:not(button)');
-        _.each( formElements , function(element){
-          that.model.set( element.name, element.value );
-        });
-
-        this.model.save();
-
-        this.disableForm();
+        this.save();
       },
       'click button.edit': function(event){
         this.enableForm();
@@ -118,7 +135,6 @@ function(
             prompt = confirm('Are you sure you want to delete ' + name + ' ?');
 
         if (prompt) {
-          console.log('delete', this.model);
           this.model.destroy();
         }
       }
@@ -138,17 +154,38 @@ function(
         actions: this.options.actions
       };
     },
-    events:{
-      'click button.create': function(event){
-        var that = this;
-        event.preventDefault();
-        var formElements = this.$el.find(':input:not(button)');
-        _.each( formElements , function(element){
-          that.model.set( element.name, element.value );
-        });
+    save: function(){
+      var that = this,
+          $formElements = this.$el.find(':input:not(button)'),
+          values = {},
+          save = true;
+
+      _.each($formElements, function(el){
+        var $el = $(el);
+
+        if ($el.attr('required') && $el.val() === '') {
+          save = false;
+          $el.css({'border-color': '#f00'});
+        } else {
+          values[el.name] = el.value;
+          $el.css({'border-color': ''});
+        }
+      });
+
+      if (save) {
+        that.model.set(values);
         Backbone.sync('create', this.model);
         this.collection.add(this.model);
         this.close();
+      } else {
+        alert('Required fields are highlighted');
+      }
+    },
+    events:{
+      'click button.create': function(event){
+        event.preventDefault();
+
+        this.save();
       },
       'click button.cancel': function(event){
         event.preventDefault();

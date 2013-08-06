@@ -32,7 +32,18 @@ function(
    */
   var formElements = {
     text: function(name, value, model){
-      return '<td><input id="' + name + '" name="' + name + '" type=text value="' + value + '"></td>';
+      var required = (model.schema.attributes[name].required) ? 'required' : '';
+
+      value = value || '';
+
+      return '<td><input id="' + name + '" name="' + name + '" type=text value="' + value + '" ' + required + '></td>';
+    },
+    email: function(name, value, model){
+      var required = (model.schema.attributes[name].required) ? 'required' : '';
+
+      value = value || '';
+
+      return '<td><input id="' + name + '" name="' + name + '" type=email value="' + value + '" ' + required + '></td>';
     },
     select: function(name, value, model){
       var select = '<td><select id="org_' + name +'_type" name="'+name+'">';
