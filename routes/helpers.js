@@ -65,8 +65,6 @@ module.exports = function(app){
     makeRequest: function(options){
       var _request = function(req, res){
 
-        console.log('body', req.body);
-
         var opts = _.extend({
           method: req.method,
           host: app.get('modelUrl'),
