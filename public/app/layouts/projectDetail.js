@@ -100,6 +100,11 @@ define([
       that.model.findDataSources().done(function(dataSources){
         // Build charts
         var chart_powerHistory = new Chart.views.Line({
+          chartOptions: {
+            title: {
+              text: 'Current Performance'
+            }
+          },
           model: new Chart.models.timeSeries({
             'traces': [
               {
@@ -128,15 +133,35 @@ define([
 
         that.chart_powerHistory.show(chart_powerHistory);
 
-        var chart_healthAndSoiling = new Chart.views.Line({
-          model: new Chart.models.timeSeries().set({
-            'dataType': [
-
+        var chart_healthAndSoiling = new Chart.views.Bar({
+          chartOptions: {
+            title: {
+              text: 'Energy History'
+            }
+          },
+          model: new Chart.models.timeSeries({
+            'traces': [
+              {
+                'project_label': project.id,
+                'ddl':'daily-summary',
+                'dtstart': '-30d',
+                'dtstop': 'now',
+                'columns': ['freezetime', 'insolation'],
+                'project_timezone': that.model.get('timezone')
+              },
+              {
+                'project_label': project.id,
+                'ddl':'daily-summary',
+                'dtstart': '-30d',
+                'dtstop': 'now',
+                'columns': ['freezetime', 'ac_energy'],
+                'project_timezone': that.model.get('timezone')
+              }
             ]
           }),
           series: [
-            Chart.seriesDefaults.health,
-            Chart.seriesDefaults.soiling
+            Chart.seriesDefaults.insolation,
+            Chart.seriesDefaults.energy
           ]
         });
 
