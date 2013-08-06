@@ -77,7 +77,7 @@ function(
       this.$('.editActions').hide();
       this.$('.defaultActions').show();
     },
-    onEnableForm: function(){
+    enableForm: function(){
       // Enable form elements
       this.$el.find(':input:not(button)').attr('disabled', false);
       this.$('.editActions').show();
@@ -176,8 +176,10 @@ function(
     onCancel: function(){
       this.close();
     },
-    triggers: {
-      'click button.create': 'create'
+    triggers: function(){
+      return _.extend({}, Forms.views.tableRow.prototype.triggers, {
+        'click button.create': 'create'
+      });
     }
   });
 
