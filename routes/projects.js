@@ -171,7 +171,7 @@ module.exports = function(app){
       setup: function(req, res, next){
         _.extend(req.body, {
           project_label: req.params.label,
-          lock: req.body.lock ? 'true' : 'false'
+          lock: req.body.lock
         });
 
         next(req, res);

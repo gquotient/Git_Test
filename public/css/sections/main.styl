@@ -531,6 +531,10 @@ header {
 #page-projectsAdmin {
   padding: 0 !important;
 
+  .verticalPane {
+    overflow: hidden;
+  }
+
   #map {
     width: 100%;
     height: 100%;
@@ -558,46 +562,74 @@ header {
     }
   }
 
-  .verticalPane {
-    overflow: hidden;
+  .verticalPane.bottom > .container {
+    position: relative;
+    float: left;
+    height: 100%;
 
-    &.bottom .buttons {
-      position: fixed;
-      bottom: 1px;
-      padding: 6px;
-      z-index: 200;
+    &.left {
+      width: 25%;
+      padding: projectTableHeaderHeight 0 38px 0;
+      border-right: borderBasicDark;
+
+      .footer {
+        text-align: right;
+
+        .create {
+          float: left;
+        }
+
+        .save, .cancel {
+          display: none;
+        }
+      }
     }
-  }
 
-  .nav_content {
-    padding-bottom: 38px;
+    &.right {
+      width: 75%;
+    }
 
-    .actions {
-      height: 38px;
+    .header {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: projectTableHeaderHeight;
+      z-index: 100;
+      background: colorBGDarkGrey;
+      background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+      border-top: borderBasicMedium;
+      border-bottom: borderBasicDark;
+      box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 6px;
+      padding-right: 0;
+      border-top: borderBasicMedium;
+      border-bottom: borderBasicDark;
+      background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
     }
   }
 
   #projectList {
     height: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
 
-    li {
-      position: relative;
+    table {
+      width: 100%;
+      border: none;
+      border-bottom: borderBasicDark;
 
-      a {
-        color: #ccc;
-      }
-
-      .delete {
-        position: absolute;
-        top: 6px;
-        right: 6px;
+      .actions {
+        text-align: right;
       }
     }
   }
 
-  #projectEdit {
-    height: 100%;
+  #projectDetail {
     overflow-y: auto;
 
     .container {
@@ -605,7 +637,7 @@ header {
       padding: 12px;
 
       &.left {
-        width: 50%;
+        clear: left;
       }
     }
 
@@ -620,10 +652,6 @@ header {
       &.invalid {
         background: pink;
       }
-    }
-
-    .buttons {
-      margin-left: -201px;
     }
   }
 }

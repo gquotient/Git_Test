@@ -98,12 +98,17 @@ define([
     },
 
     setLock: function(lock){
+      var that = this;
+
       return $.ajax(_.result(this, 'url') + '/edit', {
         type: 'PUT',
         data: {
           project_label: this.id,
           lock: arguments.length > 0 ? lock : true
-        }
+        },
+        dataType: 'json'
+      }).always(function(data){
+        that.set({locked: _.isBoolean(data.locked) ? data.locked : true});
       });
     },
 

@@ -50,7 +50,7 @@ define([
       },
       'projects': {
         title: 'Projects',
-        trigger: 'show:projects'
+        trigger: 'show:project'
       },
       'all_users': {
         title: 'All Users',
@@ -114,10 +114,11 @@ define([
       return teamAdminLayout;
     },
 
-    showProjects: function(){
+    showProject: function(id){
       var layout = new ProjectsLayout({
         collection: ia.alignedProjects,
-        user: ia.currentUser
+        user: ia.currentUser,
+        current: id
       });
 
       this.pageContent.show(layout);
@@ -155,7 +156,7 @@ define([
 
       this.listenTo(Backbone, 'show:users', this.showUsers);
       this.listenTo(Backbone, 'show:teams', this.showTeams);
-      this.listenTo(Backbone, 'show:projects', this.showProjects);
+      this.listenTo(Backbone, 'show:project', this.showProject);
 
     }
   });

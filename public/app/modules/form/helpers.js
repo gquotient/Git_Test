@@ -32,7 +32,18 @@ function(
    */
   var formElements = {
     text: function(name, value, model){
-      return '<td><input id="' + name + '" name="' + name + '" type=text value="' + value + '"></td>';
+      var required = (model.schema.attributes[name].required) ? 'required' : '';
+
+      value = value || '';
+
+      return '<td><input id="' + name + '" name="' + name + '" type=text value="' + value + '" ' + required + '></td>';
+    },
+    email: function(name, value, model){
+      var required = (model.schema.attributes[name].required) ? 'required' : '';
+
+      value = value || '';
+
+      return '<td><input id="' + name + '" name="' + name + '" type=email value="' + value + '" ' + required + '></td>';
     },
     select: function(name, value, model){
       var select = '<td><select id="org_' + name +'_type" name="'+name+'">';
@@ -51,6 +62,7 @@ function(
     edit: '<button type="button" class="button edit">Edit</button>',
     cancel: '<button type="reset" class="button cancel">Cancel</button>',
     save: '<button type="button" class="button save primary">Save</button>',
+    'delete': '<button type=button class="button delete">Delete</button>',
     resetPassword: '<button type=button class="button reset_password">Reset Password</button>',
     detail: '<button type=button class="button detail">Detail</button>'
   };
@@ -74,11 +86,18 @@ function(
    */
   Handlebars.registerHelper('edit_action_buttons', function(){
 
-    var cell = '<td>';
+    var cell = '<td class="actions"><div class="defaultActions">';
 
     _.each(this.actions, function(action){
       cell += actionButtons[action];
     });
+
+    cell += '</div>';
+
+    // If edit is an action, add the edit specific buttons
+    if (_.indexOf(this.actions, 'edit') >= 0) {
+      cell += '<div class="editActions">' + actionButtons.cancel + actionButtons.save + '</div>';
+    }
 
     cell += '</td>';
 

@@ -69,39 +69,89 @@ function(
       };
     },
     onRender: function(){
-      // Disable form elements
       this.disableForm();
     },
     disableForm: function(){
+      // Disable form elements
       this.$el.find(':input:not(button)').attr('disabled', true);
+      this.$('.editActions').hide();
+      this.$('.defaultActions').show();
     },
     enableForm: function(){
       // Enable form elements
       this.$el.find(':input:not(button)').attr('disabled', false);
+      this.$('.editActions').show();
+      this.$('.defaultActions').hide();
+    },
+    validateEmail: function(email) {
+      // Stole this from Stack Overflow, seems to work
+      var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+      return re.test(email);
+    },
+    validate: function(){
+      var $formElements = this.$el.find(':input:not(button)'),
+          values = {},
+          save = true;
+
+      // If field is required and empty, don't save these values and,
+      // handle empty field highlighting
+      _.each($formElements, function(el){
+        var $el = $(el);
+
+        if ($el.attr('required') && $el.val() === '') {
+          save = false;
+          $el.css({'border-color': '#f00'});
+        } else if ($el.attr('type') === 'email' && !this.validateEmail($el.val())) {
+          save = false;
+          alert('A valid email is required.');
+          $el.css({'border-color': '#f00'});
+        } else {
+          values[el.name] = el.value;
+          $el.css({'border-color': ''});
+        }
+      }, this);
+
+      // If everything looks good, save the model
+      if (save) {
+        this.save(values);
+      } else {
+        alert('Required fields are highlighted');
+      }
+    },
+    save: function(values){
+      this.model.set(values);
+      this.model.save();
+      this.disableForm();
+    },
+    onSave: function(){
+      this.validate();
+    },
+    onEdit: function(){
+      this.enableForm();
+    },
+    onCancel: function(){
+      // Return inputs to existing state
+      this.render();
+      this.disableForm();
+    },
+    onDelete: function(){
+      // Get the name of the model and prompt user on destroying it
+      var name = this.model.get(this.options.fields[0]),
+          prompt = confirm('Are you sure you want to delete ' + name + ' ?');
+
+      // If user clicks ok, destroy this model
+      if (prompt) {
+        this.model.destroy();
+      }
+    },
+    triggers: {
+      'click button.save': 'save',
+      'click button.edit': 'edit',
+      'click button.cancel': 'cancel',
+      'click button.delete': 'delete'
     },
     events: {
-      'click button.save': function(event){
-        event.preventDefault();
-
-        var that = this;
-
-        var formElements = this.$el.find(':input:not(button)');
-        _.each( formElements , function(element){
-          that.model.set( element.name, element.value );
-        });
-
-        this.model.save();
-
-        this.disableForm();
-      },
-      'click button.edit': function(event){
-        this.enableForm();
-      },
-      'click button.cancel': function(event){
-        event.preventDefault();
-        this.render();
-        this.disableForm();
-      },
       'click button.detail': function(event){
         event.preventDefault();
         Backbone.trigger('detail', this.model);
@@ -109,36 +159,27 @@ function(
     }
   });
 
-  Forms.views.newTableRow = Marionette.ItemView.extend({
-    tagName: 'tr',
+  Forms.views.newTableRow = Forms.views.tableRow.extend({
     template: {
       type: 'handlebars',
       template: newTableRowTemplate
     },
-    templateHelpers: function(){
-      console.log(this.options.actions);
-      return {
-        schema: this.options.schema,
-        fields: this.options.fields,
-        actions: this.options.actions
-      };
+    onRender: function(){},// Kill on render function
+    save: function(values){
+      this.model.set(values);
+      this.collection.create(this.model);
+      this.close();
     },
-    events:{
-      'click button.create': function(event){
-        var that = this;
-        event.preventDefault();
-        var formElements = this.$el.find(':input:not(button)');
-        _.each( formElements , function(element){
-          that.model.set( element.name, element.value );
-        });
-        Backbone.sync('create', this.model);
-        this.collection.add(this.model);
-        this.close();
-      },
-      'click button.cancel': function(event){
-        event.preventDefault();
-        this.close();
-      }
+    onCreate: function(){
+      this.validate();
+    },
+    onCancel: function(){
+      this.close();
+    },
+    triggers: function(){
+      return _.extend({}, Forms.views.tableRow.prototype.triggers, {
+        'click button.create': 'create'
+      });
     }
   });
 
