@@ -79,7 +79,7 @@ define([
 
       this.$el.find('.deviceName').html('<a href="#' + device.get('graph_key') + '" class="device">' + device.get('did') + '</a>');
 
-      var chart_powerAndIrradiance = new Chart.views.Line({
+      var chart_powerAndIrradiance = new Chart.views.Basic({
         model: new Chart.models.timeSeries({
           'traces': [
             {

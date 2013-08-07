@@ -99,7 +99,7 @@ define([
 
       that.model.findDataSources().done(function(dataSources){
         // Build charts
-        var chart_powerHistory = new Chart.views.Line({
+        var chart_powerHistory = new Chart.views.Basic({
           chartOptions: {
             title: {
               text: 'Current Performance'
@@ -133,7 +133,8 @@ define([
 
         that.chart_powerHistory.show(chart_powerHistory);
 
-        var chart_healthAndSoiling = new Chart.views.Bar({
+        var chart_healthAndSoiling = new Chart.views.Basic({
+          type: 'column',
           chartOptions: {
             title: {
               text: 'Energy History'
