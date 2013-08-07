@@ -417,7 +417,7 @@ function(
       this.options.series = this.smartAxesSelector(this.options.series);
 
       // Merge supplied chart options with view specific options
-      this.chartOptions = $.extend(true, this.chartOptions, options.chartOptions, {
+      this.chartOptions = $.extend(true, {}, this.chartOptions, options.chartOptions, {
         chart: {
           type: 'line',
           renderTo: this.el
@@ -482,7 +482,7 @@ function(
       this.options.series = this.smartAxesSelector(this.options.series);
 
       // Merge supplied chart options with view specific options
-      this.chartOptions = $.extend(true, this.chartOptions, options.chartOptions, {
+      this.chartOptions = $.extend(true, {}, this.chartOptions, options.chartOptions, {
         chart: {
           type: 'column',
           renderTo: this.el
