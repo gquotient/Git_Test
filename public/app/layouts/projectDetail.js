@@ -111,7 +111,9 @@ define([
       });
 
       // Fetch devices for project.
-      project.fetch({equipment: this.options.equipment});
+      if (project.devices.length === 0) {
+        project.fetch({equipment: this.options.equipment});
+      }
 
       // Update the devices power flow diagram.
       this.devices.show( new Device.views.Canvas({
