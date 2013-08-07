@@ -81,8 +81,7 @@ define([
       // Instantiate devices collection view
       this.issueNavigation = new Issue.views.NavigationListView({collection: this.model.issues});
 
-      // Fetch issues and update view
-      this.model.issues.fetch().done(function(){
+      var initialView = function(){
         if (options.currentIssue) {
           // Find issue with correct id
           var myIssue = that.model.issues.findWhere({uid: options.currentIssue});
@@ -100,7 +99,14 @@ define([
           // Handle 'no issues' view
           that.noIssues();
         }
-      });
+      };
+
+      // Fetch issues and/or update view
+      if (!this.model.issues.length) {
+        this.model.issues.fetch().done(initialView);
+      } else {
+        initialView();
+      }
 
       // Listen for a device to be clicked and change view
       this.listenTo(Backbone, 'click:issue', function(issue){

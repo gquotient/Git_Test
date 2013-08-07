@@ -106,11 +106,17 @@ define([
 
       this.project = options.project;
 
-      // Fetch project to get devices
-      this.options.project.fetch({data: {project_label: options.project.id}}).done(function(){
+      var initialView = function(){
         that.device = that.project.devices.findWhere({graph_key: that.model.get('identifier')});
         that.buildChart();
-      });
+      };
+
+      // Fetch project to get devices
+      if (!this.options.project.devices.length) {
+        this.options.project.fetch({data: {project_label: options.project.id}}).done(initialView);
+      } else {
+        initialView();
+      }
     }
   });
 });
