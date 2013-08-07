@@ -48,7 +48,7 @@ define([
     buildCharts: function(){
       var project = this.options.project;
 
-      var chart_powerAndIrradiance = new Chart.views.Line({
+      var chart_powerAndIrradiance = new Chart.views.Basic({
         model: new Chart.models.timeSeries().set({
           'traces': [
             Chart.dataDefaults(project, this.model, 'irradiance'),
@@ -61,7 +61,7 @@ define([
         ]
       });
 
-      var chart_currentAndVoltage = new Chart.views.Line({
+      var chart_currentAndVoltage = new Chart.views.Basic({
         model: new Chart.models.timeSeries().set({
           'traces': [
             Chart.dataDefaults(project, this.model, 'current'),
