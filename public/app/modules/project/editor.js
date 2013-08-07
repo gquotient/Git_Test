@@ -179,7 +179,7 @@ define([
         equip.addRootRenderings(device, project);
 
         if (target) {
-          _.each(this.equipment.getRenderingLabels(), function(label){
+          _.each(_.keys(Equipment.renderings), function(label){
             if (!device.getPosition(label) && equip.getRelationship(target, label)) {
               equip.addRelativeRendering(device, project, label, target);
             }

@@ -13,12 +13,12 @@ define([
 
   Device
 ){
-  var Equip = { views: {} },
+  var Equip = { views: {} };
 
-    renderings = {
-      POWER: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
-      DAQ: ['MANAGES', 'HAS']
-    };
+  Equip.renderings = {
+    POWER: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
+    DAQ: ['MANAGES', 'HAS']
+  };
 
 
   function findNextIndex(label, existing){
@@ -100,7 +100,7 @@ define([
         }) || {}).label;
       }
 
-      if (rendering && !_.contains(renderings[rendering], label)) {
+      if (rendering && !_.contains(Equip.renderings[rendering], label)) {
         label = null;
       }
 
@@ -184,10 +184,6 @@ define([
   Equip.Collection = Backbone.Collection.extend({
     model: Equip.Model,
     url: '/api/equipment',
-
-    getRenderingLabels: function(){
-      return _.keys(renderings);
-    },
 
     findOrCreateForDevice: function(device){
       var label = device.get('equipment_label');
