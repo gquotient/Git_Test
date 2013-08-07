@@ -5,6 +5,7 @@ define([
   'backbone.marionette',
 
   'device',
+  'equipment',
 
   './inputField',
 
@@ -17,6 +18,7 @@ define([
   Marionette,
 
   Device,
+  Equipment,
 
   InputField,
 
@@ -435,48 +437,38 @@ define([
 
     addDevice: function(equip, target){
       var project = this.model,
-        rendering = this.currentView.get('rendering'),
         device = equip.factory(project),
-        parnt, rel;
+        parnt = equip.isRoot() ? project : target,
+        rel = parnt && equip.getRelationship(parnt);
 
-      if (equip.isRoot()) {
-        equip.addRootRenderings(device, project);
-        parnt = project;
-      }
+      if (rel && parnt.has('id')) {
+        _.each(_.keys(Equipment.renderings), function(label){
+          equip.addRendering(device, project, label, target);
+        });
 
-      if (target && equip.hasRendering(rendering)) {
-        equip.addRelativeRendering(device, project, rendering, target);
-        parnt = parnt || target;
-      }
+        project.devices.add(device);
+        device.connectTo(parnt, rel);
 
-      if (parnt && parnt.has('id')) {
-        rel = equip.getRelationship(parnt);
+        device.save({
+          parent_id: parnt.get('id'),
+          relationship_label: rel
+        }, {
+          success: _.bind(function(){
+            project.addNote([
+              'added',
+              equip.get('name').toLowerCase(),
+              device.get('did'),
+              'to'
+            ].concat(parnt.equipment ? [
+              parnt.equipment.get('name').toLowerCase(),
+              parnt.get('did')
+            ] : 'project').join(' '), this.user);
 
-        if (rel) {
-          project.devices.add(device);
-          device.connectTo(parnt, rel);
-
-          device.save({
-            parent_id: parnt.get('id'),
-            relationship_label: rel
-          }, {
-            success: _.bind(function(){
-              project.addNote([
-                'added',
-                equip.get('name').toLowerCase(),
-                device.get('did'),
-                'to'
-              ].concat(parnt.equipment ? [
-                parnt.equipment.get('name').toLowerCase(),
-                parnt.get('did')
-              ] : 'project').join(' '), this.user);
-
-              if (target && target !== parnt) {
-                this.connectDevice(device, target);
-              }
-            }, this)
-          });
-        }
+            if (target && target !== parnt) {
+              this.connectDevice(device, target);
+            }
+          }, this)
+        });
       }
     },
 
@@ -541,7 +533,7 @@ define([
           }
         }).done(_.bind(function(){
           if (!device.getPosition(rendering)) {
-            equip.addRelativeRendering(device, project, rendering, target);
+            equip.addRendering(device, project, rendering, target);
             device.save();
           }
 
