@@ -288,6 +288,7 @@ define([
     appendHtml: function(){},
 
     events: {
+      'dblclick': 'handleMouseEvent',
       'mousedown': 'handleMouseEvent',
       'mousewheel': 'handleWheelEvent'
     },
@@ -362,6 +363,15 @@ define([
       } else if (delta < 0) {
         this.triggerMethod('zoom:out');
       }
+    },
+
+    onDblclick: function(e){
+      this.children.any(function(view){
+        if (view.testHit(e.projectPoint)) {
+          Backbone.trigger('click:device', view.model);
+          return true;
+        }
+      });
     },
 
     onMousedown: function(e){
