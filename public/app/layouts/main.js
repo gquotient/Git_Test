@@ -91,6 +91,7 @@ define([
       this.mainContent.show( new ProjectDetailLayout({
         model: project,
         collection: this.activePortfolio.projects,
+        equipment: this.app.equipment,
         settingsRegion: this.pageSettings
       }));
     },

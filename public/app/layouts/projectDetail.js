@@ -7,6 +7,7 @@ define([
 
   'portfolio',
   'project',
+  'device',
   'chart',
   'issue',
 
@@ -20,6 +21,7 @@ define([
 
   Portfolio,
   Project,
+  Device,
   Chart,
   Issue,
 
@@ -96,6 +98,16 @@ define([
       _.each(this.mapView.markers._layers, function(marker){
         marker.togglePopup();
       });
+
+      // Fetch devices for project.
+      project.fetch({equipment: this.options.equipment});
+
+      // Replace the map with the power flow diagram.
+      this.map.show( new Device.views.Canvas({
+        collection: project.devices,
+        rendering: 'POWER',
+        editable: false
+      }));
 
       that.model.findDataSources().done(function(dataSources){
         // Build charts
