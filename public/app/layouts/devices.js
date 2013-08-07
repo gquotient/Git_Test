@@ -5,7 +5,6 @@ define([
   'backbone.marionette',
   'handlebars',
 
-  'backbone.virtualCollection',
   'project',
   'device',
   'chart',
@@ -21,7 +20,6 @@ define([
   Marionette,
   Handlebars,
 
-  VirtualCollection,
   Project,
   Device,
   Chart,
