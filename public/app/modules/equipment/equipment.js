@@ -131,12 +131,23 @@ define([
           equipment_label: this.id,
           project_label: project.id,
           did: label + '-' + index,
-          name: this.get('name') + ' ' + index
+          name: this.generateName(index)
         });
 
       device.equipment = this;
 
       return device;
+    },
+
+    generateName: function(index){
+      var name = this.get('name'), did;
+
+      if (index instanceof Backbone.Model) {
+        did = index.get('did');
+        index = did && parseInt(did.replace(/^.*-/, ''), 10);
+      }
+
+      return name && index ? name + ' ' + index : did || 'undefined';
     },
 
     addRendering: function(device, project, label, target){
@@ -184,11 +195,13 @@ define([
     findOrCreateForDevice: function(device){
       var label = device.get('equipment_label');
 
-      if (!label) {
+      if (!label && device.has('did')) {
         label = device.get('did').replace(/-\d*$/, '');
       }
 
-      return this.get(label) || this.push({label: label});
+      if (label) {
+        return this.get(label) || this.push({label: label});
+      }
     }
   });
 

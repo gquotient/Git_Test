@@ -28,7 +28,15 @@ define([
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
 
-    initialize: function(){
+    initialize: function(attrs, options){
+      if (options.equipment) {
+        this.equipment = options.equipment.findOrCreateForDevice(this);
+      }
+
+      if (!this.has('name') && this.equipment) {
+        this.set({name: this.equipment.generateName(this)});
+      }
+
       this.relationships = {};
 
       this.outgoing = new Device.Collection();

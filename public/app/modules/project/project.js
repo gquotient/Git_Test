@@ -281,16 +281,9 @@ define([
 
     parse: function(resp, options){
       if (resp.devices) {
-        this.devices.reset(resp.devices);
-
-        if (options.equipment) {
-          this.devices.each(function(device){
-            var equip = options.equipment.findOrCreateForDevice(device);
-
-            device.equipment = equip;
-            device.trigger('change:equipment change', device);
-          });
-        }
+        this.devices.reset(resp.devices, {
+          equipment: options.equipment
+        });
 
         if (resp.rels) {
           _.each(resp.rels, function(rel) {
@@ -320,6 +313,8 @@ define([
       if (!target.outgoing) { return; }
 
       target.outgoing.each(function(device){
+        if (!device.equipment) { return; }
+
         // Add position to device for this rendering.
         device.equipment.addRendering(device, this, label, target);
 
