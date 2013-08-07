@@ -35,10 +35,11 @@ module.exports = function(app){
     var myTeams,
         myProjects,
         myPortfolios,
+        equipment,
         everythingLoaded = Q.defer();
 
     var resolveEverythingLoaded = function(){
-      if (myProjects && myPortfolios) {
+      if (myProjects && myPortfolios && equipment) {
         everythingLoaded.resolve();
       }
     };
@@ -104,6 +105,16 @@ module.exports = function(app){
       });
     });
 
+    fs.readFile('./data/json/equipment.json', 'utf8', function (err, data) {
+      if (err) {
+        return console.log(err);
+      }
+
+      equipment = data || '[]';
+
+      resolveEverythingLoaded();
+    });
+
     everythingLoaded.promise.then( function(obj){
       res.render('index', {
         user: JSON.stringify({
@@ -116,6 +127,7 @@ module.exports = function(app){
         }),
         portfolios: myPortfolios,
         projects: myProjects,
+        equipment: equipment,
         locale: req.user.locale || req.acceptedLanguages[0].toLowerCase(),
         staticDir: app.get('staticDir') || 'app'
       });

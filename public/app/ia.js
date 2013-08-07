@@ -7,7 +7,8 @@ define([
 
   'user',
   'portfolio',
-  'project'
+  'project',
+  'equipment'
 ], function(
   $,
   _,
@@ -17,7 +18,8 @@ define([
 
   User,
   Portfolio,
-  Project
+  Project,
+  Equipment
 ){
   var ia = new Marionette.Application();
 
@@ -46,6 +48,8 @@ define([
     projects: ia.projects,
     comparator: 'display_name'
   });
+
+  ia.equipment = new Equipment.Collection( JSON.parse($('#bootstrapEquipment').html()) );
 
   ia.allPortfolio = ia.portfolios.findWhere({display_name: 'All Projects'});
 

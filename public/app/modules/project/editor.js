@@ -5,7 +5,6 @@ define([
   'backbone.marionette',
 
   'device',
-  'equipment',
 
   './inputField',
 
@@ -18,7 +17,6 @@ define([
   Marionette,
 
   Device,
-  Equipment,
 
   InputField,
 
@@ -87,18 +85,16 @@ define([
     },
 
     initialize: function(options){
-      this.equipment = new Equipment.Collection();
+      this.equipment = options.equipment;
       this.user = options.user;
 
-      // Fetch equipment and project from server.
-      this.equipment.fetch({success: _.bind(function(){
-        this.model.fetch({
-          data: {
-            index_name: 'AlignedProjects/no'
-          },
-          equipment: this.equipment
-        });
-      }, this)});
+      // Fetch project from server.
+      this.model.fetch({
+        data: {
+          index_name: 'AlignedProjects/no'
+        },
+        equipment: this.equipment
+      });
 
       // Attempt to get the lock if editable.
       if (options.editable) {
