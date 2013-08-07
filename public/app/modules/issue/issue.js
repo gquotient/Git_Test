@@ -4,6 +4,8 @@ define([
   'backbone',
   'backbone.marionette',
 
+  'navigation',
+
   'hbs!issue/templates/table',
   'hbs!issue/templates/tableRow',
   'hbs!issue/templates/navigationItem',
@@ -14,6 +16,8 @@ function(
   _,
   Backbone,
   Marionette,
+
+  Navigation,
 
   tableTemplate,
   tableRowTemplate,
@@ -68,38 +72,25 @@ function(
   });
 
   /* The item view is the view for the individual portfolios in the navigation. */
-  Issue.views.NavigationItem = Marionette.ItemView.extend({
-    tagName: 'li',
+  Issue.views.NavigationItem = Navigation.views.ListItem.extend({
     template: {
       type: 'handlebars',
       template: navigationItemTemplate
-    },
-    attributes: {
-      class: 'nav-item'
     },
     events: {
       'click': function(){
         Backbone.trigger('click:issue', this.model);
       }
-    },
-    initialize: function(options) {
-      this.$el.attr('id', options.model.id);
     }
   });
 
   /* This composite view is the wrapper view for the list of portfolios.
      It handles nesting the list while allowing for the navigation header. */
-  Issue.views.NavigationListView = Marionette.CompositeView.extend({
-    tagName: 'div',
-    attributes: {
-      class: 'issues'
-    },
+  Issue.views.NavigationListView = Navigation.views.List.extend({
     template: {
       type: 'handlebars',
       template: navigationListTemplate
     },
-
-    itemViewContainer: 'ul',
 
     // Tell the composite view which view to use as for each portfolio.
     itemView: Issue.views.NavigationItem

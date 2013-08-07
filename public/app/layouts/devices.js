@@ -67,36 +67,34 @@ define([
       this.contentNavigation.show(this.devicesTree);
     },
 
-    onClose: function(){
-      if(this.model.devices && this.model.devices.length){
-        // Clear devices on model from memory
-        this.model.devices.reset();
-      }
-    },
-
     initialize: function(options){
       var that = this;
 
       Backbone.trigger('set:breadcrumbs', {state:'device', display_name:'Devices'});
 
-      // Set the project model to this layout's model
-      this.model = options.model;
-
       // Instantiate devices collection view
       this.devices = new Device.Collection();
-      this.devicesTree = new Device.views.NavigationList({collection: this.devices});
+      this.devicesTree = new Device.views.NavigationList({
+        collection: this.devices
+      });
 
-      // Fetch project to get devices
-      this.model.fetch().done(function(){
-        // Update collection once data is retrieved
-        that.devices.set(that.model.devices.where({devtype: 'Inverter'}));
-
+      var initialView = function(){
+        that.devices.reset(that.model.devices.where({devtype: 'Inverter'}));
         // If router passes a device, build detail view
         if (options.currentDevice) {
           var myDevice = that.model.devices.findWhere({graph_key: options.currentDevice});
           that.selectDevice(myDevice);
         }
-      });
+      };
+
+      if (!this.model.devices.length) {
+        // Fetch project to get devices
+        this.model.fetch().done(function(){
+          initialView();
+        });
+      } else {
+        initialView();
+      }
 
       // Listen for a device to be clicked and change view
       this.listenTo(Backbone, 'click:device', function(device){
