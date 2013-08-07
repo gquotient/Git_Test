@@ -100,7 +100,6 @@ define([
 
       this.chart.show(chart_powerAndIrradiance);
     },
-
     initialize: function(options){
       var that = this;
 
@@ -110,13 +109,26 @@ define([
         that.device = that.project.devices.findWhere({graph_key: that.model.get('identifier')});
         that.buildChart();
       };
-
       // Fetch project to get devices
-      if (!this.options.project.devices.length) {
-        this.options.project.fetch({data: {project_label: options.project.id}}).done(initialView);
-      } else {
-        initialView();
-      }
+      this.options.project.fetch({data: {project_label: options.project.id}}).done(initialView);
     }
+    /*
+    initialize: function(options){
+      console.log('core layout', options);
+      var that = this;
+
+      this.project = options.project;
+
+      var initialView = function(){
+        console.log('render initial issue view');
+        that.device = that.project.devices.findWhere({graph_key: that.model.get('identifier')});
+        console.log(that.device);
+        that.buildChart();
+      };
+
+
+      options.project.fetch({data: {project_label: options.project.id}}).done(initialView);
+
+    }*/
   });
 });

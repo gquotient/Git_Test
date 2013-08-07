@@ -69,13 +69,6 @@ define([
       this.contentNavigation.show(this.devicesTree);
     },
 
-    onClose: function(){
-      if(this.model.devices && this.model.devices.length){
-        // Clear devices on model from memory
-        this.model.devices.reset();
-      }
-    },
-
     initialize: function(options){
       var that = this;
 
