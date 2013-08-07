@@ -99,53 +99,5 @@ define([
         that.selectIssue(issue);
       });
     }
-    /*
-    initialize: function(options){
-      var that = this;
-
-      Backbone.trigger('set:breadcrumbs', {state: 'issue', display_name: 'Issues'});
-
-      // Set the project model to this layout's model
-      this.model = options.model;
-
-      // Instantiate devices collection view
-      this.issueNavigation = new Issue.views.NavigationListView({collection: this.model.issues});
-
-      var initialView = function(){
-        console.log(options.currentIssue);
-        if (options.currentIssue) {
-          // Find issue with correct id
-          var myIssue = that.model.issues.findWhere({uid: options.currentIssue});
-
-          if (myIssue) {
-            // If issue was found, change context
-            that.selectIssue(myIssue);
-          } else {
-            // Handle issue not found
-            console.warn('That issue does not exist');
-          }
-        } else if (that.model.issues.length) {
-          that.selectIssue(that.model.issues.models[0]);
-        } else {
-          // Handle 'no issues' view
-          that.noIssues();
-        }
-      };
-
-      // Fetch issues and/or update view
-      if (this.model.issues.length) {
-        console.log('has issues');
-        initialView();
-
-      } else {
-        console.log('no issues');
-        this.model.issues.fetch().done(initialView);
-      }
-
-      // Listen for a device to be clicked and change view
-      this.listenTo(Backbone, 'click:issue', function(issue){
-        that.selectIssue(issue);
-      });
-    }*/
   });
 });
