@@ -159,7 +159,7 @@ define([
         });
 
       // Otherwise position relative to target device.
-      } else if (target || this.getRelationship(target, label)) {
+      } else if (target && this.getRelationship(target, label)) {
         position = target.getPosition(label);
 
         // Apply offset for this equipment.
