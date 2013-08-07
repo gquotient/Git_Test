@@ -57,7 +57,8 @@ define([
         this.triggerMethod('key:enter', view.model);
       });
 
-      this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
+      _.bindAll(this, 'handleKeyEvent');
+      $(document).on('keydown keypress', this.handleKeyEvent);
     },
 
     triggers: {
@@ -88,6 +89,10 @@ define([
           this.triggerMethod('hotkey');
         }
       }
+    },
+
+    onClose: function(){
+      $(document).off('keydown keypress', this.handleKeyEvent);
     },
 
     onFocus: function(){

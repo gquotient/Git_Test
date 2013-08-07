@@ -265,17 +265,16 @@ define([
       this.selection = new Backbone.Collection();
 
       this.listenTo(this.selection, 'add', function(model){
-        Backbone.trigger('editor:selection', this.selection);
+        Backbone.trigger('canvas:selection', this.selection);
         model.trigger('selected');
       });
 
       this.listenTo(this.selection, 'remove', function(model){
-        Backbone.trigger('editor:selection', this.selection);
+        Backbone.trigger('canvas:selection', this.selection);
         model.trigger('deselected');
       });
 
-      this.listenTo(Backbone, 'editor:mousemove editor:mouseup', this.handleMouseEvent);
-      this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
+      _.bindAll(this, 'handleMouseEvent', 'handleKeyEvent', 'handleWheelEvent');
     },
 
     itemViewOptions: function(){
@@ -305,6 +304,18 @@ define([
       43: 'zoom:in',
       45: 'zoom:out',
       61: 'zoom:reset'
+    },
+
+    onShow: function(){
+      $(document)
+        .on('mousemove mouseup', this.handleMouseEvent)
+        .on('keydown keypress', this.handleKeyEvent);
+    },
+
+    onClose: function(){
+      $(document)
+        .off('mousemove mouseup', this.handleMouseEvent)
+        .off('keydown keypress', this.handleKeyEvent);
     },
 
     handleMouseEvent: function(e){
@@ -344,6 +355,8 @@ define([
     },
 
     handleWheelEvent: function(e, delta){
+      e.preventDefault();
+
       if (delta > 0) {
         this.triggerMethod('zoom:in');
       } else if (delta < 0) {

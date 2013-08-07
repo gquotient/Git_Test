@@ -103,12 +103,11 @@ define([
         this.model.setLock(true);
       }
 
-      this.listenTo(Backbone, 'editor:selection', function(selection){
+      this.listenTo(Backbone, 'canvas:selection', function(selection){
         this.selection = selection.length > 0 ? selection : null;
       });
 
-      this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
-      this.listenTo(Backbone, 'editor', _.throttle(this.updateTimer, 1000));
+      _.bindAll(this, 'handleKeyEvent');
     },
 
     keydownEvents: {
@@ -281,9 +280,13 @@ define([
     onShow: function(){
       this._initInputFields();
       this.updateEditable();
+
+      $(document).on('keydown keypress', this.handleKeyEvent);
     },
 
     onClose: function(){
+      $(document).off('keydown keypress', this.handleKeyEvent);
+
       if (this.editable) {
         this.model.setLock(false);
       }

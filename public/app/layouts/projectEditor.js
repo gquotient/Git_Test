@@ -33,7 +33,6 @@ define([
     },
 
     initialize: function(){
-      this.$doc = $(document);
 
       // Set up view listener.
       this.listenTo(Backbone, 'editor:change:view', function(options){
@@ -63,26 +62,7 @@ define([
     },
 
     onShow: function(){
-      this.delegateEditorEvents();
       this.overlay.show( new Project.views.Editor(this.options) );
-    },
-
-    onClose: function(){
-      this.undelegateEditorEvents();
-    },
-
-    delegateEditorEvents: function(){
-      this.undelegateEditorEvents();
-
-      _.each(['keydown', 'keypress', 'mousemove', 'mouseup'], function(eventName){
-        this.$doc.on(eventName + '.editorEvent' + this.cid, function(e){
-          Backbone.trigger('editor:' + eventName, e);
-        });
-      }, this);
-    },
-
-    undelegateEditorEvents: function(){
-      this.$doc.off('.editorEvent' + this.cid);
     }
   });
 });
