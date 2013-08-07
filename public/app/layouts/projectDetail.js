@@ -30,27 +30,39 @@ define([
       type: 'handlebars',
       template: projectDetailTemplate
     },
-
     attributes: {
       id: 'page-projectDetail'
     },
-
     regions: {
       map: '.map',
+      devices: '.devices',
       kpis: '.kpis',
       contentNavigation: '.nav_content',
       issues: '.issues',
       chart_powerHistory: '.chart#powerHistory',
       chart_healthAndSoiling: '.chart#healthAndSoiling'
     },
-
     events: {
       'click .edit': function(){
         Backbone.history.navigate('/admin/project/' + this.model.id + '/edit', true);
+      },
+      'click .toggleView': 'toggleView'
+    },
+    currentView: 'map',
+    toggleView: function(){
+      if (this.currentView === 'map') {
+        this.currentView = 'devices';
+        $('.map').hide();
+        $('.devices').show();
+      } else {
+        this.currentView = 'map';
+        $('.devices').hide();
+        $('.map').show();
       }
     },
-
     onShow: function(){
+      $('.devices').hide();
+
       this.map.show(this.mapView);
 
       this.contentNavigation.show(this.projectNavigationListView);
@@ -59,7 +71,6 @@ define([
 
       this.selectProject(this.options.model);
     },
-
     buildSettingsDropdown: function(){
       var that = this;
 
@@ -195,6 +206,9 @@ define([
     initialize: function(options){
       // Instantiate map
       this.mapView = new Project.views.Map({
+        itemView: Project.views.MarkerView.extend({
+          popUp: Project.views.MarkerPopUpDetail
+        }),
         collection: new Project.Collection()
       });
 
@@ -214,8 +228,8 @@ define([
         Backbone.history.navigate('/project/' + this.model.id + '/issues' + issueId, true);
       });
 
-      this.listenTo(Backbone, 'click:device', function(){
-        Backbone.history.navigate('/project/' + this.model.id + '/devices', true);
+      this.listenTo(Backbone, 'click:device', function(device){
+        Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'), true);
       });
     }
   });

@@ -339,6 +339,7 @@ leftColumnWidthSml = 200px;
 }
 
 .column_right {
+  position: relative;
   margin-left: leftColumnWidth;
   transition: 0.25s ease-in-out;
   @media screen and (max-width: 1024px) {
@@ -448,7 +449,59 @@ leftColumnWidthSml = 200px;
       background-image: url(../img/marker_alert.png);
     }
   }
-  .fullscreen {
+  .leaflet-popup {
+    color: #555;
+    .leaflet-popup-content-wrapper {
+      h4 {
+        padding:0;
+        margin: 0 0 6px;
+      }
+      p {
+        padding: 0;
+        margin: 0 0 3px;
+      }
+      a {
+        color: colorDrakerOrange;
+      }
+      border-radius: 2px!important;
+    }
+  }
+  .leaflet-control {
+    transition:.2s;
+    opacity: 0.6;
+    box-shadow: 0 3px 3px rgba(0,0,0,0.1);
+    border: 1px solid #aaa;
+    margin: 6px;
+    &:hover {
+      opacity: 1;
+      transition:.2s;
+    }
+  }
+  .layerControls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 9px;
+    padding: 6px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 3px 3px rgba(0,0,0,0.1);
+    color: #555;
+    ul {
+      padding: 0;
+      margin: 0;
+      list-style-type: none;
+      li {
+        padding: 0;
+        margin: 0 0 3px;
+        &:last-child {
+          margin: 0;
+        }
+      }
+    }
+  }
+  button.fullscreen {
     position: absolute;
     bottom: 0;
     left: 0;
