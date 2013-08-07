@@ -247,6 +247,13 @@ define([
     tagName: 'canvas',
     itemView: NodeView,
 
+    itemViewOptions: function(){
+      return {
+        paper: this.paper,
+        rendering: this.rendering
+      };
+    },
+
     attributes: {
       resize: true
     },
@@ -276,16 +283,6 @@ define([
 
       _.bindAll(this, 'handleMouseEvent', 'handleKeyEvent', 'handleWheelEvent');
     },
-
-    itemViewOptions: function(){
-      return {
-        paper: this.paper,
-        rendering: this.rendering
-      };
-    },
-
-    // Prevent item views from being added to the DOM.
-    appendHtml: function(){},
 
     events: {
       'dblclick': 'handleMouseEvent',
@@ -320,28 +317,37 @@ define([
     },
 
     handleMouseEvent: function(e){
-      var offset = this.$el.offset(), method;
+      var offset = this.$el.offset(),
+        obj = {type: e.type},
+        method;
 
-      e.point = new this.paper.Point(e.pageX, e.pageY);
-      e.delta = e.point.subtract(this.lastPoint);
-      this.lastPoint = e.point;
+      obj.point = new this.paper.Point(e.pageX, e.pageY);
+      obj.delta = obj.point.subtract(this.lastPoint);
+      this.lastPoint = obj.point;
 
-      e.projectPoint = this.paper.view.viewToProject(e.point.subtract(offset.left, offset.top));
-      e.projectDelta = e.projectPoint.subtract(this.lastProjectPoint);
-      this.lastProjectPoint = e.projectPoint;
+      obj.projectPoint = this.paper.view.viewToProject(obj.point.subtract(offset.left, offset.top));
+      obj.projectDelta = obj.projectPoint.subtract(this.lastProjectPoint);
+      this.lastProjectPoint = obj.projectPoint;
 
-      if (e.type === 'mousemove' && this.dragging) {
-        e.type = 'mousedrag';
+      if (obj.type !== 'mousemove') {
+        obj.view = this.children.find(function(view){
+          return view.testHit(obj.projectPoint);
+        });
+
+        obj.model = obj.view && obj.view.model;
+
+      } else if (this.dragging) {
+        obj.type = 'mousedrag';
       }
 
-      method = this['on' + e.type[0].toUpperCase() + e.type.slice(1)];
+      method = this['on' + obj.type[0].toUpperCase() + obj.type.slice(1)];
 
       if (method) {
-        method.call(this, e);
+        method.call(this, obj, e);
       }
 
-      if (e.type === 'mousedown') { this.dragging = true; }
-      if (e.type === 'mouseup') { this.dragging = false; }
+      if (obj.type === 'mousedown') { this.dragging = true; }
+      if (obj.type === 'mouseup') { this.dragging = false; }
 
       this.paper.view.draw();
     },
@@ -365,59 +371,42 @@ define([
       }
     },
 
-    onDblclick: function(e){
-      this.children.any(function(view){
-        if (view.testHit(e.projectPoint)) {
-          Backbone.trigger('click:device', view.model);
-          return true;
-        }
-      });
-    },
-
-    onMousedown: function(e){
-      var model;
-
-      this.children.any(function(view){
-        if (view.testHit(e.projectPoint)) {
-          model = view.model;
-          return true;
-        }
-      });
+    onMousedown: function(obj, e){
 
       // Make sure any lingering select boxes are removed.
       if (this.select) { this.eraseSelect(); }
 
       // Create a select box if not on a device.
-      if (!model) {
-        this.drawSelect(e.projectPoint);
+      if (!obj.model) {
+        this.drawSelect(obj.projectPoint);
 
       // Otherwise add the model if not already included.
-      } else if (!this.selection.contains(model)) {
-        this.selection.add(model, {remove: !e.ctrlKey});
+      } else if (!this.selection.contains(obj.model)) {
+        this.selection.add(obj.model, {remove: !e.ctrlKey});
 
       // Or remove the model if present and ctrl is being pressed.
       } else if (e.ctrlKey) {
-        this.selection.remove(model);
+        this.selection.remove(obj.model);
       }
     },
 
-    onMousedrag: function(e){
+    onMousedrag: function(obj, e){
 
       // Pan the canvas if holding shift.
       if (e.shiftKey) {
-        this.paper.view.scrollBy(e.delta.divide(this.paper.view.zoom).negate());
+        this.paper.view.scrollBy(obj.delta.divide(this.paper.view.zoom).negate());
 
       // Update the select box if present.
       } else if (this.select) {
-        this.moveSelect(e.projectPoint);
+        this.moveSelect(obj.projectPoint);
 
       // Otherwise move any models currently selected if editable.
       } else if (this.options.editable) {
-        this.moveSelection(e.projectDelta);
+        this.moveSelection(obj.projectDelta);
       }
     },
 
-    onMouseup: function(e){
+    onMouseup: function(obj, e){
       var models = [];
 
       // Add any models within the select box if present.
@@ -434,6 +423,12 @@ define([
       // Otherwise snap any models that may have moved if editable.
       } else if (this.options.editable) {
         this.snapSelection();
+      }
+    },
+
+    onDblclick: function(obj){
+      if (obj.model) {
+        Backbone.trigger('click:device', obj.model);
       }
     },
 
@@ -490,6 +485,9 @@ define([
           y: Math.round(position.y / 100) * 100
         }, true);
       }, this);
-    }
+    },
+
+    // Prevent item views from being added to the DOM.
+    appendHtml: function(){}
   });
 });
