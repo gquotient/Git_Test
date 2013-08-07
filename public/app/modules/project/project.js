@@ -19,6 +19,7 @@ define([
   'hbs!project/templates/dataListItem',
   'hbs!project/templates/dashboard',
   'hbs!project/templates/markerPopUp',
+  'hbs!project/templates/markerPopUpDetail',
   'hbs!project/templates/navigationList',
   'hbs!project/templates/navigationListItem',
   'hbs!project/templates/kpis',
@@ -44,6 +45,7 @@ define([
   dataListItemTemplate,
   dashboardTemplate,
   markerPopUpTemplate,
+  markerPopUpDetailTemplate,
   navigationListTemplate,
   navigationListItemTemplate,
   kpisTemplate,
@@ -427,10 +429,21 @@ define([
       'click a.viewProject': function(event){
         event.preventDefault();
         Backbone.trigger('select:project', this.model);
+      },
+      'click a.viewDevices': function(event){
+        event.preventDefault();
+        Backbone.history.navigate('/project/' + this.model.id + '/devices', true);
       }
     },
     initialize: function(options){
       this.render();
+    }
+  });
+
+  Project.views.MarkerPopUpDetail = Project.views.MarkerPopUp.extend({
+    template: {
+      type: 'handlebars',
+      template: markerPopUpDetailTemplate
     }
   });
 
@@ -468,6 +481,8 @@ define([
       this.listenTo(Backbone, 'mouseover:portfolio', this.highlight);
       this.listenTo(Backbone, 'mouseout:portfolio', highlightTimeout);
     },
+
+    popUp: Project.views.MarkerPopUp,
 
     markerStyles: {
       OK: L.divIcon({
@@ -519,7 +534,7 @@ define([
       this.marker.addTo(this.options.markers);
 
       // Instantiate pop up content
-      this.popUp = new Project.views.MarkerPopUp({model: this.model});
+      this.popUp = new this.popUp({model: this.model});
       this.marker.bindPopup(this.popUp.el);
 
       // Fade in marker
@@ -776,12 +791,6 @@ define([
     template: {
       type: 'handlebars',
       template: kpisTemplate
-    },
-    events: {
-      'click a.viewDevices': function(event){
-        event.preventDefault();
-        Backbone.trigger('click:device');
-      }
     },
     initialize: function(){
       this.model.fetchKpis();
