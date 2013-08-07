@@ -113,8 +113,8 @@ define([
       // Fetch devices for project.
       project.fetch({equipment: this.options.equipment});
 
-      // Replace the map with the power flow diagram.
-      this.map.show( new Device.views.Canvas({
+      // Update the devices power flow diagram.
+      this.devices.show( new Device.views.Canvas({
         collection: project.devices,
         rendering: 'POWER',
         editable: false
