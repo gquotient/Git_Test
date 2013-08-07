@@ -128,11 +128,7 @@ define([
 
     modelEvents: {
       'change:locked': 'updateEditable',
-      'change:editor': 'updateEditable',
-
-      'sync': function(project){
-        this.checkRenderings(project.outgoing);
-      }
+      'change:editor': 'updateEditable'
     },
 
     updateTimer: function(){
@@ -168,27 +164,6 @@ define([
           this.$('#lock-message').empty();
         }
       }
-    },
-
-    checkRenderings: function(devices, target){
-      var project = this.model;
-
-      devices.each(function(device){
-        var equip = device.equipment;
-
-        equip.addRootRenderings(device, project);
-
-        if (target) {
-          _.each(_.keys(Equipment.renderings), function(label){
-            if (!device.getPosition(label) && equip.getRelationship(target, label)) {
-              equip.addRelativeRendering(device, project, label, target);
-            }
-          });
-        }
-
-        this.checkRenderings(device.outgoing, device);
-        this.checkName(device);
-      }, this);
     },
 
     checkName: function(device){

@@ -139,44 +139,40 @@ define([
       return device;
     },
 
-    addRootRenderings: function(device, project){
-      _.each(this.get('renderings'), function(rendering){
-        var position;
-
-        if (rendering.root && !device.getPosition(rendering.label)) {
-          position = _.clone(rendering.position);
-
-          if (position) {
-            project.devices.each(function(other){
-              var pos = other.getPosition(rendering.label);
-
-              if (pos && pos.y >= position.y) {
-                position.y = pos.y + 200;
-              }
-            });
-
-            adjustPosition(rendering.label, position, project);
-            device.setPosition(rendering.label, position);
-          }
-        }
-      });
-    },
-
-    addRelativeRendering: function(device, project, label, target){
+    addRendering: function(device, project, label, target){
       var rendering = _.findWhere(this.get('renderings'), {label: label}),
-        position, offset;
+        position;
 
-      if (rendering) {
+      if (!rendering || device.getPosition(label)) { return; }
+
+      // Check if this is a root device.
+      if (rendering.root && rendering.position) {
+        position = _.clone(rendering.position);
+
+        // Move device to the bottom.
+        project.devices.each(function(other){
+          var pos = other.getPosition(label);
+
+          if (pos && pos.y >= position.y) {
+            position.y = pos.y + 200;
+          }
+        });
+
+      // Otherwise position relative to target device.
+      } else if (target || this.getRelationship(target, label)) {
         position = target.getPosition(label);
-        offset = rendering.offset || {};
 
-        if (position) {
-          position.x += offset.x || 0;
-          position.y += offset.y || 0;
-
-          adjustPosition(rendering.label, position, project);
-          device.setPosition(label, position);
+        // Apply offset for this equipment.
+        if (position && rendering.offset) {
+          position.x += rendering.offset.x || 0;
+          position.y += rendering.offset.y || 0;
         }
+      }
+
+      // If position was found adjust for overlap and set.
+      if (position) {
+        adjustPosition(label, position, project);
+        device.setPosition(label, position);
       }
     }
   });

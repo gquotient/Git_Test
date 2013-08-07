@@ -9,6 +9,7 @@ define([
 
   'navigation',
   'device',
+  'equipment',
   'issue',
 
   './admin',
@@ -33,6 +34,7 @@ define([
 
   Navigation,
   Device,
+  Equipment,
   Issue,
 
   adminViews,
@@ -303,9 +305,25 @@ define([
             }
           }, this);
         }
+
+        _.each(_.keys(Equipment.renderings), function(label){
+          this.checkOutgoing(this, label);
+        }, this);
       }
 
       return _.omit(resp, 'devices', 'rels');
+    },
+
+    checkOutgoing: function(target, label){
+      if (!target.outgoing) { return; }
+
+      target.outgoing.each(function(device){
+        // Add position to device for this rendering.
+        device.equipment.addRendering(device, this, label, target);
+
+        // Recursively check all outgoing devices for this rendering.
+        this.checkOutgoing(device, label);
+      }, this);
     },
 
     addNote: function(note, user){
