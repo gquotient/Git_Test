@@ -279,6 +279,9 @@ define([
       target.outgoing.each(function(device){
         if (!device.equipment) { return; }
 
+        // For now ignore strings and panels.
+        if (_.contains(['S', 'P'], device.equipment.get('label'))) { return; }
+
         // Add position to device for this rendering.
         device.equipment.addRendering(device, this, label, target);
 
