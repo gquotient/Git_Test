@@ -29,7 +29,7 @@ define([
     url: '/api/devices',
 
     initialize: function(attrs, options){
-      if (options.equipment) {
+      if (options && options.equipment) {
         this.equipment = options.equipment.findOrCreateForDevice(this);
       }
 
