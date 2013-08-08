@@ -286,36 +286,24 @@ define([
       _.bindAll(this, 'handleMouseEvent', 'handleKeyEvent', 'handleWheelEvent');
     },
 
-    events: {
-      'dblclick': 'handleMouseEvent',
-      'mousedown': 'handleMouseEvent',
-      'mousewheel': 'handleWheelEvent'
-    },
+    delegateCanvasEvents: function(){
+      function format(events){
+        return _.map(events.split(' '), function(evnt){
+          return evnt + '.canvas' + this.cid;
+        }, this).join(' ');
+      }
 
-    keydownEvents: {
-      9: 'key:tab',
-      37: 'key:left',
-      38: 'key:up',
-      39: 'key:right',
-      40: 'key:down'
-    },
+      this.$el
+        .on(format('mousedown dblclick'), this.handleMouseEvent)
+        .on(format('mousewheel'), this.handleWheelEvent);
 
-    keypressEvents: {
-      43: 'zoom:in',
-      45: 'zoom:out',
-      61: 'zoom:reset'
-    },
-
-    onShow: function(){
       $(document)
-        .on('mousemove mouseup', this.handleMouseEvent)
-        .on('keydown keypress', this.handleKeyEvent);
+        .on(format('mousemove mouseup'), this.handleMouseEvent)
+        .on(format('keydown keypress'), this.handleKeyEvent);
     },
 
-    onClose: function(){
-      $(document)
-        .off('mousemove mouseup', this.handleMouseEvent)
-        .off('keydown keypress', this.handleKeyEvent);
+    undelegateCanvasEvents: function(){
+      this.$el.add(document).off('.canvas' + this.cid);
     },
 
     handleMouseEvent: function(e){
@@ -354,6 +342,20 @@ define([
       this.paper.view.draw();
     },
 
+    keydownEvents: {
+      9: 'key:tab',
+      37: 'key:left',
+      38: 'key:up',
+      39: 'key:right',
+      40: 'key:down'
+    },
+
+    keypressEvents: {
+      43: 'zoom:in',
+      45: 'zoom:out',
+      61: 'zoom:reset'
+    },
+
     handleKeyEvent: function(e){
       var value = (this[e.type + 'Events'] || {})[e.which];
 
@@ -371,6 +373,14 @@ define([
       } else if (delta < 0) {
         this.triggerMethod('zoom:out');
       }
+    },
+
+    onShow: function(){
+      this.delegateCanvasEvents();
+    },
+
+    onClose: function(){
+      this.undelegateCanvasEvents();
     },
 
     onMousedown: function(obj, e){

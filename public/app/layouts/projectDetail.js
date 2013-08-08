@@ -27,6 +27,50 @@ define([
 
   projectDetailTemplate
 ){
+
+  var DevicesView = Marionette.CollectionView.extend({
+    itemView: Device.views.Canvas,
+
+    itemViewOptions: function(project){
+      return {
+        collection: project.devices,
+        rendering: 'POWER',
+        editable: false
+      };
+    },
+
+    initialize: function(){
+      this.collection = new Backbone.Collection();
+    },
+
+    showProject: function(project){
+      var view = this.children.findByModel(project);
+
+      if (this.currentView) {
+        if (this.currentView === view) { return; }
+
+        this.currentView.undelegateCanvasEvents();
+        this.currentView.$el.hide();
+        this.currentView = null;
+      }
+
+      if (view) {
+        view.delegateCanvasEvents();
+        view.$el.show();
+        this.currentView = view;
+
+      } else {
+        project.fetch({equipment: this.options.equipment});
+        this.collection.add(project);
+      }
+    },
+
+    onAfterItemAdded: function(view){
+      this.currentView = view;
+    }
+  });
+
+
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',
@@ -66,6 +110,8 @@ define([
       $('.devices').hide();
 
       this.map.show(this.mapView);
+
+      this.devices.show(this.devicesView);
 
       this.contentNavigation.show(this.projectNavigationListView);
 
@@ -110,17 +156,8 @@ define([
         marker.togglePopup();
       });
 
-      // Fetch devices for project.
-      if (project.devices.length === 0) {
-        project.fetch({equipment: this.options.equipment});
-      }
-
-      // Update the devices power flow diagram.
-      this.devices.show( new Device.views.Canvas({
-        collection: project.devices,
-        rendering: 'POWER',
-        editable: false
-      }));
+      // Add project to devices view and activate it.
+      this.devicesView.showProject(project);
 
       that.model.findDataSources().done(function(dataSources){
         // Build charts
@@ -224,6 +261,11 @@ define([
           popUp: Project.views.MarkerPopUpDetail
         }),
         collection: new Project.Collection()
+      });
+
+      // Instantiate devices collection view.
+      this.devicesView = new DevicesView({
+        equipment: options.equipment
       });
 
       // Instantiate left nav
