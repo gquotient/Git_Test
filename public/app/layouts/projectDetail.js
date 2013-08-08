@@ -62,7 +62,7 @@ define([
       } else {
         this.collection.add(project);
 
-        if (project.devices.length === 0) {
+        if (project.devices.length) {
           project.fetch({equipment: this.options.equipment});
         }
       }
