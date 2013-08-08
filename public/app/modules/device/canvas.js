@@ -259,15 +259,17 @@ define([
     },
 
     initialize: function(options){
+      this.rendering = options.rendering;
+
+      this.paper = new paper.PaperScope();
+      this.paper.setup(this.el);
+
       this.collection = new Backbone.VirtualCollection(options.collection, {
         filter: function(model){
           // Only render devices that have position and equipment.
           return model.getPosition(options.rendering) && model.equipment;
         }
       });
-
-      this.paper = paper.setup(this.el);
-      this.rendering = options.rendering;
 
       this.selection = new Backbone.Collection();
 
