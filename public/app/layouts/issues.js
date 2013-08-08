@@ -60,6 +60,7 @@ define([
     onShow: function(){
       this.contentNavigation.show(this.issueNavigation);
     },
+
     initialize: function(options){
       var that = this;
 
