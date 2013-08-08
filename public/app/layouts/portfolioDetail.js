@@ -98,6 +98,9 @@ define([
 
       // Update active item
       this.portfolioNavigationListView.setActive(portfolio.id);
+
+      // Update Map View
+      this.mapView.fitToBounds();
     },
 
     initialize: function(options){
