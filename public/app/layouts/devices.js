@@ -64,25 +64,15 @@ define([
     },
 
     onShow: function(){
-      this.contentNavigation.show(this.devicesTree);
-    },
-
-    initialize: function(options){
       var that = this;
 
-      Backbone.trigger('set:breadcrumbs', {state:'device', display_name:'Devices'});
-
-      // Instantiate devices collection view
-      this.devices = new Device.Collection();
-      this.devicesTree = new Device.views.NavigationList({
-        collection: this.devices
-      });
-
       var initialView = function(){
+        that.contentNavigation.show(that.devicesTree);
+
         that.devices.reset(that.model.devices.where({devtype: 'Inverter'}));
         // If router passes a device, build detail view
-        if (options.currentDevice) {
-          var myDevice = that.model.devices.findWhere({graph_key: options.currentDevice});
+        if (that.options.currentDevice) {
+          var myDevice = that.model.devices.findWhere({graph_key: that.options.currentDevice});
           that.selectDevice(myDevice);
         }
       };
@@ -95,6 +85,18 @@ define([
       } else {
         initialView();
       }
+    },
+
+    initialize: function(options){
+      var that = this;
+
+      Backbone.trigger('set:breadcrumbs', {state:'device', display_name:'Devices'});
+
+      // Instantiate devices collection view
+      this.devices = new Device.Collection();
+      this.devicesTree = new Device.views.NavigationList({
+        collection: this.devices
+      });
 
       // Listen for a device to be clicked and change view
       this.listenTo(Backbone, 'click:device', function(device){
