@@ -61,11 +61,14 @@ define([
       kpis: {
         irradiance: 0,
         power: 0,
-        dpi: 0,
-        energyYTD: {
+        pr: 0,
+        energyProduction: {
           generated: 0,
           forecast: 0,
-          modeled: 0
+          modeled: 0,
+          year: 0,
+          month: 0,
+          week: 0
         }
       },
       dataSources: {
