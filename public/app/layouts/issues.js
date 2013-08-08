@@ -50,9 +50,7 @@ define([
 
       this.issueDetail.show(new CoreLayout({model: issue, project: this.model}));
 
-      $('.nav_content').find('.active').removeClass('active');
-
-      $('.nav_content').find('#' + issue.id).addClass('active');
+      this.issueNavigation.setActive(issue.id);
     },
 
     noIssues: function(){
@@ -62,14 +60,6 @@ define([
     onShow: function(){
       this.contentNavigation.show(this.issueNavigation);
     },
-
-    onClose: function(){
-      if(this.model.devices && this.model.devices.length){
-        // Clear devices from memory
-        this.model.devices.reset();
-      }
-    },
-
     initialize: function(options){
       var that = this;
 
@@ -81,8 +71,7 @@ define([
       // Instantiate devices collection view
       this.issueNavigation = new Issue.views.NavigationListView({collection: this.model.issues});
 
-      // Fetch issues and update view
-      this.model.issues.fetch().done(function(){
+      var initialView = function(){
         if (options.currentIssue) {
           // Find issue with correct id
           var myIssue = that.model.issues.findWhere({uid: options.currentIssue});
@@ -100,7 +89,10 @@ define([
           // Handle 'no issues' view
           that.noIssues();
         }
-      });
+      };
+
+      // Fetch issues and update view
+      this.model.issues.fetch().done(initialView);
 
       // Listen for a device to be clicked and change view
       this.listenTo(Backbone, 'click:issue', function(issue){

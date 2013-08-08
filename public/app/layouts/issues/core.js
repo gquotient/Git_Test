@@ -52,6 +52,20 @@ define([
           display_name: this.options.model.get('display_name')
         }
       );
+
+      // This stuff needs to be in the onShow because it needs the dom elements to work
+      var that = this;
+
+      var initialView = function(){
+        that.device = that.project.devices.findWhere({graph_key: that.model.get('identifier')});
+        that.buildChart();
+      };
+      // Fetch project to get devices
+      if (this.options.project.devices.length) {
+        initialView();
+      } else {
+        this.options.project.fetch({data: {project_label: this.project.id}}).done(initialView);
+      }
     },
 
     buildChart: function(){
@@ -65,7 +79,7 @@ define([
 
       this.$el.find('.deviceName').html('<a href="#' + device.get('graph_key') + '" class="device">' + device.get('did') + '</a>');
 
-      var chart_powerAndIrradiance = new Chart.views.Line({
+      var chart_powerAndIrradiance = new Chart.views.Basic({
         model: new Chart.models.timeSeries({
           'traces': [
             {
@@ -100,17 +114,10 @@ define([
 
       this.chart.show(chart_powerAndIrradiance);
     },
-
     initialize: function(options){
       var that = this;
 
       this.project = options.project;
-
-      // Fetch project to get devices
-      this.options.project.fetch({data: {project_label: options.project.id}}).done(function(){
-        that.device = that.project.devices.findWhere({graph_key: that.model.get('identifier')});
-        that.buildChart();
-      });
     }
   });
 });

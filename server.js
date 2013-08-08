@@ -105,6 +105,21 @@ app.configure('stage', function(){
   app.set('staticDir', 'app.build');
 });
 
+app.configure('production', function(){
+  console.log('Using Production');
+  app.use(express.errorHandler());
+  app.set('clientID', 'IA6_0.1');
+  app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
+  app.set('callbackURL', 'http://app.intelligentarray.com/token');
+  app.set('authorizationURL', 'http://auth.intelligentarray.com/ia/oauth2/auth');
+  app.set('tokenURL', 'http://auth.intelligentarray.com/ia/oauth2/token');
+  app.set('authPort', 80);
+  app.set('authUrl', 'auth.intelligentarray.com');
+  app.set('modelUrl', 'http://model.intelligentarray.com');
+  app.set('dataUrl', 'http://data.stage.intelligentarray.com');
+  app.set('staticDir', 'app.build');
+});
+
 app.configure('development-vagrant', function(){
   console.log('Using Vagrant');
   app.use(express.errorHandler());

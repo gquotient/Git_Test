@@ -391,11 +391,7 @@ function(
     }
   });
 
-  Chart.views.Line = Chart.views.core.extend({
-    options: {
-      title: 'Generic Chart',
-      autoUpdate: true
-    },
+  Chart.views.Basic = Chart.views.core.extend({
     render: function(){
       //Fetch data
       this.model.fetch();
@@ -405,7 +401,6 @@ function(
       clearInterval(this.fetchInterval);
     },
     initialize: function(options){
-      //console.log('init', this, this.model);
       var that = this;
 
       // If no series defs provided, build basic series for traces
@@ -417,74 +412,9 @@ function(
       this.options.series = this.smartAxesSelector(this.options.series);
 
       // Merge supplied chart options with view specific options
-      this.chartOptions = $.extend(true, this.chartOptions, options.chartOptions, {
+      this.chartOptions = $.extend(true, {}, this.chartOptions, options.chartOptions, {
         chart: {
-          type: 'line',
-          renderTo: this.el
-        },
-        yAxis: this.smartAxesTitles(this.options.series),
-        series: this.options.series
-      });
-
-      // Instantiate the chart
-      this.chart = new Highcharts.Chart(this.chartOptions);
-
-      // Update chart on data change
-      this.model.on('change:series', function(model, seriesData){
-        if (seriesData.length) {
-          _.each(that.chart.series, function(serie, index){
-            // Update series data
-            if (seriesData[index].data && seriesData[index].data.length) {
-              serie.setData(seriesData[index].data);
-            } else {
-              //throw no data error
-              console.warn('No data found on trace:', seriesData[index]);
-            }
-          });
-        } else {
-          //throw no data error
-          console.warn('No data came back at all. Call Thadeus.');
-        }
-      });
-
-      var fetch = function(){
-        that.model.fetch();
-      };
-
-      // Using set timeout for now so it only updates once
-      this.fetchInterval = setInterval(fetch, 300000);
-    }
-  });
-
-  Chart.views.Bar = Chart.views.core.extend({
-    options: {
-      title: 'Generic Chart',
-      autoUpdate: true
-    },
-    render: function(){
-      //Fetch data
-      this.model.fetch();
-    },
-    onClose: function(){
-      // Clear the auto update when view is closed
-      clearInterval(this.fetchInterval);
-    },
-    initialize: function(options){
-      //console.log('init', this, this.model);
-      var that = this;
-
-      // If no series defs provided, build basic series for traces
-      if (!options.series) {
-        this.options.series = this.smartSeriesBuilder();
-      }
-
-      // Run series through axis selector
-      this.options.series = this.smartAxesSelector(this.options.series);
-
-      // Merge supplied chart options with view specific options
-      this.chartOptions = $.extend(true, this.chartOptions, options.chartOptions, {
-        chart: {
-          type: 'column',
+          type: options.type || 'line',
           renderTo: this.el
         },
         yAxis: this.smartAxesTitles(this.options.series),

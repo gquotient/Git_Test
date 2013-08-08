@@ -92,6 +92,22 @@ define(
           }
         });
       },
+      destroy: function(options) {
+        var model = this;
+
+        var destroy = function() {
+          model.trigger('destroy', model, model.collection, options);
+        };
+
+        return $.ajax({
+          url: this.url,
+          type: 'DELETE',
+          dataType: 'json',
+          data: this.toJSON()
+        })
+        .done(destroy)
+        .fail(this.render);
+      },
       initialize: function(){
         this.users = new User.TeamUsers({team: this});
         this.projects = new Project.Collection([],{ url: '/api/teamprojects/' + this.id });
