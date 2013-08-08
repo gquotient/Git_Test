@@ -268,7 +268,8 @@ define([
         filter: function(model){
           // Only render devices that have position and equipment.
           return model.getPosition(options.rendering) && model.equipment;
-        }
+        },
+        close_with: this
       });
 
       this.selection = new Backbone.Collection();
