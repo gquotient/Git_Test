@@ -199,6 +199,7 @@ define([
         that.chart_powerHistory.show(chart_powerHistory);
 
         var chart_healthAndSoiling = new Chart.views.Basic({
+          autoUpdate: false,
           type: 'column',
           chartOptions: {
             title: {

@@ -135,8 +135,8 @@ define([
         dataType: 'json',
         data: {
           traces: [{
-            project_label: 'TPW1_01',
-            project_timezone: 'America/Chicago'
+            project_label: this.id,
+            project_timezone: this.get('timezone')
           }]
         }
       })

@@ -288,6 +288,13 @@ function(
         }
       },
       tooltip: {
+        shared: true,
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        borderColor: '#999',
+        borderRadius: 0,
+        style: {
+          color: '#ccc'
+        }
         //formatter: function() {
         //  return this.x + ' | ' + this.y;
         //},
@@ -392,6 +399,9 @@ function(
   });
 
   Chart.views.Basic = Chart.views.core.extend({
+    options: {
+      autoUpdate: true
+    },
     render: function(){
       //Fetch data
       this.model.fetch();
@@ -447,7 +457,9 @@ function(
       };
 
       // Using set timeout for now so it only updates once
-      this.fetchInterval = setInterval(fetch, 300000);
+      if (this.options.autoUpdate) {
+        this.fetchInterval = setInterval(fetch, 300000);
+      }
     }
   });
 
