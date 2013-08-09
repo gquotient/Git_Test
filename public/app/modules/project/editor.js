@@ -201,7 +201,7 @@ define([
 
       add: {
         hotKey: 97,
-        collection: new Backbone.Collection([], {comparator: 'name'}),
+        comparator: 'name',
 
         parseInput: function(){
           var input = InputField.prototype.parseInput.call(this),
@@ -223,27 +223,25 @@ define([
 
       connect: {
         hotKey: 99,
-        collection: new Backbone.Collection([], {comparator: 'name'})
+        comparator: 'name'
       },
 
       disconnect: {
         hotKey: 100,
-        collection: new Backbone.Collection([], {comparator: 'name'})
-      },
-
-      import: {
-        hotKey: 105
+        comparator: 'name'
       }
     },
 
     _initInputFields: function(){
       _.each(this.inputFields, function(obj, name){
-        var view = new InputField(_.extend({}, this.options, {
+        var view = new InputField({
           collection: obj.collection,
+          comparator: obj.comparator,
+          view: this.options.view,
           el: this.$('#' + name)
-        }));
+        });
 
-        _.extend(view, _.omit(obj, 'collection'));
+        _.extend(view, _.omit(obj, 'collection', 'comparator'));
 
         _.each(['focus', 'apply'], function(evnt){
           this.listenTo(view, evnt, function(){

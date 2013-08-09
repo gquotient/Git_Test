@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'backbone.virtualCollection',
 
   'hbs!project/templates/inputFieldItem'
 ], function(
@@ -10,6 +11,7 @@ define([
   _,
   Backbone,
   Marionette,
+  VirtualCollection,
 
   inputItemTemplate
 ){
@@ -28,30 +30,128 @@ define([
         triggers: {
           'mousedown a': 'select'
         }
-      }),
+      })
+    }),
 
-      renderPartial: function(regex){
-        this.regex = regex;
-        return this.render();
+    Collection = Backbone.Collection.extend.call(Backbone.VirtualCollection, {
+
+      pluck: function(attr){
+        return _.invoke(this._models(), 'get', attr);
       },
 
-      addItemView: function(model){
-        if (!this.regex || this.regex.test(model.get('name'))) {
-          Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
+      updateFilter: function(filter, options){
+        options = options || {};
+
+        this.filter = filter || function(){ return true; };
+        this._rebuildIndex();
+
+        if (!options.silent) {
+          this.trigger('reset', this, options);
         }
+      },
+
+      sort: function(options){
+        var iterator, sorter;
+
+        if (!this.comparator) {
+          throw new Error('Cannot sort a set without a comparator');
+        }
+
+        options = options || {};
+
+        if (_.isString(this.comparator)) {
+          iterator = function(model){
+            return model.get(this.comparator);
+          };
+        } else if (this.comparator.length === 1){
+          iterator = this.comparator;
+        } else {
+          iterator = _.identity;
+          sorter = this.comparator;
+        }
+
+        this.index = sort(this.index, {
+          iterator: function(cid, index, list){
+            var model = this.collection.get(cid),
+              result = iterator.call(this, model, index, list);
+
+            return _.isString(result) ? naturalSplit(result.toLowerCase()) : result;
+          },
+          sorter: sorter
+        }, this);
+
+        if (!options.silent) {
+          this.trigger('sort', this, options);
+        }
+
+        return this;
       }
     });
+
+  function naturalSplit(str){
+    return _.map(str.match(/(\.\d+)|(\d+)|(\D+)/g), function(part){
+      var num = parseInt(part, 10);
+
+      return isNaN(num) ? part : num;
+    });
+  }
+
+  // Sort that takes optional iterator and sorter functions and sorts array
+  // elements properly instead of concatenating them.
+  function sort(obj, options, context){
+    options = _.defaults(options || {}, {
+      iterator: _.identity,
+      sorter: function(a, b){
+        if (a !== b) {
+          if (a > b || a === void 0) return 1;
+          if (a < b || b === void 0) return -1;
+        }
+        return 0;
+      }
+    });
+
+    return _.pluck(_.map(obj, function(value, index, list){
+      return {
+        value: value,
+        index: index,
+        criteria: options.iterator.call(context, value, index, list)
+      };
+    }).sort(function(left, right){
+      var a, b, result;
+
+      a = _.clone(left.criteria);
+      b = _.clone(right.criteria);
+
+      if (_.isArray(a) && _.isArray(b)) {
+        while (a.length || b.length) {
+          result = options.sorter.call(context, a.shift(), b.shift());
+          if (result !== 0) return result;
+        }
+      } else {
+        result = options.sorter.call(context, a, b);
+        if (result !== 0) return result;
+      }
+
+      return left.index < right.index ? -1 : 1;
+    }), 'value');
+  }
+
 
   return Marionette.View.extend({
 
     constructor: function(options){
-      var args = Array.prototype.slice.apply(arguments);
-      Marionette.View.prototype.constructor.apply(this, args);
+      options.collection = options.collection || new Backbone.Collection();
+      Marionette.View.prototype.constructor.call(this, options);
+
+      this._collection = new Collection(this.collection, {
+        comparator: options.comparator,
+        close_with: this
+      });
 
       this.ui = {input: this.$('input')};
       this.placeholder = this.ui.input.val();
 
-      this.dropdown = new Dropdown({collection: this.collection});
+      this.dropdown = new Dropdown({collection: this._collection});
 
       this.listenTo(this.dropdown, 'itemview:select', function(view){
         this.triggerMethod('key:enter', view.model);
@@ -97,7 +197,8 @@ define([
 
     onFocus: function(){
       this.ui.input.val('');
-      this.$el.append(this.dropdown.renderPartial().el);
+      this._collection.updateFilter();
+      this.$el.append(this.dropdown.render().el);
       this.focused = true;
     },
 
@@ -112,17 +213,17 @@ define([
     },
 
     onInput: function(){
-      this.dropdown.renderPartial( new RegExp('^' + this.parseInput(), 'i') );
+      var regex = new RegExp('^' + this.parseInput(), 'i');
+
+      this._collection.updateFilter(function(model){
+        return regex.test(model.get('name'));
+      });
     },
 
     getAutocomplete: function(){
-      var values, partial, last, len;
-
-      values = this.dropdown.children.map(function(view){
-        return view.model.get('name');
-      }).sort();
-
-      partial = _.first(values) || '';
+      var values = this._collection.pluck('name').sort(),
+        partial = _.first(values) || '',
+        last, len;
 
       if (values.length > 1) {
         len = partial.length;
