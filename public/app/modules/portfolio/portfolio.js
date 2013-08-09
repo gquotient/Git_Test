@@ -120,19 +120,21 @@ define([
     },
 
     parseProjectKpis: function(data){
+      var irradiance = 0, power = 0;
+
       // Loop through returned KPIs and send the data to their respective projects
       _.each(data, function(kpi){
         var project = this.projects.findWhere({project_label: kpi.project_label});
 
         project.parseKpis(kpi);
-        /*
-        this.projects.each(function(project){
-          if (project.id === kpi.project_label) {
-            project.parseKpis(kpi);
-          }
-        });
-        */
+
+        irradiance += (kpi.performance_snapshot.irradiance || 0);
+        power += (kpi.performance_snapshot.ac_power || 0);
       }, this);
+
+      // Set portfolio aggregated kpis
+      this.set('irradiance_now', irradiance);
+      this.set('power_now', power);
     },
 
     aggregateKpis: function(){
@@ -218,6 +220,9 @@ define([
     template: {
       type: 'handlebars',
       template: aggregateKpisTemplate
+    },
+    modelEvents: {
+      'change': 'render'
     },
     initialize: function(options){
       var that = this;
