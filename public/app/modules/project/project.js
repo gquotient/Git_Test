@@ -379,8 +379,8 @@ define([
         Backbone.history.navigate('/project/'+this.model.id, true);
       }
     },
-    onShow: function(){
-      this.model.fetchKpis().done(this.render);
+    modelEvents: {
+      'change': 'render'
     }
   });
 
