@@ -1,10 +1,14 @@
 {
-  "Hi": "Bonjour",
+  "Hi": "Hi",
 
   "DC Capacity": "DC Capacity",
   "AC Capacity": "AC Capacity",
+  "DC Cap": "DC Cap",
+  "AC Cap": "AC Cap",
   "Irradiance Now": "Irradiance Now",
   "Power Now": "Power Now",
+  "PR": "PR",
+  "Performance Ratio": "Performance Ratio",
 
   "All Portfolios": "All Portfolios",
   "Portfolios": "Portfolios",
