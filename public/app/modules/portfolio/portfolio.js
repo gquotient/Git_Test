@@ -93,6 +93,48 @@ define([
       });
     },
 
+    fetchProjectKpis: function(){
+      var that = this;
+      var traces = [];
+
+      this.projects.each(function(project){
+        traces.push({
+          project_label: project.id,
+          project_timezone: project.get('timezone')
+        });
+      });
+
+      return $.ajax({
+        url: '/api/kpis',
+        cache: false,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          traces: traces
+        }
+      })
+      .done(function(data){
+        that.trigger('data:done', data);
+        that.parseProjectKpis(data.response);
+      });
+    },
+
+    parseProjectKpis: function(data){
+      // Loop through returned KPIs and send the data to their respective projects
+      data.each(function(kpi){
+        var project = this.projects.findWhere({project_label: kpi.project_label});
+
+        project.parseKpis(kpi);
+        /*
+        this.projects.each(function(project){
+          if (project.id === kpi.project_label) {
+            project.parseKpis(kpi);
+          }
+        });
+        */
+      }, this);
+    },
+
     aggregateKpis: function(){
       var that = this;
 

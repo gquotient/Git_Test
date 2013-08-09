@@ -80,6 +80,7 @@ define([
     },
 
     initialize: function(){
+      console.log(this);
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
       this.issues = new Issue.Collection([], {projectId: this.id});
@@ -137,13 +138,16 @@ define([
         type: 'POST',
         dataType: 'json',
         data: {
-          traces: [{
-            project_label: this.id,
-            project_timezone: this.get('timezone')
-          }]
+          traces: [
+            {
+              project_label: this.id,
+              project_timezone: this.get('timezone')
+            }
+          ]
         }
       })
       .done(function(data){
+        console.log(data);
         that.trigger('data:done', data);
         that.parseKpis(data.response[0]);
       });
