@@ -121,7 +121,7 @@ define([
 
     parseProjectKpis: function(data){
       // Loop through returned KPIs and send the data to their respective projects
-      data.each(function(kpi){
+      _.each(data, function(kpi){
         var project = this.projects.findWhere({project_label: kpi.project_label});
 
         project.parseKpis(kpi);

@@ -80,7 +80,6 @@ define([
     },
 
     initialize: function(){
-      console.log(this);
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
       this.issues = new Issue.Collection([], {projectId: this.id});
@@ -354,7 +353,7 @@ define([
       }
     },
     initialize: function(options){
-      this.listenTo(this.model, 'change:status', this.render);
+      this.listenTo(this.model, 'change', this.render);
     }
   });
 
