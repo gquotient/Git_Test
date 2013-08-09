@@ -146,7 +146,6 @@ define([
         }
       })
       .done(function(data){
-        console.log(data);
         that.trigger('data:done', data);
         that.parseKpis(data.response[0]);
       });
