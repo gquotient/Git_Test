@@ -48,6 +48,10 @@ define([
       this.selectPortfolio(this.options.model);
     },
 
+    onClose: function(){
+      this.options.settingsRegion.close();
+    },
+
     buildSettingsDropdown: function(){
       var that = this;
 
@@ -78,15 +82,16 @@ define([
       }
 
       // Fetch issues on the new portfolio
-      var fetchIssues = function(){
+      var fetchProjectData = function(){
         portfolio.fetchIssues();
+        portfolio.fetchProjectKpis();
       };
 
       // Run initially to get latest data
-      fetchIssues();
+      fetchProjectData();
 
       // Fetch issues every five minutes
-      this.fetchIssuesInterval = setInterval(fetchIssues, 300000);
+      this.fetchIssuesInterval = setInterval(fetchProjectData, 300000);
 
       // Build KPIs
       var kpis = new Portfolio.views.AggregateKpis({ model: portfolio });
@@ -98,6 +103,9 @@ define([
 
       // Update active item
       this.portfolioNavigationListView.setActive(portfolio.id);
+
+      // Update Map View
+      this.mapView.fitToBounds();
     },
 
     initialize: function(options){

@@ -137,10 +137,12 @@ define([
         type: 'POST',
         dataType: 'json',
         data: {
-          traces: [{
-            project_label: this.id,
-            project_timezone: this.get('timezone')
-          }]
+          traces: [
+            {
+              project_label: this.id,
+              project_timezone: this.get('timezone')
+            }
+          ]
         }
       })
       .done(function(data){
@@ -350,7 +352,7 @@ define([
       }
     },
     initialize: function(options){
-      this.listenTo(this.model, 'change:status', this.render);
+      this.listenTo(this.model, 'change', this.render);
     }
   });
 
@@ -376,8 +378,8 @@ define([
         Backbone.history.navigate('/project/'+this.model.id, true);
       }
     },
-    onShow: function(){
-      this.model.fetchKpis().done(this.render);
+    modelEvents: {
+      'change': 'render'
     }
   });
 
