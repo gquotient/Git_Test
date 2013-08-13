@@ -618,6 +618,35 @@ leftColumnWidthSml = 200px;
     a {
       color: #ccc;
     }
+    a.datepickerGoNext, a.datepickerGoPrev, a.datepickerMonth {
+      height: 20px;
+      line-height: 20px;
+      float: none;
+    }
+    a.datepickerMonth {
+      text-align: center;
+      margin: 0;
+      width: 100%;
+    }
+    .datepickerViewDays {
+      > thead {
+        > tr {
+          th {
+            position: relative;
+            .datepickerGoPrev {
+              position: absolute;
+              top: 0;
+              left: 0;
+            }
+            .datepickerGoNext {
+              position: absolute;
+              top: 0;
+              right: 0;
+            }
+          }
+        }
+      }
+    }
     .datepickerSelected {
       background: colorDrakerOrange;
     }
