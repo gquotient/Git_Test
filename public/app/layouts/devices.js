@@ -8,6 +8,7 @@ define([
   'project',
   'device',
   'chart',
+  'jquery.DatePicker',
 
   'layouts/devices/core',
   'layouts/devices/inverter',
@@ -23,12 +24,14 @@ define([
   Project,
   Device,
   Chart,
+  DatePicker,
 
   CoreLayout,
   InverterLayout,
 
   devicesTemplate
 ){
+  console.log($.fn.DatePicker);
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',

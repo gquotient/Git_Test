@@ -132,7 +132,8 @@ require.config({
     highcharts: 'bower_components/highcharts/highcharts',
     handsontable: 'bower_components/handsontable/dist/jquery.handsontable',
     walltime: 'bower_components/walltime-js/client/walltime',
-    'walltime-data': 'bower_components/walltime-js/client/walltime-data'
+    'walltime-data': 'bower_components/walltime-js/client/walltime-data',
+    'jquery.DatePicker': 'bower_components/datepicker/js/datepicker'
   },
   shim: {
     backbone: {
@@ -153,6 +154,9 @@ require.config({
     },
     leaflet: {
       exports: 'L'
+    },
+    'jquery.DatePicker': {
+      deps: ['jquery']
     },
     highcharts: {
       deps: ['jquery'],
