@@ -111,6 +111,11 @@ define([
       this.buildSettingsDropdown();
     },
 
+    onClose: function(){
+      // Close settings dropdown views
+      this.options.settingsDropdown.close();
+    },
+
     initialize: function(options){
       var that = this;
 

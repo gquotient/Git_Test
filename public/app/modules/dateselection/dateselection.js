@@ -28,9 +28,11 @@ function(
       type: 'handlebars',
       template: multiTemplate
     },
-    date: {
-      start: new Date(),
-      stop: new Date()
+    options: {
+      date: {
+        start: null,
+        stop: null
+      }
     },
     events: {
       'click .expand': function(){
@@ -38,16 +40,39 @@ function(
       }
     },
     onShow: function(){
-      console.log('calendar div', this.$('.calendar'));
       // Add jquery calendar
       this.calendar = this.$('.calendar').DatePicker({
         mode: 'multiple',
         inline: true,
         calendars: 3,
-        date: new Date()
+        date: [this.options.date.start, this.options.date.stop]
       });
 
       this.calendar.toggle();
+    },
+    serializeData: function(){
+      // Since we don't have a model, we need to manually create context for the template
+
+      var start = new Date(this.options.date.start),
+          stop = new Date(this.options.date.start);
+
+      return {
+        date: {
+          // Stringify date
+          // NOTE - We may just want to make a template helper for this
+          start: start.getFullYear() + '-' + start.getMonth() + '-' + start.getDate(),
+          stop: start.getFullYear() + '-' + start.getMonth() + '-' + start.getDate()
+        }
+      };
+    },
+    initialize: function(options){
+      // Set date to now if not supplied
+      if (!options || !options.date) {
+        var now = new Date().getTime();
+
+        this.options.date.start = now;
+        this.options.date.stop = now;
+      }
     }
   });
 

@@ -303,7 +303,7 @@ function(
       tooltip: {
         shared: true,
         backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        borderColor: '#999',
+        borderColor: '#555',
         borderRadius: 0,
         style: {
           color: '#ccc'
