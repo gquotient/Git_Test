@@ -194,7 +194,20 @@ function(
       // Set the data on the model
       this.set('series', series);
     },
+    setTime: function(time){
+      var start = time.start,
+          stop = time.stop;
+
+      _.each(this.get('traces'), function(trace){
+        trace.dtstart = start/1000;
+        trace.dtstop = stop/1000;
+      });
+
+      this.fetch();
+      console.log(this, time);
+    },
     fetch: function(){
+      console.log('fetch');
       /*
         Opted to use a custom data fetch method in lieu of the
         default backbone fetch() to have a little more control
@@ -211,6 +224,7 @@ function(
         }
       })
       .done(function(data){
+        console.log('done', data);
         that.parse(data.response);
       });
     },
@@ -218,6 +232,8 @@ function(
       var that = this;
 
       this.url = (options && options.url) ? options.url : this.url;
+
+      this.listenTo(Backbone, 'set:time', this.setTime);
     }
   });
 
@@ -407,6 +423,14 @@ function(
       this.model.fetch();
     },
     onClose: function(){
+      console.log('close', this);
+
+      this.model = null;
+
+      if (this.chart) {
+        this.chart.destroy();
+      }
+
       // Clear the auto update when view is closed
       clearInterval(this.fetchInterval);
     },
