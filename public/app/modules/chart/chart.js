@@ -191,20 +191,19 @@ function(
         });
       }, this);
 
-      // Set the data on the model
-      this.set('series', series);
+      // Trigger data update for any views listening
+      this.trigger('change:data', series);
     },
     setTime: function(time){
-      var start = time.start,
-          stop = time.stop;
+      var start = time.start/1000, // Devide by 1000 to match unix epoch time
+          stop = time.stop/1000;
 
       _.each(this.get('traces'), function(trace){
-        trace.dtstart = start/1000;
-        trace.dtstop = stop/1000;
+        trace.dtstart = start;
+        trace.dtstop = stop;
       });
 
       this.fetch();
-      console.log(this, time);
     },
     fetch: function(){
       console.log('fetch');
@@ -219,9 +218,7 @@ function(
         cache: false,
         type: 'POST',
         dataType: 'json',
-        data: {
-          traces: this.get('traces')
-        }
+        data: this.toJSON()
       })
       .done(function(data){
         console.log('done', data);
@@ -459,7 +456,7 @@ function(
       this.chart = new Highcharts.Chart(this.chartOptions);
 
       // Update chart on data change
-      this.model.on('change:series', function(model, seriesData){
+      this.model.on('change:data', function(seriesData){
         if (seriesData.length) {
           _.each(that.chart.series, function(serie, index){
             // Update series data
