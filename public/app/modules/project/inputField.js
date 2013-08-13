@@ -152,6 +152,7 @@ define([
       this.placeholder = this.ui.input.val();
 
       this.dropdown = new Dropdown({collection: this._collection});
+      this.$el.append(this.dropdown.el);
 
       this.listenTo(this.dropdown, 'itemview:select', function(view){
         this.triggerMethod('key:enter', view.model);
@@ -198,13 +199,13 @@ define([
     onFocus: function(){
       this.ui.input.val('');
       this._collection.updateFilter();
-      this.$el.append(this.dropdown.render().el);
+      this.dropdown.$el.show();
       this.focused = true;
     },
 
     onBlur: function(){
       this.ui.input.val(this.placeholder);
-      this.dropdown.close();
+      this.dropdown.$el.hide();
       this.focused = false;
     },
 
