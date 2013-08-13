@@ -17,20 +17,21 @@ define([
 ){
   var
 
+    DropdownItemView = Marionette.ItemView.extend({
+      tagName: 'li',
+      template: {
+        type: 'handlebars',
+        template: inputItemTemplate
+      },
+
+      triggers: {
+        'mousedown a': 'select'
+      }
+    }),
+
     Dropdown = Marionette.CollectionView.extend({
       tagName: 'ul',
-
-      itemView: Marionette.ItemView.extend({
-        tagName: 'li',
-        template: {
-          type: 'handlebars',
-          template: inputItemTemplate
-        },
-
-        triggers: {
-          'mousedown a': 'select'
-        }
-      })
+      itemView: DropdownItemView
     }),
 
     Collection = Backbone.Collection.extend.call(Backbone.VirtualCollection, {
@@ -103,8 +104,8 @@ define([
       iterator: _.identity,
       sorter: function(a, b){
         if (a !== b) {
-          if (a > b || a === void 0) return 1;
-          if (a < b || b === void 0) return -1;
+          if (a > b || a === void 0) { return 1; }
+          if (a < b || b === void 0) { return -1; }
         }
         return 0;
       }
@@ -125,11 +126,11 @@ define([
       if (_.isArray(a) && _.isArray(b)) {
         while (a.length || b.length) {
           result = options.sorter.call(context, a.shift(), b.shift());
-          if (result !== 0) return result;
+          if (result !== 0) { return result; }
         }
       } else {
         result = options.sorter.call(context, a, b);
-        if (result !== 0) return result;
+        if (result !== 0) { return result; }
       }
 
       return left.index < right.index ? -1 : 1;
@@ -183,7 +184,7 @@ define([
         e.preventDefault();
         this.triggerMethod(value);
 
-      } else if (this.hotKey && e.which === this.hotKey) {
+      } else if (this.options.hotKey && e.which === this.options.hotKey) {
 
         if (!_.contains(['INPUT', 'TEXTAREA'], e.target.nodeName)) {
           e.preventDefault();

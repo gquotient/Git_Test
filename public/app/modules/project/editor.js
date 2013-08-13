@@ -188,14 +188,16 @@ define([
           }
         ]),
 
-        onShow: function(){
-          var model = this.collection.findWhere({uri: this.options.view});
+        extend: {
+          onShow: function(){
+            var model = this.collection.findWhere({uri: this.options.view});
 
-          this.triggerMethod('key:enter', model || this.collection.first());
-        },
+            this.triggerMethod('key:enter', model || this.collection.first());
+          },
 
-        onApply: function(model){
-          this.placeholder = model.get('name');
+          onApply: function(model){
+            this.placeholder = model.get('name');
+          }
         }
       },
 
@@ -203,21 +205,23 @@ define([
         hotKey: 97,
         comparator: 'name',
 
-        parseInput: function(){
-          var input = InputField.prototype.parseInput.call(this),
-            re = /^\d+\s*/,
-            match = re.exec(input),
-            times = match && parseInt(match[0], 10);
+        extend: {
+          parseInput: function(){
+            var input = InputField.prototype.parseInput.call(this),
+              re = /^\d+\s*/,
+              match = re.exec(input),
+              times = match && parseInt(match[0], 10);
 
-          this.times = times < 1 ? 1 : times > 100 ? 100 : times;
+            this.times = times < 1 ? 1 : times > 100 ? 100 : times;
 
-          return input.replace(re, '');
-        },
+            return input.replace(re, '');
+          },
 
-        getAutocomplete: function(){
-          var value = InputField.prototype.getAutocomplete.call(this);
+          getAutocomplete: function(){
+            var value = InputField.prototype.getAutocomplete.call(this);
 
-          return value && this.times > 1 ? this.times + ' ' + value : value;
+            return value && this.times > 1 ? this.times + ' ' + value : value;
+          }
         }
       },
 
@@ -234,14 +238,12 @@ define([
 
     _initInputFields: function(){
       _.each(this.inputFields, function(obj, name){
-        var view = new InputField({
-          collection: obj.collection,
-          comparator: obj.comparator,
+        var view = new InputField(_.extend({}, _.omit(obj, 'extend'), {
           view: this.options.view,
           el: this.$('#' + name)
-        });
+        }));
 
-        _.extend(view, _.omit(obj, 'collection', 'comparator'));
+        _.extend(view, obj.extend);
 
         _.each(['focus', 'apply'], function(evnt){
           this.listenTo(view, evnt, function(){
