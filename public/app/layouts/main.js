@@ -53,7 +53,7 @@ define([
       banner: '.banner',
       navigation: '.nav_page',
       breadcrumbs: '.breadcrumbs',
-      pageSettings: '#pageSettings',
+      settings: 'ul.settings',
       mainContent: '#page'
     },
 
@@ -76,7 +76,7 @@ define([
       this.mainContent.show( new PortfolioDetailLayout({
         model: portfolio,
         portfolios: this.app.portfolios,
-        settingsRegion: this.pageSettings
+        settingsRegion: this.settings
       }));
     },
 
@@ -92,7 +92,7 @@ define([
         model: project,
         collection: this.activePortfolio.projects,
         equipment: this.app.equipment,
-        settingsRegion: this.pageSettings
+        settingsRegion: this.settings
       }));
     },
 
@@ -205,6 +205,7 @@ define([
       }, this);
 
       // Special page settings handling
+      /*
       this.pageSettings.on('show', function(){
         this.$el.addClass('active');
       });
@@ -212,6 +213,7 @@ define([
       this.pageSettings.on('close', function(){
         this.$el.removeClass('active');
       });
+      */
 
       // Special notification banner handling
       this.banner.on('show', function(){
