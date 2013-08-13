@@ -8,12 +8,14 @@ define([
   'project',
   'device',
   'chart',
-  'jquery.DatePicker',
+  'dateselection',
 
   'layouts/devices/core',
   'layouts/devices/inverter',
 
-  'hbs!layouts/templates/devices'
+  'hbs!layouts/templates/devices',
+
+
 ], function(
   $,
   _,
@@ -24,14 +26,13 @@ define([
   Project,
   Device,
   Chart,
-  DatePicker,
+  DateSelection,
 
   CoreLayout,
   InverterLayout,
 
   devicesTemplate
 ){
-  console.log($.fn.DatePicker);
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',
@@ -66,6 +67,24 @@ define([
       this.devicesTree.propagateActive({graph_key: device.get('graph_key')});
     },
 
+    buildSettingsDropdown: function(){
+      var that = this;
+
+      var myDateSelector = new DateSelection.views.Multi();
+
+      /*
+      var settingsDropdown = new Marionette.ItemView({
+        tagName: 'li',
+        template: _.template('<div class="dateSelection"></div>')
+      });
+      console.log(settingsDropdown.$('.dateSelection'));
+      */
+
+
+      //Create settings view
+      this.options.settingsRegion.show(myDateSelector);
+    },
+
     onShow: function(){
       var that = this;
 
@@ -88,6 +107,8 @@ define([
       } else {
         initialView();
       }
+
+      this.buildSettingsDropdown();
     },
 
     initialize: function(options){

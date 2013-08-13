@@ -99,6 +99,11 @@ require.config({
       name: 'table',
       main: 'table',
       location: 'modules/table'
+    },
+    {
+      name: 'dateselection',
+      main: 'dateselection',
+      location: 'modules/dateselection'
     }
   ],
   paths: {

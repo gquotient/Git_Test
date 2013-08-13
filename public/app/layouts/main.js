@@ -127,7 +127,8 @@ define([
 
       this.mainContent.show( new DevicesLayout({
         model: project,
-        currentDevice: deviceId
+        currentDevice: deviceId,
+        settingsRegion: this.settings
       }));
     },
 
