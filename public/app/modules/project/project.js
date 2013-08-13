@@ -719,6 +719,13 @@ define([
       this.listenTo(Backbone, 'window:resize', this.map.viewreset);
     },
 
+    onClose: function(){
+      // Clean up leaflet map
+      if (this.map) {
+        this.map.remove();
+      }
+    },
+
     events: {
       'click .layerControl': function(event){
         this.toggleLayer(event.target.id.split('_')[1]);
