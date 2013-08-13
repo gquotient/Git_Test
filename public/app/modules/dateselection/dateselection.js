@@ -6,7 +6,9 @@ define([
 
   'jquery.DatePicker',
 
-  'hbs!dateselection/templates/multi'
+  'hbs!dateselection/templates/multi',
+
+  'css!bower_components/datepicker/css/datepicker/base.css'
 ],
 function(
   $,

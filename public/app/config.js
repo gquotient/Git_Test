@@ -117,9 +117,14 @@ require.config({
 
     // Libraries
     es5shim: 'bower_components/es5-shim/es5-shim',
+
     json2: 'bower_components/require-handlebars-plugin/hbs/json2',
     i18nprecompile: 'bower_components/require-handlebars-plugin/hbs/i18nprecompile',
+
     jquery: 'bower_components/jquery/jquery',
+    'jquery.DatePicker': 'bower_components/datepicker/js/datepicker',
+    'jquery.mousewheel': 'bower_components/jquery-mousewheel/jquery.mousewheel',
+
     underscore: 'bower_components/underscore/underscore',
     // underscore: 'bower_components/lodash/lodash',
     backbone: 'bower_components/backbone/backbone',
@@ -128,17 +133,16 @@ require.config({
     'backbone.marionette': 'bower_components/backbone.marionette/lib/core/amd/backbone.marionette',
     'backbone.marionette.handlebars': 'bower_components/backbone.marionette.handlebars/backbone.marionette.handlebars',
     'backbone.virtualCollection': 'bower_components/backbone.virtualCollection/backbone.virtual-collection',
+
     handlebars: 'bower_components/handlebars/handlebars',
     modernizr: 'bower_components/modernizr/modernizr',
     leaflet: 'bower_components/leaflet/dist/leaflet',
     messageformat: 'bower_components/messageformat.js/messageformat',
     paper: 'bower_components/paper/dist/paper',
-    'jquery.mousewheel': 'bower_components/jquery-mousewheel/jquery.mousewheel',
     highcharts: 'bower_components/highcharts/highcharts',
     handsontable: 'bower_components/handsontable/dist/jquery.handsontable',
     walltime: 'bower_components/walltime-js/client/walltime',
-    'walltime-data': 'bower_components/walltime-js/client/walltime-data',
-    'jquery.DatePicker': 'bower_components/datepicker/js/datepicker'
+    'walltime-data': 'bower_components/walltime-js/client/walltime-data'
   },
   shim: {
     backbone: {
