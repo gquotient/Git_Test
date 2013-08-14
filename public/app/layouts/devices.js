@@ -70,7 +70,7 @@ define([
     buildSettingsDropdown: function(){
       var that = this;
 
-      var myDateSelector = new DateSelection.views.Multi();
+      var myDateSelector = new DateSelection.views.Multi({tagName: 'li'});
 
       this.options.settingsRegion.show(myDateSelector);
     },
