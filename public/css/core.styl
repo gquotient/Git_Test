@@ -148,6 +148,9 @@ button.button, a.button {
     color: #fff;
     text-shadow: 0 1px 0 #d84515;
     box-shadow: inset 0 1px 0 #f8ad7c;
+    &.sml {
+      color: #fff;
+    }
   }
   &.disabled,
   &.disabled:hover {
@@ -513,6 +516,7 @@ leftColumnWidthSml = 200px;
 /* Charts */
 
 .chart {
+  position: relative;
   height: 300px;
   width: 100%;
 }
@@ -563,4 +567,122 @@ leftColumnWidthSml = 200px;
   width: 100%;
   min-height: 100px;
   height: 100%;
+}
+
+/* Date Selection */
+
+.dateSelection {
+  &.multi {
+    height: 24px;
+    position: relative;
+    .current {
+      line-height: 22px;
+      background: #111;
+      color: #777;
+      float: left;
+      border: 1px solid #555;
+      height: 100%;
+      border-top-left-radius: 2px;
+      border-bottom-left-radius: 2px;
+      padding: 0 6px;
+      font-size: 12px;
+      span {
+        color: #ccc;
+      }
+    }
+    .expand {
+      width: 24px;
+      height: 100%;
+      line-height: 22px;
+      float: left;
+      background: linear-gradient(#555, #444);;
+      border: 1px solid #555;
+      border-left: none;
+      overflow: hidden;
+      text-align: center;
+      //text-indent: -200%;
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px;
+      cursor: pointer;
+      color: #111;
+      text-shadow: 0 1px 0 #777;
+    }
+    .calendar {
+      position: absolute;
+      border: 1px solid #555;
+      top: 23px;
+      right: 0;
+      background: #111;
+      padding: 6px;
+      box-shadow: 0 5px 5px rgba(0,0,0,0.1);
+      .actions {
+        height: 18px;
+        button {
+          float: right;
+        }
+      }
+    }
+  }
+
+  .datepicker {
+    a {
+      color: #ccc;
+    }
+    a.datepickerGoNext, a.datepickerGoPrev, a.datepickerMonth {
+      height: 20px;
+      line-height: 20px;
+      float: none;
+    }
+    a.datepickerMonth {
+      text-align: center;
+      margin: 0;
+      width: 100%;
+    }
+    .datepickerViewDays {
+      > thead {
+        > tr {
+          th {
+            position: relative;
+            .datepickerGoPrev {
+              position: absolute;
+              top: 0;
+              left: 0;
+            }
+            .datepickerGoNext {
+              position: absolute;
+              top: 0;
+              right: 0;
+            }
+          }
+        }
+      }
+    }
+    .datepickerSelected {
+      background: colorDrakerOrange;
+    }
+  }
+}
+
+/* Loading Indicator */
+
+@keyframes rotate {
+  from {transform: rotate(0deg);}
+  to   {transform: rotate(359deg);}
+}
+
+.loadingIndicator {
+  margin: 6px;
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border: 1px solid #ccc;
+  border-right: none;
+  border-radius: 50%;
+  animation: rotate 1s linear infinite;
+}
+
+.chart .loadingIndicator {
+  position: absolute;
+  top: 125px;
+  right: 50%;
 }
