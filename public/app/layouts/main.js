@@ -205,17 +205,6 @@ define([
         this.showProject(model, this.activePortfolio.projects);
       }, this);
 
-      // Special page settings handling
-      /*
-      this.pageSettings.on('show', function(){
-        this.$el.addClass('active');
-      });
-
-      this.pageSettings.on('close', function(){
-        this.$el.removeClass('active');
-      });
-      */
-
       // Special notification banner handling
       this.banner.on('show', function(){
         $('#page').addClass('withBanner');
