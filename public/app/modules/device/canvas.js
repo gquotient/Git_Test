@@ -301,7 +301,10 @@ define([
 
       this.$el
         .on(format('mousedown dblclick'), this.handleMouseEvent)
-        .on(format('mousewheel'), this.handleWheelEvent);
+        .on(format('mousewheel'), this.handleWheelEvent)
+
+        // Disable context menus in the canvas.
+        .on(format('contextmenu'), false);
 
       $(document)
         .on(format('mousemove mouseup'), this.handleMouseEvent)
@@ -313,35 +316,44 @@ define([
     },
 
     handleMouseEvent: function(e){
-      var offset = this.$el.offset(),
-        obj = {type: e.type},
-        method;
+      var type = this.dragging && e.type === 'mousemove' ? 'mousedrag' : e.type,
 
-      obj.point = new this.paper.Point(e.pageX, e.pageY);
-      obj.delta = obj.point.subtract(this.lastPoint);
-      this.lastPoint = obj.point;
+        // Create a point relative to the window and calculate the delta.
+        point = new this.paper.Point(e.pageX, e.pageY),
+        delta = point.subtract(this.lastPoint),
 
-      obj.projectPoint = this.paper.view.viewToProject(obj.point.subtract(offset.left, offset.top));
-      obj.projectDelta = obj.projectPoint.subtract(this.lastProjectPoint);
-      this.lastProjectPoint = obj.projectPoint;
+        // Subtract the el offset to get the canvas point.
+        offset = this.$el.offset(),
+        canvasPoint = point.subtract(offset.left, offset.top),
 
-      if (obj.type !== 'mousemove') {
-        obj.view = this.children.find(function(view){
-          return view.testHit(obj.projectPoint);
+        // Convert the canvas point to a project point and calculate the delta.
+        projectPoint = this.paper.view.viewToProject(canvasPoint),
+        projectDelta = projectPoint.subtract(this.lastProjectPoint),
+
+        // For click events see if the point falls within a device view.
+        view = e.type !== 'mousemove' && this.children.find(function(view){
+          return view.testHit(projectPoint);
         });
 
-        obj.model = obj.view && obj.view.model;
+      this.triggerMethod(type, {
+        type: type,
+        modifier: e.ctrlKey || e.which === 3,
 
-      } else if (this.dragging) {
-        obj.type = 'mousedrag';
-      }
+        point: point,
+        delta: delta,
+        canvasPoint: canvasPoint,
+        projectPoint: projectPoint,
+        projectDelta: projectDelta,
 
-      _.extend(obj, _.pick(e, 'ctrlKey'));
+        view: view,
+        model: view && view.model
+      });
 
-      this.triggerMethod(obj.type, obj);
+      this.lastPoint = point;
+      this.lastProjectPoint = projectPoint;
 
-      if (obj.type === 'mousedown') { this.dragging = true; }
-      if (obj.type === 'mouseup') { this.dragging = false; }
+      if (e.type === 'mousedown') { this.dragging = true; }
+      if (e.type === 'mouseup') { this.dragging = false; }
 
       this.paper.view.draw();
     },
@@ -392,19 +404,19 @@ define([
       // Make sure any lingering select boxes are removed.
       if (this.select) { this.eraseSelect(); }
 
-      // Create a select box if ctrl is being pressed and not on a device.
-      if (obj.ctrlKey && !obj.model) {
+      // Create a select box if modifier and not on a device.
+      if (obj.modifier && !obj.model) {
         this.drawSelect(obj.projectPoint);
       }
 
       // Try and add the device if not currently selected. Remove all other
-      // selected devices if ctrl isn't being pressed. If not on a device this
-      // clears the whole selection.
+      // selected devices if no modifier. If not on a device this clears the
+      // whole selection.
       if (!this.selection.contains(obj.model)) {
-        this.selection.add(obj.model, {remove: !obj.ctrlKey});
+        this.selection.add(obj.model, {remove: !obj.modifier});
 
-      // Or remove the device if present and ctrl is being pressed.
-      } else if (obj.ctrlKey) {
+      // Or remove the device if present and modifier.
+      } else if (obj.modifier) {
         this.selection.remove(obj.model);
       }
     },
