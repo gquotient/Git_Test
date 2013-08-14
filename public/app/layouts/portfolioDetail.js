@@ -55,22 +55,15 @@ define([
     buildSettingsDropdown: function(){
       var that = this;
 
+      var settingsDropdown = new Marionette.ItemView({
+        tagName: 'li',
+        className: 'menu dropdown',
+        template: _.template('<ul><li><a href="#" class="edit">Operator Dashboard</a></li></ul>')
+      });
+
+
       //Create settings view
-      this.settings = new Marionette.ItemView({
-        tagName: 'ul',
-        template: _.template('<li><a href="#" class="edit">Operator Dashboard</a></li>')
-      });
-
-      //Show ItemView in cached region
-      this.options.settingsRegion.show(this.settings);
-
-      //Define listeners
-      this.options.settingsRegion.$el.find('.edit').on('click', function(event){
-        event.preventDefault();
-
-        //Navigate to edit view
-        Backbone.history.navigate('/portfolio/dashboard/' + that.model.id, true);
-      });
+      this.options.settingsRegion.show(settingsDropdown);
     },
 
     selectPortfolio: function(portfolio) {

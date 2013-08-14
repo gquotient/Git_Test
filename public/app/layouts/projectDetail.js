@@ -126,13 +126,14 @@ define([
       var that = this;
 
       //Create settings view
-      this.settings = new Marionette.ItemView({
-        tagName: 'ul',
-        template: _.template('<li><a href="#" class="edit">Edit Project</a></li>')
+      var settingsDropdown = new Marionette.ItemView({
+        tagName: 'li',
+        className: 'menu dropdown',
+        template: _.template('<ul><li><a href="#" class="edit">Edit Project</a></li></ul>')
       });
 
       //Show ItemView in cached region
-      this.options.settingsRegion.show(this.settings);
+      this.options.settingsRegion.show(settingsDropdown);
 
       //Define listeners
       this.options.settingsRegion.$el.find('.edit').on('click', function(event){
@@ -170,26 +171,24 @@ define([
               text: 'Current Performance'
             }
           },
-          model: new Chart.models.timeSeries({
-            'traces': [
-              {
-                'project_label': project.id,
-                'ddl': 'pgen-env',
-                'dtstart': 'today',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'irradiance'],
-                'project_timezone': that.model.get('timezone')
-              },
-              {
-                'project_label': project.id,
-                'ddl': dataSources.energy,
-                'dtstart': 'today',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'ac_power'],
-                'project_timezone': that.model.get('timezone')
-              }
-            ]
-          }),
+          traces: [
+            {
+              'project_label': project.id,
+              'ddl': 'pgen-env',
+              'dtstart': 'today',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'irradiance'],
+              'project_timezone': that.model.get('timezone')
+            },
+            {
+              'project_label': project.id,
+              'ddl': dataSources.energy,
+              'dtstart': 'today',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'ac_power'],
+              'project_timezone': that.model.get('timezone')
+            }
+          ],
           series: [
             Chart.seriesDefaults.irradiance,
             Chart.seriesDefaults.power
@@ -206,26 +205,24 @@ define([
               text: 'Energy History'
             }
           },
-          model: new Chart.models.timeSeries({
-            'traces': [
-              {
-                'project_label': project.id,
-                'ddl':'daily-summary',
-                'dtstart': '-30d',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'insolation'],
-                'project_timezone': that.model.get('timezone')
-              },
-              {
-                'project_label': project.id,
-                'ddl':'daily-summary',
-                'dtstart': '-30d',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'ac_energy'],
-                'project_timezone': that.model.get('timezone')
-              }
-            ]
-          }),
+          traces: [
+            {
+              'project_label': project.id,
+              'ddl':'daily-summary',
+              'dtstart': '-30d',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'insolation'],
+              'project_timezone': that.model.get('timezone')
+            },
+            {
+              'project_label': project.id,
+              'ddl':'daily-summary',
+              'dtstart': '-30d',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'ac_energy'],
+              'project_timezone': that.model.get('timezone')
+            }
+          ],
           series: [
             Chart.seriesDefaults.insolation,
             Chart.seriesDefaults.energy

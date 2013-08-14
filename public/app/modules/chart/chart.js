@@ -145,82 +145,6 @@ function(
     return dataDefinition;
   };
 
-  Chart.models.timeSeries = Backbone.Model.extend({
-    url: '/api/timeline',
-    parse: function(data){
-      /*
-        This is pretty simple minded at the moment and assumes duples of points on
-        individual traces
-      */
-      var series = [];
-
-      var roundNumber = function(num, dec) {
-        var result = (num !== null) ? Math.round(num*Math.pow(10,dec)) / Math.pow(10,dec) : null;
-        return result;
-      };
-
-      // Loop through each trace
-      _.each(data, function(trace, index){
-        var seriesData = [],
-            timezone = this.get('traces')[index].project_timezone;
-
-        if (trace && trace.data) {
-          // Loop through each point on the trace
-          _.each(trace.data, function(point, index){
-            var localTime = new Date(WallTime.UTCToWallTime(point[0]*1000, timezone).wallTime).getTime();
-
-            // Change point to local js epoch time
-            point[0] = localTime;
-            // Round watts to integers
-            point[1] = roundNumber(point[1], 2);
-          });
-
-          seriesData = trace.data;
-
-          // Sort data until APIs sort by default
-          seriesData.sort();
-        } else if (trace && trace.errmsg) {
-          console.warn(trace.errmsg);
-        } else {
-          console.warn('Something bad happend', this);
-        }
-
-        // Push updated trace to series array
-        series.push({
-          data: seriesData
-        });
-      }, this);
-
-      // Set the data on the model
-      this.set('series', series);
-    },
-    fetch: function(){
-      /*
-        Opted to use a custom data fetch method in lieu of the
-        default backbone fetch() to have a little more control
-      */
-      var that = this;
-
-      return $.ajax({
-        url: this.url,
-        cache: false,
-        type: 'POST',
-        dataType: 'json',
-        data: {
-          traces: this.get('traces')
-        }
-      })
-      .done(function(data){
-        that.parse(data.response);
-      });
-    },
-    initialize: function(options){
-      var that = this;
-
-      this.url = (options && options.url) ? options.url : this.url;
-    }
-  });
-
   Chart.views.core = Marionette.ItemView.extend({
     chartOptions: {
       chart: {
@@ -290,7 +214,7 @@ function(
       tooltip: {
         shared: true,
         backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        borderColor: '#999',
+        borderColor: '#555',
         borderRadius: 0,
         style: {
           color: '#ccc'
@@ -340,8 +264,107 @@ function(
         }
       ]
     },
-    attributes: {
-      class: 'chart'
+    className: 'chart',
+    fetch: function(){
+      var that = this;
+      var $loadingIndicator = $('<span class="loadingIndicator"></span>');
+
+      this.$el.append($loadingIndicator);
+
+      return $.ajax({
+        url: '/api/timeline',
+        cache: false,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          traces: this.options.traces
+        }
+      })
+      .always(function(){
+        $loadingIndicator.remove();
+      })
+      .fail(function(){
+        console.warn('Timeline data request failed', arguments);
+      })
+      .done(function(data){
+        that.parse(data.response);
+      });
+    },
+    parse: function(data){
+      /*
+        This is pretty simple minded at the moment and assumes duples of points on
+        individual traces
+      */
+      var series = [];
+
+      var roundNumber = function(num, dec) {
+        var result = (num !== null) ? Math.round(num*Math.pow(10,dec)) / Math.pow(10,dec) : null;
+        return result;
+      };
+
+      // Loop through each trace
+      _.each(data, function(trace, index){
+        var seriesData = [],
+            timezone = this.options.traces[index].project_timezone;
+
+        if (trace && trace.data) {
+          // Loop through each point on the trace
+          _.each(trace.data, function(point, index){
+            var localTime = new Date(WallTime.UTCToWallTime(point[0]*1000, timezone).wallTime).getTime();
+
+            // Change point to local js epoch time
+            point[0] = localTime;
+            // Round watts to integers
+            point[1] = roundNumber(point[1], 2);
+          });
+
+          seriesData = trace.data;
+
+          // Sort data until APIs sort by default
+          seriesData.sort();
+        } else if (trace && trace.errmsg) {
+          console.warn(trace.errmsg);
+        } else {
+          console.warn('Something bad happend', this);
+        }
+
+        // Push updated trace to series array
+        series.push({
+          data: seriesData
+        });
+      }, this);
+
+      // Update chart data
+      this.setSeriesData(series);
+    },
+    setSeriesData: function(series){
+      if (series.length) {
+        _.each(this.chart.series, function(serie, index){
+          // Update series data
+          if (series[index].data && series[index].data.length) {
+            serie.setData(series[index].data);
+          } else {
+            //throw no data error
+            console.warn('No data found on trace:', series[index]);
+          }
+        });
+      } else {
+        //throw no data error
+        console.warn('No data came back at all. Call Thadeus.');
+      }
+    },
+    setDate: function(date){
+      var start = date.start/1000, // Devide by 1000 to match unix epoch time
+          stop = date.stop/1000;
+
+      // Update time on each trace
+      _.each(this.options.traces, function(trace){
+        trace.dtstart = start;
+        trace.dtstop = stop;
+      });
+
+      // Fetch new data
+      this.fetch();
     },
     render: function(){
       // Overwrite existing render method
@@ -352,6 +375,7 @@ function(
       $(window).resize();
     },
     onClose: function(){
+      // Clean up highcharts chart
       if (this.chart) {
         this.chart.destroy();
       }
@@ -359,7 +383,8 @@ function(
     smartSeriesBuilder: function(){
       var series = [];
 
-      _.each(this.model.get('traces'), function(trace){
+      // Default names based on ddls
+      _.each(this.options.traces, function(trace){
         series.push({
           name: trace.columns[1]
         });
@@ -370,6 +395,7 @@ function(
     smartAxesSelector: function(series){
       var axes = [];
 
+      // Select the correct axis based on matching units
       _.each(series, function(serie, index){
         if (axes.indexOf(serie.unit) < 0) {
           axes.push(serie.unit);
@@ -382,6 +408,7 @@ function(
     smartAxesTitles: function(series){
       var titles = [];
 
+      // Use the unit to label the axis
       _.each(series, function(serie, index){
         if (!titles[serie.yAxis]) {
           var title = {
@@ -400,13 +427,19 @@ function(
 
   Chart.views.Basic = Chart.views.core.extend({
     options: {
+      // Fetch new data every 5 minutes
       autoUpdate: true
     },
     render: function(){
-      //Fetch data
-      this.model.fetch();
+      //Fetch data on render
+      this.fetch();
     },
     onClose: function(){
+      // Clean up highcharts chart
+      if (this.chart) {
+        this.chart.destroy();
+      }
+
       // Clear the auto update when view is closed
       clearInterval(this.fetchInterval);
     },
@@ -434,32 +467,17 @@ function(
       // Instantiate the chart
       this.chart = new Highcharts.Chart(this.chartOptions);
 
-      // Update chart on data change
-      this.model.on('change:series', function(model, seriesData){
-        if (seriesData.length) {
-          _.each(that.chart.series, function(serie, index){
-            // Update series data
-            if (seriesData[index].data && seriesData[index].data.length) {
-              serie.setData(seriesData[index].data);
-            } else {
-              //throw no data error
-              console.warn('No data found on trace:', seriesData[index]);
-            }
-          });
-        } else {
-          //throw no data error
-          console.warn('No data came back at all. Call Thadeus.');
-        }
-      });
-
       var fetch = function(){
-        that.model.fetch();
+        that.fetch();
       };
 
       // Using set timeout for now so it only updates once
       if (this.options.autoUpdate) {
         this.fetchInterval = setInterval(fetch, 300000);
       }
+
+      // Listen for date set event and update chart
+      this.listenTo(Backbone, 'set:date', this.setDate);
     }
   });
 
