@@ -113,7 +113,7 @@ define([
 
     onClose: function(){
       // Close settings dropdown views
-      this.options.settingsDropdown.close();
+      this.options.settingsRegion.close();
     },
 
     initialize: function(options){
