@@ -264,15 +264,12 @@ function(
         }
       ]
     },
-    attributes: {
-      class: 'chart'
-    },
+    className: 'chart',
     fetch: function(){
-      /*
-        Opted to use a custom data fetch method in lieu of the
-        default backbone fetch() to have a little more control
-      */
       var that = this;
+      var $loadingIndicator = $('<span class="loadingIndicator"></span>');
+
+      this.$el.append($loadingIndicator);
 
       return $.ajax({
         url: this.url,
@@ -280,6 +277,9 @@ function(
         type: 'POST',
         dataType: 'json',
         data: this.traces
+      })
+      .always(function(){
+        $loadingIndicator.remove();
       })
       .done(function(data){
         console.log('done', data);
