@@ -661,3 +661,21 @@ leftColumnWidthSml = 200px;
     }
   }
 }
+
+/* Loading Indicator */
+
+@keyframes rotate {
+  from {transform: rotate(0deg);}
+  to   {transform: rotate(359deg);}
+}
+
+.loadingIndicator {
+  margin: 6px;
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border: 1px solid #ccc;
+  border-right: none;
+  border-radius: 50%;
+  animation: rotate 1s linear infinite;
+}
