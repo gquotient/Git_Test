@@ -171,26 +171,24 @@ define([
               text: 'Current Performance'
             }
           },
-          model: new Chart.models.timeSeries({
-            'traces': [
-              {
-                'project_label': project.id,
-                'ddl': 'pgen-env',
-                'dtstart': 'today',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'irradiance'],
-                'project_timezone': that.model.get('timezone')
-              },
-              {
-                'project_label': project.id,
-                'ddl': dataSources.energy,
-                'dtstart': 'today',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'ac_power'],
-                'project_timezone': that.model.get('timezone')
-              }
-            ]
-          }),
+          traces: [
+            {
+              'project_label': project.id,
+              'ddl': 'pgen-env',
+              'dtstart': 'today',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'irradiance'],
+              'project_timezone': that.model.get('timezone')
+            },
+            {
+              'project_label': project.id,
+              'ddl': dataSources.energy,
+              'dtstart': 'today',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'ac_power'],
+              'project_timezone': that.model.get('timezone')
+            }
+          ],
           series: [
             Chart.seriesDefaults.irradiance,
             Chart.seriesDefaults.power
@@ -207,26 +205,24 @@ define([
               text: 'Energy History'
             }
           },
-          model: new Chart.models.timeSeries({
-            'traces': [
-              {
-                'project_label': project.id,
-                'ddl':'daily-summary',
-                'dtstart': '-30d',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'insolation'],
-                'project_timezone': that.model.get('timezone')
-              },
-              {
-                'project_label': project.id,
-                'ddl':'daily-summary',
-                'dtstart': '-30d',
-                'dtstop': 'now',
-                'columns': ['freezetime', 'ac_energy'],
-                'project_timezone': that.model.get('timezone')
-              }
-            ]
-          }),
+          traces: [
+            {
+              'project_label': project.id,
+              'ddl':'daily-summary',
+              'dtstart': '-30d',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'insolation'],
+              'project_timezone': that.model.get('timezone')
+            },
+            {
+              'project_label': project.id,
+              'ddl':'daily-summary',
+              'dtstart': '-30d',
+              'dtstop': 'now',
+              'columns': ['freezetime', 'ac_energy'],
+              'project_timezone': that.model.get('timezone')
+            }
+          ],
           series: [
             Chart.seriesDefaults.insolation,
             Chart.seriesDefaults.energy

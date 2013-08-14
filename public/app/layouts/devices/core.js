@@ -49,12 +49,10 @@ define([
       var project = this.options.project;
 
       var chart_powerAndIrradiance = new Chart.views.Basic({
-        model: new Chart.models.timeSeries().set({
-          'traces': [
-            Chart.dataDefaults(project, this.model, 'irradiance'),
-            Chart.dataDefaults(project, this.model, 'power')
-          ]
-        }),
+        traces: [
+          Chart.dataDefaults(project, this.model, 'irradiance'),
+          Chart.dataDefaults(project, this.model, 'power')
+        ],
         series: [
           Chart.seriesDefaults.irradiance,
           Chart.seriesDefaults.power
@@ -62,12 +60,10 @@ define([
       });
 
       var chart_currentAndVoltage = new Chart.views.Basic({
-        model: new Chart.models.timeSeries().set({
-          'traces': [
-            Chart.dataDefaults(project, this.model, 'current'),
-            Chart.dataDefaults(project, this.model, 'voltage')
-          ]
-        }),
+        traces: [
+          Chart.dataDefaults(project, this.model, 'current'),
+          Chart.dataDefaults(project, this.model, 'voltage')
+        ],
         series: [
           Chart.seriesDefaults.current,
           Chart.seriesDefaults.voltage
