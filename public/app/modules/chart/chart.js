@@ -284,7 +284,7 @@ function(
         $loadingIndicator.remove();
       })
       .fail(function(){
-        console.warn('Timeline data request faild', arguments);
+        console.warn('Timeline data request failed', arguments);
       })
       .done(function(data){
         that.parse(data.response);

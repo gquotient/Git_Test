@@ -41,14 +41,12 @@ function(
     },
     toggle: function(){
       if (this.enabled) {
-        this.$('.calendar').hide();
+        this.$('.calendar').fadeOut();
         this.enabled = false;
       } else {
-        this.$('.calendar').show();
+        this.$('.calendar').fadeIn();
         this.enabled = true;
       }
-
-      this.calendar.toggle();
     },
     onShow: function(){
       // Add jquery calendar
@@ -59,9 +57,8 @@ function(
         date: [this.options.date.start, this.options.date.stop]
       });
 
-      this.enabled = true;
-
-      this.toggle();
+      this.enabled = false;
+      this.$('.calendar').hide();
     },
     serializeData: function(){
       // Since we don't have a model, we need to manually create context for the template
