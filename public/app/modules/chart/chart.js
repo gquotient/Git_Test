@@ -272,17 +272,21 @@ function(
       this.$el.append($loadingIndicator);
 
       return $.ajax({
-        url: this.url,
+        url: '/api/timeline',
         cache: false,
         type: 'POST',
         dataType: 'json',
-        data: this.traces
+        data: {
+          traces: this.options.traces
+        }
       })
       .always(function(){
         $loadingIndicator.remove();
       })
+      .fail(function(){
+        console.warn('Timeline data request faild', arguments);
+      })
       .done(function(data){
-        console.log('done', data);
         that.parse(data.response);
       });
     },
@@ -301,7 +305,7 @@ function(
       // Loop through each trace
       _.each(data, function(trace, index){
         var seriesData = [],
-            timezone = this.get('traces')[index].project_timezone;
+            timezone = this.options.traces[index].project_timezone;
 
         if (trace && trace.data) {
           // Loop through each point on the trace
