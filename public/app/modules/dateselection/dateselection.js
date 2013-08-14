@@ -53,7 +53,7 @@ function(
     onShow: function(){
       // Add jquery calendar
       this.calendar = this.$('.selector').DatePicker({
-        mode: 'multiple',
+        mode: 'range',
         inline: true,
         calendars: 3,
         date: [this.options.date.start, this.options.date.stop]
