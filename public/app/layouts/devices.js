@@ -72,16 +72,6 @@ define([
 
       var myDateSelector = new DateSelection.views.Multi();
 
-      /*
-      var settingsDropdown = new Marionette.ItemView({
-        tagName: 'li',
-        template: _.template('<div class="dateSelection"></div>')
-      });
-      console.log(settingsDropdown.$('.dateSelection'));
-      */
-
-
-      //Create settings view
       this.options.settingsRegion.show(myDateSelector);
     },
 
