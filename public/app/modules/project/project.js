@@ -61,11 +61,14 @@ define([
       kpis: {
         irradiance: 0,
         power: 0,
-        dpi: 0,
-        energyYTD: {
+        pr: 0,
+        energyProduction: {
           generated: 0,
           forecast: 0,
-          modeled: 0
+          modeled: 0,
+          year: 0,
+          month: 0,
+          week: 0
         }
       },
       dataSources: {
@@ -134,10 +137,12 @@ define([
         type: 'POST',
         dataType: 'json',
         data: {
-          traces: [{
-            project_label: 'TPW1_01',
-            project_timezone: 'America/Chicago'
-          }]
+          traces: [
+            {
+              project_label: this.id,
+              project_timezone: this.get('timezone')
+            }
+          ]
         }
       })
       .done(function(data){
@@ -347,7 +352,7 @@ define([
       }
     },
     initialize: function(options){
-      this.listenTo(this.model, 'change:status', this.render);
+      this.listenTo(this.model, 'change', this.render);
     }
   });
 
@@ -373,8 +378,8 @@ define([
         Backbone.history.navigate('/project/'+this.model.id, true);
       }
     },
-    onShow: function(){
-      this.model.fetchKpis().done(this.render);
+    modelEvents: {
+      'change': 'render'
     }
   });
 
@@ -712,6 +717,13 @@ define([
       this.initFullscreen();
 
       this.listenTo(Backbone, 'window:resize', this.map.viewreset);
+    },
+
+    onClose: function(){
+      // Clean up leaflet map
+      if (this.map) {
+        this.map.remove();
+      }
     },
 
     events: {

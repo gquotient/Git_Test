@@ -8,11 +8,14 @@ define([
   'project',
   'device',
   'chart',
+  'dateselection',
 
   'layouts/devices/core',
   'layouts/devices/inverter',
 
-  'hbs!layouts/templates/devices'
+  'hbs!layouts/templates/devices',
+
+
 ], function(
   $,
   _,
@@ -23,6 +26,7 @@ define([
   Project,
   Device,
   Chart,
+  DateSelection,
 
   CoreLayout,
   InverterLayout,
@@ -63,6 +67,14 @@ define([
       this.devicesTree.propagateActive({graph_key: device.get('graph_key')});
     },
 
+    buildSettingsDropdown: function(){
+      var that = this;
+
+      var myDateSelector = new DateSelection.views.Multi({tagName: 'li'});
+
+      this.options.settingsRegion.show(myDateSelector);
+    },
+
     onShow: function(){
       var that = this;
 
@@ -85,6 +97,13 @@ define([
       } else {
         initialView();
       }
+
+      this.buildSettingsDropdown();
+    },
+
+    onClose: function(){
+      // Close settings dropdown views
+      this.options.settingsRegion.close();
     },
 
     initialize: function(options){
