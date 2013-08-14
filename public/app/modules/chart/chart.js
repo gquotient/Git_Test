@@ -353,15 +353,17 @@ function(
         console.warn('No data came back at all. Call Thadeus.');
       }
     },
-    setTime: function(time){
-      var start = time.start/1000, // Devide by 1000 to match unix epoch time
-          stop = time.stop/1000;
+    setDate: function(date){
+      var start = date.start/1000, // Devide by 1000 to match unix epoch time
+          stop = date.stop/1000;
 
-      _.each(this.traces, function(trace){
+      // Update time on each trace
+      _.each(this.options.traces, function(trace){
         trace.dtstart = start;
         trace.dtstop = stop;
       });
 
+      // Fetch new data
       this.fetch();
     },
     render: function(){
@@ -373,6 +375,7 @@ function(
       $(window).resize();
     },
     onClose: function(){
+      // Clean up highcharts chart
       if (this.chart) {
         this.chart.destroy();
       }
@@ -380,7 +383,8 @@ function(
     smartSeriesBuilder: function(){
       var series = [];
 
-      _.each(this.model.get('traces'), function(trace){
+      // Default names based on ddls
+      _.each(this.options.traces, function(trace){
         series.push({
           name: trace.columns[1]
         });
@@ -391,6 +395,7 @@ function(
     smartAxesSelector: function(series){
       var axes = [];
 
+      // Select the correct axis based on matching units
       _.each(series, function(serie, index){
         if (axes.indexOf(serie.unit) < 0) {
           axes.push(serie.unit);
@@ -403,6 +408,7 @@ function(
     smartAxesTitles: function(series){
       var titles = [];
 
+      // Use the unit to label the axis
       _.each(series, function(serie, index){
         if (!titles[serie.yAxis]) {
           var title = {
@@ -421,13 +427,15 @@ function(
 
   Chart.views.Basic = Chart.views.core.extend({
     options: {
+      // Fetch new data every 5 minutes
       autoUpdate: true
     },
     render: function(){
-      //Fetch data
+      //Fetch data on render
       this.fetch();
     },
     onClose: function(){
+      // Clean up highcharts chart
       if (this.chart) {
         this.chart.destroy();
       }
@@ -467,6 +475,9 @@ function(
       if (this.options.autoUpdate) {
         this.fetchInterval = setInterval(fetch, 300000);
       }
+
+      // Listen for date set event and update chart
+      this.listenTo(Backbone, 'set:date', this.setDate);
     }
   });
 
