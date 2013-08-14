@@ -5,7 +5,8 @@ define([
   'backbone.marionette',
   'backbone.virtualCollection',
 
-  'hbs!project/templates/inputFieldItem'
+  'hbs!project/templates/dropdown',
+  'hbs!project/templates/dropdownItem'
 ], function(
   $,
   _,
@@ -13,7 +14,8 @@ define([
   Marionette,
   VirtualCollection,
 
-  inputItemTemplate
+  dropdownTemplate,
+  dropdownItemTemplate
 ){
   var
 
@@ -21,7 +23,7 @@ define([
       tagName: 'li',
       template: {
         type: 'handlebars',
-        template: inputItemTemplate
+        template: dropdownItemTemplate
       },
 
       triggers: {
@@ -29,9 +31,29 @@ define([
       }
     }),
 
-    Dropdown = Marionette.CollectionView.extend({
-      tagName: 'ul',
-      itemView: DropdownItemView
+    DropdownView = Marionette.CompositeView.extend({
+      template: {
+        type: 'handlebars',
+        template: dropdownTemplate
+      },
+
+      templateHelpers: function(){
+        return {
+          applyAll: this.options.applyAll && this.collection.length > 0
+        };
+      },
+
+      itemView: DropdownItemView,
+      itemViewContainer: 'ul',
+
+      className: 'editorDropdown',
+
+      triggers: {
+        'mousedown a.all': 'select:all'
+      },
+
+      // Use the collection view version so that reset causes everything to render.
+      _initialEvents: Marionette.CollectionView.prototype._initialEvents
     }),
 
     Collection = Backbone.Collection.extend.call(Backbone.VirtualCollection, {
@@ -152,11 +174,20 @@ define([
       this.ui = {input: this.$('input')};
       this.placeholder = this.ui.input.val();
 
-      this.dropdown = new Dropdown({collection: this._collection});
+      this.dropdown = new DropdownView({
+        collection: this._collection,
+        applyAll: options.applyAll
+      });
       this.$el.append(this.dropdown.el);
 
       this.listenTo(this.dropdown, 'itemview:select', function(view){
         this.triggerMethod('key:enter', view.model);
+      });
+
+      this.listenTo(this.dropdown, 'select:all', function(){
+        this._collection.each(function(model){
+          this.triggerMethod('key:enter', model);
+        }, this);
       });
 
       _.bindAll(this, 'handleKeyEvent');

@@ -227,12 +227,14 @@ define([
 
       connect: {
         hotKey: 99,
-        comparator: 'name'
+        comparator: 'name',
+        applyAll: true
       },
 
       disconnect: {
         hotKey: 100,
-        comparator: 'name'
+        comparator: 'name',
+        applyAll: true
       }
     },
 
