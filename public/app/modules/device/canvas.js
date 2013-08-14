@@ -331,11 +331,9 @@ define([
         obj.type = 'mousedrag';
       }
 
-      method = this['on' + obj.type[0].toUpperCase() + obj.type.slice(1)];
+      _.extend(obj, _.pick(e, 'ctrlKey'));
 
-      if (method) {
-        method.call(this, obj, e);
-      }
+      this.triggerMethod(obj.type, obj);
 
       if (obj.type === 'mousedown') { this.dragging = true; }
       if (obj.type === 'mouseup') { this.dragging = false; }
@@ -384,45 +382,48 @@ define([
       this.undelegateCanvasEvents();
     },
 
-    onMousedown: function(obj, e){
+    onMousedown: function(obj){
 
       // Make sure any lingering select boxes are removed.
       if (this.select) { this.eraseSelect(); }
 
-      // Create a select box if not on a device.
-      if (!obj.model) {
+      // Create a select box if ctrl is being pressed and not on a device.
+      if (obj.ctrlKey && !obj.model) {
         this.drawSelect(obj.projectPoint);
+      }
 
-      // Otherwise add the model if not already included.
-      } else if (!this.selection.contains(obj.model)) {
-        this.selection.add(obj.model, {remove: !e.ctrlKey});
+      // Try and add the device if not currently selected. Remove all other
+      // selected devices if ctrl isn't being pressed. If not on a device this
+      // clears the whole selection.
+      if (!this.selection.contains(obj.model)) {
+        this.selection.add(obj.model, {remove: !obj.ctrlKey});
 
-      // Or remove the model if present and ctrl is being pressed.
-      } else if (e.ctrlKey) {
+      // Or remove the device if present and ctrl is being pressed.
+      } else if (obj.ctrlKey) {
         this.selection.remove(obj.model);
       }
     },
 
-    onMousedrag: function(obj, e){
-
-      // Pan the canvas if holding shift.
-      if (e.shiftKey) {
-        this.paper.view.scrollBy(obj.delta.divide(this.paper.view.zoom).negate());
+    onMousedrag: function(obj){
 
       // Update the select box if present.
-      } else if (this.select) {
+      if (this.select) {
         this.moveSelect(obj.projectPoint);
 
-      // Otherwise move any models currently selected if editable.
+      // Otherwise pan the canvas if no devices selected.
+      } else if (!this.selection.length) {
+        this.paper.view.scrollBy(obj.delta.divide(this.paper.view.zoom).negate());
+
+      // Or move those devices if editable.
       } else if (this.options.editable) {
         this.moveSelection(obj.projectDelta);
       }
     },
 
-    onMouseup: function(obj, e){
+    onMouseup: function(obj){
       var models = [];
 
-      // Add any models within the select box if present.
+      // Add any devices within the select box if present.
       if (this.select) {
         this.children.each(function(view){
           if (view.testInside(this.select)) {
@@ -430,10 +431,10 @@ define([
           }
         }, this);
 
-        this.selection.add(models, {remove: !e.ctrlKey});
+        this.selection.add(models);
         this.eraseSelect();
 
-      // Otherwise snap any models that may have moved if editable.
+      // Otherwise snap any devices that may have moved if editable.
       } else if (this.options.editable) {
         this.snapSelection();
       }
