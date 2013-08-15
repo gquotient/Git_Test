@@ -82,10 +82,8 @@ define([
           });
         }
 
-        var chart_powerAndIrradiance = new Chart.views.Line({
-          model: new Chart.models.timeSeries().set({
-            'traces': traces
-          }),
+        var chart_powerAndIrradiance = new Chart.views.Basic({
+          traces: traces,
           series: series
         });
 

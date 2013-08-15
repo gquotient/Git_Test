@@ -137,18 +137,28 @@ header {
       }
     }
   }
-  .dropdown.settings {
-    width: 30px;
-    height: pageNavHeight - 2px;;
-    background: url(../img/icon_settings.png) center center no-repeat;
-    opacity: .25;
-    display: none;
-    &.active {
-      display: inherit;
+  ul.settings {
+    height: pageNavHeight - 2px;
+    float: right;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    li {
+      float: left;
+      &.menu {
+        width: 30px;
+        height: 100%;
+        background: url(../img/icon_settings.png) center center no-repeat;
+        opacity: .25;
+        &:hover {
+          background-color: colorDropDownBG;
+          opacity: 1;
+        }
+      }
     }
-    &:hover {
-      background-color: colorDropDownBG;
-      opacity: 1;
+    // Force date widget to middle
+    .dateSelection {
+      margin: 2px 0;
     }
   }
 }
@@ -487,11 +497,17 @@ header {
             td {
               //width: 25%;
               //text-align: center;
+              span.statusIndicator {
+                margin-right: 6px;
+              }
+              &.PerformanceRatio {
+                min-width: 42px;
+              }
               &.ACCapacity {
-                min-width: 124px;
+                min-width: 100px;
               }
               &.DCCapacity {
-                min-width: 124px;
+                min-width: 100px;
               }
             }
             td.name {
@@ -504,12 +520,42 @@ header {
   }
   #page-projectDetail {
     overflow: auto;
-    .map {
+    .map, .devices {
       height: 400px;
       border-bottom: borderBasicDark;
     }
+    .devices {
+      background: #bbb;
+      overflow: hidden;
+    }
     .kpis {
       padding: 6px;
+    }
+    .toggleView {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      margin: 6px 0 0 10px;
+      padding: 3px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 3px 3px rgba(0,0,0,0.1);
+      border: 1px solid #aaa;
+      font-size: .8em;
+      color: #555;
+      cursor: pointer;
+      opacity: 0.6;
+      transition:.2s;
+      &:hover {
+        opacity: 1;
+        transition:.2s;
+      }
+    }
+    .leaflet-container {
+      .leaflet-control-zoom {
+        margin-top: 42px;
+      }
     }
   }
   #page-issues {
@@ -530,6 +576,10 @@ header {
 
 #page-projectsAdmin {
   padding: 0 !important;
+
+  .verticalPane {
+    overflow: hidden;
+  }
 
   #map {
     width: 100%;
@@ -558,46 +608,74 @@ header {
     }
   }
 
-  .verticalPane {
-    overflow: hidden;
+  .verticalPane.bottom > .container {
+    position: relative;
+    float: left;
+    height: 100%;
 
-    &.bottom .buttons {
-      position: fixed;
-      bottom: 1px;
-      padding: 6px;
-      z-index: 200;
+    &.left {
+      width: 25%;
+      padding: projectTableHeaderHeight 0 38px 0;
+      border-right: borderBasicDark;
+
+      .footer {
+        text-align: right;
+
+        .create {
+          float: left;
+        }
+
+        .save, .cancel {
+          display: none;
+        }
+      }
     }
-  }
 
-  .nav_content {
-    padding-bottom: 38px;
+    &.right {
+      width: 75%;
+    }
 
-    .actions {
-      height: 38px;
+    .header {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: projectTableHeaderHeight;
+      z-index: 100;
+      background: colorBGDarkGrey;
+      background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+      border-top: borderBasicMedium;
+      border-bottom: borderBasicDark;
+      box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 6px;
+      padding-right: 0;
+      border-top: borderBasicMedium;
+      border-bottom: borderBasicDark;
+      background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
     }
   }
 
   #projectList {
     height: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
 
-    li {
-      position: relative;
+    table {
+      width: 100%;
+      border: none;
+      border-bottom: borderBasicDark;
 
-      a {
-        color: #ccc;
-      }
-
-      .delete {
-        position: absolute;
-        top: 6px;
-        right: 6px;
+      .actions {
+        text-align: right;
       }
     }
   }
 
-  #projectEdit {
-    height: 100%;
+  #projectDetail {
     overflow-y: auto;
 
     .container {
@@ -605,7 +683,7 @@ header {
       padding: 12px;
 
       &.left {
-        width: 50%;
+        clear: left;
       }
     }
 
@@ -620,10 +698,6 @@ header {
       &.invalid {
         background: pink;
       }
-    }
-
-    .buttons {
-      margin-left: -201px;
     }
   }
 }
@@ -796,58 +870,6 @@ ul.handsontableDropdown {
   }
 }
 
-.leaflet-container {
-  .leaflet-popup {
-    color: #555;
-    .leaflet-popup-content-wrapper {
-      h4 {
-        padding:0;
-        margin: 0 0 6px;
-      }
-      p {
-        padding: 0;
-        margin: 0 0 3px;
-      }
-      a {
-        color: colorDrakerOrange;
-      }
-      border-radius: 2px!important;
-    }
-  }
-  .leaflet-control {
-    opacity: 0.6;
-    box-shadow: 0 3px 3px rgba(0,0,0,0.1);
-    border: 1px solid #aaa;
-    &:hover {
-      opacity: 1;
-      transition:.2s;
-    }
-  }
-  .layerControls {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    padding: 6px;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 3px 3px rgba(0,0,0,0.1);
-    color: #555;
-    ul {
-      padding: 0;
-      margin: 0;
-      list-style-type: none;
-      li {
-        padding: 0;
-        margin: 0 0 3px;
-        &:last-child {
-          margin: 0;
-        }
-      }
-    }
-  }
-}
-
 /* New Portfolio */
 .new-portfolio {
   background: colorBGDarkGrey;
@@ -974,6 +996,7 @@ ul.handsontableDropdown {
             height: 8px;
             background: #444;
             span {
+              transition: width 0.5s;
               background: #7fbfff;
               display: block;
               height: 8px;

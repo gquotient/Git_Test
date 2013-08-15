@@ -26,17 +26,36 @@ function(
 
   User.Model = Backbone.Model.extend({
     url: '/api/users',
-    idAttribute: 'email'
+    idAttribute: 'user_id',
+    // Overwrite the destroy method because REST is stupid, or something
+    destroy: function(options) {
+      var model = this;
+
+      var destroy = function() {
+        model.trigger('destroy', model, model.collection, options);
+      };
+
+      return $.ajax({
+        url: this.url,
+        type: 'DELETE',
+        dataType: 'json',
+        data: this.toJSON()
+      })
+      .done(destroy)
+      .fail(this.render);
+    }
   }, {
     schema: {
       attributes: {
         'name': {
           type: 'text',
-          title: 'Name'
+          title: 'Name',
+          required: true
         },
         'email': {
-          type: 'text',
-          title: 'Email'
+          type: 'email',
+          title: 'Email',
+          required: true
         },
         'org_label': {
           type: 'text',
@@ -44,11 +63,6 @@ function(
         }
       }
     }
-  });
-
-  User.CurrentUser = User.Model.extend({
-    url: '/api/users/current',
-    idAttribute: 'email'
   });
 
   User.Collection = Backbone.Collection.extend({
@@ -112,15 +126,15 @@ function(
   });
 
   User.views.EditRow = Forms.views.tableRow.extend({
-    events: function(){
-      return _.extend({}, Forms.views.tableRow.prototype.events, {
-        'click button.reset_password': function(event){
-          event.preventDefault();
-          $.ajax('/api/reset_password', {
-            type: 'PUT',
-            data: { email: this.model.get('email') }
-          });
-        }
+    onResetPassword: function(){
+      return $.ajax('/api/reset_password', {
+        type: 'PUT',
+        data: { email: this.model.get('email') }
+      });
+    },
+    triggers: function(){
+      return _.extend({}, Forms.views.tableRow.prototype.triggers, {
+        'click button.reset_password': 'resetPassword'
       });
     }
   });
@@ -129,14 +143,7 @@ function(
   User.views.EditTable = Forms.views.table.extend({
     fields: ['name', 'email'],
     model: User.Model,
-    actions: ['edit', 'cancel', 'save']
-  });
-
-  User.views.VendorEditTable = Forms.views.table.extend({
-    fields: ['name', 'email', 'org_label'],
-    itemView: User.views.EditRow,
-    model: User.Model,
-    actions: ['edit', 'cancel', 'save', 'resetPassword']
+    actions: ['edit', 'delete', 'resetPassword']
   });
 
   return User;

@@ -53,7 +53,7 @@ define([
       banner: '.banner',
       navigation: '.nav_page',
       breadcrumbs: '.breadcrumbs',
-      pageSettings: '#pageSettings',
+      settings: 'ul.settings',
       mainContent: '#page'
     },
 
@@ -76,7 +76,7 @@ define([
       this.mainContent.show( new PortfolioDetailLayout({
         model: portfolio,
         portfolios: this.app.portfolios,
-        settingsRegion: this.pageSettings
+        settingsRegion: this.settings
       }));
     },
 
@@ -91,15 +91,17 @@ define([
       this.mainContent.show( new ProjectDetailLayout({
         model: project,
         collection: this.activePortfolio.projects,
-        settingsRegion: this.pageSettings
+        equipment: this.app.equipment,
+        settingsRegion: this.settings
       }));
     },
 
-    showProjectEdit: function(id){
-      this.mainContent.show( new ProjectEditorLayout({
+    showProjectEditor: function(id, options){
+      this.mainContent.show( new ProjectEditorLayout(_.extend({
         model: this.app.alignedProjects.getOrCreate(id),
+        equipment: this.app.equipment,
         user: this.app.currentUser
-      }));
+      }, options)));
     },
 
     showProjectIssues: function(project, issueId){
@@ -125,7 +127,8 @@ define([
 
       this.mainContent.show( new DevicesLayout({
         model: project,
-        currentDevice: deviceId
+        currentDevice: deviceId,
+        settingsRegion: this.settings
       }));
     },
 
@@ -201,15 +204,6 @@ define([
         Backbone.history.navigate('/project/' + model.id);
         this.showProject(model, this.activePortfolio.projects);
       }, this);
-
-      // Special page settings handling
-      this.pageSettings.on('show', function(){
-        this.$el.addClass('active');
-      });
-
-      this.pageSettings.on('close', function(){
-        this.$el.removeClass('active');
-      });
 
       // Special notification banner handling
       this.banner.on('show', function(){

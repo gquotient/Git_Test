@@ -43,6 +43,11 @@ module.exports = function(app){
       path: '/res/teams'
     }));
 
+  app.del('/api/teams', ensureAuthorized(['vendor_admin', 'admin']),
+    makeRequest({
+      path: '/res/teams'
+    }));
+
   app.put('/api/teams/current', function(req, res){
       req.session.team_label = req.body.team_label;
       res.send(200);

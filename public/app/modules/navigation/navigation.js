@@ -3,7 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
-  'backbone.virtual-collection',
+  'backbone.virtualCollection',
 
   'hbs!navigation/templates/list',
   'hbs!navigation/templates/listItem'
@@ -67,36 +67,25 @@ define([
       this.setActive(this.activeFilter);
     },
     setActive: function(options){
-      var property, value;
-
-      // If options is a string or number, assume it's an id
-      // else, it's a hash with an arbitrary property
-      if (typeof options === 'string' || typeof options === 'number') {
-        property = 'id';
-        value = options;
-      } else if (typeof options === 'object') {
-        for (var name in options) {
-          property = name;
-          value = options[name];
-        }
-      }
+      if (!_.isObject(options)) {
+        options = {id: options};
+      }
 
       // Remove existing active class
       this.$('.active').removeClass('active');
 
-      // Find view with matching model
-      this.children.each(function(view){
-        if (property === 'id') {
-          if (view.model.id === value) {
-            view.setActive();
-          }
-        } else if (view.model.get(property) === value) {
+      this.children.each(function(view){
+        var active = _.all(options, function(value, key){
+          var other = key === 'id' ? view.model.id : view.model.get(key);
+          return value === other;
+        });
+
+        if (active) {
           view.setActive();
         }
-      });
+      });
 
-      // Store the current active state in case of sorting or similar event
-      this.activeFilter[property] = value;
+      this.activeFilter = options;
     },
     initialize: function(options){
       this.collection = new Backbone.VirtualCollection(options.collection);

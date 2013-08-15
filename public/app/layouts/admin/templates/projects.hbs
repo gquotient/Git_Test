@@ -3,10 +3,16 @@
 </div>
 
 <div class="verticalPane bottom">
-  <div class="container half nav_content">
+
+  <div class="container left">
+    <div class="header"></div>
     <div id="projectList"></div>
-    <div class="actions"></div>
+    <div class="footer">
+      <button type="button" class="button create">{{$ 'New Project' }}</button>
+      <button type="submit" class="button save primary">{{$ 'Save' }}</button>
+      <button type="button" class="button cancel">{{$ 'Close' }}</button>
+    </div>
   </div>
 
-  <div id="projectEdit" class="container half"></div>
+  <div id="projectDetail" class="container right"></div>
 </div>

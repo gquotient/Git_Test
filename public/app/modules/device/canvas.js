@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'backbone.virtualCollection',
   'jquery.mousewheel',
   'paper',
 
@@ -12,6 +13,7 @@ define([
   _,
   Backbone,
   Marionette,
+  VirtualCollection,
   wheel,
   paper,
 
@@ -130,7 +132,15 @@ define([
       itemView: EdgeView,
 
       initialize: function(options){
-        this.collection = this.model.outgoing;
+        this.collection = new Backbone.VirtualCollection(this.model.outgoing, {
+          filter: function(model){
+            // Only render devices that have position.
+            return model.getPosition(options.rendering) &&
+
+              // And a relationship in the current rendering.
+              model.equipment.getRelationship(options.model, options.rendering);
+          }
+        });
 
         this.paper = options.paper || paper;
         this.rendering = options.rendering;
@@ -148,11 +158,6 @@ define([
         'change:renderings': 'setCenter'
       },
 
-      collectionEvents: {
-        'rendering:add': 'addChildView',
-        'rendering:remove': 'removeItemView'
-      },
-
       itemViewOptions: function(item){
         return {
           device: this.model,
@@ -160,19 +165,6 @@ define([
           rendering: this.rendering,
           relationship: item.getRelationship(this.model)
         };
-      },
-
-      addItemView: function(item){
-        var equip = item.equipment;
-
-        // Only add new items if they have position.
-        if (!this.children.findByModel(item) && item.getPosition(this.rendering)) {
-
-          // And a relationship in the current rendering.
-          if (equip.getRelationship(this.model, this.rendering)) {
-            Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
-          }
-        }
       },
 
       // Prevent item views from being added to the DOM.
@@ -255,36 +247,6 @@ define([
     tagName: 'canvas',
     itemView: NodeView,
 
-    attributes: {
-      resize: true
-    },
-
-    initialize: function(options){
-      this.paper = paper.setup(this.el);
-      this.rendering = options.rendering;
-
-      this.selection = new Backbone.Collection();
-
-      this.listenTo(this.selection, 'add', function(model){
-        Backbone.trigger('editor:selection', this.selection);
-        model.trigger('selected');
-      });
-
-      this.listenTo(this.selection, 'remove', function(model){
-        Backbone.trigger('editor:selection', this.selection);
-        model.trigger('deselected');
-      });
-
-      this.listenTo(Backbone, 'editor:mousemove editor:mouseup', this.handleMouseEvent);
-      this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
-    },
-
-    collectionEvents: {
-      'equipment:add': 'addChildView',
-      'rendering:add': 'addChildView',
-      'rendering:remove': 'removeItemView'
-    },
-
     itemViewOptions: function(){
       return {
         paper: this.paper,
@@ -292,20 +254,93 @@ define([
       };
     },
 
-    addItemView: function(item){
-
-      // Only add new items if they have position and equipment.
-      if (!this.children.findByModel(item) && item.getPosition(this.rendering) && item.equipment) {
-        Marionette.CollectionView.prototype.addItemView.apply(this, arguments);
-      }
+    attributes: {
+      resize: true
     },
 
-    // Prevent item views from being added to the DOM.
-    appendHtml: function(){},
+    initialize: function(options){
+      this.rendering = options.rendering;
 
-    events: {
-      'mousedown': 'handleMouseEvent',
-      'mousewheel': 'handleWheelEvent'
+      this.paper = new paper.PaperScope();
+      this.paper.setup(this.el);
+
+      this.collection = new Backbone.VirtualCollection(options.collection, {
+        filter: function(model){
+          // Only render devices that have position and equipment.
+          return model.getPosition(options.rendering) && model.equipment;
+        },
+        close_with: this
+      });
+
+      this.selection = new Backbone.Collection();
+
+      this.listenTo(this.selection, 'add', function(model){
+        Backbone.trigger('canvas:selection', this.selection);
+        model.trigger('selected');
+      });
+
+      this.listenTo(this.selection, 'remove', function(model){
+        Backbone.trigger('canvas:selection', this.selection);
+        model.trigger('deselected');
+      });
+
+      _.bindAll(this, 'handleMouseEvent', 'handleKeyEvent', 'handleWheelEvent');
+    },
+
+    delegateCanvasEvents: function(){
+      function format(events){
+        return _.map(events.split(' '), function(evnt){
+          return evnt + '.canvas' + this.cid;
+        }, this).join(' ');
+      }
+
+      this.$el
+        .on(format('mousedown dblclick'), this.handleMouseEvent)
+        .on(format('mousewheel'), this.handleWheelEvent);
+
+      $(document)
+        .on(format('mousemove mouseup'), this.handleMouseEvent)
+        .on(format('keydown keypress'), this.handleKeyEvent);
+    },
+
+    undelegateCanvasEvents: function(){
+      this.$el.add(document).off('.canvas' + this.cid);
+    },
+
+    handleMouseEvent: function(e){
+      var offset = this.$el.offset(),
+        obj = {type: e.type},
+        method;
+
+      obj.point = new this.paper.Point(e.pageX, e.pageY);
+      obj.delta = obj.point.subtract(this.lastPoint);
+      this.lastPoint = obj.point;
+
+      obj.projectPoint = this.paper.view.viewToProject(obj.point.subtract(offset.left, offset.top));
+      obj.projectDelta = obj.projectPoint.subtract(this.lastProjectPoint);
+      this.lastProjectPoint = obj.projectPoint;
+
+      if (obj.type !== 'mousemove') {
+        obj.view = this.children.find(function(view){
+          return view.testHit(obj.projectPoint);
+        });
+
+        obj.model = obj.view && obj.view.model;
+
+      } else if (this.dragging) {
+        obj.type = 'mousedrag';
+      }
+
+      method = this['on' + obj.type[0].toUpperCase() + obj.type.slice(1)];
+
+      if (method) {
+        method.call(this, obj, e);
+      }
+
+      if (obj.type === 'mousedown') { this.dragging = true; }
+      if (obj.type === 'mouseup') { this.dragging = false; }
+
+      this.paper.view.draw();
     },
 
     keydownEvents: {
@@ -322,33 +357,6 @@ define([
       61: 'zoom:reset'
     },
 
-    handleMouseEvent: function(e){
-      var offset = this.$el.offset(), method;
-
-      e.point = new this.paper.Point(e.pageX, e.pageY);
-      e.delta = e.point.subtract(this.lastPoint);
-      this.lastPoint = e.point;
-
-      e.projectPoint = this.paper.view.viewToProject(e.point.subtract(offset.left, offset.top));
-      e.projectDelta = e.projectPoint.subtract(this.lastProjectPoint);
-      this.lastProjectPoint = e.projectPoint;
-
-      if (e.type === 'mousemove' && this.dragging) {
-        e.type = 'mousedrag';
-      }
-
-      method = this['on' + e.type[0].toUpperCase() + e.type.slice(1)];
-
-      if (method) {
-        method.call(this, e);
-      }
-
-      if (e.type === 'mousedown') { this.dragging = true; }
-      if (e.type === 'mouseup') { this.dragging = false; }
-
-      this.paper.view.draw();
-    },
-
     handleKeyEvent: function(e){
       var value = (this[e.type + 'Events'] || {})[e.which];
 
@@ -359,6 +367,8 @@ define([
     },
 
     handleWheelEvent: function(e, delta){
+      e.preventDefault();
+
       if (delta > 0) {
         this.triggerMethod('zoom:in');
       } else if (delta < 0) {
@@ -366,50 +376,50 @@ define([
       }
     },
 
-    onMousedown: function(e){
-      var model;
+    onShow: function(){
+      this.delegateCanvasEvents();
+    },
 
-      this.children.any(function(view){
-        if (view.testHit(e.projectPoint)) {
-          model = view.model;
-          return true;
-        }
-      });
+    onClose: function(){
+      this.undelegateCanvasEvents();
+    },
+
+    onMousedown: function(obj, e){
 
       // Make sure any lingering select boxes are removed.
       if (this.select) { this.eraseSelect(); }
 
       // Create a select box if not on a device.
-      if (!model) {
-        this.drawSelect(e.projectPoint);
+      if (!obj.model) {
+        this.drawSelect(obj.projectPoint);
 
       // Otherwise add the model if not already included.
-      } else if (!this.selection.contains(model)) {
-        this.selection.add(model, {remove: !e.ctrlKey});
+      } else if (!this.selection.contains(obj.model)) {
+        this.selection.add(obj.model, {remove: !e.ctrlKey});
 
       // Or remove the model if present and ctrl is being pressed.
       } else if (e.ctrlKey) {
-        this.selection.remove(model);
+        this.selection.remove(obj.model);
       }
     },
 
-    onMousedrag: function(e){
+    onMousedrag: function(obj, e){
 
       // Pan the canvas if holding shift.
       if (e.shiftKey) {
-        this.paper.view.scrollBy(e.delta.divide(this.paper.view.zoom).negate());
+        this.paper.view.scrollBy(obj.delta.divide(this.paper.view.zoom).negate());
 
       // Update the select box if present.
       } else if (this.select) {
-        this.moveSelect(e.projectPoint);
+        this.moveSelect(obj.projectPoint);
 
       // Otherwise move any models currently selected if editable.
       } else if (this.options.editable) {
-        this.moveSelection(e.projectDelta);
+        this.moveSelection(obj.projectDelta);
       }
     },
 
-    onMouseup: function(e){
+    onMouseup: function(obj, e){
       var models = [];
 
       // Add any models within the select box if present.
@@ -426,6 +436,12 @@ define([
       // Otherwise snap any models that may have moved if editable.
       } else if (this.options.editable) {
         this.snapSelection();
+      }
+    },
+
+    onDblclick: function(obj){
+      if (obj.model) {
+        Backbone.trigger('click:device', obj.model);
       }
     },
 
@@ -482,6 +498,9 @@ define([
           y: Math.round(position.y / 100) * 100
         }, true);
       }, this);
-    }
+    },
+
+    // Prevent item views from being added to the DOM.
+    appendHtml: function(){}
   });
 });

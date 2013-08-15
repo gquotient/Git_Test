@@ -13,12 +13,12 @@ define([
 
   Device
 ){
-  var Equip = { views: {} },
+  var Equip = { views: {} };
 
-    renderings = {
-      POWER: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
-      DAQ: ['MANAGES', 'HAS']
-    };
+  Equip.renderings = {
+    POWER: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
+    DAQ: ['MANAGES', 'HAS']
+  };
 
 
   function findNextIndex(label, existing){
@@ -100,7 +100,7 @@ define([
         }) || {}).label;
       }
 
-      if (rendering && !_.contains(renderings[rendering], label)) {
+      if (rendering && !_.contains(Equip.renderings[rendering], label)) {
         label = null;
       }
 
@@ -131,7 +131,7 @@ define([
           equipment_label: this.id,
           project_label: project.id,
           did: label + '-' + index,
-          name: this.get('name') + ' ' + index
+          name: this.generateName(index)
         });
 
       device.equipment = this;
@@ -139,44 +139,51 @@ define([
       return device;
     },
 
-    addRootRenderings: function(device, project){
-      _.each(this.get('renderings'), function(rendering){
-        var position;
+    generateName: function(index){
+      var name = this.get('name'), did;
 
-        if (rendering.root && !device.getPosition(rendering.label)) {
-          position = _.clone(rendering.position);
+      if (index instanceof Backbone.Model) {
+        did = index.get('did');
+        index = did && parseInt(did.replace(/^.*-/, ''), 10);
+      }
 
-          if (position) {
-            project.devices.each(function(other){
-              var pos = other.getPosition(rendering.label);
-
-              if (pos && pos.y >= position.y) {
-                position.y = pos.y + 200;
-              }
-            });
-
-            adjustPosition(rendering.label, position, project);
-            device.setPosition(rendering.label, position);
-          }
-        }
-      });
+      return name && index ? name + ' ' + index : did || 'undefined';
     },
 
-    addRelativeRendering: function(device, project, label, target){
+    addRendering: function(device, project, label, target){
       var rendering = _.findWhere(this.get('renderings'), {label: label}),
-        position, offset;
+        position;
 
-      if (rendering) {
+      if (!rendering || device.getPosition(label)) { return; }
+
+      // Check if this is a root device.
+      if (rendering.root && rendering.position) {
+        position = _.clone(rendering.position);
+
+        // Move device to the bottom.
+        project.devices.each(function(other){
+          var pos = other.getPosition(label);
+
+          if (pos && pos.y >= position.y) {
+            position.y = pos.y + 200;
+          }
+        });
+
+      // Otherwise position relative to target device.
+      } else if (target && this.getRelationship(target, label)) {
         position = target.getPosition(label);
-        offset = rendering.offset || {};
 
-        if (position) {
-          position.x += offset.x || 0;
-          position.y += offset.y || 0;
-
-          adjustPosition(rendering.label, position, project);
-          device.setPosition(label, position);
+        // Apply offset for this equipment.
+        if (position && rendering.offset) {
+          position.x += rendering.offset.x || 0;
+          position.y += rendering.offset.y || 0;
         }
+      }
+
+      // If position was found adjust for overlap and set.
+      if (position) {
+        adjustPosition(label, position, project);
+        device.setPosition(label, position);
       }
     }
   });
@@ -185,18 +192,16 @@ define([
     model: Equip.Model,
     url: '/api/equipment',
 
-    getRenderingLabels: function(){
-      return _.keys(renderings);
-    },
-
     findOrCreateForDevice: function(device){
       var label = device.get('equipment_label');
 
-      if (!label) {
+      if (!label && device.has('did')) {
         label = device.get('did').replace(/-\d*$/, '');
       }
 
-      return this.get(label) || this.push({label: label});
+      if (label) {
+        return this.get(label) || this.push({label: label});
+      }
     }
   });
 

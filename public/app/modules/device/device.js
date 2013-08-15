@@ -23,12 +23,20 @@ define([
   deviceListItemViewTemplate,
   deviceListViewTemplate
 ){
-  var Device = { views: {Canvas: Canvas, Table: Table} };
+  var Device = { views: {} };
 
   Device.Model = Backbone.Model.extend({
     url: '/api/devices',
 
-    initialize: function(){
+    initialize: function(attrs, options){
+      if (options && options.equipment) {
+        this.equipment = options.equipment.findOrCreateForDevice(this);
+      }
+
+      if (!this.has('name') && this.equipment) {
+        this.set({name: this.equipment.generateName(this)});
+      }
+
       this.relationships = {};
 
       this.outgoing = new Device.Collection();
@@ -114,15 +122,19 @@ define([
     model: Device.Model,
     comparator: function(device){
       var did = device.get('did'),
-          didPieces = did.split('-'),
-          comparator  = did;
+          didPieces, comparator;
 
-      // Use the number in the did for sorting if one exists
-      _.each(didPieces, function(piece){
-        if (typeof +piece === 'number') {
-          comparator = +piece;
-        }
-      });
+      if (did) {
+        comparator = did;
+        didPieces = did.split('-');
+
+        // Use the number in the did for sorting if one exists
+        _.each(didPieces, function(piece){
+          if (typeof +piece === 'number') {
+            comparator = +piece;
+          }
+        });
+      }
 
       return comparator;
     }
@@ -235,6 +247,11 @@ define([
         });
       }
     }
+  });
+
+  _.extend(Device.views, {
+    Canvas: Canvas,
+    Table: Table
   });
 
   return Device;

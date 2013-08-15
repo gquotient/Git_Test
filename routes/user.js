@@ -35,6 +35,11 @@ module.exports = function(app){
       path: '/res/usermgt'
     }));
 
+  app.del('/api/users', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
+    makeRequest({
+      path: '/res/usermgt'
+    }));
+
   app.put('/api/reset_password', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/usermgt'

@@ -9,6 +9,7 @@ define([
 
   'navigation',
   'device',
+  'equipment',
   'issue',
 
   './admin',
@@ -18,6 +19,7 @@ define([
   'hbs!project/templates/dataListItem',
   'hbs!project/templates/dashboard',
   'hbs!project/templates/markerPopUp',
+  'hbs!project/templates/markerPopUpDetail',
   'hbs!project/templates/navigationList',
   'hbs!project/templates/navigationListItem',
   'hbs!project/templates/kpis',
@@ -33,6 +35,7 @@ define([
 
   Navigation,
   Device,
+  Equipment,
   Issue,
 
   adminViews,
@@ -42,6 +45,7 @@ define([
   dataListItemTemplate,
   dashboardTemplate,
   markerPopUpTemplate,
+  markerPopUpDetailTemplate,
   navigationListTemplate,
   navigationListItemTemplate,
   kpisTemplate,
@@ -57,11 +61,14 @@ define([
       kpis: {
         irradiance: 0,
         power: 0,
-        dpi: 0,
-        energyYTD: {
+        pr: 0,
+        energyProduction: {
           generated: 0,
           forecast: 0,
-          modeled: 0
+          modeled: 0,
+          year: 0,
+          month: 0,
+          week: 0
         }
       },
       dataSources: {
@@ -98,12 +105,17 @@ define([
     },
 
     setLock: function(lock){
+      var that = this;
+
       return $.ajax(_.result(this, 'url') + '/edit', {
         type: 'PUT',
         data: {
           project_label: this.id,
           lock: arguments.length > 0 ? lock : true
-        }
+        },
+        dataType: 'json'
+      }).always(function(data){
+        that.set({locked: _.isBoolean(data.locked) ? data.locked : true});
       });
     },
 
@@ -120,73 +132,39 @@ define([
       var that = this;
 
       return $.ajax({
-        url: '/api/snapshot',
+        url: '/api/kpis',
         cache: false,
         type: 'POST',
         dataType: 'json',
         data: {
           traces: [
             {
-              'project_label': this.id,
-              'ddl': 'pgen-env',
-              'columns': ['irradiance']
-            },
-            {
-              'project_label': this.id,
-              'ddl': 'pgen-acm',
-              'columns': ['ac_power']
-            },
-            {
-              'project_label': this.id,
-              'ddl': 'pgen-rm',
-              'columns': ['ac_power']
-            },
-            {
-              'project_label': this.id,
-              'ddl': 'pgen-util',
-              'columns': ['ac_power']
+              project_label: this.id,
+              project_timezone: this.get('timezone')
             }
           ]
         }
       })
       .done(function(data){
         that.trigger('data:done', data);
-        that.parseKpis(data.response);
+        that.parseKpis(data.response[0]);
       });
     },
 
     parseKpis: function(data){
       var kpis = {
-        irradiance: 0,
-        power: 0,
-        dpi: 0,
-        energyYTD: {
+        irradiance: data.performance_snapshot.irradiance || 0,
+        power: data.performance_snapshot.ac_power || 0,
+        pr: (data.performance_snapshot.perf_ratio * 100) || 0,
+        energyProduction: {
           generated: 0,
           forecast: 0,
-          modeled: 0
+          modeled: 0,
+          year: data.energy_production.ac_year_to_date || 0,
+          month: data.energy_production.ac_month_to_date || 0,
+          week: data.energy_production.ac_week_to_date || 0
         }
       };
-
-      _.each(data, function(kpi, index){
-        if (kpi.columns) {
-          var dataType = kpi.columns[0];
-
-          // Set irradiance kpi
-          if (dataType === 'irradiance') {
-            kpis.irradiance = kpi.data[0][0];
-          }
-
-          // Select first available power snapshot
-          if (dataType === 'ac_power' && kpis.power === 0) {
-            kpis.power = kpi.data[0][0];
-          }
-        }
-      });
-
-      // DPI cheat
-      if (kpis.power > 0 && kpis.irradiance) {
-        kpis.dpi = (kpis.power / kpis.irradiance) / (this.get('ac_capacity') / 1000) * 100;
-      }
 
       this.set('kpis', kpis);
     },
@@ -272,16 +250,9 @@ define([
 
     parse: function(resp, options){
       if (resp.devices) {
-        this.devices.reset(resp.devices);
-
-        if (options.equipment) {
-          this.devices.each(function(device){
-            var equip = options.equipment.findOrCreateForDevice(device);
-
-            device.equipment = equip;
-            device.trigger('equipment:add', device);
-          });
-        }
+        this.devices.reset(resp.devices, {
+          equipment: options.equipment
+        });
 
         if (resp.rels) {
           _.each(resp.rels, function(rel) {
@@ -298,9 +269,30 @@ define([
             }
           }, this);
         }
+
+        _.each(_.keys(Equipment.renderings), function(label){
+          this.checkOutgoing(this, label);
+        }, this);
       }
 
       return _.omit(resp, 'devices', 'rels');
+    },
+
+    checkOutgoing: function(target, label){
+      if (!target.outgoing) { return; }
+
+      target.outgoing.each(function(device){
+        if (!device.equipment) { return; }
+
+        // For now ignore strings and panels.
+        if (_.contains(['S', 'P'], device.equipment.get('label'))) { return; }
+
+        // Add position to device for this rendering.
+        device.equipment.addRendering(device, this, label, target);
+
+        // Recursively check all outgoing devices for this rendering.
+        this.checkOutgoing(device, label);
+      }, this);
     },
 
     addNote: function(note, user){
@@ -360,7 +352,7 @@ define([
       }
     },
     initialize: function(options){
-      this.listenTo(this.model, 'change:status', this.render);
+      this.listenTo(this.model, 'change', this.render);
     }
   });
 
@@ -386,8 +378,8 @@ define([
         Backbone.history.navigate('/project/'+this.model.id, true);
       }
     },
-    onShow: function(){
-      this.model.fetchKpis().done(this.render);
+    modelEvents: {
+      'change': 'render'
     }
   });
 
@@ -404,10 +396,21 @@ define([
       'click a.viewProject': function(event){
         event.preventDefault();
         Backbone.trigger('select:project', this.model);
+      },
+      'click a.viewDevices': function(event){
+        event.preventDefault();
+        Backbone.history.navigate('/project/' + this.model.id + '/devices', true);
       }
     },
     initialize: function(options){
       this.render();
+    }
+  });
+
+  Project.views.MarkerPopUpDetail = Project.views.MarkerPopUp.extend({
+    template: {
+      type: 'handlebars',
+      template: markerPopUpDetailTemplate
     }
   });
 
@@ -445,6 +448,8 @@ define([
       this.listenTo(Backbone, 'mouseover:portfolio', this.highlight);
       this.listenTo(Backbone, 'mouseout:portfolio', highlightTimeout);
     },
+
+    popUp: Project.views.MarkerPopUp,
 
     markerStyles: {
       OK: L.divIcon({
@@ -496,7 +501,7 @@ define([
       this.marker.addTo(this.options.markers);
 
       // Instantiate pop up content
-      this.popUp = new Project.views.MarkerPopUp({model: this.model});
+      this.popUp = new this.popUp({model: this.model});
       this.marker.bindPopup(this.popUp.el);
 
       // Fade in marker
@@ -714,6 +719,13 @@ define([
       this.listenTo(Backbone, 'window:resize', this.map.viewreset);
     },
 
+    onClose: function(){
+      // Clean up leaflet map
+      if (this.map) {
+        this.map.remove();
+      }
+    },
+
     events: {
       'click .layerControl': function(event){
         this.toggleLayer(event.target.id.split('_')[1]);
@@ -753,12 +765,6 @@ define([
     template: {
       type: 'handlebars',
       template: kpisTemplate
-    },
-    events: {
-      'click a.viewDevices': function(event){
-        event.preventDefault();
-        Backbone.trigger('click:device');
-      }
     },
     initialize: function(){
       this.model.fetchKpis();

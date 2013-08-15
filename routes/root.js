@@ -32,73 +32,106 @@ module.exports = function(app){
       uri: app.get('modelUrl') + '/res/user'
     };
 
-
-    // Don't judge me for this. I'll fix it later.
     var myTeams,
         myProjects,
-        myPortfolios;
+        myPortfolios,
+        equipment,
+        everythingLoaded = Q.defer();
 
-    Q.
-      fcall( function(){
-        var myUserDef = Q.defer();
-        // console.log('user')
-        request(requestOptions, function(error, response, userJSON){
-          var user = JSON.parse(userJSON);
-          // Until we have a default team option for the user, assume first team or last selected. Or, you know. No team at all.
-          var team = user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
-          req.session.team_label = req.session.team_label || team;
-          req.session.org_label = user.org_label;
-          myTeams = JSON.stringify(JSON.parse(userJSON).teams);
-          console.log(myTeams);
-          myUserDef.resolve(user);
-        });
+    var resolveEverythingLoaded = function(){
+      if (myProjects && myPortfolios && equipment) {
+        everythingLoaded.resolve();
+      }
+    };
 
-        return myUserDef.promise;
-      })
-      .then( function(){
-        var myPortfoliosDef = Q.defer();
-        // console.log('portfolios');
-        requestOptions.uri = app.get('modelUrl') + '/res/teamportfolios?team_label='+req.session.team_label+'&org_label='+req.session.org_label;
-        request(requestOptions, function(error, response, portfolios){
-          myPortfolios = portfolios;
-          myPortfoliosDef.resolve(portfolios);
-        });
+    var user = (function(){
+      var defer = Q.defer();
 
-        return myPortfoliosDef.promise;
+      request(requestOptions, function(error, response, userJSON){
+        var user = JSON.parse(userJSON);
+        // Until we have a default team option for the user, assume first team or last selected. Or, you know. No team at all.
+        var team = user.default_team ? user.default_team : user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
+        req.session.team_label = req.session.team_label || team;
+        req.session.org_label = user.org_label;
+        myTeams = user.teams;
 
-      })
-      .then( function(myPortfolios){
-        var myProjectsDef = Q.defer();
-        // console.log('projects');
-        requestOptions.uri = app.get('modelUrl') + '/res/teamprojects?team_label'+req.session.team_label+'&org_label='+req.session.org_label;
-        request(requestOptions, function(error, response, projects){
-          myProjects = JSON.stringify(JSON.parse(projects).projects || []);
-          console.log(req.session.team_label, projects);
-          // console.log('projects')
-          myProjectsDef.resolve(projects);
-        });
+        if (error) {
+          console.log('***************************************');
+          console.log('Model service returned an error:', error);
+          console.log('***************************************');
 
-        return myProjectsDef.promise;
-      })
-      .then( function(obj){
-        // console.log('render');
-        console.log(req.session);
-        res.render('index', {
-          user: JSON.stringify({
-            name: req.user.name,
-            email: req.user.email,
-            teams: myTeams,
-            currentTeam: req.session.team_label,
-            currentOrganization: req.session.org_label,
-            role: roles[req.user.role]
-          }),
-          portfolios: myPortfolios,
-          projects: myProjects,
-          locale: req.user.locale || req.acceptedLanguages[0].toLowerCase(),
-          staticDir: app.get('staticDir') || 'app'
-        });
+          defer.reject();
+          req.session.destroy();
+          res.location('/login');
+          res.render('login', { flash: 'There was an issue, please try logging in again.' });
+        } else if (typeof user !== 'object') {
+          console.log('***************************************');
+          console.log('Something is wrong with the returned user model.');
+          console.log('***************************************');
+
+          defer.reject();
+          req.session.destroy();
+          res.location('/login');
+          res.render('login', { flash: 'There was an issue, please try logging in again.' });
+        } else {
+          defer.resolve(user);
+        }
       });
 
+      return defer.promise;
+    })();
+
+
+    user.then( function(){
+      requestOptions.uri = app.get('modelUrl') + '/res/teamportfolios?team_label='+req.session.team_label+'&org_label='+req.session.org_label;
+
+      request(requestOptions, function(error, response, portfolios){
+        myPortfolios = portfolios;
+
+        resolveEverythingLoaded();
+      });
+    });
+
+    user.then( function(){
+      requestOptions.uri = app.get('modelUrl') + '/res/teamprojects?team_label'+req.session.team_label+'&org_label='+req.session.org_label;
+
+      request(requestOptions, function(error, response, projects){
+        // Portfolios returns as an array but projects returns as an array inside an object
+        // (i.e. { projects: [] } )
+        // sooooo, we have to do this to keep our stuff consistent
+        myProjects = JSON.stringify(JSON.parse(projects).projects || []);
+
+        resolveEverythingLoaded();
+      });
+    });
+
+    fs.readFile('./data/json/equipment.json', 'utf8', function (err, data) {
+      if (err) {
+        return console.log(err);
+      }
+
+      equipment = data || '[]';
+
+      resolveEverythingLoaded();
+    });
+
+    everythingLoaded.promise.then( function(obj){
+      res.render('index', {
+        user: JSON.stringify({
+          name: req.user.name,
+          email: req.user.email,
+          teams: myTeams,
+          currentTeam: req.session.team_label,
+          currentOrganization: req.session.org_label,
+          role: roles[req.user.role]
+        }),
+        portfolios: myPortfolios,
+        projects: myProjects,
+        equipment: equipment,
+        locale: req.user.locale || req.acceptedLanguages[0].toLowerCase(),
+        staticDir: app.get('staticDir') || 'app'
+      });
+    });
   });
 
   app.all('/ia/*', ensureAuthenticated, function(req, res){

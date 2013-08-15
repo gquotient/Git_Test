@@ -40,6 +40,24 @@ define([
     setPortfolio: function(portfolio){
       Backbone.history.navigate('/portfolio/dashboard/' + portfolio.id);
 
+      // Clear existing interval
+      // NOTE - I'm not sure how necessary this is
+      if (this.fetchIssuesInterval) {
+        clearInterval(this.fetchIssuesInterval);
+      }
+
+      // Fetch issues on the new portfolio
+      var fetchProjectData = function(){
+        portfolio.fetchIssues();
+        portfolio.fetchProjectKpis();
+      };
+
+      // Run initially to get latest data
+      fetchProjectData();
+
+      // Fetch issues every five minutes
+      this.fetchIssuesInterval = setInterval(fetchProjectData, 300000);
+
       Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolioDashboard', display_name: portfolio.get('display_name') + ' Dashboard'});
 
       // Update the collection.

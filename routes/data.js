@@ -47,4 +47,19 @@ module.exports = function(app){
       .pipe(res);
     }
   );
+
+  app.post('/api/kpis',
+    function(req, res){
+      request({
+        method: 'POST',
+        uri: app.get('dataUrl') + '/kpi/mapper/performance_snapshot,energy_production',
+        body: JSON.stringify(req.body),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept-encoding' : 'gzip,deflate'
+        }
+      })
+      .pipe(res);
+    }
+  );
 };

@@ -4,6 +4,9 @@ define([
   'backbone',
   'backbone.marionette',
 
+  'device',
+  'equipment',
+
   './inputField',
 
   'hbs!project/templates/editor',
@@ -14,12 +17,63 @@ define([
   Backbone,
   Marionette,
 
+  Device,
+  Equipment,
+
   InputField,
 
   editorTemplate,
   notesTemplate
 ){
   var views = {};
+
+  views.Notes = Marionette.ItemView.extend({
+    tagName: 'form',
+    template: {
+      type: 'handlebars',
+      template: notesTemplate
+    },
+
+    attributes: {
+      id: 'notes'
+    },
+
+    ui: {
+      textarea: 'textarea'
+    },
+
+    events: {
+      'keyup textarea': function(e){
+        this.model.set('notes', this.ui.textarea.val());
+
+        if (e.which === 27) {
+          this.ui.textarea.blur();
+        }
+      },
+
+      'blur textarea': function(){
+        if (this.options.editable) {
+          this.model.save();
+        }
+      }
+    },
+
+    modelEvents: {
+      'change:notes': function(){
+        this.ui.textarea.val(this.model.get('notes'));
+      }
+    },
+
+    onShow: function(){
+      this.ui.textarea.attr('disabled', !this.options.editable);
+    },
+
+    onClose: function(){
+      if (this.options.editable) {
+        this.model.save();
+      }
+    }
+  });
 
   views.Editor = Marionette.ItemView.extend({
     tagName: 'form',
@@ -32,29 +86,112 @@ define([
       id: 'editor'
     },
 
+    initialize: function(options){
+      this.equipment = options.equipment;
+      this.user = options.user;
+
+      // Fetch project from server.
+      this.model.fetch({
+        data: {
+          index_name: 'AlignedProjects/no'
+        },
+        equipment: this.equipment
+      });
+
+      // Attempt to get the lock if editable.
+      if (options.editable) {
+        this.model.setLock(true);
+      }
+
+      this.listenTo(Backbone, 'canvas:selection', function(selection){
+        this.selection = selection.length > 0 ? selection : null;
+      });
+
+      _.bindAll(this, 'handleKeyEvent');
+    },
+
+    keydownEvents: {
+      46: 'delete'
+    },
+
+    handleKeyEvent: function(e){
+      var value = (this[e.type + 'Events'] || {})[e.which];
+
+      if (value && !_.contains(['INPUT', 'TEXTAREA'], e.target.nodeName)) {
+        e.preventDefault();
+        this.triggerMethod(value);
+      }
+    },
+
+    modelEvents: {
+      'change:locked': 'updateEditable',
+      'change:editor': 'updateEditable'
+    },
+
+    updateTimer: function(){
+      if (this.timer) { clearTimeout(this.timer); }
+
+      if (!this.editable) { return; }
+
+      this.timer = setTimeout(_.bind(function(){
+        Backbone.history.navigate('/admin/project/' + this.model.id, true);
+      }, this), 5 * 60 * 1000);
+    },
+
+    updateEditable: function(){
+      var editable = this.options.editable,
+        who = this.model.get('editor'),
+        user = this.user.get('email'),
+        locked = this.model.get('locked');
+
+      if (!who || who === '' || who === 'unlocked' || who === user) {
+        who = null;
+
+      } else if (locked) {
+        editable = false;
+      }
+
+      if (this.editable !== editable) {
+        this.editable = editable;
+        this.$el.find('input:not(.nav)').attr('disabled', !editable);
+
+        if (who && !editable) {
+          this.$('#lock-message').html(who + ' has this project locked');
+        } else {
+          this.$('#lock-message').empty();
+        }
+      }
+    },
+
     inputFields: {
       view: {
         hotKey: 118,
         collection: new Backbone.Collection([
           {
             name: 'Power Flow',
-            view: 'Canvas',
+            uri: 'power',
+            View: Device.views.Canvas,
             rendering: 'POWER'
           }, {
             name: 'Data Acquisition',
-            view: 'Canvas',
+            uri: 'daq',
+            View: Device.views.Canvas,
             rendering: 'DAQ'
           }, {
             name: 'Device Table',
-            view: 'Table'
+            uri: 'table',
+            View: Device.views.Table
           }, {
             name: 'Notes',
-            view: 'Notes'
+            uri: 'notes',
+            View: views.Notes
           }
         ]),
 
         onShow: function(){
-          this.triggerMethod('key:enter', this.collection.first());
+          var model = this.collection.findWhere({uri: this.options.view});
+
+          this.triggerMethod('key:enter', model || this.collection.first());
         },
 
         onApply: function(model){
@@ -99,97 +236,14 @@ define([
       }
     },
 
-    initialize: function(options){
-      this.equipment = options.equipment;
-      this.user = options.user;
-
-      this.listenTo(Backbone, 'editor:selection', function(selection){
-        this.selection = selection.length > 0 ? selection : null;
-      });
-
-      this.listenTo(Backbone, 'editor:keydown editor:keypress', this.handleKeyEvent);
-    },
-
-    keydownEvents: {
-      46: 'delete'
-    },
-
-    handleKeyEvent: function(e){
-      var value = (this[e.type + 'Events'] || {})[e.which];
-
-      if (value && !_.contains(['INPUT', 'TEXTAREA'], e.target.nodeName)) {
-        e.preventDefault();
-        this.triggerMethod(value);
-      }
-    },
-
-    modelEvents: {
-      'sync': function(project){
-        this.checkRenderings(project.outgoing);
-      },
-
-      'change:editor': function(project, value){
-        this.toggleEditable();
-      }
-    },
-
-    toggleEditable: function(){
-      var who = this.model.get('editor');
-
-      this.editable = !who || who === this.user.get('email');
-      this.$el.find('input:not(.nav)').attr('disabled', !this.editable);
-      this.$('#lock-message').html(this.editable ? '' :
-        (who || 'Someone') + ' has this project locked');
-    },
-
-    checkRenderings: function(devices, target){
-      var project = this.model;
-
-      devices.each(function(device){
-        var equip = device.equipment;
-
-        equip.addRootRenderings(device, project);
-
-        if (target) {
-          _.each(this.equipment.getRenderingLabels(), function(label){
-            if (!device.getPosition(label) && equip.getRelationship(target, label)) {
-              equip.addRelativeRendering(device, project, label, target);
-            }
-          });
-        }
-
-        this.checkRenderings(device.outgoing, device);
-        this.checkName(device);
-      }, this);
-    },
-
-    checkName: function(device){
-      var name, did, index;
-
-      if (!device.has('name')) {
-        did = device.get('did');
-
-        if (did) {
-          name = device.equipment.get('name');
-          index = parseInt(did.replace(/^.*-/, ''), 10);
-
-          name = name && index ? name + ' ' + index : did;
-        } else {
-          name = 'undefined';
-        }
-
-        device.set({name: name});
-      }
-    },
-
-    onShow: function(){
-      this.toggleEditable();
-
-      _.each(this.inputFields, function(options, name){
-        var view = _.extend( new InputField({
-          collection: options.collection,
+    _initInputFields: function(){
+      _.each(this.inputFields, function(obj, name){
+        var view = new InputField(_.extend({}, this.options, {
+          collection: obj.collection,
           el: this.$('#' + name)
-        }), _.omit(options, 'collection'));
+        }));
+
+        _.extend(view, _.omit(obj, 'collection'));
 
         _.each(['focus', 'apply'], function(evnt){
           this.listenTo(view, evnt, function(){
@@ -202,6 +256,25 @@ define([
 
         Marionette.triggerMethod.call(view, 'show');
       }, this);
+    },
+
+    onShow: function(){
+      this._initInputFields();
+      this.updateEditable();
+
+      $(document).on('keydown keypress', this.handleKeyEvent);
+    },
+
+    onClose: function(){
+      $(document).off('keydown keypress', this.handleKeyEvent);
+
+      if (this.editable) {
+        this.model.setLock(false);
+      }
+
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
     },
 
     onAddFocus: function(view){
@@ -348,31 +421,23 @@ define([
 
     addDevice: function(equip, target){
       var project = this.model,
-        rendering = this.currentView.get('rendering'),
         device = equip.factory(project),
-        parnt, rel;
+        parnt = equip.isRoot() ? project : target,
+        rel = parnt && equip.getRelationship(parnt);
 
-      if (equip.isRoot()) {
-        equip.addRootRenderings(device, project);
-        parnt = project;
-      }
+      if (rel && parnt.has('id')) {
+        _.each(_.keys(Equipment.renderings), function(label){
+          equip.addRendering(device, project, label, target);
+        });
 
-      if (target && equip.hasRendering(rendering)) {
-        equip.addRelativeRendering(device, project, rendering, target);
-        parnt = parnt || target;
-      }
+        project.devices.add(device);
+        device.connectTo(parnt, rel);
 
-      if (parnt && parnt.has('id')) {
-        rel = equip.getRelationship(parnt);
-
-        if (rel) {
-          project.devices.add(device);
-          device.connectTo(parnt, rel);
-
-          device.save({
-            parent_id: parnt.get('id'),
-            relationship_label: rel
-          }).done(_.bind(function(){
+        device.save({
+          parent_id: parnt.get('id'),
+          relationship_label: rel
+        }, {
+          success: _.bind(function(){
             project.addNote([
               'added',
               equip.get('name').toLowerCase(),
@@ -386,8 +451,8 @@ define([
             if (target && target !== parnt) {
               this.connectDevice(device, target);
             }
-          }, this));
-        }
+          }, this)
+        });
       }
     },
 
@@ -404,14 +469,15 @@ define([
             project_label: project.id,
             id: device.get('id')
           },
-          processData: true
-        }).done(_.bind(function(){
-          project.addNote([
-            'deleted',
-            equip.get('name').toLowerCase(),
-            device.get('did')
-          ].join(' '), this.user);
-        }, this));
+          processData: true,
+          success: _.bind(function(){
+            project.addNote([
+              'deleted',
+              equip.get('name').toLowerCase(),
+              device.get('did')
+            ].join(' '), this.user);
+          }, this)
+        });
 
       // Otherwise, if the device has no outgoing relationships in the current
       // view.
@@ -451,7 +517,7 @@ define([
           }
         }).done(_.bind(function(){
           if (!device.getPosition(rendering)) {
-            equip.addRelativeRendering(device, project, rendering, target);
+            equip.addRendering(device, project, rendering, target);
             device.save();
           }
 
@@ -503,54 +569,6 @@ define([
             target.get('did')
           ].join(' '), this.user);
         }, this));
-      }
-    }
-  });
-
-  views.Notes = Marionette.ItemView.extend({
-    tagName: 'form',
-    template: {
-      type: 'handlebars',
-      template: notesTemplate
-    },
-
-    attributes: {
-      id: 'notes'
-    },
-
-    ui: {
-      textarea: 'textarea'
-    },
-
-    events: {
-      'keyup textarea': function(e){
-        this.model.set('notes', this.ui.textarea.val());
-
-        if (e.which === 27) {
-          this.ui.textarea.blur();
-        }
-      },
-
-      'blur textarea': function(){
-        if (this.options.editable) {
-          this.model.save();
-        }
-      }
-    },
-
-    modelEvents: {
-      'change:notes': function(){
-        this.ui.textarea.val(this.model.get('notes'));
-      }
-    },
-
-    onShow: function(){
-      this.ui.textarea.attr('disabled', !this.options.editable);
-    },
-
-    onClose: function(){
-      if (this.options.editable) {
-        this.model.save();
       }
     }
   });

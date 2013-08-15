@@ -13,7 +13,7 @@
     "backbone.marionette.handlebars": "latest",
     "backbone.babysitter": "latest",
     "backbone.wreqr": "latest",
-    "virtual-collection": "git@github.com:justinwinslow/Backbone.VirtualCollection.git#master",
+    "backbone.virtualCollection": "git@github.com:p3drosola/Backbone.VirtualCollection.git#master",
     "requirejs-text": "latest",
     "css": "git://github.com/justinwinslow/css.git",
     "handlebars": "latest",
@@ -24,6 +24,7 @@
     "jquery-mousewheel": "latest",
     "highcharts": "latest",
     "handsontable": "git://github.com/ianmetcalf/jquery-handsontable.git#master",
-    "walltime-js": "latest"
+    "walltime-js": "latest",
+    "datepicker": "git@github.com:foxrunsoftware/DatePicker.git#master"
   }
 }
