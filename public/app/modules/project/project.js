@@ -318,6 +318,77 @@ define([
 
     getOrCreate: function(label){
       return this.get(label) || this.push({project_label: label});
+    },
+
+    fetchIssues: function(){
+      var that = this,
+          projectIds = [];
+
+      this.each(function(project){
+        projectIds.push(project.id);
+      });
+
+      return $.ajax({
+        url: '/api/alarms/active/' + projectIds.join(','),
+        cache: false,
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done(function(data){
+        that.trigger('data:done', data);
+        that.parseIssues(data);
+      });
+    },
+
+    parseIssues: function(data){
+      var issues = data.alarms;
+
+      this.each(function(project){
+        var projectIssues = [];
+
+        _.each(issues, function(issue){
+          if (issue.project_label === project.id) {
+            projectIssues.push(issue);
+          }
+        });
+
+        project.issues.reset(projectIssues);
+      });
+    },
+
+    fetchProjectKpis: function(){
+      var that = this;
+      var traces = [];
+
+      this.each(function(project){
+        traces.push({
+          project_label: project.id,
+          project_timezone: project.get('timezone')
+        });
+      });
+
+      return $.ajax({
+        url: '/api/kpis',
+        cache: false,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          traces: traces
+        }
+      })
+      .done(function(data){
+        that.trigger('data:done', data);
+        that.parseProjectKpis(data.response);
+      });
+    },
+
+    parseProjectKpis: function(data){
+      // Loop through returned KPIs and send the data to their respective projects
+      _.each(data, function(kpi){
+        var project = this.findWhere({project_label: kpi.project_label});
+
+        project.parseKpis(kpi);
+      }, this);
     }
   });
 
