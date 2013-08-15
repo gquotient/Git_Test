@@ -8,6 +8,7 @@ define([
 
   'hbs!issue/templates/table',
   'hbs!issue/templates/tableRow',
+  'hbs!issue/templates/tableRowEmpty',
   'hbs!issue/templates/navigationItem',
   'hbs!issue/templates/navigationList'
 ],
@@ -21,6 +22,7 @@ function(
 
   tableTemplate,
   tableRowTemplate,
+  tableRowEmptyTemplate,
   navigationItemTemplate,
   navigationListTemplate
 ){
@@ -77,7 +79,13 @@ function(
     },
     itemViewContainer: 'tbody',
     itemView: Issue.views.TableRow,
-    emptyView: Marionette.ItemView.extend({tagName: 'tr', template: _.template('<td colspan="2">There are currently no active alarms</td>')}),
+    emptyView: Marionette.ItemView.extend({
+      tagName: 'tr',
+      template: {
+        type: 'handlebars',
+        template: tableRowEmptyTemplate
+      }
+    }),
     events: {
       'click .viewAll': function(event){
         event.preventDefault();
