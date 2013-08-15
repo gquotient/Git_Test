@@ -34,8 +34,8 @@ function(
 
   Issue.Collection = Backbone.Collection.extend({
     model: Issue.Model,
-    parse: function(response){
-      return response.alarms;
+    parse: function(data){
+      return data.alarms;
     },
     getSeverity: function(){
       var statusLevels = ['OK', 'Warning', 'Alert'],
