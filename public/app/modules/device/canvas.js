@@ -337,7 +337,7 @@ define([
 
       this.triggerMethod(type, {
         type: type,
-        modifier: e.ctrlKey || e.which === 3,
+        modifier: e.ctrlKey,
 
         point: point,
         delta: delta,
