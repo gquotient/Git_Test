@@ -89,22 +89,9 @@ define([
       this.lazySave = _.debounce(Backbone.Model.prototype.save, 1000);
 
       // This might be a bit convoluted and potentially fire too often but it works
-      this.listenTo(this.issues, 'change reset add remove', this.setStatus);
-    },
-
-    setStatus: function(){
-      var statusLevels = ['OK', 'Warning', 'Alert'],
-          status = 'OK';
-
-      this.issues.each(function(issue){
-        var priority = issue.get('active_conditions')[0].priority;
-
-        if (_.indexOf(statusLevels, priority) > _.indexOf(statusLevels, status)) {
-          status = priority;
-        }
+      this.listenTo(this.issues, 'change reset add remove', function(){
+        this.set('status', this.issues.getSeverity());
       });
-
-      this.set('status', status);
     },
 
     setLock: function(lock){

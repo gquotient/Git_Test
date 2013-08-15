@@ -40,8 +40,6 @@ define([
       power_now: 0
     },
 
-    kpis: ['dc_capacity', 'ac_capacity'],
-
     initialize: function(options){
       this.projects = new Project.Collection([], {comparator: 'display_name'});
 
@@ -54,21 +52,31 @@ define([
       }, this);
 
       this.set('total_projects', this.projects.length);
-      this.set(this.aggregateKpis());
+      this.aggregateKpis();
+      this.listenTo(this.projects, 'change', this.aggregateKpis);
     },
 
     aggregateKpis: function(){
-      var that = this;
+      var that = this,
+        kpis = {
+          dc_capacity: 0,
+          ac_capacity: 0,
+          irradiance_now: 0,
+          power_now: 0
+        };
 
-      return this.projects.reduce(function(memo, project){
-        _.each(that.kpis, function(kpi){
-          var value = project.get(kpi) || 0;
+      this.projects.each(function(project){
+        var dc_capacity = project.get('dc_capacity'),
+            ac_capacity = project.get('ac_capacity'),
+            projectKpis = project.get('kpis');
 
-          memo[kpi] = (memo[kpi] || 0) + value;
-        });
+        kpis.dc_capacity += (dc_capacity || 0);
+        kpis.ac_capacity += (ac_capacity || 0);
+        kpis.irradiance_now += (projectKpis.irradiance || 0);
+        kpis.power_now += (projectKpis.power || 0);
+      }, this);
 
-        return memo;
-      }, {});
+      this.set(kpis);
     }
   });
 
