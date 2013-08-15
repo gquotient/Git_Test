@@ -80,33 +80,30 @@ define([
       this.$el.find('.deviceName').html('<a href="#' + device.get('graph_key') + '" class="device">' + device.get('did') + '</a>');
 
       var chart_powerAndIrradiance = new Chart.views.Basic({
-        model: new Chart.models.timeSeries({
-          autoUpdate: false,
-          'traces': [
-            {
-              'project_label': project.id,
-              'ddl': 'pgen-env',
-              'dtstart': startTime,
-              'dtstop': stopTime,
-              'columns': ['freezetime', 'irradiance'],
-              project_timezone: project.get('timezone')
-            },
-            {
-              'project_label': project.id,
-              'ddl': this.model.get('device_type'),
-              'dtstart': startTime,
-              'dtstop': stopTime,
-              'columns': ['freezetime', this.model.get('device_column')],
-              'filters': [
-                {
-                  'column': 'identifier',
-                  'in_set': [device.get('graph_key')]
-                }
-              ],
-              project_timezone: project.get('timezone')
-            }
-          ]
-        }),
+        traces: [
+          {
+            'project_label': project.id,
+            'ddl': 'pgen-env',
+            'dtstart': startTime,
+            'dtstop': stopTime,
+            'columns': ['freezetime', 'irradiance'],
+            project_timezone: project.get('timezone')
+          },
+          {
+            'project_label': project.id,
+            'ddl': this.model.get('device_type'),
+            'dtstart': startTime,
+            'dtstop': stopTime,
+            'columns': ['freezetime', this.model.get('device_column')],
+            'filters': [
+              {
+                'column': 'identifier',
+                'in_set': [device.get('graph_key')]
+              }
+            ],
+            project_timezone: project.get('timezone')
+          }
+        ],
         series: [
           Chart.seriesDefaults.irradiance,
           Chart.seriesDefaults.power
