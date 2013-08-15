@@ -507,6 +507,11 @@ define([
 
       this.listenTo(this.model, 'change:status', function(model){
         this.marker.setIcon(this.markerStyles[model.get('status')]);
+
+        // This shouldn't have to be here but the markers occassionally end up behind
+        // the map layer. This brings focus back to them and makes them visble.
+        // There is probably a better solution to this...
+        this.highlight();
       });
 
       this.listenTo(Backbone, 'mouseover:project', this.highlight);
@@ -590,11 +595,13 @@ define([
       });
     },
     onClose: function(){
+      this.marker.off();
       this.popUp.close();
     },
     remove: function(){
       var that = this;
       this.stopListening();
+      this.marker.off();
       this.fadeTo(250, 0, function(){ that.options.markers.removeLayer(that.marker); } );
       this.popUp.close();
     }
@@ -772,17 +779,17 @@ define([
       // add an OpenStreetMap tile layer
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-      }).addTo(map).setOpacity(0.99);
-
-      this.addLayers();
+      }).addTo(map);
 
       this.markers = new L.layerGroup([]);
 
       this.markers.addTo(this.map);
 
+      this._renderChildren();
+
       this.fitToBounds();
 
-      this._renderChildren();
+      this.addLayers();
 
       this.initFullscreen();
 
