@@ -367,10 +367,9 @@ define([
     itemViewContainer: 'tbody',
     itemView: Project.views.DataListItem,
     initialize: function(options){
-      this.collection = new Backbone.VirtualCollection(options.collection);
-
-      // This is need to kill listeners
-      this.collection.closeWith(this);
+      this.collection = new Backbone.VirtualCollection(options.collection, {
+        close_with: this
+      });
     }
   });
 
