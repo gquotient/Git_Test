@@ -149,8 +149,8 @@ require.config({
       deps: ['underscore', 'jquery'],
       exports: 'Backbone'
     },
-    'backbone.virtual-collection': {
-      deps: ['backbone']
+    'backbone.virtualCollection': {
+      deps: ['backbone', 'underscore']
     },
     underscore: {
       exports: '_'

@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'backbone.virtualCollection',
 
   'leaflet',
   'css!leaflet.css', //This seems silly but also seems to work, sooooo...
@@ -29,6 +30,7 @@ define([
   _,
   Backbone,
   Marionette,
+  VirtualCollection,
 
   L,
   leafletCSS,
@@ -86,22 +88,10 @@ define([
 
       this.lazySave = _.debounce(Backbone.Model.prototype.save, 1000);
 
-      this.listenTo(this.issues, 'reset', this.setStatus);
-    },
-
-    setStatus: function(issues){
-      var statusLevels = ['OK', 'Warning', 'Alert'],
-          status = 'OK';
-
-      issues.each(function(issue){
-        var priority = issue.get('active_conditions')[0].priority;
-
-        if (_.indexOf(statusLevels, priority) > _.indexOf(statusLevels, status)) {
-          status = priority;
-        }
+      // This might be a bit convoluted and potentially fire too often but it works
+      this.listenTo(this.issues, 'change reset add remove', function(){
+        this.set('status', this.issues.getSeverity());
       });
-
-      this.set('status', status);
     },
 
     setLock: function(lock){
@@ -315,6 +305,77 @@ define([
 
     getOrCreate: function(label){
       return this.get(label) || this.push({project_label: label});
+    },
+
+    fetchIssues: function(){
+      var that = this,
+          projectIds = [];
+
+      this.each(function(project){
+        projectIds.push(project.id);
+      });
+
+      return $.ajax({
+        url: '/api/alarms/active/' + projectIds.join(','),
+        cache: false,
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done(function(data){
+        that.trigger('data:done', data);
+        that.parseIssues(data);
+      });
+    },
+
+    parseIssues: function(data){
+      var issues = data.alarms;
+
+      this.each(function(project){
+        var projectIssues = [];
+
+        _.each(issues, function(issue){
+          if (issue.project_label === project.id) {
+            projectIssues.push(issue);
+          }
+        });
+
+        project.issues.reset(projectIssues);
+      });
+    },
+
+    fetchProjectKpis: function(){
+      var that = this;
+      var traces = [];
+
+      this.each(function(project){
+        traces.push({
+          project_label: project.id,
+          project_timezone: project.get('timezone')
+        });
+      });
+
+      return $.ajax({
+        url: '/api/kpis',
+        cache: false,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          traces: traces
+        }
+      })
+      .done(function(data){
+        that.trigger('data:done', data);
+        that.parseProjectKpis(data.response);
+      });
+    },
+
+    parseProjectKpis: function(data){
+      // Loop through returned KPIs and send the data to their respective projects
+      _.each(data, function(kpi){
+        var project = this.findWhere({project_label: kpi.project_label});
+
+        project.parseKpis(kpi);
+      }, this);
     }
   });
 
@@ -363,8 +424,10 @@ define([
     },
     itemViewContainer: 'tbody',
     itemView: Project.views.DataListItem,
-    onClose: function(){
-      this.collection = null;
+    initialize: function(options){
+      this.collection = new Backbone.VirtualCollection(options.collection, {
+        close_with: this
+      });
     }
   });
 
@@ -743,6 +806,9 @@ define([
       'click': function(){
         Backbone.trigger('click:project', this.model);
       }
+    },
+    modelEvents: {
+      'change': 'render'
     }
   });
 

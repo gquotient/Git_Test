@@ -58,5 +58,7 @@
   "Close": "Close",
   "Reset": "Reset",
   "Save": "Save",
-  "Delete": "Delete"
+  "Delete": "Delete",
+
+  "There are currently no active alarms": "There are currently no active alarms"
 }

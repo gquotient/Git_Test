@@ -240,7 +240,7 @@ define([
 
       this.issues.show(issueView);
 
-      issueView.collection.fetch();
+      this.model.issues.fetch();
 
       // Build kpi view
       var kpisView = new Project.views.Kpis({model: this.model});

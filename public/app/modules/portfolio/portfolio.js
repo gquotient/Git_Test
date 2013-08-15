@@ -40,8 +40,6 @@ define([
       power_now: 0
     },
 
-    kpis: ['dc_capacity', 'ac_capacity'],
-
     initialize: function(options){
       this.projects = new Project.Collection([], {comparator: 'display_name'});
 
@@ -54,101 +52,31 @@ define([
       }, this);
 
       this.set('total_projects', this.projects.length);
-      this.set(this.aggregateKpis());
-    },
-
-    fetchIssues: function(){
-      var that = this,
-          projectIds = [];
-
-      this.projects.each(function(project){
-        projectIds.push(project.id);
-      });
-
-      return $.ajax({
-        url: '/api/alarms/active/' + projectIds.join(','),
-        cache: false,
-        type: 'GET',
-        dataType: 'json'
-      })
-      .done(function(data){
-        that.trigger('data:done', data);
-        that.parseIssues(data);
-      });
-    },
-
-    parseIssues: function(data){
-      var issues = data.alarms;
-
-      this.projects.each(function(project){
-        var projectIssues = [];
-
-        _.each(issues, function(issue){
-          if (issue.project_label === project.id) {
-            projectIssues.push(issue);
-          }
-        });
-
-        project.issues.reset(projectIssues);
-      });
-    },
-
-    fetchProjectKpis: function(){
-      var that = this;
-      var traces = [];
-
-      this.projects.each(function(project){
-        traces.push({
-          project_label: project.id,
-          project_timezone: project.get('timezone')
-        });
-      });
-
-      return $.ajax({
-        url: '/api/kpis',
-        cache: false,
-        type: 'POST',
-        dataType: 'json',
-        data: {
-          traces: traces
-        }
-      })
-      .done(function(data){
-        that.trigger('data:done', data);
-        that.parseProjectKpis(data.response);
-      });
-    },
-
-    parseProjectKpis: function(data){
-      var irradiance = 0, power = 0;
-
-      // Loop through returned KPIs and send the data to their respective projects
-      _.each(data, function(kpi){
-        var project = this.projects.findWhere({project_label: kpi.project_label});
-
-        project.parseKpis(kpi);
-
-        irradiance += (kpi.performance_snapshot.irradiance || 0);
-        power += (kpi.performance_snapshot.ac_power || 0);
-      }, this);
-
-      // Set portfolio aggregated kpis
-      this.set('irradiance_now', irradiance);
-      this.set('power_now', power);
+      this.aggregateKpis();
+      this.listenTo(this.projects, 'change', this.aggregateKpis);
     },
 
     aggregateKpis: function(){
-      var that = this;
+      var that = this,
+        kpis = {
+          dc_capacity: 0,
+          ac_capacity: 0,
+          irradiance_now: 0,
+          power_now: 0
+        };
 
-      return this.projects.reduce(function(memo, project){
-        _.each(that.kpis, function(kpi){
-          var value = project.get(kpi) || 0;
+      this.projects.each(function(project){
+        var dc_capacity = project.get('dc_capacity'),
+            ac_capacity = project.get('ac_capacity'),
+            projectKpis = project.get('kpis');
 
-          memo[kpi] = (memo[kpi] || 0) + value;
-        });
+        kpis.dc_capacity += (dc_capacity || 0);
+        kpis.ac_capacity += (ac_capacity || 0);
+        kpis.irradiance_now += (projectKpis.irradiance || 0);
+        kpis.power_now += (projectKpis.power || 0);
+      }, this);
 
-        return memo;
-      }, {});
+      this.set(kpis);
     }
   });
 
