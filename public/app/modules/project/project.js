@@ -79,7 +79,8 @@ define([
       },
       notes: '',
       // Status as an array for sorting purposes
-      status: [-1, 'Unknown']
+      status: 'Unknown',
+      statusValue: -1
     },
 
     initialize: function(){
@@ -91,7 +92,8 @@ define([
 
       // This might be a bit convoluted and potentially fire too often but it works
       this.listenTo(this.issues, 'change reset add remove', function(){
-        this.set('status', this.issues.getSeverity());
+        var status = this.issues.getSeverity();
+        this.set(status);
       });
     },
 
@@ -481,7 +483,7 @@ define([
   Project.views.MarkerView = Marionette.ItemView.extend({
     initialize: function(options){
       var that = this,
-        icon = this.markerStyles[this.model.get('status')[1]];
+        icon = this.markerStyles[this.model.get('status')];
 
       this.marker = L.marker(
         [
@@ -504,7 +506,7 @@ define([
       };
 
       this.listenTo(this.model, 'change:status', function(model){
-        this.marker.setIcon(this.markerStyles[model.get('status')[1]]);
+        this.marker.setIcon(this.markerStyles[model.get('status')]);
       });
 
       this.listenTo(Backbone, 'mouseover:project', this.highlight);
@@ -772,15 +774,15 @@ define([
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
       }).addTo(map).setOpacity(0.99);
 
+      this.addLayers();
+
       this.markers = new L.layerGroup([]);
 
       this.markers.addTo(this.map);
 
-      this._renderChildren();
-
       this.fitToBounds();
 
-      this.addLayers();
+      this._renderChildren();
 
       this.initFullscreen();
 

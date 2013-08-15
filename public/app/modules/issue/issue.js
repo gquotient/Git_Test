@@ -39,17 +39,22 @@ function(
     },
     getSeverity: function(){
       var statusLevels = ['OK', 'Warning', 'Alert'],
-          status = [0, 'OK'];
+          status = 'OK',
+          statusValue = 0;
 
       this.each(function(issue){
         var priority = issue.get('active_conditions')[0].priority;
 
         if (_.indexOf(statusLevels, priority) > _.indexOf(statusLevels, status)) {
-          status = [_.indexOf(statusLevels, priority), priority];
+          status = priority;
+          statusValue = _.indexOf(statusLevels, priority);
         }
       });
 
-      return status;
+      return {
+        status: status,
+        statusValue: statusValue
+      };
     },
     initialize: function(models, options){
       this.url = '/api/alarms/active/' + options.projectId;
