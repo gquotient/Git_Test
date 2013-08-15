@@ -118,6 +118,7 @@ module.exports = function(app){
         'dataSources',
         'kpis',
         'status',
+        'statusValue',
         'type'
       ]),
       translate: combineProperties
@@ -131,9 +132,6 @@ module.exports = function(app){
         'project_label'
       ], [
         'site_label',
-        'latitude',
-        'longitude',
-        'elevation',
         'index_name',
 
         'editor',
@@ -142,6 +140,7 @@ module.exports = function(app){
         'dataSources',
         'kpis',
         'status',
+        'statusValue',
         'type'
       ]),
       translate: combineProperties

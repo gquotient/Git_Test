@@ -34,22 +34,27 @@ function(
 
   Issue.Collection = Backbone.Collection.extend({
     model: Issue.Model,
-    parse: function(response){
-      return response.alarms;
+    parse: function(data){
+      return data.alarms;
     },
     getSeverity: function(){
       var statusLevels = ['OK', 'Warning', 'Alert'],
-          status = 'OK';
+          status = 'OK',
+          statusValue = 0;
 
       this.each(function(issue){
         var priority = issue.get('active_conditions')[0].priority;
 
         if (_.indexOf(statusLevels, priority) > _.indexOf(statusLevels, status)) {
           status = priority;
+          statusValue = _.indexOf(statusLevels, priority);
         }
       });
 
-      return status;
+      return {
+        status: status,
+        statusValue: statusValue
+      };
     },
     initialize: function(models, options){
       this.url = '/api/alarms/active/' + options.projectId;

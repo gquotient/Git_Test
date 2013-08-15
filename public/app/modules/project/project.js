@@ -78,7 +78,9 @@ define([
         inverter: ''
       },
       notes: '',
-      status: 'OK'
+      // Status as an array for sorting purposes
+      status: 'Unknown',
+      statusValue: -1
     },
 
     initialize: function(){
@@ -90,7 +92,8 @@ define([
 
       // This might be a bit convoluted and potentially fire too often but it works
       this.listenTo(this.issues, 'change reset add remove', function(){
-        this.set('status', this.issues.getSeverity());
+        var status = this.issues.getSeverity();
+        this.set(status);
       });
     },
 
@@ -526,6 +529,10 @@ define([
       Alert: L.divIcon({
         className: 'alert',
         iconSize: [15,32]
+      }),
+      Unknown: L.divIcon({
+        className: 'unknown',
+        iconSize: [15,32]
       })
     },
 
@@ -767,15 +774,15 @@ define([
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
       }).addTo(map).setOpacity(0.99);
 
+      this.addLayers();
+
       this.markers = new L.layerGroup([]);
 
       this.markers.addTo(this.map);
 
-      this.addLayers();
+      this.fitToBounds();
 
       this._renderChildren();
-
-      this.fitToBounds();
 
       this.initFullscreen();
 

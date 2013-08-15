@@ -31,7 +31,6 @@ define([
     defaults: {
       type: 'portfolio',
 
-      total_portfolios: 0,
       total_projects: 0,
 
       dc_capacity: 0,

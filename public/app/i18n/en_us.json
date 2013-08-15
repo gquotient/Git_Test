@@ -14,7 +14,9 @@
   "Portfolios": "Portfolios",
   "Projects": "Projects",
   "Project Name": "Project Name",
+  "Total Projects": "Total Projects",
   "Status": "Status",
+  "New Portfolio": "New Portfolio",
 
   "Users": "Users",
   "Teams": "Teams",
@@ -60,5 +62,6 @@
   "Save": "Save",
   "Delete": "Delete",
 
+  "Alarm Status": "Alarm Status",
   "There are currently no active alarms": "There are currently no active alarms"
 }
