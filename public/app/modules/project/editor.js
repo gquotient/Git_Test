@@ -160,6 +160,8 @@ define([
         } else {
           this.$('#lock-message').empty();
         }
+
+        Backbone.trigger('editor:change:editable', editable);
       }
     },
 

@@ -13,9 +13,7 @@ define([
   'layouts/devices/core',
   'layouts/devices/inverter',
 
-  'hbs!layouts/templates/devices',
-
-
+  'hbs!layouts/templates/devices'
 ], function(
   $,
   _,
