@@ -273,6 +273,9 @@ td.name {
   box-shadow: 0 1px 0 #444;
   float: left;
   //margin: 0 auto;
+  &.Unknown {
+    background: #aaa;
+  }
   &.Warning {
     background: colorWarningYellow;
   }
@@ -450,6 +453,9 @@ leftColumnWidthSml = 200px;
     }
     &.alert {
       background-image: url(../img/marker_alert.png);
+    }
+    &.unknown {
+      background-image: url(../img/marker_unknown.png);
     }
   }
   .leaflet-popup {

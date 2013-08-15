@@ -78,7 +78,8 @@ define([
         inverter: ''
       },
       notes: '',
-      status: 'OK'
+      // Status as an array for sorting purposes
+      status: [-1, 'Unknown']
     },
 
     initialize: function(){
@@ -480,7 +481,7 @@ define([
   Project.views.MarkerView = Marionette.ItemView.extend({
     initialize: function(options){
       var that = this,
-        icon = this.markerStyles[this.model.get('status')];
+        icon = this.markerStyles[this.model.get('status')[1]];
 
       this.marker = L.marker(
         [
@@ -503,7 +504,7 @@ define([
       };
 
       this.listenTo(this.model, 'change:status', function(model){
-        this.marker.setIcon(this.markerStyles[model.get('status')]);
+        this.marker.setIcon(this.markerStyles[model.get('status')[1]]);
       });
 
       this.listenTo(Backbone, 'mouseover:project', this.highlight);
@@ -525,6 +526,10 @@ define([
       }),
       Alert: L.divIcon({
         className: 'alert',
+        iconSize: [15,32]
+      }),
+      Unknown: L.divIcon({
+        className: 'unknown',
         iconSize: [15,32]
       })
     },
@@ -771,11 +776,11 @@ define([
 
       this.markers.addTo(this.map);
 
-      this.addLayers();
-
       this._renderChildren();
 
       this.fitToBounds();
+
+      this.addLayers();
 
       this.initFullscreen();
 

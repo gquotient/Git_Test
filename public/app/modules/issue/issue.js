@@ -39,13 +39,13 @@ function(
     },
     getSeverity: function(){
       var statusLevels = ['OK', 'Warning', 'Alert'],
-          status = 'OK';
+          status = [0, 'OK'];
 
       this.each(function(issue){
         var priority = issue.get('active_conditions')[0].priority;
 
         if (_.indexOf(statusLevels, priority) > _.indexOf(statusLevels, status)) {
-          status = priority;
+          status = [_.indexOf(statusLevels, priority), priority];
         }
       });
 
