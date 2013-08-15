@@ -7,7 +7,7 @@ define([
   'jquery.mousewheel',
   'paper',
 
-  './canvas_symbols'
+  './canvasSymbols'
 ], function(
   $,
   _,
