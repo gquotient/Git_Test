@@ -63,11 +63,7 @@ function(
     },
     itemViewContainer: 'tbody',
     itemView: Issue.views.TableRow,
-    onRender: function(){
-      if (!this.collection.length) {
-        this.$('tbody').append('<tr><td colspan="2">There are currently no active alarms</td></tr>');
-      }
-    },
+    emptyView: Marionette.ItemView.extend({tagName: 'tr', template: _.template('<td colspan="2">There are currently no active alarms</td>')}),
     events: {
       'click .viewAll': function(event){
         event.preventDefault();

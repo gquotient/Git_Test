@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'backbone.virtualCollection',
 
   'leaflet',
   'css!leaflet.css', //This seems silly but also seems to work, sooooo...
@@ -29,6 +30,7 @@ define([
   _,
   Backbone,
   Marionette,
+  VirtualCollection,
 
   L,
   leafletCSS,
@@ -86,14 +88,15 @@ define([
 
       this.lazySave = _.debounce(Backbone.Model.prototype.save, 1000);
 
-      this.listenTo(this.issues, 'reset', this.setStatus);
+      // This might be a bit convoluted and potentially fire too often but it works
+      this.listenTo(this.issues, 'change reset add remove', this.setStatus);
     },
 
-    setStatus: function(issues){
+    setStatus: function(){
       var statusLevels = ['OK', 'Warning', 'Alert'],
           status = 'OK';
 
-      issues.each(function(issue){
+      this.issues.each(function(issue){
         var priority = issue.get('active_conditions')[0].priority;
 
         if (_.indexOf(statusLevels, priority) > _.indexOf(statusLevels, status)) {
@@ -363,8 +366,11 @@ define([
     },
     itemViewContainer: 'tbody',
     itemView: Project.views.DataListItem,
-    onClose: function(){
-      this.collection = null;
+    initialize: function(options){
+      this.collection = new Backbone.VirtualCollection(options.collection);
+
+      // This is need to kill listeners
+      this.collection.closeWith(this);
     }
   });
 
@@ -743,6 +749,9 @@ define([
       'click': function(){
         Backbone.trigger('click:project', this.model);
       }
+    },
+    modelEvents: {
+      'change': 'render'
     }
   });
 
