@@ -58,9 +58,23 @@ define([
     },
     sort: function(comparator){
       // Set new comparator on collection
-      this.collection.comparator = comparator;
+      if (_.indexOf(comparator, '-') === 0) {
+        // Remove minus
+        comparator = comparator.slice(1);
+
+        // Reverse sort
+        this.collection.comparator = function(valueA, valueB){
+          if (valueA.get(comparator) > valueB.get(comparator)){ return -1; }
+          if (valueA.get(comparator) < valueB.get(comparator)){ return 1; }
+          return 0;
+        };
+      } else {
+        this.collection.comparator = comparator;
+      }
+
       // Sort collection
       this.collection.sort();
+
       // Re-render only the child views
       this._renderChildren();
       // Reset the active el since render blows it away
