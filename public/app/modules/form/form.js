@@ -214,6 +214,18 @@ function(
         var newModelView = new this.newRowView( { model: newModel, collection: this.collection, schema: this.model.schema, fields: this.fields, actions: this.actions } );
         this.$el.find('tbody').append( newModelView.render().el );
       }
+    },
+    onShow: function(){
+      // if collection is empty fetch data
+      if (!this.collection.length) {
+        var $loadingIndicator = $('<span class="loadingIndicator"></span>');
+
+        this.$('tbody').append($loadingIndicator);
+
+        this.collection.fetch().done(function(){
+          $loadingIndicator.remove();
+        });
+      }
     }
   });
 
