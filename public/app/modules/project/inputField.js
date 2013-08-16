@@ -95,12 +95,10 @@ define([
 
         this.index = sort(this.index, {
           iterator: function(cid, index, list){
-            var model = this.collection.get(cid),
-              result = iterator.call(this, model, index, list);
-
-            return _.isString(result) ? naturalSplit(result.toLowerCase()) : result;
+            return iterator.call(this, this.collection.get(cid), index, list);
           },
-          sorter: sorter
+          sorter: sorter,
+          natural: true
         }, this);
 
         if (!options.silent) {
@@ -110,6 +108,14 @@ define([
         return this;
       }
     });
+
+  function comparator(a, b){
+    if (a !== b) {
+      if (a > b || a === void 0) { return 1; }
+      if (a < b || b === void 0) { return -1; }
+    }
+    return 0;
+  }
 
   function naturalSplit(str){
     return _.map(str.match(/(\.\d+)|(\d+)|(\D+)/g), function(part){
@@ -122,22 +128,25 @@ define([
   // Sort that takes optional iterator and sorter functions and sorts array
   // elements properly instead of concatenating them.
   function sort(obj, options, context){
-    options = _.defaults(options || {}, {
-      iterator: _.identity,
-      sorter: function(a, b){
-        if (a !== b) {
-          if (a > b || a === void 0) { return 1; }
-          if (a < b || b === void 0) { return -1; }
-        }
-        return 0;
-      }
-    });
+    options = options || {};
+
+    var iterator = options.iterator || _.identity,
+      sorter = options.sorter || comparator;
+
+    if (options.natural) {
+      iterator = _.wrap(iterator, function(func){
+        var args = Array.prototype.slice.apply(arguments),
+          result = func.apply(context, args.slice(1));
+
+        return _.isString(result) ? naturalSplit(result) : result;
+      });
+    }
 
     return _.pluck(_.map(obj, function(value, index, list){
       return {
         value: value,
         index: index,
-        criteria: options.iterator.call(context, value, index, list)
+        criteria: iterator.call(context, value, index, list)
       };
     }).sort(function(left, right){
       var a, b, result;
@@ -147,11 +156,11 @@ define([
 
       if (_.isArray(a) && _.isArray(b)) {
         while (a.length || b.length) {
-          result = options.sorter.call(context, a.shift(), b.shift());
+          result = sorter.call(context, a.shift(), b.shift());
           if (result !== 0) { return result; }
         }
       } else {
-        result = options.sorter.call(context, a, b);
+        result = sorter.call(context, a, b);
         if (result !== 0) { return result; }
       }
 
