@@ -28,11 +28,13 @@ define([
     },
 
     regions: {
-      chart_powerAndIrradiance: '.chart_powerAndIrradiance',
-      chart_currentAndVoltage: '.chart_currentAndVoltage'
+      powerAndIrradiance: '.chart.powerAndIrradiance',
+      currentAndVoltage: '.chart.currentAndVoltage',
+      children: '.chart.children'
     },
 
     onShow: function(){
+      console.log(this.model);
       Backbone.trigger(
         'set:breadcrumbs',
         {
@@ -43,12 +45,16 @@ define([
       );
 
       this.buildCharts();
+
+      if (this.model.get('dev_type') !== 'Panel' && this.model.outgoing.length) {
+        this.buildChildChart();
+      }
     },
 
     buildCharts: function(){
       var project = this.options.project;
 
-      var chart_powerAndIrradiance = new Chart.views.Basic({
+      var powerAndIrradiance = new Chart.views.Basic({
         traces: [
           Chart.dataDefaults(project, this.model, 'irradiance'),
           Chart.dataDefaults(project, this.model, 'power')
@@ -59,7 +65,7 @@ define([
         ]
       });
 
-      var chart_currentAndVoltage = new Chart.views.Basic({
+      var currentAndVoltage = new Chart.views.Basic({
         traces: [
           Chart.dataDefaults(project, this.model, 'current'),
           Chart.dataDefaults(project, this.model, 'voltage')
@@ -70,8 +76,32 @@ define([
         ]
       });
 
-      this.chart_powerAndIrradiance.show(chart_powerAndIrradiance);
-      this.chart_currentAndVoltage.show(chart_currentAndVoltage);
+      this.powerAndIrradiance.show(powerAndIrradiance);
+      this.currentAndVoltage.show(currentAndVoltage);
+    },
+
+    buildChildChart: function(){
+      var traces = [],
+          series = [];
+
+      this.model.outgoing.each(function(child, index){
+        if (index < 2) {
+          traces.push(Chart.dataDefaults(this.options.project, child, 'power'));
+          series.push({
+            name: 'Power (' + child.get('did') + ')',
+            unit: 'W'
+          });
+        }
+      }, this);
+
+      var children = new Chart.views.Basic({
+        traces: traces,
+        series: series
+      });
+
+      console.log(children);
+
+      this.children.show(children);
     }
   });
 });
