@@ -34,7 +34,6 @@ define([
     initialize: function(options){
       this.collection = new User.Collection();
       this.view = new User.views.EditTable({ collection: this.collection });
-      this.collection.fetch();
 
       // Update history
       Backbone.history.navigate('/admin/users');

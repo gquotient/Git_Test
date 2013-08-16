@@ -1,13 +1,17 @@
 <div class="sort">
   Sort by
   <select id="portfolio-sort" value={{sort_order}}>
-    <option value="display_name">Name</option>
-    <option value="dc_capacity">DC Capacity</option>
+    <option value="display_name">{{$ 'Name' }}</option>
+    <option value="dc_capacity">{{$ 'DC Capacity' }} &uarr;</option>
+    <option value="-dc_capacity">{{$ 'DC Capacity' }} &darr;</option>
+    <option value="total_projects">{{$ 'Total Projects' }} &uarr;</option>
+    <option value="-total_projects">{{$ 'Total Projects' }} &darr;</option>
+
   </select>
 </div>
 
 <ul class="portfolio-list">
 </ul>
 <div class="actions">
-  <button id="new-portfolio" class="button">New Portfolio</class>
+  <button id="new-portfolio" class="button">{{$ 'New Portfolio' }}</class>
 </div>

@@ -240,8 +240,6 @@ define([
 
       this.issues.show(issueView);
 
-      issueView.collection.fetch();
-
       // Build kpi view
       var kpisView = new Project.views.Kpis({model: this.model});
 
@@ -254,6 +252,9 @@ define([
     onClose: function(){
       // Clean up contextual settings
       this.options.settingsRegion.close();
+
+      // Clear data fetch
+      clearInterval(this.fetchInterval);
     },
 
     initialize: function(options){
@@ -274,6 +275,17 @@ define([
       this.projectNavigationListView = new Project.views.NavigationListView({
         collection: options.collection
       });
+
+      // Fetch data for all projects
+      var fetchData = function(){
+        options.collection.fetchIssues();
+      };
+
+      // Fetch data right away
+      fetchData();
+
+      // Fetch data every 15 minutes
+      this.fetchInterval = setInterval(900000, fetchData);
 
       this.listenTo(Backbone, 'click:project', function(project){
         this.selectProject(project);

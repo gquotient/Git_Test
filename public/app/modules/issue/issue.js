@@ -8,6 +8,7 @@ define([
 
   'hbs!issue/templates/table',
   'hbs!issue/templates/tableRow',
+  'hbs!issue/templates/tableRowEmpty',
   'hbs!issue/templates/navigationItem',
   'hbs!issue/templates/navigationList'
 ],
@@ -21,6 +22,7 @@ function(
 
   tableTemplate,
   tableRowTemplate,
+  tableRowEmptyTemplate,
   navigationItemTemplate,
   navigationListTemplate
 ){
@@ -32,8 +34,27 @@ function(
 
   Issue.Collection = Backbone.Collection.extend({
     model: Issue.Model,
-    parse: function(response){
-      return response.alarms;
+    parse: function(data){
+      return data.alarms;
+    },
+    getSeverity: function(){
+      var statusLevels = ['OK', 'Warning', 'Alert'],
+          status = 'OK',
+          statusValue = 0;
+
+      this.each(function(issue){
+        var priority = issue.get('active_conditions')[0].priority;
+
+        if (_.indexOf(statusLevels, priority) > _.indexOf(statusLevels, status)) {
+          status = priority;
+          statusValue = _.indexOf(statusLevels, priority);
+        }
+      });
+
+      return {
+        status: status,
+        statusValue: statusValue
+      };
     },
     initialize: function(models, options){
       this.url = '/api/alarms/active/' + options.projectId;
@@ -63,11 +84,13 @@ function(
     },
     itemViewContainer: 'tbody',
     itemView: Issue.views.TableRow,
-    onRender: function(){
-      if (!this.collection.length) {
-        this.$('tbody').append('<tr><td colspan="2">There are currently no active alarms</td></tr>');
+    emptyView: Marionette.ItemView.extend({
+      tagName: 'tr',
+      template: {
+        type: 'handlebars',
+        template: tableRowEmptyTemplate
       }
-    },
+    }),
     events: {
       'click .viewAll': function(event){
         event.preventDefault();

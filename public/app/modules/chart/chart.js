@@ -244,6 +244,7 @@ function(
         {
           gridLineColor: '#333', //Lines inside plot
           title: {
+            text: null,
             style: {
               color: '#ccc',
               'font-weight': 'normal'
@@ -255,6 +256,7 @@ function(
           opposite: true,
           gridLineColor: '#333', //Lines inside plot
           title: {
+            text: null,
             style: {
               color: '#ccc',
               'font-weight': 'normal'
@@ -305,15 +307,15 @@ function(
       // Loop through each trace
       _.each(data, function(trace, index){
         var seriesData = [],
-            timezone = this.options.traces[index].project_timezone;
+            timezone = this.options.traces[index].project_timezone,
+            walltime = WallTime.UTCToWallTime(new Date(), timezone),
+            offset = (walltime.offset.negative) ? -walltime.offset.hours : walltime.offset.hours;
 
         if (trace && trace.data) {
           // Loop through each point on the trace
           _.each(trace.data, function(point, index){
-            var localTime = new Date(WallTime.UTCToWallTime(point[0]*1000, timezone).wallTime).getTime();
-
             // Change point to local js epoch time
-            point[0] = localTime;
+            point[0] = (point[0] * 1000) + (offset * 60 * 60 * 1000);
             // Round watts to integers
             point[1] = roundNumber(point[1], 2);
           });
@@ -341,9 +343,12 @@ function(
       if (series.length) {
         _.each(this.chart.series, function(serie, index){
           // Update series data
-          if (series[index].data && series[index].data.length) {
+          if (series[index].data) {
             serie.setData(series[index].data);
-          } else {
+          }
+
+          // If trace data is empty, handle no data error
+          if (!series[index].data.length) {
             //throw no data error
             console.warn('No data found on trace:', series[index]);
           }
@@ -431,8 +436,25 @@ function(
       autoUpdate: true
     },
     render: function(){
+      var that = this;
+
+      // Instantiate the chart
+      this.chart = new Highcharts.Chart(this.chartOptions);
+
+      var fetch = function(){
+        that.fetch();
+      };
+
       //Fetch data on render
-      this.fetch();
+      fetch();
+
+      // Using set timeout for now so it only updates once
+      if (this.options.autoUpdate) {
+        this.fetchInterval = setInterval(fetch, 300000);
+      }
+
+      // Listen for date set event and update chart
+      this.listenTo(Backbone, 'set:date', this.setDate);
     },
     onClose: function(){
       // Clean up highcharts chart
@@ -443,16 +465,14 @@ function(
       // Clear the auto update when view is closed
       clearInterval(this.fetchInterval);
     },
-    initialize: function(options){
-      var that = this;
-
+    initialize: function(options) {
       // If no series defs provided, build basic series for traces
       if (!options.series) {
-        this.options.series = this.smartSeriesBuilder();
+        options.series = this.smartSeriesBuilder();
       }
 
       // Run series through axis selector
-      this.options.series = this.smartAxesSelector(this.options.series);
+      options.series = this.smartAxesSelector(options.series);
 
       // Merge supplied chart options with view specific options
       this.chartOptions = $.extend(true, {}, this.chartOptions, options.chartOptions, {
@@ -461,23 +481,8 @@ function(
           renderTo: this.el
         },
         yAxis: this.smartAxesTitles(this.options.series),
-        series: this.options.series
+        series: options.series
       });
-
-      // Instantiate the chart
-      this.chart = new Highcharts.Chart(this.chartOptions);
-
-      var fetch = function(){
-        that.fetch();
-      };
-
-      // Using set timeout for now so it only updates once
-      if (this.options.autoUpdate) {
-        this.fetchInterval = setInterval(fetch, 300000);
-      }
-
-      // Listen for date set event and update chart
-      this.listenTo(Backbone, 'set:date', this.setDate);
     }
   });
 

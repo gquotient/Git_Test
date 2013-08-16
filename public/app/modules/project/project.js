@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'backbone.virtualCollection',
 
   'leaflet',
   'css!leaflet.css', //This seems silly but also seems to work, sooooo...
@@ -29,6 +30,7 @@ define([
   _,
   Backbone,
   Marionette,
+  VirtualCollection,
 
   L,
   leafletCSS,
@@ -76,7 +78,9 @@ define([
         inverter: ''
       },
       notes: '',
-      status: 'OK'
+      // Status as an array for sorting purposes
+      status: 'Unknown',
+      statusValue: -1
     },
 
     initialize: function(){
@@ -86,22 +90,11 @@ define([
 
       this.lazySave = _.debounce(Backbone.Model.prototype.save, 1000);
 
-      this.listenTo(this.issues, 'reset', this.setStatus);
-    },
-
-    setStatus: function(issues){
-      var statusLevels = ['OK', 'Warning', 'Alert'],
-          status = 'OK';
-
-      issues.each(function(issue){
-        var priority = issue.get('active_conditions')[0].priority;
-
-        if (_.indexOf(statusLevels, priority) > _.indexOf(statusLevels, status)) {
-          status = priority;
-        }
+      // This might be a bit convoluted and potentially fire too often but it works
+      this.listenTo(this.issues, 'change reset add remove', function(){
+        var status = this.issues.getSeverity();
+        this.set(status);
       });
-
-      this.set('status', status);
     },
 
     setLock: function(lock){
@@ -315,6 +308,77 @@ define([
 
     getOrCreate: function(label){
       return this.get(label) || this.push({project_label: label});
+    },
+
+    fetchIssues: function(){
+      var that = this,
+          projectIds = [];
+
+      this.each(function(project){
+        projectIds.push(project.id);
+      });
+
+      return $.ajax({
+        url: '/api/alarms/active/' + projectIds.join(','),
+        cache: false,
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done(function(data){
+        that.trigger('data:done', data);
+        that.parseIssues(data);
+      });
+    },
+
+    parseIssues: function(data){
+      var issues = data.alarms;
+
+      this.each(function(project){
+        var projectIssues = [];
+
+        _.each(issues, function(issue){
+          if (issue.project_label === project.id) {
+            projectIssues.push(issue);
+          }
+        });
+
+        project.issues.reset(projectIssues);
+      });
+    },
+
+    fetchProjectKpis: function(){
+      var that = this;
+      var traces = [];
+
+      this.each(function(project){
+        traces.push({
+          project_label: project.id,
+          project_timezone: project.get('timezone')
+        });
+      });
+
+      return $.ajax({
+        url: '/api/kpis',
+        cache: false,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          traces: traces
+        }
+      })
+      .done(function(data){
+        that.trigger('data:done', data);
+        that.parseProjectKpis(data.response);
+      });
+    },
+
+    parseProjectKpis: function(data){
+      // Loop through returned KPIs and send the data to their respective projects
+      _.each(data, function(kpi){
+        var project = this.findWhere({project_label: kpi.project_label});
+
+        project.parseKpis(kpi);
+      }, this);
     }
   });
 
@@ -363,8 +427,10 @@ define([
     },
     itemViewContainer: 'tbody',
     itemView: Project.views.DataListItem,
-    onClose: function(){
-      this.collection = null;
+    initialize: function(options){
+      this.collection = new Backbone.VirtualCollection(options.collection, {
+        close_with: this
+      });
     }
   });
 
@@ -441,6 +507,11 @@ define([
 
       this.listenTo(this.model, 'change:status', function(model){
         this.marker.setIcon(this.markerStyles[model.get('status')]);
+
+        // This shouldn't have to be here but the markers occassionally end up behind
+        // the map layer. This brings focus back to them and makes them visble.
+        // There is probably a better solution to this...
+        this.highlight();
       });
 
       this.listenTo(Backbone, 'mouseover:project', this.highlight);
@@ -462,6 +533,10 @@ define([
       }),
       Alert: L.divIcon({
         className: 'alert',
+        iconSize: [15,32]
+      }),
+      Unknown: L.divIcon({
+        className: 'unknown',
         iconSize: [15,32]
       })
     },
@@ -520,11 +595,13 @@ define([
       });
     },
     onClose: function(){
+      this.marker.off();
       this.popUp.close();
     },
     remove: function(){
       var that = this;
       this.stopListening();
+      this.marker.off();
       this.fadeTo(250, 0, function(){ that.options.markers.removeLayer(that.marker); } );
       this.popUp.close();
     }
@@ -702,17 +779,17 @@ define([
       // add an OpenStreetMap tile layer
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-      }).addTo(map).setOpacity(0.99);
+      }).addTo(map);
 
       this.markers = new L.layerGroup([]);
 
       this.markers.addTo(this.map);
 
-      this.addLayers();
-
       this._renderChildren();
 
       this.fitToBounds();
+
+      this.addLayers();
 
       this.initFullscreen();
 
@@ -743,6 +820,9 @@ define([
       'click': function(){
         Backbone.trigger('click:project', this.model);
       }
+    },
+    modelEvents: {
+      'change': 'render'
     }
   });
 
