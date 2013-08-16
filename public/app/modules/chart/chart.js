@@ -343,9 +343,12 @@ function(
       if (series.length) {
         _.each(this.chart.series, function(serie, index){
           // Update series data
-          if (series[index].data && series[index].data.length) {
+          if (series[index].data) {
             serie.setData(series[index].data);
-          } else {
+          }
+
+          // If trace data is empty, handle no data error
+          if (!series[index].data.length) {
             //throw no data error
             console.warn('No data found on trace:', series[index]);
           }
