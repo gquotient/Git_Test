@@ -116,8 +116,6 @@ function(
       dataDefinition
     ;
 
-    console.log(device.get('devtype'), device.get('graph_key'));
-
     if (dataType === 'irradiance') {
       dataDefinition = {
         'project_label': project.id,
@@ -143,8 +141,6 @@ function(
         project_timezone: project.get('timezone')
       };
     }
-
-    console.log(dataDefinition);
 
     return dataDefinition;
   };
