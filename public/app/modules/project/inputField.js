@@ -126,7 +126,7 @@ define([
   }
 
   // Sort that takes optional iterator and sorter functions and sorts array
-  // elements properly instead of concatenating them.
+  // elements properly instead of joining them into a string.
   function sort(obj, options, context){
     options = options || {};
 
