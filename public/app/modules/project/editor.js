@@ -42,6 +42,10 @@ define([
       textarea: 'textarea'
     },
 
+    initialize: function(){
+      this.editable = false;
+    },
+
     events: {
       'keyup textarea': function(e){
         this.model.set('notes', this.ui.textarea.val());
@@ -52,7 +56,7 @@ define([
       },
 
       'blur textarea': function(){
-        if (this.options.editable) {
+        if (this.editable) {
           this.model.save();
         }
       }
@@ -65,11 +69,11 @@ define([
     },
 
     onShow: function(){
-      this.ui.textarea.attr('disabled', !this.options.editable);
+      this.ui.textarea.attr('disabled', !this.editable);
     },
 
     onClose: function(){
-      if (this.options.editable) {
+      if (this.editable) {
         this.model.save();
       }
     }
