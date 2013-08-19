@@ -48,8 +48,8 @@ define([
 
       // Fetch issues on the new portfolio
       var fetchProjectData = function(){
-        portfolio.fetchIssues();
-        portfolio.fetchProjectKpis();
+        portfolio.projects.fetchIssues();
+        portfolio.projects.fetchProjectKpis();
       };
 
       // Run initially to get latest data
