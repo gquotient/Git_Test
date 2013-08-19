@@ -54,6 +54,10 @@
   "Target": "Target",
   "Source": "Source",
 
+  "Make Changes": "Make Changes",
+  "Release Lock": "Release Lock",
+  "has this project locked": "has this project locked",
+
   "Add": "Add",
   "Edit": "Edit",
   "Apply": "Apply",
