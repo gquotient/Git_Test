@@ -96,16 +96,8 @@ define([
       this.mainLayout.showAdmin().showProject(id);
     },
 
-    projectAdminEdit: function(id, view){
+    projectEditor: function(id, view){
       this.mainLayout.showProjectEditor(id, {
-        editable: true,
-        view: view
-      });
-    },
-
-    projectAdminView: function(id, view){
-      this.mainLayout.showProjectEditor(id, {
-        editable: false,
         view: view
       });
     },
@@ -140,13 +132,9 @@ define([
       'admin/teams': 'teamsAdmin',
       'admin/teams/:id': 'teamAdminDetail',
 
-      'admin/project/:id/edit/:view': 'projectAdminEdit',
-      'admin/project/:id/edit': 'projectAdminEdit',
-      'admin/project/:id/view/:view': 'projectAdminView',
-      'admin/project/:id/view': 'projectAdminView',
-      'admin/project/:id': 'projectAdmin',
-      'admin/projects': 'projectAdmin',
-      'admin/project': 'projectAdmin'
+      'admin/projects/:id/:view': 'projectEditor',
+      'admin/projects/:id': 'projectAdmin',
+      'admin/projects': 'projectAdmin'
     }
   });
 

@@ -187,7 +187,7 @@ define([
       this.$('.save, .cancel').show();
 
       if (model.id) {
-        Backbone.history.navigate('/admin/project/' + model.id);
+        Backbone.history.navigate('/admin/projects/' + model.id);
       }
     },
 
