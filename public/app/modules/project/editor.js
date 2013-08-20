@@ -227,7 +227,7 @@ define([
 
     _initLockView: function(){
       this.lockView = new views.EditorLock({
-        el: this.$('#lock'),
+        el: this.$('.lock'),
         model: this.model,
         user: this.user
       });
