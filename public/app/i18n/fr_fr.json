@@ -54,7 +54,8 @@
   "Target": "Target",
   "Source": "Source",
 
-  "Make Changes": "Make Changes",
+  "Model": "Model",
+  "Edit Model": "Edit Model",
   "Release Lock": "Release Lock",
   "has this project locked": "has this project locked",
 

@@ -558,7 +558,7 @@ define([
     },
 
     triggers: {
-      'click button.capture': 'capture',
+      'click button.edit': 'edit',
       'click button.release': 'release'
     },
 
@@ -599,7 +599,7 @@ define([
       }, this), 5 * 60 * 1000);
     },
 
-    onCapture: function(){
+    onEdit: function(){
       this.model.setLock(true);
     },
 

@@ -30,11 +30,11 @@ define([
 
     triggers: {
       'click': 'show:detail',
-      'click button.edit': 'edit',
+      'click button.model': 'editor',
       'click button.delete': 'delete'
     },
 
-    onEdit: function(){
+    onEditor: function(){
       Backbone.history.navigate('/admin/projects/' + this.model.id + '/power', true);
     },
 
