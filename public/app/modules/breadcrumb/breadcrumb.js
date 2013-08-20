@@ -80,6 +80,7 @@ define([
 
       // Listen for prune event on ItemView
       Backbone.listenTo(this, 'itemview:prune', function(itemView){
+        console.log(itemView);
         var model = itemView.model;
         // Fire global select event
         Backbone.trigger('select:' + model.get('state'), model.get('model'));

@@ -143,10 +143,26 @@ define([
     },
 
     initialize: function(options){
-
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
         display_name: 'Admin'
+      });
+
+      this.listenTo(Backbone, 'select:admin', function(){
+        console.log('admin clicked');
+        this.showUsers();
+      });
+
+      this.listenTo(Backbone, 'select:users', function(){
+        this.showUsers();
+      });
+
+      this.listenTo(Backbone, 'select:teams', function(){
+        this.showTeams();
+      });
+
+      this.listenTo(Backbone, 'select:projects', function(){
+        this.showProject();
       });
 
       // this.listenTo(Backbone, 'detail', function(model){
