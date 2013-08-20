@@ -93,6 +93,11 @@ define([
         el: '#zipcode'
       },
 
+      description: {
+        el: '#description',
+        validate: function(){ return true; }
+      },
+
       latitude: {
         el: '#latitude',
         parse: function(value){

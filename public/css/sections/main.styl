@@ -692,14 +692,22 @@ header {
       &.left {
         clear: left;
       }
+
+      &.full {
+        clear: both;
+
+        input, textarea {
+          width: 424px;
+        }
+      }
     }
 
     label {
       display: block;
     }
 
-    input {
-      width: 100%;
+    input, textarea {
+      width: 200px;
       margin: 3px 0 12px 0;
 
       &.invalid {
