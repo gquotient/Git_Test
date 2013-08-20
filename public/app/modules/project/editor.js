@@ -581,11 +581,11 @@ define([
 
       if (this.editable !== editable) {
         this.editable = editable;
-        this.render();
 
         Backbone.trigger('editor:change:editable', editable);
       }
 
+      this.render();
       this.updateTimer();
     },
 

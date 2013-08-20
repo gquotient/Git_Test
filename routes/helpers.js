@@ -91,22 +91,35 @@ module.exports = function(app){
         }
 
         request(opts, function(error, response, body){
+          var stat = response.statusCode;
+
           if (error) {
             req.flash('error', error.message);
             console.log('error!:', error);
             res.redirect('/ia');
-          } else if (response.statusCode !== 200) {
-            console.log('error!:', response.statusCode, body);
-            res.send(response.statusCode);
-          } else {
-            if (opts.translate) {
-              opts.translate(JSON.parse(body), function(translatedData){
-                res.end(JSON.stringify(translatedData));
-              });
-            } else {
-              res.end(body);
-            }
           }
+
+          if (stat < 200 || stat > 299) {
+            console.log('error!:', stat, body);
+
+            if (options.error) {
+              options.error(body, stat, res);
+            }
+
+            res.send(stat);
+          }
+
+          if (options.success) {
+            options.success(body, stat, res);
+          }
+
+          if (options.translate) {
+            options.translate(JSON.parse(body), function(translatedData){
+              res.end(JSON.stringify(translatedData));
+            });
+          }
+
+          res.end(body);
         });
       };
 
