@@ -104,22 +104,21 @@ module.exports = function(app){
 
             if (options.error) {
               options.error(body, stat, res);
+            } else {
+              res.send(stat);
             }
 
-            res.send(stat);
-          }
-
-          if (options.success) {
+          } else if (options.success) {
             options.success(body, stat, res);
-          }
 
-          if (options.translate) {
+          } else if (options.translate) {
             options.translate(JSON.parse(body), function(translatedData){
               res.end(JSON.stringify(translatedData));
             });
-          }
 
-          res.end(body);
+          } else {
+            res.end(body);
+          }
         });
       };
 
