@@ -116,6 +116,8 @@ define([
     },
 
     keydownEvents: {
+      // Adding support for backspace key (because Apple)
+      8: 'delete',
       46: 'delete'
     },
 
