@@ -104,11 +104,11 @@ define([
         type: 'PUT',
         data: {
           project_label: this.id,
-          lock: arguments.length > 0 ? lock : true
+          lock: _.isBoolean(lock) ? lock : true
         },
         dataType: 'json'
-      }).always(function(data){
-        that.set({locked: _.isBoolean(data.locked) ? data.locked : true});
+      }).done(function(data){
+        that.set(_.pick(data, 'locked', 'editor'));
       });
     },
 

@@ -116,6 +116,8 @@ define([
     },
 
     keydownEvents: {
+      // Adding support for backspace key (because Apple)
+      8: 'delete',
       46: 'delete'
     },
 
@@ -581,11 +583,11 @@ define([
 
       if (this.editable !== editable) {
         this.editable = editable;
-        this.render();
 
         Backbone.trigger('editor:change:editable', editable);
       }
 
+      this.render();
       this.updateTimer();
     },
 
