@@ -14,7 +14,7 @@ define([
   'layouts/admin/users',
   'layouts/admin/teams',
   'layouts/admin/projects',
-  'layouts/admin/alarmManagement',
+  'layouts/admin/portfolios',
 
   'hbs!layouts/templates/admin'
 ], function(
@@ -33,7 +33,7 @@ define([
   UsersLayout,
   TeamsLayout,
   ProjectsLayout,
-  AlarmManagementTemplate,
+  PortfoliosLayout,
 
   adminTemplate
 ){
@@ -42,27 +42,23 @@ define([
     views: {
       'users': {
         title: 'Users',
-        trigger: 'show:users'
+        trigger: 'select:users'
       },
       'teams': {
         title: 'Teams',
-        trigger: 'show:teams'
+        trigger: 'select:teams'
       },
       'projects': {
         title: 'Projects',
-        trigger: 'show:project'
+        trigger: 'select:projects'
       },
-      'all_users': {
-        title: 'All Users',
-        trigger: 'show:allUsers'
-      },
-      'all_teams': {
-        title: 'All Teams',
-        trigger: 'show:allTeams'
+      'portfolios': {
+        title: 'Portfolios',
+        trigger: 'select:portfolios'
       },
       'organizations': {
         title: 'All Organizations',
-        trigger: 'show:allOrganizations'
+        trigger: 'select:allOrganizations'
       },
       'alarms': {
 
@@ -127,6 +123,17 @@ define([
       return layout;
     },
 
+    showPortfolios: function(){
+      var layout = new PortfoliosLayout({
+        collection: ia.portfolios
+      });
+
+      this.pageContent.show(layout);
+      this.highlightLink('portfolios');
+
+      return layout;
+    },
+
     showAlarms: function(){
 
     },
@@ -149,7 +156,7 @@ define([
       });
 
       this.listenTo(Backbone, 'select:admin', function(){
-        console.log('admin clicked');
+        console.log('admin clicked', arguments);
         this.showUsers();
       });
 
@@ -165,14 +172,9 @@ define([
         this.showProject();
       });
 
-      // this.listenTo(Backbone, 'detail', function(model){
-      //   this.renderDetailView({ model: model, page: this.view });
-      //   Backbone.history.navigate('/admin/'+ this.view + '/' + model.id);
-      // }, this);
-
-      this.listenTo(Backbone, 'show:users', this.showUsers);
-      this.listenTo(Backbone, 'show:teams', this.showTeams);
-      this.listenTo(Backbone, 'show:project', this.showProject);
+      this.listenTo(Backbone, 'select:portfolios', function(){
+        this.showPortfolios();
+      });
 
     }
   });

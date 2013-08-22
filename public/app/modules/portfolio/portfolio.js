@@ -6,6 +6,7 @@ define([
 
   'navigation',
   'project',
+  'form',
 
   'hbs!portfolio/templates/navigationList',
   'hbs!portfolio/templates/navigationItem',
@@ -19,6 +20,7 @@ define([
 
   Navigation,
   Project,
+  Forms,
 
   navigationListTemplate,
   navigationItemTemplate,
@@ -76,6 +78,16 @@ define([
       }, this);
 
       this.set(kpis);
+    }
+  }, {
+    schema: {
+      attributes: {
+        'display_name': {
+          type: 'text',
+          title: 'Name',
+          required: true
+        }
+      }
     }
   });
 
@@ -200,6 +212,17 @@ define([
       setTimeout(function(){ that.$el.remove(); }, 250);
 
     }
+  });
+
+  Portfolio.views.EditRow = Forms.views.tableRow.extend({
+
+  });
+
+  // Table CompositeView extended from form
+  Portfolio.views.EditTable = Forms.views.table.extend({
+    fields: ['display_name'],
+    model: Portfolio.Model,
+    actions: ['edit', 'delete']
   });
 
   return Portfolio;

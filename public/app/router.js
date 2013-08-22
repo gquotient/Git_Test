@@ -110,6 +110,10 @@ define([
       });
     },
 
+    portfoliosAdmin: function(){
+      this.mainLayout.showAdmin().showPortfolios();
+    },
+
     initialize: function(){
       this.mainLayout = new MainLayout({currentUser: ia.currentUser, app: ia});
       ia.main.show(this.mainLayout);
@@ -146,7 +150,9 @@ define([
       'admin/project/:id/view': 'projectAdminView',
       'admin/project/:id': 'projectAdmin',
       'admin/projects': 'projectAdmin',
-      'admin/project': 'projectAdmin'
+      'admin/project': 'projectAdmin',
+
+      'admin/portfolios': 'portfoliosAdmin'
     }
   });
 
