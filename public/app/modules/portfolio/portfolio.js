@@ -56,7 +56,7 @@ define([
       }, this);
 
       // Parse filter if it's one defined by the client side
-      if (this.get('filter').charAt(0) === '[') {
+      if (this.get('filter') && this.get('filter').charAt(0) === '[') {
         this.set('filter', JSON.parse(this.get('filter')));
 
         // Get filtered project list and add them to collection
@@ -241,7 +241,7 @@ define([
     onRender: function(){
       var filters = this.model.get('filter');
 
-      if (filters.length) {
+      if (filters && filters.length) {
         // Build existing filters
         _.each(filters, function(filter){
           this.addFilter(filter);
