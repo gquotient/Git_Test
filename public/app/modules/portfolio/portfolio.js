@@ -184,7 +184,7 @@ define([
     }
   });
 
-  Portfolio.views.SingleEdit = Marionette.ItemView.extend({
+  Portfolio.views.SingleEdit = Marionette.CompositeView.extend({
     template: {
       type: 'handlebars',
       template: editPortfolioTemplate
@@ -197,18 +197,15 @@ define([
     onAddFilter: function(){
       this.addFilter({});
     },
+    itemViewContainer: '.filters',
+    itemView: Portfolio.views.Filter,
     addFilter: function(filter){
-      var date = new Date();
-      var $filters = this.$('.filters');
-      var filterView = new Portfolio.views.Filter(new Backbone.Model(filter));
-
-      filterView.render();
-      $filters.append(filterView.el);
+      this.collection.add(new Backbone.Model(filter));
     },
     onRender: function(){
-      if (this.model._filter && this.model._filter.length) {
+      if (this.model.filter && typeof this.model.filter === 'object' && this.model.filter.length) {
         // Build existing filters
-        _.each(this.model.get('_filter'), function(filter){
+        _.each(this.model.get('filter'), function(filter){
           this.addFilter(filter);
         }, this);
       } else {
@@ -267,6 +264,9 @@ define([
         filter: filter
       });
       */
+    },
+    initialize: function(){
+      this.collection = new Backbone.Collection();
     }
   });
 
