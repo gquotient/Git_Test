@@ -177,6 +177,7 @@ define([
       'click .cancel': 'cancel'
     },
     onSave: function(){
+      console.log($('#share'), $('#share:checked'));
       var filter = {
         property: this.$('#filter\\.property option:selected').val(),
         operator: this.$('#filter\\.operator option:selected').val(),
@@ -185,7 +186,8 @@ define([
 
       console.dir({
         display_name: this.$('#display_name').val(),
-        _filter: filter
+        _filter: filter,
+        share: $('#share').prop('checked')
       });
       /*
       this.model.save({

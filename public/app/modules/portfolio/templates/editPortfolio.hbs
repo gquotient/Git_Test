@@ -21,7 +21,7 @@
       <input id="filter.value" name="filter.value" type="text" value="{{ _filter.value }}">
     </li>
     <li>
-      <label for="share">Share with team: <input id="share" name="share" type="checkbox"></label>
+      <label for="share">Share with team: <input id="share" name="share" type="checkbox" {{#ifCond share true }}checked{{/ifCond}}></label>
     </li>
     <li>
       <div class="container buttons">
