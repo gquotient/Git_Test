@@ -213,11 +213,22 @@ define([
         this.addFilter({});
       }
     },
+    updateMessage: function(message) {
+      var $message = this.$('.message');
+
+      if (message) {
+        $message.show();
+        $message.text(message);
+      } else {
+        $message.hide();
+      }
+    },
     validate: function(portfolio){
       var validateFilters = function(filter){
         console.log('filter', filter);
 
         if (!filter && !filter.length) {
+          this.updateMessage('A filter is required');
           return false;
         }
 
@@ -225,6 +236,8 @@ define([
       };
 
       if (!portfolio.display_name.length) {
+        this.updateMessage('A name is required');
+        $('#display_name').focus();
         return false;
       } else if (!validateFilters(portfolio.filter)) {
         return false;
@@ -253,17 +266,16 @@ define([
 
       if(this.validate(portfolio)){
         console.log('portfolio looks good');
+        this.updateMessage();
+        /*
+        this.model.save({
+          display_name: this.$('#display_name').val(),
+          filter: filter
+        });
+        */
       } else {
         console.log('portfolio needs fixed');
       }
-
-
-      /*
-      this.model.save({
-        display_name: this.$('#display_name').val(),
-        filter: filter
-      });
-      */
     },
     initialize: function(){
       this.collection = new Backbone.Collection();
