@@ -224,6 +224,14 @@ define([
     triggers: {
       'click .save': 'save',
       'click .cancel': 'cancel'
+    },
+    events: {
+      'blur #display_name': function(){
+        console.log('blur', arguments);
+        $('#label').val($('#display_name').val().replace(' ', '_'));
+
+        console.log($('#label').val());
+      }
     }
   });
 
