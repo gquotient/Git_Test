@@ -67,12 +67,19 @@ define([
 
     schema: {
       display_name: {
-        el: '#name'
+        el: '#name',
+        validate: function(value){
+          return value && value !== '';
+        }
       },
 
       site_label: {
         el: '#site_label',
-        validate: function(value) {
+        editable: false,
+        parse: function(value){
+          return value.toUpperCase().replace(/[^A-Z]+/g, '');
+        },
+        validate: function(value){
           return (/^[A-Z]{3,}$/).test(value);
         }
       },
@@ -94,8 +101,7 @@ define([
       },
 
       description: {
-        el: '#description',
-        validate: function(){ return true; }
+        el: '#description'
       },
 
       latitude: {
@@ -129,36 +135,38 @@ define([
       }
     },
 
-    ui: {},
+    onShow: function(){
+      var events = {};
 
-    events: function(){
-      var result = {};
+      this.ui = {};
 
       _.each(this.schema, function(obj, key){
-        this.ui[key] = obj.el;
+        var $el = this.$(obj.el);
 
-        result['blur ' + obj.el] = function(){
-          var value = this.ui[key].val().trim(), valid;
+        if (!$el) { return; }
+
+        if (obj.editable === false && !this.model.isNew()) {
+          $el.attr('disabled', true);
+        }
+
+        events['blur ' + obj.el] = function(){
+          var value = $el.val().trim();
 
           if (obj.parse) {
             value = obj.parse.call(this, value);
           }
 
-          if (obj.validate) {
-            valid = obj.validate.call(this, value);
-          } else {
-            valid = value && value !== '';
-          }
-
-          if (valid) {
+          if (!obj.validate || obj.validate.call(this, value)) {
             this.model.set(key, value);
           } else {
-            this.ui[key].addClass('invalid');
+            $el.addClass('invalid');
           }
         };
+
+        this.ui[key] = $el;
       }, this);
 
-      return result;
+      this.delegateEvents(events);
     },
 
     modelEvents: {
@@ -182,7 +190,7 @@ define([
 
       this.ui.site_label.val(_.reduce(parts, function(memo, part){
         if (memo.length < 8) {
-          memo += part.replace(/[\W_]+/g, '').toUpperCase();
+          memo += part.toUpperCase().replace(/[^A-Z]+/g, '');
         }
 
         return memo;
