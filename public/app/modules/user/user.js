@@ -41,8 +41,7 @@ function(
         dataType: 'json',
         data: this.toJSON()
       })
-      .done(destroy)
-      .fail(this.render);
+      .done(destroy);
     }
   }, {
     schema: {

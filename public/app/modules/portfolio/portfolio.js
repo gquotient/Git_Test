@@ -68,6 +68,24 @@ define([
       this.listenTo(this.projects, 'change', this.aggregateKpis);
     },
 
+    destroy: function(options) {
+      var model = this;
+
+      var destroy = function() {
+        model.trigger('destroy', model, model.collection, options);
+      };
+
+      return $.ajax({
+        url: this.url,
+        type: 'DELETE',
+        dataType: 'json',
+        data: {
+          portfolio_id: this.id
+        }
+      })
+      .done(destroy);
+    },
+
     filteredProjects: function(){
       var projects = [];
       var operation = {
