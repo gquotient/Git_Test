@@ -58,7 +58,7 @@
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"},
 
-      {"label": "FOR", "direction": "INCOMING", "target": "ZNP"}
+      {"label": "USES", "direction": "INCOMING", "target": "ZNP"}
     ],
     "renderings": [
       {"label": "DAQ", "offset": {"x": 100, "y": 100}},
@@ -72,7 +72,7 @@
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"},
 
-      {"label": "FOR", "direction": "INCOMING", "target": "ZNP"}
+      {"label": "USES", "direction": "INCOMING", "target": "ZNP"}
     ],
     "renderings": [
       {"label": "DAQ", "offset": {"x": 100, "y": 100}},
@@ -154,8 +154,8 @@
       {"label": "HAS", "direction": "INCOMING", "target": "PVS"},
       {"label": "HAS", "direction": "INCOMING", "target": "PVC"},
 
-      {"label": "FOR", "direction": "OUTGOING", "target": "IRRA"},
-      {"label": "FOR", "direction": "OUTGOING", "target": "IRRZ"},
+      {"label": "USES", "direction": "OUTGOING", "target": "IRRA"},
+      {"label": "USES", "direction": "OUTGOING", "target": "IRRZ"},
 
       {"label": "MEMBER", "direction": "OUTGOING", "target": "INV"},
       {"label": "MEMBER", "direction": "OUTGOING", "target": "DCB"},
