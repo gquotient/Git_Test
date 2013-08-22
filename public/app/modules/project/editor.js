@@ -145,6 +145,11 @@ define([
             View: Device.views.Canvas,
             rendering: 'DAQ'
           }, {
+            name: 'Zones',
+            uri: 'zones',
+            View: Device.views.Canvas,
+            rendering: 'ZONE'
+          }, {
             name: 'Device Table',
             uri: 'table',
             View: Device.views.Table

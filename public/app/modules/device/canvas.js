@@ -28,6 +28,8 @@ define([
       MEASURED_BY: {color: 'grey', offset: 2},
       MANAGES: {color: 'blue'},
       HAS: {color: 'blue'},
+      USES: {color: 'green'},
+      MEMBER: {color: 'green'},
       DEFAULT: {color: 'grey'}
     },
 

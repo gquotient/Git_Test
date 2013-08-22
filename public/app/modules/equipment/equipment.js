@@ -17,7 +17,8 @@ define([
 
   Equip.renderings = {
     POWER: ['FLOWS', 'COLLECTS', 'MEASURED_BY'],
-    DAQ: ['MANAGES', 'HAS']
+    DAQ: ['MANAGES', 'HAS'],
+    ZONE: ['USES', 'MEMBER']
   };
 
 

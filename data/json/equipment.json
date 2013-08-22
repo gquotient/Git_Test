@@ -23,9 +23,7 @@
 
       {"label": "MANAGES", "direction": "OUTGOING", "target": "ESI"},
       {"label": "MANAGES", "direction": "OUTGOING", "target": "INV"},
-      {"label": "MANAGES", "direction": "OUTGOING", "target": "RM"},
-      {"label": "MANAGES", "direction": "OUTGOING", "target": "RCB"},
-      {"label": "MANAGES", "direction": "OUTGOING", "target": "CMB"}
+      {"label": "MANAGES", "direction": "OUTGOING", "target": "RM"}
     ],
     "renderings": [
       {"label": "DAQ", "offset": {"x": 100, "y": 0}}
@@ -58,10 +56,13 @@
     "name": "POA Pyranometer",
     "order": 4,
     "relationships": [
-      {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
+      {"label": "HAS", "direction": "INCOMING", "target": "ESI"},
+
+      {"label": "FOR", "direction": "INCOMING", "target": "ZNP"}
     ],
     "renderings": [
-      {"label": "DAQ", "offset": {"x": 100, "y": 100}}
+      {"label": "DAQ", "offset": {"x": 100, "y": 100}},
+      {"label": "ZONE", "offset": {"x": 100, "y": 100}}
     ]
   },
   {
@@ -69,10 +70,13 @@
     "name": "Horiz Pyranometer",
     "order": 5,
     "relationships": [
-      {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
+      {"label": "HAS", "direction": "INCOMING", "target": "ESI"},
+
+      {"label": "FOR", "direction": "INCOMING", "target": "ZNP"}
     ],
     "renderings": [
-      {"label": "DAQ", "offset": {"x": 100, "y": 100}}
+      {"label": "DAQ", "offset": {"x": 100, "y": 100}},
+      {"label": "ZONE", "offset": {"x": 100, "y": 100}}
     ]
   },
   {
@@ -142,9 +146,33 @@
     ]
   },
   {
+    "label": "ZNP",
+    "name": "Pyranometer Zone",
+    "order": 12,
+    "relationships": [
+      {"label": "HAS", "direction": "INCOMING", "target": "PVA"},
+      {"label": "HAS", "direction": "INCOMING", "target": "PVS"},
+      {"label": "HAS", "direction": "INCOMING", "target": "PVC"},
+
+      {"label": "FOR", "direction": "OUTGOING", "target": "IRRA"},
+      {"label": "FOR", "direction": "OUTGOING", "target": "IRRZ"},
+
+      {"label": "MEMBER", "direction": "OUTGOING", "target": "INV"},
+      {"label": "MEMBER", "direction": "OUTGOING", "target": "DCB"},
+      {"label": "MEMBER", "direction": "OUTGOING", "target": "APH"},
+      {"label": "MEMBER", "direction": "OUTGOING", "target": "RCB"},
+      {"label": "MEMBER", "direction": "OUTGOING", "target": "CMB"},
+      {"label": "MEMBER", "direction": "OUTGOING", "target": "S"},
+      {"label": "MEMBER", "direction": "OUTGOING", "target": "P"}
+    ],
+    "renderings": [
+      {"label": "ZONE", "position": {"x": 100, "y": 100}, "root": true}
+    ]
+  },
+  {
     "label": "RM",
     "name": "Meter",
-    "order": 12,
+    "order": 13,
     "relationships": [
       {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"},
 
@@ -159,13 +187,14 @@
   {
     "label": "INV",
     "name": "Inverter",
-    "order": 13,
+    "order": 14,
     "relationships": [
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVA"},
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVS"},
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVC"},
 
       {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"},
+      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
 
       {"label": "MEASURED_BY", "direction": "OUTGOING", "target": "RM"},
 
@@ -177,13 +206,14 @@
     ],
     "renderings": [
       {"label": "DAQ", "offset": {"x": 500, "y": 100}},
+      {"label": "ZONE", "offset": {"x": 300, "y": 100}},
       {"label": "POWER", "position": {"x": 700, "y": 200}, "root": true}
     ]
   },
   {
     "label": "ACB",
     "name": "AC Bus",
-    "order": 15,
+    "order": 16,
     "relationships": [
       {"label": "MEASURED_BY", "direction": "OUTGOING", "target": "RM"},
 
@@ -203,7 +233,7 @@
   {
     "label": "XFR",
     "name": "Transformer",
-    "order": 16,
+    "order": 17,
     "relationships": [
       {"label": "FLOWS", "direction": "INCOMING", "target": "INV"},
       {"label": "FLOWS", "direction": "INCOMING", "target": "ACB"},
@@ -220,7 +250,7 @@
   {
     "label": "IC",
     "name": "Interconnect",
-    "order": 17,
+    "order": 18,
     "relationships": [
       {"label": "FLOWS", "direction": "INCOMING", "target": "INV"},
       {"label": "FLOWS", "direction": "INCOMING", "target": "ACB"},
@@ -233,7 +263,7 @@
   {
     "label": "LD",
     "name": "Load",
-    "order": 14,
+    "order": 15,
     "relationships": [
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVA"},
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVS"},
@@ -248,9 +278,11 @@
   {
     "label": "DCB",
     "name": "DC Bus",
-    "order": 18,
+    "order": 19,
     "relationships": [
       {"label": "COLLECTS", "direction": "INCOMING", "target": "INV"},
+
+      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
 
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "APH"},
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "RCB"},
@@ -258,29 +290,33 @@
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "S"}
     ],
     "renderings": [
+      {"label": "ZONE", "offset": {"x": 400, "y": 100}},
       {"label": "POWER", "offset": {"x": -200, "y": 0}}
     ]
   },
   {
     "label": "APH",
     "name": "Array",
-    "order": 19,
+    "order": 20,
     "relationships": [
+      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
+
       {"label": "COLLECTS", "direction": "INCOMING", "target": "DCB"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "RCB"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "CMB"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "S"}
     ],
     "renderings": [
+      {"label": "ZONE", "offset": {"x": 500, "y": 100}},
       {"label": "POWER", "offset": {"x": -200, "y": 0}}
     ]
   },
   {
     "label": "RCB",
     "name": "Recombiner",
-    "order": 20,
+    "order": 21,
     "relationships": [
-      {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"},
+      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
 
       {"label": "COLLECTS", "direction": "INCOMING", "target": "DCB"},
 
@@ -289,16 +325,16 @@
 
     ],
     "renderings": [
-      {"label": "DAQ", "offset": {"x": 900, "y": 0}},
+      {"label": "ZONE", "offset": {"x": 600, "y": 100}},
       {"label": "POWER", "offset": {"x": -200, "y": 0}}
     ]
   },
   {
     "label": "CMB",
     "name": "Combiner",
-    "order": 21,
+    "order": 22,
     "relationships": [
-      {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"},
+      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
 
       {"label": "COLLECTS", "direction": "INCOMING", "target": "DCB"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "RCB"},
@@ -307,15 +343,17 @@
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "S"}
     ],
     "renderings": [
-      {"label": "DAQ", "offset": {"x": 1100, "y": 0}},
+      {"label": "ZONE", "offset": {"x": 700, "y": 100}},
       {"label": "POWER", "offset": {"x": -200, "y": 0}}
     ]
   },
   {
     "label": "S",
     "name": "String",
-    "order": 22,
+    "order": 23,
     "relationships": [
+      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
+
       {"label": "COLLECTS", "direction": "INCOMING", "target": "DCB"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "CMB"},
 
@@ -323,20 +361,24 @@
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "P"}
     ],
     "renderings": [
+      {"label": "ZONE", "offset": {"x": 800, "y": 100}},
       {"label": "POWER", "offset": {"x": -200, "y": 0}}
     ]
   },
   {
     "label": "P",
     "name": "Panel",
-    "order": 23,
+    "order": 24,
     "relationships": [
+      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
+
       {"label": "COLLECTS", "direction": "INCOMING", "target": "S"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "P"},
 
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "P"}
     ],
     "renderings": [
+      {"label": "ZONE", "offset": {"x": 900, "y": 100}},
       {"label": "POWER", "offset": {"x": -100, "y": 0}}
     ]
   }
