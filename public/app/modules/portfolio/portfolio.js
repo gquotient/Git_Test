@@ -32,6 +32,7 @@ define([
   var Portfolio = { views: {} };
 
   Portfolio.Model = Backbone.Model.extend({
+    url: '/api/portfolios',
     defaults: {
       type: 'portfolio',
 
@@ -44,7 +45,6 @@ define([
     },
 
     initialize: function(options){
-      console.dir(this);
       this.projects = new Project.Collection([], {comparator: 'display_name'});
 
       _.each(this.get('projects'), function(project){
@@ -55,9 +55,47 @@ define([
         }
       }, this);
 
+      // Parse filter if it's one defined by the client side
+      if (this.get('filter').charAt(0) === '[') {
+        this.set('filter', JSON.parse(this.get('filter')));
+
+        // Get filtered project list and add them to collection
+        this.projects.add(this.filteredProjects());
+      }
+
       this.set('total_projects', this.projects.length);
       this.aggregateKpis();
       this.listenTo(this.projects, 'change', this.aggregateKpis);
+    },
+
+    filteredProjects: function(){
+      var projects = [];
+      var operation = {
+        '>': function(val1, val2) {
+          return val1 > val2;
+        },
+        '<': function(val1, val2) {
+          return val1 < val2;
+        },
+        '=': function(val1, val2) {
+          return val1 = val2;
+        }
+      };
+
+
+      this.collection.projects.each(function(project){
+        var match = false;
+
+        _.each(this.get('filter'), function(filter){
+          match = operation[filter.operator](project.get(filter.property), filter.value);
+        });
+
+        if (match) {
+          projects.push(project);
+        }
+      }, this);
+
+      return projects;
     },
 
     aggregateKpis: function(){
@@ -201,9 +239,11 @@ define([
       this.collection.add(new Backbone.Model(filter));
     },
     onRender: function(){
-      if (this.model.filter && typeof this.model.filter === 'object' && this.model.filter.length) {
+      var filters = this.model.get('filter');
+
+      if (filters.length) {
         // Build existing filters
-        _.each(this.model.get('filter'), function(filter){
+        _.each(filters, function(filter){
           this.addFilter(filter);
         }, this);
       } else {
@@ -246,7 +286,8 @@ define([
     onSave: function(){
       var portfolio = {
         display_name: this.$('#display_name').val(),
-        filter: []
+        filter: [],
+        share: this.$('#share').attr('checked') ? 'yes' : 'no'
       };
 
       $('.filter').each(function(index){
@@ -259,17 +300,18 @@ define([
         });
       });
 
+      // Stringify filter for the API
+      portfolio.filter = JSON.stringify(portfolio.filter);
+
       if(this.validate(portfolio)){
-        console.log('portfolio looks good');
+        console.log('portfolio looks good', portfolio);
         this.updateMessage();
-        /*
-        this.model.save({
-          display_name: this.$('#display_name').val(),
-          filter: filter
+
+        this.model.save(portfolio).done(function(){
+          console.log(arguments);
         });
-        */
       } else {
-        console.log('portfolio needs fixed');
+        console.log('portfolio needs fixed', portfolio);
       }
     },
     initialize: function(){

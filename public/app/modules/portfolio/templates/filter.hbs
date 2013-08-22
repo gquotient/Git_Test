@@ -2,16 +2,16 @@
   <legend>{{$ 'Filter By' }}</legend>
 
   <select name="property">
-    <option value="ac_capacity" {{#ifCond _filter.property 'ac_capacity' }}selected{{/ifCond}}>{{$ 'AC Capacity' }} (W)</option>
+    <option value="ac_capacity" {{#ifCond property 'ac_capacity' }}selected{{/ifCond}}>{{$ 'AC Capacity' }} (W)</option>
   </select>
 
   <select name="operator">
-    <option value=">" {{#ifCond _filter.operator '>' }}selected{{/ifCond}}>&gt;</option>
-    <option value="<" {{#ifCond _filter.operator '<' }}selected{{/ifCond}}>&lt;</option>
-    <option value="=" {{#ifCond _filter.operator '=' }}selected{{/ifCond}}>=</option>
+    <option value=">" {{#ifCond operator '>' }}selected{{/ifCond}}>&gt;</option>
+    <option value="<" {{#ifCond operator '<' }}selected{{/ifCond}}>&lt;</option>
+    <option value="=" {{#ifCond operator '=' }}selected{{/ifCond}}>=</option>
   </select>
 
-  <input name="value" type="text" value="{{ _filter.value }}">
+  <input name="value" type="text" value="{{ value }}">
 
   <button class="button sml remove">Remove</button>
 </fieldset>

@@ -43,7 +43,7 @@ define([
       this.editPortfolios.show(this.portfolioTable);
     },
     edit: function(portfolio){
-      console.dir(portfolio);
+      console.dir('edit', portfolio);
       var editView;
 
       if (portfolio) {
