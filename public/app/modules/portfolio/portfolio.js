@@ -10,7 +10,6 @@ define([
 
   'hbs!portfolio/templates/navigationList',
   'hbs!portfolio/templates/navigationItem',
-  'hbs!portfolio/templates/newPortfolio',
   'hbs!portfolio/templates/editPortfolio',
   'hbs!portfolio/templates/filter',
   'hbs!portfolio/templates/aggregateKpis'
@@ -26,7 +25,6 @@ define([
 
   navigationListTemplate,
   navigationItemTemplate,
-  newPortfolioTemplate,
   editPortfolioTemplate,
   filterTemplate,
   aggregateKpisTemplate
@@ -260,9 +258,6 @@ define([
           value: $this.find('[name="value"]').val()
         });
       });
-
-      console.dir(portfolio);
-
 
       if(this.validate(portfolio)){
         console.log('portfolio looks good');
