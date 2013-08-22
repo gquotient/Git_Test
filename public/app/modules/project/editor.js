@@ -556,6 +556,12 @@ define([
     },
 
     initialize: function(){
+      var devices = this.model.devices;
+
+      // Update the lock timeout no more then once a minute as long as changes
+      // are still being made to devices.
+      this.listenTo(devices, 'change', _.throttle(this.updateTimeout, 60 * 1000));
+
       this.updateEditable();
     },
 
@@ -566,8 +572,7 @@ define([
 
     modelEvents: {
       'change:locked': 'updateEditable',
-      'change:editor': 'updateEditable',
-      'change': 'updateTimer'
+      'change:editor': 'updateEditable'
     },
 
     updateEditable: function(){
@@ -588,17 +593,19 @@ define([
       }
 
       this.render();
-      this.updateTimer();
+      this.updateTimeout();
     },
 
-    updateTimer: function(){
-      if (this.timer) { clearTimeout(this.timer); }
+    updateTimeout: function(){
+      var that = this;
 
-      if (!this.editable) { return; }
+      clearTimeout(this.lockTimeout);
 
-      this.timer = setTimeout(_.bind(function(){
-        this.model.setLock(false);
-      }, this), 5 * 60 * 1000);
+      if (this.editable) {
+        this.lockTimeout = setTimeout(function(){
+          that.model.setLock(false);
+        }, 5 * 60 * 1000);
+      }
     },
 
     onEdit: function(){
@@ -612,11 +619,10 @@ define([
     onClose: function(){
       if (this.editable) {
         this.model.setLock(false);
+        this.editable = false;
       }
 
-      if (this.timer) {
-        clearTimeout(this.timer);
-      }
+      this.updateTimeout();
     }
   });
 
