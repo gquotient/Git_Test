@@ -176,13 +176,23 @@ define([
       'click .save': 'save',
       'click .cancel': 'cancel'
     },
-    events: {
-      'blur #display_name': function(){
-        // update label based on name
-        // NOTE - May want to only update label if it's empty
-        var label = $('#display_name').val().replace(' ', '_');
-        $('#label').val(label);
-      }
+    onSave: function(){
+      var filter = {
+        property: this.$('#filter\\.property option:selected').val(),
+        operator: this.$('#filter\\.operator option:selected').val(),
+        value: this.$('#filter\\.value').val()
+      };
+
+      console.dir({
+        display_name: this.$('#display_name').val(),
+        _filter: filter
+      });
+      /*
+      this.model.save({
+        display_name: this.$('#display_name').val(),
+        _filter: filter
+      });
+      */
     }
   });
 

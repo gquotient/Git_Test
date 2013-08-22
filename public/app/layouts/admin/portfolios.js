@@ -69,6 +69,15 @@ define([
         Backbone.history.navigate('/admin/portfolios');
         Backbone.trigger('set:breadcrumbs', {state:'portfolios', display_name:'Portfolios'});
       });
+
+      this.listenTo(editView, 'save', function(){
+        console.log(arguments);
+        //this.editPortfolios.show(this.portfolioTable);
+        //Backbone.history.navigate('/admin/portfolios');
+        //Backbone.trigger('set:breadcrumbs', {state:'portfolios', display_name:'Portfolios'});
+
+        //this.options.collection
+      });
     },
     initialize: function(options){
       console.log('init portfolios admin');

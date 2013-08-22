@@ -1,25 +1,27 @@
 <h3>Edit Portfolio</h3>
 <form>
-  <input id="label" name="label" type="hidden" value="{{ label }}">
   <ul>
     <li>
       <label for="display_name">{{$ 'Name' }}</label>
       <input id="display_name" name="display_name" type="text" value="{{ display_name }}">
     </li>
     <li>
-      <label for="_filter">{{$ 'Filter By' }}</label>
+      <label for="filter">{{$ 'Filter By' }}</label>
 
-      <select id="_filter.property" name="_filter.property">
-        <option value="ac_capacity">{{$ 'AC Capacity' }}</option>
+      <select id="filter.property" name="filter.property">
+        <option value="ac_capacity" {{#ifCond _filter.property 'ac_capacity' }}selected{{/ifCond}}>{{$ 'AC Capacity' }}</option>
       </select>
 
-      <select id="_filter.operator" name="_filter.operator">
-        <option value=">">&gt;</option>
-        <option value="<">&lt;</option>
-        <option value="=">=</option>
+      <select id="filter.operator" name="filter.operator">
+        <option value=">" {{#ifCond _filter.operator '>' }}selected{{/ifCond}}>&gt;</option>
+        <option value="<" {{#ifCond _filter.operator '<' }}selected{{/ifCond}}>&lt;</option>
+        <option value="=" {{#ifCond _filter.operator '=' }}selected{{/ifCond}}>=</option>
       </select>
 
-      <input id="_filter.value" name="_filter.value" type="text">
+      <input id="filter.value" name="filter.value" type="text" value="{{ _filter.value }}">
+    </li>
+    <li>
+      <label for="share">Share with team: <input id="share" name="share" type="checkbox"></label>
     </li>
     <li>
       <div class="container buttons">
