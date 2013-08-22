@@ -139,16 +139,7 @@ define([
         this.sort(event.currentTarget.value);
       },
       'click #new-portfolio': function(){
-        var newPortfolioView = new Portfolio.views.NewPortfolio({collection: this.options.collection});
-
-        newPortfolioView.render();
-        $('body').append(newPortfolioView.obscure);
-        $('body').append(newPortfolioView.$el);
-
-        newPortfolioView.$el.css({
-          top: this.$el.offset().top,
-          left: this.$el.offset().left + this.$el.width()
-        }).removeClass('hidden');
+        Backbone.history.navigate('/admin/portfolios/new', true);
       }
     },
     serializeData: function(){
@@ -176,46 +167,6 @@ define([
     }
   });
 
-  Portfolio.views.NewPortfolio = Marionette.ItemView.extend({
-    attributes: {
-      class: 'modal new-portfolio hidden'
-    },
-    template: {
-      type: 'handlebars',
-      template: newPortfolioTemplate
-    },
-    obscure: $('<div class="obscure"></div>'),
-    events: {
-      'click button': function(e){
-        e.preventDefault();
-        var that = this,
-            share = this.$el.find('input[name=share]:checked');
-
-        this.collection.create({
-          display_name: this.$el.find('input[name=dName]').val(),
-          filter: this.$el.find('input[name=filter]').val(),
-          share: share.val()
-        });
-
-        this.obscure.detach();
-        this.close();
-      },
-      'click .close': function(e){
-        this.obscure.detach();
-        this.close();
-      }
-    },
-    remove: function(){
-      var that = this;
-
-      this.stopListening();
-      this.$el.addClass('hidden');
-
-      setTimeout(function(){ that.$el.remove(); }, 250);
-
-    }
-  });
-
   Portfolio.views.SingleEdit = Marionette.ItemView.extend({
     template: {
       type: 'handlebars',
@@ -227,10 +178,10 @@ define([
     },
     events: {
       'blur #display_name': function(){
-        console.log('blur', arguments);
-        $('#label').val($('#display_name').val().replace(' ', '_'));
-
-        console.log($('#label').val());
+        // update label based on name
+        // NOTE - May want to only update label if it's empty
+        var label = $('#display_name').val().replace(' ', '_');
+        $('#label').val(label);
       }
     }
   });

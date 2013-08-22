@@ -3,19 +3,19 @@
   <input id="label" name="label" type="hidden" value="{{ label }}">
   <ul>
     <li>
-      <label for="display_name">Name</label>
+      <label for="display_name">{{$ 'Name' }}</label>
       <input id="display_name" name="display_name" type="text" value="{{ display_name }}">
     </li>
     <li>
-      <label for="_filter">Filter By</label>
+      <label for="_filter">{{$ 'Filter By' }}</label>
 
       <select id="_filter.property" name="_filter.property">
-        <option value="ac_capacity">AC Capacity</option>
+        <option value="ac_capacity">{{$ 'AC Capacity' }}</option>
       </select>
 
       <select id="_filter.operator" name="_filter.operator">
-        <option value="<">&lt;</option>
         <option value=">">&gt;</option>
+        <option value="<">&lt;</option>
         <option value="=">=</option>
       </select>
 
