@@ -3,6 +3,8 @@
 
   <select name="property">
     <option value="ac_capacity" {{#ifCond property 'ac_capacity' }}selected{{/ifCond}}>{{$ 'AC Capacity' }} (W)</option>
+    <option value="latitude" {{#ifCond property 'latitude' }}selected{{/ifCond}}>{{$ 'Latitude' }}</option>
+    <option value="longitude" {{#ifCond property 'longitude' }}selected{{/ifCond}}>{{$ 'Longitude' }}</option>
   </select>
 
   <select name="operator">
