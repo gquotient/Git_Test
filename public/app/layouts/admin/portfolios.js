@@ -44,16 +44,20 @@ define([
       if (portfolio) {
         // display edit view
         editView = new Portfolio.views.SingleEdit({model: portfolio});
+
+        // Update history
+        Backbone.history.navigate('/admin/portfolios/' + portfolio.id);
+        Backbone.trigger('set:breadcrumbs', {state:'portfolio', display_name: portfolio.get('display_name')});
       } else {
         // display new view
         editView = new Portfolio.views.SingleEdit({model: new Portfolio.Model()});
+
+        // Update history
+        Backbone.history.navigate('/admin/portfolios/new');
+        Backbone.trigger('set:breadcrumbs', {state:'portfolio', display_name: 'New'});
       }
 
       this.editPortfolios.show(editView);
-
-      // Update history
-      Backbone.history.navigate('/admin/portfolios/' + portfolio.id);
-      Backbone.trigger('set:breadcrumbs', {state:'portfolio', display_name: portfolio.get('display_name')});
     },
     initialize: function(options){
       // Update breadcrumbs

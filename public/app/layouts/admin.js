@@ -173,6 +173,7 @@ define([
       });
 
       this.listenTo(Backbone, 'select:portfolios', function(){
+        console.log('select portfolios');
         this.showPortfolios();
       });
 
