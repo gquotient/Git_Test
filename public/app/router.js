@@ -110,8 +110,13 @@ define([
       });
     },
 
-    portfoliosAdmin: function(){
-      this.mainLayout.showAdmin().showPortfolios();
+    portfoliosAdmin: function(id){
+      if (id) {
+        var portfolio = this.findPortfolio(id);
+        this.mainLayout.showAdmin().showPortfolios().edit(portfolio);
+      } else {
+        this.mainLayout.showAdmin().showPortfolios();
+      }
     },
 
     initialize: function(){
@@ -152,7 +157,8 @@ define([
       'admin/projects': 'projectAdmin',
       'admin/project': 'projectAdmin',
 
-      'admin/portfolios': 'portfoliosAdmin'
+      'admin/portfolios': 'portfoliosAdmin',
+      'admin/portfolios/:id': 'portfoliosAdmin'
     }
   });
 

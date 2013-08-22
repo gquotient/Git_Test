@@ -11,6 +11,7 @@ define([
   'hbs!portfolio/templates/navigationList',
   'hbs!portfolio/templates/navigationItem',
   'hbs!portfolio/templates/newPortfolio',
+  'hbs!portfolio/templates/editPortfolio',
   'hbs!portfolio/templates/aggregateKpis'
 ], function(
   $,
@@ -25,6 +26,7 @@ define([
   navigationListTemplate,
   navigationItemTemplate,
   newPortfolioTemplate,
+  editPortfolioTemplate,
   aggregateKpisTemplate
 ){
   var Portfolio = { views: {} };
@@ -214,8 +216,15 @@ define([
     }
   });
 
-  Portfolio.views.EditRow = Forms.views.tableRow.extend({
-
+  Portfolio.views.SingleEdit = Marionette.ItemView.extend({
+    template: {
+      type: 'handlebars',
+      template: editPortfolioTemplate
+    },
+    triggers: {
+      'click .save': 'save',
+      'click .cancel': 'cancel'
+    }
   });
 
   // Table CompositeView extended from form
