@@ -12,6 +12,7 @@ define([
   'hbs!portfolio/templates/navigationItem',
   'hbs!portfolio/templates/newPortfolio',
   'hbs!portfolio/templates/editPortfolio',
+  'hbs!portfolio/templates/filter',
   'hbs!portfolio/templates/aggregateKpis'
 ], function(
   $,
@@ -27,6 +28,7 @@ define([
   navigationItemTemplate,
   newPortfolioTemplate,
   editPortfolioTemplate,
+  filterTemplate,
   aggregateKpisTemplate
 ){
   var Portfolio = { views: {} };
@@ -44,6 +46,7 @@ define([
     },
 
     initialize: function(options){
+      console.dir(this);
       this.projects = new Project.Collection([], {comparator: 'display_name'});
 
       _.each(this.get('projects'), function(project){
@@ -167,6 +170,20 @@ define([
     }
   });
 
+  Portfolio.views.Filter = Marionette.ItemView.extend({
+    tagName: 'li',
+    className: 'filter',
+    events: {
+      'click .remove': function(event){
+        this.close();
+      }
+    },
+    template: {
+      type: 'handlebars',
+      template: filterTemplate
+    }
+  });
+
   Portfolio.views.SingleEdit = Marionette.ItemView.extend({
     template: {
       type: 'handlebars',
@@ -174,25 +191,80 @@ define([
     },
     triggers: {
       'click .save': 'save',
-      'click .cancel': 'cancel'
+      'click .cancel': 'cancel',
+      'click .addFilter': 'addFilter'
     },
-    onSave: function(){
-      console.log($('#share'), $('#share:checked'));
-      var filter = {
-        property: this.$('#filter\\.property option:selected').val(),
-        operator: this.$('#filter\\.operator option:selected').val(),
-        value: this.$('#filter\\.value').val()
+    onAddFilter: function(){
+      this.addFilter({});
+    },
+    addFilter: function(filter){
+      var date = new Date();
+      var $filters = this.$('.filters');
+      var filterView = new Portfolio.views.Filter(new Backbone.Model(filter));
+
+      filterView.render();
+      $filters.append(filterView.el);
+    },
+    onRender: function(){
+      if (this.model._filter && this.model._filter.length) {
+        // Build existing filters
+        _.each(this.model.get('_filter'), function(filter){
+          this.addFilter(filter);
+        }, this);
+      } else {
+        //handle new
+        this.addFilter({});
+      }
+    },
+    validate: function(portfolio){
+      var validateFilters = function(filter){
+        console.log('filter', filter);
+
+        if (!filter && !filter.length) {
+          return false;
+        }
+
+        return true;
       };
 
-      console.dir({
+      if (!portfolio.display_name.length) {
+        return false;
+      } else if (!validateFilters(portfolio.filter)) {
+        return false;
+      }
+
+      return true;
+    },
+    onSave: function(){
+      var portfolio = {
         display_name: this.$('#display_name').val(),
-        _filter: filter,
-        share: $('#share').prop('checked')
+        filter: []
+      };
+
+      $('.filter').each(function(index){
+        var $this = $(this);
+
+        portfolio.filter.push({
+          property: $this.find('[name="property"]').val(),
+          operator: $this.find('[name="operator"]').val(),
+          value: $this.find('[name="value"]').val()
+        });
       });
+
+      console.dir(portfolio);
+
+
+      if(this.validate(portfolio)){
+        console.log('portfolio looks good');
+      } else {
+        console.log('portfolio needs fixed');
+      }
+
+
       /*
       this.model.save({
         display_name: this.$('#display_name').val(),
-        _filter: filter
+        filter: filter
       });
       */
     }
