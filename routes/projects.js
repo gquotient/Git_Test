@@ -174,6 +174,14 @@ module.exports = function(app){
         });
 
         next(req, res);
+      },
+      error: function(body, stat, res){
+        var match = body.match(/locked by ([^"]+)/);
+
+        res.send(match ? {
+          locked: true,
+          editor: match[1]
+        } : stat);
       }
     }));
 

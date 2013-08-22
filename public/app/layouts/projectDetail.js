@@ -93,7 +93,7 @@ define([
     },
     events: {
       'click .edit': function(){
-        Backbone.history.navigate('/admin/project/' + this.model.id + '/edit', true);
+        Backbone.history.navigate('/admin/projects/' + this.model.id, true);
       },
       'click .toggleView': 'toggleView'
     },
