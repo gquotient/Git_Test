@@ -84,10 +84,14 @@ define([
 
 
       this.collection.projects.each(function(project){
-        var match = false;
+        var match = true;
 
         _.each(this.get('filter'), function(filter){
-          match = operation[filter.operator](project.get(filter.property), filter.value);
+          // Once match is set to false, don't run any more
+          // NOTE - This will have to be smarter to handle both and/or cases
+          if (match) {
+            match = operation[filter.operator](project.get(filter.property), filter.value);
+          }
         });
 
         if (match) {
