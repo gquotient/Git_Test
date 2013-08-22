@@ -87,7 +87,7 @@ define([
           series: series
         });
 
-        that.chart_powerAndIrradiance.show(chart_powerAndIrradiance);
+        that.powerAndIrradiance.show(chart_powerAndIrradiance);
       });
     }
   });

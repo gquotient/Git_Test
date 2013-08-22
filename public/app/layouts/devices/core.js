@@ -30,7 +30,8 @@ define([
     regions: {
       powerAndIrradiance: '.chart.powerAndIrradiance',
       currentAndVoltage: '.chart.currentAndVoltage',
-      children: '.chart.children'
+      children: '.chart.children',
+      issues: '.issus'
     },
 
     onShow: function(){
@@ -46,7 +47,7 @@ define([
 
       this.buildCharts();
 
-      if (this.model.get('dev_type') !== 'Panel' && this.model.outgoing.length) {
+      if (this.model.get('devtype') !== 'Panel' && this.model.outgoing.length) {
         this.buildChildChart();
       }
     },
@@ -85,7 +86,7 @@ define([
           series = [];
 
       this.model.outgoing.each(function(child, index){
-        if (index < 2) {
+        if (index < 100) {
           traces.push(Chart.dataDefaults(this.options.project, child, 'power'));
           series.push({
             name: 'Power (' + child.get('did') + ')',
@@ -100,6 +101,7 @@ define([
       });
 
       console.log(children);
+      this.$('.children').show();
 
       this.children.show(children);
     }
