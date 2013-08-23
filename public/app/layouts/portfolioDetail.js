@@ -110,6 +110,7 @@ define([
     },
 
     initialize: function(options){
+      console.log('portfolios init');
       // Build primary portfolio nav
       this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
         collection: options.portfolios

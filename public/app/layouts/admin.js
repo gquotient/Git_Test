@@ -124,6 +124,7 @@ define([
     },
 
     showPortfolios: function(){
+      console.log('showPortfolios');
       var layout = new PortfoliosLayout({
         collection: ia.portfolios
       });
@@ -145,7 +146,7 @@ define([
         // This seems kind of hacky, but (shrug)
         var route = event.target.hash.replace('#', '');
 
-        Backbone.trigger(config.views[route].trigger);
+        Backbone.trigger('select:' + route);
       }
     },
 
