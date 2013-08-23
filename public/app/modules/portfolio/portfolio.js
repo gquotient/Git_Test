@@ -95,6 +95,8 @@ define([
           return val1 < val2;
         },
         '=': function(val1, val2) {
+          // Fuzzy eval because who knows if a given property is coming back
+          // as a number or a string...
           return val1 == val2;
         }
       };
@@ -238,9 +240,6 @@ define([
     template: {
       type: 'handlebars',
       template: filterTemplate
-    },
-    initialize: function(){
-      console.log('init filter', this.model);
     }
   });
 
@@ -287,8 +286,6 @@ define([
     },
     validate: function(portfolio){
       var validateFilters = function(filter){
-        console.log('filter', filter);
-
         if (!filter && !filter.length) {
           this.updateMessage('A filter is required');
           return false;
@@ -328,16 +325,12 @@ define([
       portfolio.filter = JSON.stringify(portfolio.filter);
 
       if(this.validate(portfolio)){
-        console.log('portfolio looks good', portfolio);
         this.updateMessage();
 
         this.model.save(portfolio);
-      } else {
-        console.log('portfolio needs fixed', portfolio);
       }
     },
     initialize: function(){
-      console.log(this.model);
       this.collection = new Backbone.Collection();
     }
   });

@@ -43,7 +43,6 @@ define([
       this.editPortfolios.show(this.portfolioTable);
     },
     edit: function(portfolio){
-      console.log('edit', portfolio);
       var editView;
 
       if (portfolio) {
@@ -71,7 +70,6 @@ define([
       });
     },
     initialize: function(options){
-      console.log('init portfolios admin');
       // Update breadcrumbs
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',

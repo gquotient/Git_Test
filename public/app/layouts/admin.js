@@ -124,7 +124,6 @@ define([
     },
 
     showPortfolios: function(){
-      console.log('showPortfolios');
       var layout = new PortfoliosLayout({
         collection: ia.portfolios
       });
@@ -157,7 +156,6 @@ define([
       });
 
       this.listenTo(Backbone, 'select:admin', function(){
-        console.log('admin clicked', arguments);
         this.showUsers();
       });
 
@@ -174,7 +172,6 @@ define([
       });
 
       this.listenTo(Backbone, 'select:portfolios', function(){
-        console.log('select portfolios');
         this.showPortfolios();
       });
 
