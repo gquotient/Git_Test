@@ -48,6 +48,14 @@ define([
     initialize: function(options){
       this.projects = new Project.Collection([], {comparator: 'display_name'});
 
+      // Add projects to the collection
+      this.updateProjects();
+
+      // Update aggregate KPIs when projects update
+      this.listenTo(this.projects, 'change', _.debounce(this.aggregateKpis, 500));
+    },
+
+    updateProjects: function(){
       _.each(this.get('projects'), function(project){
         project = this.collection.projects.get(project);
 
@@ -65,8 +73,8 @@ define([
       }
 
       this.set('total_projects', this.projects.length);
+
       this.aggregateKpis();
-      this.listenTo(this.projects, 'change', this.aggregateKpis);
     },
 
     destroy: function(options) {
@@ -270,8 +278,12 @@ define([
         this.addFilter({});
       }
     },
-    updateMessage: function(message) {
+    updateMessage: function(message, type) {
       var $message = this.$('.message');
+
+      if (type) {
+        $message.addClass('type');
+      }
 
       if (message) {
         $message.show();
@@ -283,7 +295,7 @@ define([
     validate: function(portfolio){
       var validateFilters = function(filter){
         if (!filter && !filter.length) {
-          this.updateMessage('A filter is required');
+          this.updateMessage('A filter is required', 'error');
           return false;
         }
 
@@ -291,7 +303,7 @@ define([
       };
 
       if (!portfolio.display_name.length) {
-        this.updateMessage('A name is required');
+        this.updateMessage('A name is required', 'error');
         $('#display_name').focus();
         return false;
       } else if (!validateFilters(portfolio.filter)) {
@@ -320,10 +332,20 @@ define([
       // Stringify filter for the API
       portfolio.filter = JSON.stringify(portfolio.filter);
 
-      if(this.validate(portfolio)){
-        this.updateMessage();
+      if (this.validate(portfolio)){
+        var that = this;
 
-        this.model.save(portfolio);
+        this.model.save(portfolio, {wait: true}).done(function(){
+          that.updateMessage('Portfolio saved');
+
+          // Update projects list for new model
+          that.model.updateProjects();
+        });
+      }
+
+      // Update the portfolio collection if one is provided
+      if (this.model.isNew() && this.options.portfolios) {
+        this.options.portfolios.add(this.model);
       }
     },
     initialize: function(){
