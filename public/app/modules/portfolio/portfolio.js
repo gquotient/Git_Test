@@ -233,9 +233,7 @@ define([
     tagName: 'li',
     className: 'filter',
     events: {
-      'click .remove': function(event){
-        this.close();
-      }
+      'click .remove': 'close'
     },
     template: {
       type: 'handlebars',
@@ -266,9 +264,7 @@ define([
 
       if (typeof filters === 'object' && filters.length) {
         // Build existing filters
-        _.each(filters, function(filter){
-          this.addFilter(filter);
-        }, this);
+        _.each(filters, this.addFilter, this);
       } else {
         //handle new
         this.addFilter({});
