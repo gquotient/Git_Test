@@ -258,6 +258,9 @@ define([
       type: 'handlebars',
       template: editPortfolioTemplate
     },
+    ui: {
+      message: '.message'
+    },
     triggers: {
       'click .save': 'save',
       'click .cancel': 'cancel',
@@ -283,20 +286,18 @@ define([
       }
     },
     updateMessage: function(message, type) {
-      var $message = this.$('.message');
-
       // Remove existing status classes
-      $message.removeClass('error warning ok');
+      this.ui.message.removeClass('error warning ok');
 
       if (type) {
-        $message.addClass('type');
+        this.ui.message.addClass(type);
       }
 
       if (message) {
-        $message.show();
-        $message.text(message);
+        this.ui.message.text(message);
+        this.ui.message.fadeIn();
       } else {
-        $message.hide();
+        this.ui.message.fadeOut();
       }
     },
     validate: function(portfolio){
@@ -323,7 +324,8 @@ define([
       var portfolio = {
         display_name: this.$('#display_name').val(),
         filter: [],
-        share: this.$('#share').attr('checked') ? 'yes' : 'no'
+        // Default to share for now until we figure out this whole concept a little better
+        share: 'yes'//this.$('#share').attr('checked') ? 'yes' : 'no'
       };
 
       $('.filter').each(function(index){
