@@ -239,6 +239,9 @@ define([
     template: {
       type: 'handlebars',
       template: filterTemplate
+    },
+    initialize: function(){
+      console.log('init filter', this.model);
     }
   });
 
@@ -263,7 +266,7 @@ define([
     onRender: function(){
       var filters = this.model.get('filter');
 
-      if (filters && filters.length) {
+      if (typeof filters === 'object' && filters.length) {
         // Build existing filters
         _.each(filters, function(filter){
           this.addFilter(filter);
