@@ -28,6 +28,9 @@ module.exports = function(app){
   );
 
   app.del('/api/portfolios', ensureCurrentOrganization, ensureCurrentTeam, function(req, res){
+    // Ok, so, delete needs to happen in 2 places for a portfolio to actually be deleted
+    // this is definitely not right so, we are going to have a conversation about
+    // reshaping sensible Portfolio sharing and how that impacts the API
     var defer = Q.defer();
 
     var options = {
@@ -43,10 +46,12 @@ module.exports = function(app){
       qs: req.body
     };
 
+    // Delete it from the team first
     request(options, function(error, response, body){
       defer.resolve();
     });
 
+    // Then from the user's private portfolios
     defer.promise.then(function(){
       request(
         _.extend({}, options, {
@@ -58,5 +63,7 @@ module.exports = function(app){
         }
       );
     });
+
+    //TADA! Your portfolio is deleted...
   });
 };
