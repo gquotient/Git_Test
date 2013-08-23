@@ -1,0 +1,20 @@
+<fieldset>
+  <legend>{{$ 'Filter By' }}</legend>
+
+  <select name="property">
+    <option value="ac_capacity" {{#ifCond property 'ac_capacity' }}selected{{/ifCond}}>{{$ 'AC Capacity' }} (W)</option>
+    <option value="zipcode" {{#ifCond property 'zipcode' }}selected{{/ifCond}}>{{$ 'Zip Code' }}</option>
+    <option value="latitude" {{#ifCond property 'latitude' }}selected{{/ifCond}}>{{$ 'Latitude' }}</option>
+    <option value="longitude" {{#ifCond property 'longitude' }}selected{{/ifCond}}>{{$ 'Longitude' }}</option>
+  </select>
+
+  <select name="operator">
+    <option value=">" {{#ifCond operator '>' }}selected{{/ifCond}}>&gt;</option>
+    <option value="<" {{#ifCond operator '<' }}selected{{/ifCond}}>&lt;</option>
+    <option value="=" {{#ifCond operator '=' }}selected{{/ifCond}}>=</option>
+  </select>
+
+  <input name="value" type="text" value="{{ value }}">
+
+  <button class="button sml remove">Remove</button>
+</fieldset>

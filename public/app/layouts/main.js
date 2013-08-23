@@ -160,9 +160,9 @@ define([
         },
         success: function(){
           that.app.portfolios.fetch().done(function(portfolios){
-            var myPortfolio = that.app.portfolios.findWhere({label: 'ALL'});
+            that.app.allPortfolio = that.app.portfolios.findWhere({label: 'ALL'});
 
-            Backbone.trigger('select:portfolio', myPortfolio);
+            Backbone.trigger('select:portfolio', that.app.allPortfolio);
           });
 
           // Once more APIs are implemented, we can make sure everything else syncs up with the team.

@@ -1,0 +1,22 @@
+<form>
+  <div class="message error" style="display:none"></div>
+  <ul>
+    <li>
+      <label for="display_name">{{$ 'Name' }}</label>
+      <input id="display_name" name="display_name" type="text" value="{{ display_name }}">
+    </li>
+    <li>
+      <div class="container buttons">
+        <button class="button sml addFilter">+ {{$ 'Add Filter' }}</button>
+      </div>
+      <ul class="filters"></ul>
+    </li>
+    <li><label for="share">Share with team: <input type="checkbox" value="Y" id="share" name="share" checked></label></li>
+    <li>
+      <div class="container buttons">
+        <button class="button primary save">{{$ 'Save'}}</button>
+        <button class="button cancel">{{$ 'Cancel'}}</button>
+      </div>
+    </li>
+  </ul>
+</form>

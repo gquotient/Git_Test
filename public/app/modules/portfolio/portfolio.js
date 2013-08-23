@@ -6,10 +6,12 @@ define([
 
   'navigation',
   'project',
+  'form',
 
   'hbs!portfolio/templates/navigationList',
   'hbs!portfolio/templates/navigationItem',
-  'hbs!portfolio/templates/newPortfolio',
+  'hbs!portfolio/templates/editPortfolio',
+  'hbs!portfolio/templates/filter',
   'hbs!portfolio/templates/aggregateKpis'
 ], function(
   $,
@@ -19,15 +21,19 @@ define([
 
   Navigation,
   Project,
+  Forms,
 
   navigationListTemplate,
   navigationItemTemplate,
-  newPortfolioTemplate,
+  editPortfolioTemplate,
+  filterTemplate,
   aggregateKpisTemplate
 ){
   var Portfolio = { views: {} };
 
   Portfolio.Model = Backbone.Model.extend({
+    idAttribute: 'portfolio_id',
+    url: '/api/portfolios',
     defaults: {
       type: 'portfolio',
 
@@ -50,9 +56,69 @@ define([
         }
       }, this);
 
+      // Parse filter if it's one defined by the client side
+      if (this.get('filter') && this.get('filter').charAt(0) === '[') {
+        this.set('filter', JSON.parse(this.get('filter')));
+
+        // Get filtered project list and add them to collection
+        this.projects.add(this.filteredProjects());
+      }
+
       this.set('total_projects', this.projects.length);
       this.aggregateKpis();
       this.listenTo(this.projects, 'change', this.aggregateKpis);
+    },
+
+    destroy: function(options) {
+      var model = this;
+
+      var destroy = function() {
+        model.trigger('destroy', model, model.collection, options);
+      };
+
+      return $.ajax({
+        url: this.url,
+        type: 'DELETE',
+        dataType: 'json',
+        data: this.toJSON()
+      })
+      .done(destroy);
+    },
+
+    filteredProjects: function(){
+      var projects = [];
+      var operation = {
+        '>': function(val1, val2) {
+          return val1 > val2;
+        },
+        '<': function(val1, val2) {
+          return val1 < val2;
+        },
+        '=': function(val1, val2) {
+          // Fuzzy eval because who knows if a given property is coming back
+          // as a number or a string...
+          return val1 == val2;
+        }
+      };
+
+
+      this.collection.projects.each(function(project){
+        var match = true;
+
+        _.each(this.get('filter'), function(filter){
+          // Once match is set to false, don't run any more
+          // NOTE - This will have to be smarter to handle both and/or cases
+          if (match) {
+            match = operation[filter.operator](project.get(filter.property), filter.value);
+          }
+        });
+
+        if (match) {
+          projects.push(project);
+        }
+      }, this);
+
+      return projects;
     },
 
     aggregateKpis: function(){
@@ -76,6 +142,16 @@ define([
       }, this);
 
       this.set(kpis);
+    }
+  }, {
+    schema: {
+      attributes: {
+        'display_name': {
+          type: 'text',
+          title: 'Name',
+          required: true
+        }
+      }
     }
   });
 
@@ -125,16 +201,7 @@ define([
         this.sort(event.currentTarget.value);
       },
       'click #new-portfolio': function(){
-        var newPortfolioView = new Portfolio.views.NewPortfolio({collection: this.options.collection});
-
-        newPortfolioView.render();
-        $('body').append(newPortfolioView.obscure);
-        $('body').append(newPortfolioView.$el);
-
-        newPortfolioView.$el.css({
-          top: this.$el.offset().top,
-          left: this.$el.offset().left + this.$el.width()
-        }).removeClass('hidden');
+        Backbone.history.navigate('/admin/portfolios/new', true);
       }
     },
     serializeData: function(){
@@ -162,44 +229,113 @@ define([
     }
   });
 
-  Portfolio.views.NewPortfolio = Marionette.ItemView.extend({
-    attributes: {
-      class: 'modal new-portfolio hidden'
+  Portfolio.views.Filter = Marionette.ItemView.extend({
+    tagName: 'li',
+    className: 'filter',
+    events: {
+      'click .remove': 'close'
     },
     template: {
       type: 'handlebars',
-      template: newPortfolioTemplate
+      template: filterTemplate
+    }
+  });
+
+  Portfolio.views.SingleEdit = Marionette.CompositeView.extend({
+    template: {
+      type: 'handlebars',
+      template: editPortfolioTemplate
     },
-    obscure: $('<div class="obscure"></div>'),
-    events: {
-      'click button': function(e){
-        e.preventDefault();
-        var that = this,
-            share = this.$el.find('input[name=share]:checked');
+    triggers: {
+      'click .save': 'save',
+      'click .cancel': 'cancel',
+      'click .addFilter': 'addFilter'
+    },
+    onAddFilter: function(){
+      this.addFilter({});
+    },
+    itemViewContainer: '.filters',
+    itemView: Portfolio.views.Filter,
+    addFilter: function(filter){
+      this.collection.add(new Backbone.Model(filter));
+    },
+    onRender: function(){
+      var filters = this.model.get('filter');
 
-        this.collection.create({
-          display_name: this.$el.find('input[name=dName]').val(),
-          filter: this.$el.find('input[name=filter]').val(),
-          share: share.val()
-        });
-
-        this.obscure.detach();
-        this.close();
-      },
-      'click .close': function(e){
-        this.obscure.detach();
-        this.close();
+      if (typeof filters === 'object' && filters.length) {
+        // Build existing filters
+        _.each(filters, this.addFilter, this);
+      } else {
+        //handle new
+        this.addFilter({});
       }
     },
-    remove: function(){
-      var that = this;
+    updateMessage: function(message) {
+      var $message = this.$('.message');
 
-      this.stopListening();
-      this.$el.addClass('hidden');
+      if (message) {
+        $message.show();
+        $message.text(message);
+      } else {
+        $message.hide();
+      }
+    },
+    validate: function(portfolio){
+      var validateFilters = function(filter){
+        if (!filter && !filter.length) {
+          this.updateMessage('A filter is required');
+          return false;
+        }
 
-      setTimeout(function(){ that.$el.remove(); }, 250);
+        return true;
+      };
 
+      if (!portfolio.display_name.length) {
+        this.updateMessage('A name is required');
+        $('#display_name').focus();
+        return false;
+      } else if (!validateFilters(portfolio.filter)) {
+        return false;
+      }
+
+      return true;
+    },
+    onSave: function(){
+      var portfolio = {
+        display_name: this.$('#display_name').val(),
+        filter: [],
+        share: this.$('#share').attr('checked') ? 'yes' : 'no'
+      };
+
+      $('.filter').each(function(index){
+        var $this = $(this);
+
+        portfolio.filter.push({
+          property: $this.find('[name="property"]').val(),
+          operator: $this.find('[name="operator"]').val(),
+          value: $this.find('[name="value"]').val()
+        });
+      });
+
+      // Stringify filter for the API
+      portfolio.filter = JSON.stringify(portfolio.filter);
+
+      if(this.validate(portfolio)){
+        this.updateMessage();
+
+        this.model.save(portfolio);
+      }
+    },
+    initialize: function(){
+      this.collection = new Backbone.Collection();
     }
+  });
+
+  // Table CompositeView extended from form
+  Portfolio.views.EditTable = Forms.views.table.extend({
+    fields: ['display_name'],
+    model: Portfolio.Model,
+    actions: ['edit', 'delete']
   });
 
   return Portfolio;

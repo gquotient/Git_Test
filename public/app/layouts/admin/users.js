@@ -32,6 +32,13 @@ define([
     },
 
     initialize: function(options){
+      Backbone.trigger('reset:breadcrumbs', {
+        state:'admin',
+        display_name: 'Admin'
+      });
+
+      Backbone.trigger('set:breadcrumbs', {state:'users', display_name:'Users'});
+
       this.collection = new User.Collection();
       this.view = new User.views.EditTable({ collection: this.collection });
 
