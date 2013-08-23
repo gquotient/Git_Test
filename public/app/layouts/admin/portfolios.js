@@ -43,18 +43,13 @@ define([
       this.editPortfolios.show(this.portfolioTable);
     },
     edit: function(portfolio){
-      var editView, model;
+      var editView, model = portfolio || new Portfolio.Model();
 
-      if (portfolio) {
-        model = portfolio;
-
+      if (!model.isNew()) {
         // Update history
         Backbone.history.navigate('/admin/portfolios/' + portfolio.id);
         Backbone.trigger('set:breadcrumbs', {state: 'portfolioEdit', display_name: portfolio.get('display_name')});
       } else {
-        // create new model
-        model = new Portfolio.Model();
-
         // Update history
         Backbone.history.navigate('/admin/portfolios/new');
         Backbone.trigger('set:breadcrumbs', {state: 'portfolioEdit', display_name: 'New'});
@@ -73,6 +68,14 @@ define([
         Backbone.history.navigate('/admin/portfolios');
         Backbone.trigger('set:breadcrumbs', {state:'portfolios', display_name:'Portfolios'});
       });
+
+      this.listenTo(model, 'sync', function(){
+        // Update the portfolio collection
+        this.options.collection.add(model);
+
+        Backbone.history.navigate('/admin/portfolios/' + model.id);
+        Backbone.trigger('set:breadcrumbs', {state: 'portfolioEdit', display_name: model.get('display_name')});
+      }, this);
     },
     initialize: function(options){
       // Update breadcrumbs

@@ -168,6 +168,10 @@ define([
     url: '/api/portfolios',
     initialize: function(models, options){
       this.projects = options.projects;
+
+      this.on('add', function(portfolio, collection){
+        portfolio.updateProjects();
+      }, this);
     }
     // comparator: 'display_name'
   });
@@ -281,6 +285,9 @@ define([
     updateMessage: function(message, type) {
       var $message = this.$('.message');
 
+      // Remove existing status classes
+      $message.removeClass('error warning ok');
+
       if (type) {
         $message.addClass('type');
       }
@@ -330,6 +337,7 @@ define([
       });
 
       // Stringify filter for the API
+      // NOTE - We may want to do this on the server
       portfolio.filter = JSON.stringify(portfolio.filter);
 
       if (this.validate(portfolio)){
@@ -337,15 +345,7 @@ define([
 
         this.model.save(portfolio, {wait: true}).done(function(){
           that.updateMessage('Portfolio saved');
-
-          // Update projects list for new model
-          that.model.updateProjects();
         });
-      }
-
-      // Update the portfolio collection if one is provided
-      if (this.model.isNew() && this.options.portfolios) {
-        this.options.portfolios.add(this.model);
       }
     },
     initialize: function(){
