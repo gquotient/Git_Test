@@ -26,6 +26,7 @@ define([
   var Device = { views: {} };
 
   Device.Model = Backbone.Model.extend({
+    idAttribute: 'node_id',
     url: '/api/devices',
 
     initialize: function(attrs, options){

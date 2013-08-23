@@ -381,7 +381,7 @@ define([
     },
 
     onDelete: function(){
-      if (this.selection) {
+      if (this.lockView && this.lockView.editable && this.selection) {
         _.each(this.selection.models.slice(0), function(device){
           this.deleteDevice(device);
         }, this);
@@ -394,7 +394,7 @@ define([
         parnt = equip.isRoot() ? project : target,
         rel = parnt && equip.getRelationship(parnt);
 
-      if (rel && parnt.has('id')) {
+      if (rel && parnt.has('node_id')) {
         _.each(_.keys(Equipment.renderings), function(label){
           equip.addRendering(device, project, label, target);
         });
@@ -403,7 +403,7 @@ define([
         device.connectTo(parnt, rel);
 
         device.save({
-          parent_id: parnt.get('id'),
+          parent_id: parnt.get('node_id'),
           relationship_label: rel
         }, {
           success: _.bind(function(){
@@ -434,9 +434,10 @@ define([
       // If the device has no outgoing relationships then delete it.
       if (device.outgoing.length === 0) {
         device.destroy({
+          wait: true,
           data: {
             project_label: project.id,
-            id: device.get('id')
+            node_id: device.id
           },
           processData: true,
           success: _.bind(function(){
@@ -481,8 +482,8 @@ define([
           data: {
             relationship_label: rel,
             project_label: project.id,
-            from_id: target.get('id'),
-            to_id: device.get('id')
+            from_id: target.id,
+            to_id: device.id
           }
         }).done(_.bind(function(){
           if (!device.getPosition(rendering)) {
@@ -517,8 +518,8 @@ define([
           data: {
             relationship_label: rel,
             project_label: project.id,
-            from_id: target.get('id'),
-            to_id: device.get('id')
+            from_id: target.id,
+            to_id: device.id
           }
         }).done(_.bind(function(){
           device.disconnectFrom(target);

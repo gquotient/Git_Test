@@ -298,7 +298,7 @@ define([
               target = this.devices.get(rel[0]),
               relationship = rel[1];
 
-            if (!target && rel[0] === resp.id) {
+            if (!target && rel[0] === resp.node_id) {
               target = this;
             }
 
