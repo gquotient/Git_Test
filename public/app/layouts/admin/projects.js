@@ -80,6 +80,14 @@ define([
         this.showDetail(args.model);
       });
 
+      // Update breadcrumbs
+      Backbone.trigger('reset:breadcrumbs', {
+        state:'admin',
+        display_name: 'Admin'
+      });
+
+      Backbone.trigger('set:breadcrumbs', {state:'projects', display_name:'Projects'});
+
       // Update history
       Backbone.history.navigate('/admin/projects');
     },

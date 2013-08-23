@@ -102,6 +102,17 @@ define([
       });
     },
 
+    portfoliosAdmin: function(id){
+      if (id && id !== 'new') {
+        var portfolio = this.findPortfolio(id);
+        this.mainLayout.showAdmin().showPortfolios().edit(portfolio);
+      } else if (id && id === 'new') {
+        this.mainLayout.showAdmin().showPortfolios().edit();
+      } else {
+        this.mainLayout.showAdmin().showPortfolios();
+      }
+    },
+
     initialize: function(){
       this.mainLayout = new MainLayout({currentUser: ia.currentUser, app: ia});
       ia.main.show(this.mainLayout);
@@ -134,7 +145,10 @@ define([
 
       'admin/projects/:id/:view': 'projectEditor',
       'admin/projects/:id': 'projectAdmin',
-      'admin/projects': 'projectAdmin'
+      'admin/projects': 'projectAdmin',
+
+      'admin/portfolios': 'portfoliosAdmin',
+      'admin/portfolios/:id': 'portfoliosAdmin'
     }
   });
 
