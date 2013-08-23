@@ -32,6 +32,7 @@ define([
   var Portfolio = { views: {} };
 
   Portfolio.Model = Backbone.Model.extend({
+    idAttribute: 'portfolio_id',
     url: '/api/portfolios',
     defaults: {
       type: 'portfolio',
@@ -79,9 +80,7 @@ define([
         url: this.url,
         type: 'DELETE',
         dataType: 'json',
-        data: {
-          portfolio_id: this.id
-        }
+        data: this.toJSON()
       })
       .done(destroy);
     },
@@ -332,14 +331,13 @@ define([
         console.log('portfolio looks good', portfolio);
         this.updateMessage();
 
-        this.model.save(portfolio).done(function(){
-          console.log(arguments);
-        });
+        this.model.save(portfolio);
       } else {
         console.log('portfolio needs fixed', portfolio);
       }
     },
     initialize: function(){
+      console.log(this.model);
       this.collection = new Backbone.Collection();
     }
   });
