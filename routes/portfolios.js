@@ -26,7 +26,7 @@ module.exports = function(app){
 
   app.del('/api/portfolios', ensureCurrentOrganization, ensureCurrentTeam,
     makeRequest({
-      path: '/res/portfolio'
+      path: '/res/teamportfolios'
     })
   );
 
