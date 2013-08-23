@@ -204,9 +204,7 @@ define([
       template: adminGeosearchTemplate
     },
 
-    attributes: {
-      id: 'geosearch'
-    },
+    className: 'geosearch',
 
     ui: {
       input: 'input'

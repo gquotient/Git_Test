@@ -34,12 +34,12 @@ define([
     },
 
     ui: {
-      map: '#map'
+      map: '.map'
     },
 
     regions: {
-      list: '#projectList',
-      detail: '#projectDetail'
+      list: '.projectList',
+      detail: '.projectDetail'
     },
 
     initialize: function(options){
