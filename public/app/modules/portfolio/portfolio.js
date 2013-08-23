@@ -259,7 +259,8 @@ define([
       template: editPortfolioTemplate
     },
     ui: {
-      message: '.message'
+      message: '.message',
+      display_name: '#display_name'
     },
     triggers: {
       'click .save': 'save',
@@ -301,10 +302,25 @@ define([
       }
     },
     validate: function(portfolio){
-      var validateFilters = function(filter){
-        if (!filter && !filter.length) {
-          this.updateMessage('A filter is required', 'error');
+      var that = this;
+
+      var validateFilters = function(filters){
+        if (!filters || !filters.length) {
+          that.updateMessage('A filter is required', 'error');
           return false;
+        } else {
+          var hasValue = true;
+
+          _.each(filters, function(filter){
+            if (!filter.value.length) {
+              hasValue = false;
+            }
+          });
+
+          if (!hasValue) {
+            that.updateMessage('All filters require a value', 'error');
+            return false;
+          }
         }
 
         return true;
@@ -312,7 +328,7 @@ define([
 
       if (!portfolio.display_name.length) {
         this.updateMessage('A name is required', 'error');
-        $('#display_name').focus();
+        this.ui.display_name.focus();
         return false;
       } else if (!validateFilters(portfolio.filter)) {
         return false;
@@ -322,12 +338,13 @@ define([
     },
     onSave: function(){
       var portfolio = {
-        display_name: this.$('#display_name').val(),
+        display_name: this.ui.display_name.val(),
         filter: [],
         // Default to share for now until we figure out this whole concept a little better
         share: 'yes'//this.$('#share').attr('checked') ? 'yes' : 'no'
       };
 
+      // NOTE - This can be cleaned up to use the actual collection of ItemViews
       $('.filter').each(function(index){
         var $this = $(this);
 
@@ -338,12 +355,13 @@ define([
         });
       });
 
-      // Stringify filter for the API
-      // NOTE - We may want to do this on the server
-      portfolio.filter = JSON.stringify(portfolio.filter);
-
+      // Run validation and save if it passes
       if (this.validate(portfolio)){
         var that = this;
+
+        // Stringify filter for the API
+        // NOTE - We may want to do this on the server
+        portfolio.filter = JSON.stringify(portfolio.filter);
 
         this.model.save(portfolio, {wait: true}).done(function(){
           that.updateMessage('Portfolio saved');

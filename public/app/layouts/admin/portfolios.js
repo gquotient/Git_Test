@@ -43,7 +43,9 @@ define([
       this.editPortfolios.show(this.portfolioTable);
     },
     edit: function(portfolio){
-      var editView, model = portfolio || new Portfolio.Model();
+      // Create a new portfolio if none was passed
+      var model = portfolio || new Portfolio.Model();
+      var editView;
 
       if (!model.isNew()) {
         // Update history
@@ -55,7 +57,7 @@ define([
         Backbone.trigger('set:breadcrumbs', {state: 'portfolioEdit', display_name: 'New'});
       }
 
-      // display edit view
+      // Instantiate and show edit view
       editView = new Portfolio.views.SingleEdit({
         model: model,
         portfolios: this.options.collection
@@ -63,6 +65,7 @@ define([
 
       this.editPortfolios.show(editView);
 
+      // On cancel just return to the primary portfolios admin view
       this.listenTo(editView, 'cancel', function(){
         this.editPortfolios.show(this.portfolioTable);
         Backbone.history.navigate('/admin/portfolios');
@@ -73,6 +76,7 @@ define([
         // Update the portfolio collection
         this.options.collection.add(model);
 
+        // Update bread crumbs and url to the new model
         Backbone.history.navigate('/admin/portfolios/' + model.id);
         Backbone.trigger('set:breadcrumbs', {state: 'portfolioEdit', display_name: model.get('display_name')});
       }, this);
