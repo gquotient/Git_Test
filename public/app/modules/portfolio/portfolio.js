@@ -264,11 +264,14 @@ define([
       'click .cancel': 'cancel',
       'click .addFilter': 'addFilter'
     },
+    itemViewContainer: '.filters',
+    itemView: Portfolio.views.Filter,
+    initialize: function(){
+      this.collection = new Backbone.Collection();
+    },
     onAddFilter: function(){
       this.addFilter({});
     },
-    itemViewContainer: '.filters',
-    itemView: Portfolio.views.Filter,
     addFilter: function(filter){
       this.collection.add(new Backbone.Model(filter));
     },
@@ -360,9 +363,6 @@ define([
           that.updateMessage('Portfolio saved');
         });
       }
-    },
-    initialize: function(){
-      this.collection = new Backbone.Collection();
     }
   });
 
