@@ -27,7 +27,8 @@ define([
         that = this,
         project = this.options.project,
         traces = [],
-        series = []
+        series = [],
+        date = this.options.date
       ;
 
       project.findDataSources().done(function(dataSources){
@@ -40,8 +41,8 @@ define([
           traces.push({
             'project_label': project.id,
             'ddl': 'inv',
-            'dtstart': 'today',
-            'dtstop': 'now',
+            'dtstart': date ? date.start/1000 : 'today',
+            'dtstop': date ? date.stop/1000 : 'now',
             'columns': ['freezetime', 'ac_power_mean'],
             'filters': [
               {
@@ -61,8 +62,8 @@ define([
               traces.push({
                 'project_label': project.id,
                 'ddl': 'bus-str-calc',
-                'dtstart': 'today',
-                'dtstop': 'now',
+                'dtstart': date ? date.start/1000 : 'today',
+                'dtstop': date ? date.stop/1000 : 'now',
                 'columns': ['freezetime', 'dc_power'],
                 'filters': [
                   {
