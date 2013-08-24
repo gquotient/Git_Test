@@ -44,6 +44,7 @@
   "Latitude": "Latitude",
   "Longitude": "Longitude",
   "Elevation": "Elevation",
+  "Owner": "Owner",
 
   "View": "View",
   "Add Device": "Add Device",
