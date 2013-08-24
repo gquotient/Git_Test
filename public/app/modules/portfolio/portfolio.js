@@ -48,6 +48,14 @@ define([
     initialize: function(options){
       this.projects = new Project.Collection([], {comparator: 'display_name'});
 
+      // Add projects to the collection
+      this.updateProjects();
+
+      // Update aggregate KPIs when projects update
+      this.listenTo(this.projects, 'change', _.debounce(this.aggregateKpis, 500));
+    },
+
+    updateProjects: function(){
       _.each(this.get('projects'), function(project){
         project = this.collection.projects.get(project);
 
@@ -65,8 +73,8 @@ define([
       }
 
       this.set('total_projects', this.projects.length);
+
       this.aggregateKpis();
-      this.listenTo(this.projects, 'change', this.aggregateKpis);
     },
 
     destroy: function(options) {
@@ -160,6 +168,10 @@ define([
     url: '/api/portfolios',
     initialize: function(models, options){
       this.projects = options.projects;
+
+      this.on('add', function(portfolio, collection){
+        portfolio.updateProjects();
+      }, this);
     }
     // comparator: 'display_name'
   });
@@ -246,6 +258,10 @@ define([
       type: 'handlebars',
       template: editPortfolioTemplate
     },
+    ui: {
+      message: '.message',
+      display_name: '#display_name'
+    },
     triggers: {
       'click .save': 'save',
       'click .cancel': 'cancel',
@@ -270,29 +286,49 @@ define([
         this.addFilter({});
       }
     },
-    updateMessage: function(message) {
-      var $message = this.$('.message');
+    updateMessage: function(message, type) {
+      // Remove existing status classes
+      this.ui.message.removeClass('error warning ok');
+
+      if (type) {
+        this.ui.message.addClass(type);
+      }
 
       if (message) {
-        $message.show();
-        $message.text(message);
+        this.ui.message.text(message);
+        this.ui.message.fadeIn();
       } else {
-        $message.hide();
+        this.ui.message.fadeOut();
       }
     },
     validate: function(portfolio){
-      var validateFilters = function(filter){
-        if (!filter && !filter.length) {
-          this.updateMessage('A filter is required');
+      var that = this;
+
+      var validateFilters = function(filters){
+        if (!filters || !filters.length) {
+          that.updateMessage('A filter is required', 'error');
           return false;
+        } else {
+          var hasValue = true;
+
+          _.each(filters, function(filter){
+            if (!filter.value.length) {
+              hasValue = false;
+            }
+          });
+
+          if (!hasValue) {
+            that.updateMessage('All filters require a value', 'error');
+            return false;
+          }
         }
 
         return true;
       };
 
       if (!portfolio.display_name.length) {
-        this.updateMessage('A name is required');
-        $('#display_name').focus();
+        this.updateMessage('A name is required', 'error');
+        this.ui.display_name.focus();
         return false;
       } else if (!validateFilters(portfolio.filter)) {
         return false;
@@ -302,11 +338,13 @@ define([
     },
     onSave: function(){
       var portfolio = {
-        display_name: this.$('#display_name').val(),
+        display_name: this.ui.display_name.val(),
         filter: [],
-        share: this.$('#share').attr('checked') ? 'yes' : 'no'
+        // Default to share for now until we figure out this whole concept a little better
+        share: 'yes'//this.$('#share').attr('checked') ? 'yes' : 'no'
       };
 
+      // NOTE - This can be cleaned up to use the actual collection of ItemViews
       $('.filter').each(function(index){
         var $this = $(this);
 
@@ -317,13 +355,17 @@ define([
         });
       });
 
-      // Stringify filter for the API
-      portfolio.filter = JSON.stringify(portfolio.filter);
+      // Run validation and save if it passes
+      if (this.validate(portfolio)){
+        var that = this;
 
-      if(this.validate(portfolio)){
-        this.updateMessage();
+        // Stringify filter for the API
+        // NOTE - We may want to do this on the server
+        portfolio.filter = JSON.stringify(portfolio.filter);
 
-        this.model.save(portfolio);
+        this.model.save(portfolio, {wait: true}).done(function(){
+          that.updateMessage('Portfolio saved');
+        });
       }
     },
     initialize: function(){

@@ -123,13 +123,23 @@ define([
       return layout;
     },
 
-    showPortfolios: function(){
+    showPortfolios: function(id){
+      // Force id to be a number
+      id = +id;
+
       var layout = new PortfoliosLayout({
         collection: ia.portfolios
       });
 
       this.pageContent.show(layout);
       this.highlightLink('portfolios');
+
+      if (id && id !== 'new') {
+        var portfolio = ia.portfolios.findWhere({portfolio_id: id});
+        layout.edit(portfolio);
+      } else if (id && id === 'new') {
+        layout.edit();
+      }
 
       return layout;
     },
