@@ -35,8 +35,6 @@ module.exports = function(app){
 
     var options = {
       method: req.method,
-      host: app.get('modelUrl'),
-      path: '/res/teamportfolios',
       uri: app.get('modelUrl') + '/res/teamportfolios',
       headers: {
         currentUser: req.user.email,
@@ -55,7 +53,6 @@ module.exports = function(app){
     defer.promise.then(function(){
       request(
         _.extend({}, options, {
-          path: '/res/portfolio',
           uri: app.get('modelUrl') + '/res/portfolio'
         }),
         function(error, response, body){
