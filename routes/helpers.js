@@ -62,8 +62,32 @@ module.exports = function(app){
         next(req, res);
       };
     },
+    parsePortfolioFilters: function(portfolios){
+      portfolios = JSON.parse(portfolios);
+
+      var parseFilters = function(filter){
+        // Only parse if the filter is an array (smart filter)
+        if (typeof filter === 'string' && filter.charAt(0) === '[') {
+          filter = JSON.parse(filter);
+        }
+
+        return filter;
+      };
+
+      if (_.isArray(portfolios)) {
+        _.each(portfolios, function(portfolio){
+          portfolio.filter = parseFilters(portfolio.filter);
+        });
+      } else if (_.isObject(portfolios)) {
+        portfolios.filter = parseFilters(portfolios.filter);
+      }
+
+      portfolios = JSON.stringify(portfolios);
+
+      return portfolios;
+    },
     makeRequest: function(options){
-      var _request = function(req, res){
+      var _request = function(req, res, next){
 
         var opts = _.extend({
           method: req.method,
@@ -113,9 +137,13 @@ module.exports = function(app){
 
           } else if (options.translate) {
             options.translate(JSON.parse(body), function(translatedData){
-              res.end(JSON.stringify(translatedData));
+              res.send(JSON.stringify(translatedData));
             });
 
+          } else if (options.processData) {
+            // Manipulate the response after the request returns
+            res.body = body;
+            next();
           } else {
             res.end(body);
           }
