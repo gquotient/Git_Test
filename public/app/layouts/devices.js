@@ -51,6 +51,30 @@ define([
       Inverter: InverterLayout
     },
 
+    date: null,
+
+    initialize: function(options){
+      var that = this;
+
+      Backbone.trigger('set:breadcrumbs', {state:'device', display_name:'Devices'});
+
+      // Instantiate devices collection view
+      this.devices = new Device.Collection();
+      this.devicesTree = new Device.views.NavigationList({
+        collection: this.devices
+      });
+
+      // Listen for a device to be clicked and change view
+      this.listenTo(Backbone, 'click:device', function(device){
+        that.selectDevice(device);
+      });
+
+      this.listenTo(Backbone, 'set:date', function(date){
+        console.log(date);
+        this.date = date;
+      });
+    },
+
     selectDevice: function(device){
       Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'));
 
@@ -58,7 +82,7 @@ define([
       var SubLayout = (this.deviceLayouts[device.get('devtype')]) ? this.deviceLayouts[device.get('devtype')] : this.deviceLayouts.core;
 
       // Show layout
-      this.deviceDetail.show(new SubLayout({model: device, project: this.model}));
+      this.deviceDetail.show(new SubLayout({model: device, project: this.model, date: this.date}));
 
       // Set active nav el
       //NOTE - this is a special recursive method on the device tree
@@ -102,23 +126,6 @@ define([
     onClose: function(){
       // Close settings dropdown views
       this.options.settingsRegion.close();
-    },
-
-    initialize: function(options){
-      var that = this;
-
-      Backbone.trigger('set:breadcrumbs', {state:'device', display_name:'Devices'});
-
-      // Instantiate devices collection view
-      this.devices = new Device.Collection();
-      this.devicesTree = new Device.views.NavigationList({
-        collection: this.devices
-      });
-
-      // Listen for a device to be clicked and change view
-      this.listenTo(Backbone, 'click:device', function(device){
-        that.selectDevice(device);
-      });
     }
   });
 });
