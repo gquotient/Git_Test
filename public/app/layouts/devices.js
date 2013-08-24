@@ -70,7 +70,6 @@ define([
       });
 
       this.listenTo(Backbone, 'set:date', function(date){
-        console.log(date);
         this.date = date;
       });
     },
