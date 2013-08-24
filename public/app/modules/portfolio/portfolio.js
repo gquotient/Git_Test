@@ -65,7 +65,7 @@ define([
       }, this);
 
       // Parse filter if it's one defined by the client side
-      if (this.get('filter') && this.get('filter').charAt(0) === '[') {
+      if (typeof this.get('filter') === 'string' && this.get('filter').charAt(0) === '[') {
         this.set('filter', JSON.parse(this.get('filter')));
 
         // Get filtered project list and add them to collection
