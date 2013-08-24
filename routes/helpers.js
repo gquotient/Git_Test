@@ -63,6 +63,7 @@ module.exports = function(app){
       };
     },
     parsePortfolioFilters: function(portfolios){
+      // Parse json
       portfolios = JSON.parse(portfolios);
 
       var parseFilters = function(filter){
@@ -74,6 +75,8 @@ module.exports = function(app){
         return filter;
       };
 
+      // Since the body can come back as an array or a single object,
+      // handle each case
       if (_.isArray(portfolios)) {
         _.each(portfolios, function(portfolio){
           portfolio.filter = parseFilters(portfolio.filter);
@@ -82,6 +85,7 @@ module.exports = function(app){
         portfolios.filter = parseFilters(portfolios.filter);
       }
 
+      // Re-stringify to send back to the browser
       portfolios = JSON.stringify(portfolios);
 
       return portfolios;
