@@ -83,9 +83,15 @@ define([
       statusValue: -1
     },
 
-    initialize: function(){
+    constructor: function(){
+      // Need these initialized here for parsing.
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
+
+      Backbone.Model.prototype.constructor.apply(this, arguments);
+    },
+
+    initialize: function(){
       this.issues = new Issue.Collection([], {projectId: this.id});
 
       // This might be a bit convoluted and potentially fire too often but it works
@@ -287,6 +293,9 @@ define([
     },
 
     parse: function(resp, options){
+      // Check if this is a simple project object.
+      if (resp.project_label) { return resp; }
+
       var project = resp.project || {};
 
       this.devices.reset();
