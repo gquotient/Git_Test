@@ -583,17 +583,14 @@ header {
 
 #page-projectsAdmin {
   padding: 0 !important;
+  min-width: 825px;
 
-  .verticalPane {
-    overflow: hidden;
-  }
-
-  #map {
+  .map {
     width: 100%;
     height: 100%;
   }
 
-  #geosearch {
+  .geosearch {
     position: absolute;
     top: 12px;
     width: 100%;
@@ -615,17 +612,61 @@ header {
     }
   }
 
-  .verticalPane.bottom > .container {
-    position: relative;
-    float: left;
-    height: 100%;
+  .verticalPane.bottom {
+    padding-left: 400px;
 
-    &.left {
-      width: 25%;
+    & > div {
+      position: relative;
+      float: left;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .listContainer {
+      width: 400px;
+      right: 400px;
+      margin-left: -100%;
       padding: projectTableHeaderHeight 0 38px 0;
       border-right: borderBasicDark;
 
+      .header {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: projectTableHeaderHeight;
+        z-index: 100;
+        background: colorBGDarkGrey;
+        background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+        border-top: borderBasicMedium;
+        border-bottom: borderBasicDark;
+        box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .projectList {
+        height: 100%;
+        overflow-y: auto;
+
+        table {
+          width: 100%;
+          border: none;
+          border-bottom: borderBasicDark;
+
+          .actions {
+            text-align: right;
+          }
+        }
+      }
+
       .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 6px;
+        padding-right: 0;
+        border-top: borderBasicMedium;
+        border-bottom: borderBasicDark;
+        background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+
         text-align: right;
 
         .create {
@@ -638,72 +679,37 @@ header {
       }
     }
 
-    &.right {
-      width: 75%;
-    }
-
-    .header {
-      position: absolute;
-      top: 0;
+    .projectDetail {
       width: 100%;
-      height: projectTableHeaderHeight;
-      z-index: 100;
-      background: colorBGDarkGrey;
-      background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-      border-top: borderBasicMedium;
-      border-bottom: borderBasicDark;
-      box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .footer {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      padding: 6px;
-      padding-right: 0;
-      border-top: borderBasicMedium;
-      border-bottom: borderBasicDark;
-      background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-    }
-  }
-
-  #projectList {
-    height: 100%;
-    overflow-y: auto;
-
-    table {
-      width: 100%;
-      border: none;
-      border-bottom: borderBasicDark;
-
-      .actions {
-        text-align: right;
-      }
-    }
-  }
-
-  #projectDetail {
-    overflow-y: auto;
-
-    .container {
-      float: left;
       padding: 12px;
+      overflow-y: auto;
 
-      &.left {
-        clear: left;
-      }
-    }
+      fieldset {
+        width: 400px;
+        padding: 12px;
 
-    label {
-      display: block;
-    }
+        & > div {
+          float: left;
+          width: 50%;
+          padding-left: 12px;
 
-    input {
-      width: 100%;
-      margin: 3px 0 12px 0;
+          &:first-child {
+            padding-left: 0;
+          }
+        }
 
-      &.invalid {
-        background: pink;
+        label {
+          display: block;
+        }
+
+        input, textarea {
+          width: 100%;
+          margin: 3px 0 12px 0;
+
+          &.invalid {
+            background: pink;
+          }
+        }
       }
     }
   }
