@@ -88,9 +88,7 @@ module.exports = function(app){
       requestOptions.uri = app.get('modelUrl') + '/res/teamportfolios?team_label='+req.session.team_label+'&org_label='+req.session.org_label;
 
       request(requestOptions, function(error, response, portfolios){
-        portfolios = parsePortfolioFilters(portfolios);
-
-        myPortfolios = portfolios;
+        myPortfolios = parsePortfolioFilters(portfolios);
 
         resolveEverythingLoaded();
       });
