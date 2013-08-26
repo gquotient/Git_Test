@@ -148,7 +148,7 @@ define([
 
       _.each(this.schema, function(obj, key){
         var $el = this.$(obj.el),
-          editable = !(obj.editable === false) || this.model.isNew();
+          editable = obj.editable !== false || this.model.isNew();
 
         if (!$el) { return; }
 
