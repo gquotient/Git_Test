@@ -393,29 +393,32 @@ define([
     },
 
     fetchProjectKpis: function(){
-      var that = this;
-      var traces = [];
+      // Don't fetch data if there are no projects
+      if(this.length) {
+        var that = this;
+        var traces = [];
 
-      this.each(function(project){
-        traces.push({
-          project_label: project.id,
-          project_timezone: project.get('timezone')
+        this.each(function(project){
+          traces.push({
+            project_label: project.id,
+            project_timezone: project.get('timezone')
+          });
         });
-      });
 
-      return $.ajax({
-        url: '/api/kpis',
-        cache: false,
-        type: 'POST',
-        dataType: 'json',
-        data: {
-          traces: traces
-        }
-      })
-      .done(function(data){
-        that.trigger('data:done', data);
-        that.parseProjectKpis(data.response);
-      });
+        return $.ajax({
+          url: '/api/kpis',
+          cache: false,
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            traces: traces
+          }
+        })
+        .done(function(data){
+          that.trigger('data:done', data);
+          that.parseProjectKpis(data.response);
+        });
+      }
     },
 
     parseProjectKpis: function(data){

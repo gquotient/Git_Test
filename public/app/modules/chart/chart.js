@@ -83,7 +83,7 @@ function(
     })
   };
 
-  Chart.dataDefaults = function(project, device, dataType) {
+  Chart.dataDefaults = function(project, device, dataType, date) {
     var
       ddl = {
         'Panel': 'pnl',
@@ -120,8 +120,8 @@ function(
       dataDefinition = {
         'project_label': project.id,
         'ddl': 'pgen-env',
-        'dtstart': 'today',
-        'dtstop': 'now',
+        'dtstart': date ? date.start/1000 : 'today',
+        'dtstop': date ? date.stop/1000 : 'now',
         'columns': ['freezetime', 'irradiance'],
         project_timezone: project.get('timezone')
       };
@@ -129,8 +129,8 @@ function(
       dataDefinition = {
         'project_label': project.id,
         'ddl': ddl[device.get('devtype')],
-        'dtstart': 'today',
-        'dtstop': 'now',
+        'dtstart': date ? date.start/1000 : 'today',
+        'dtstop': date ? date.stop/1000 : 'now',
         'columns': ['freezetime', column[device.get('devtype')][dataType]],
         'filters': [
           {

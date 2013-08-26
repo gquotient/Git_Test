@@ -103,14 +103,7 @@ define([
     },
 
     portfoliosAdmin: function(id){
-      if (id && id !== 'new') {
-        var portfolio = this.findPortfolio(id);
-        this.mainLayout.showAdmin().showPortfolios().edit(portfolio);
-      } else if (id && id === 'new') {
-        this.mainLayout.showAdmin().showPortfolios().edit();
-      } else {
-        this.mainLayout.showAdmin().showPortfolios();
-      }
+      this.mainLayout.showAdmin().showPortfolios(id);
     },
 
     initialize: function(){
