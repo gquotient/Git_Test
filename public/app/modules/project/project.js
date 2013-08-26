@@ -287,33 +287,43 @@ define([
     },
 
     parse: function(resp, options){
-      if (resp.devices) {
-        this.devices.reset(resp.devices, {
-          equipment: options.equipment
+      var project = resp.project || {};
+
+      this.devices.reset();
+
+      // Parse devices.
+      _.each(resp.devices, function(device){
+        _.extend(device, {
+          project_label: this.id,
+          renderings: JSON.parse(device.renderings || '{}')
         });
 
-        if (resp.rels) {
-          _.each(resp.rels, function(rel) {
-            var source = this.devices.get(rel[2]),
-              target = this.devices.get(rel[0]),
-              relationship = rel[1];
+        this.devices.add(device, {
+          equipment: options.equipment
+        });
+      }, this);
 
-            if (!target && rel[0] === resp.node_id) {
-              target = this;
-            }
+      // Parse device relationships.
+      _.each(resp.rels, function(rel) {
+        var source = this.devices.get(rel[2]),
+          target = this.devices.get(rel[0]),
+          relationship = rel[1];
 
-            if (source && target) {
-              source.connectTo(target, relationship);
-            }
-          }, this);
+        if (!target && rel[0] === project.node_id) {
+          target = this;
         }
 
-        _.each(_.keys(Equipment.renderings), function(label){
-          this.checkOutgoing(this, label);
-        }, this);
-      }
+        if (source && target) {
+          source.connectTo(target, relationship);
+        }
+      }, this);
 
-      return _.omit(resp, 'devices', 'rels');
+      // Add rendering information to each device recursivly.
+      _.each(_.keys(Equipment.renderings), function(label){
+        this.checkOutgoing(this, label);
+      }, this);
+
+      return project;
     },
 
     checkOutgoing: function(target, label){

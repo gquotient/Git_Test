@@ -171,6 +171,10 @@ module.exports = function(app){
           path = options.path || '',
           _req;
 
+        if (_.isFunction(path)) {
+          path = path(req);
+        }
+
         _.defaults(options, {
           method: req.method,
           uri: host + path,

@@ -38,68 +38,16 @@ module.exports = function(app){
     }));
 
   app.get('/api/projects/:label',
-    function(req, res){
-      var project_label = req.params.label,
-        index_name = req.query.index_name || 'StagedProjects';
-
-      if (!project_label) {
-        res.send(301);
-
-      } else {
-        request({
-          method: 'GET',
-          uri: [
-            app.get('modelUrl'),
-            'api/project/devices',
-            project_label,
-            index_name
-          ].join('/'),
-          headers: {
-            currentUser: req.user.email,
-            access_token: req.user.access_token,
-            clientSecret: app.get('clientSecret')
-          }
-        }, function(err, resp, body){
-          var project = {devices: [], rels: []};
-
-          if (err) {
-            req.flash('error', err.message);
-            console.log('error!:', err);
-            res.redirect('/ia');
-
-          } else if (resp.statusCode < 200 || resp.statusCode > 299) {
-            console.log(resp.statusCode, body);
-            res.send(resp.statusCode);
-
-          } else {
-            body = JSON.parse(body);
-
-            _.each(body.devices, function(node){
-              if (/^PV[ASC]/.test(node.did)) {
-                _.extend(project, _.omit(node, 'id', 'devices', 'rels'), {
-                  node_id: node.id
-                });
-
-              } else if (!/^EQT/.test(node.did)) {
-                project.devices.push(_.extend(_.omit(node, 'id'), {
-                  node_id: node.id,
-                  project_label: project_label,
-                  renderings: node.renderings ? JSON.parse(node.renderings) : {}
-                }));
-              }
-            });
-
-            _.each(body.rels, function(rel){
-              if (rel[1] !== 'SPEC') {
-                project.rels.push(rel);
-              }
-            });
-
-            res.send(project);
-          }
-        });
-      }
-    });
+    helpers.request({
+      path: function(req){
+        return [
+          '/api/project/devices',
+          req.params.label,
+          req.query.index_name || 'StagedProjects'
+        ].join('/');
+      },
+      pipe: true
+    }));
 
   app.post('/api/projects', ensureAuthorized(['vendor_admin']),
     makeRequest({
