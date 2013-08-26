@@ -6,25 +6,48 @@ module.exports = function(app){
     , helpers = require('./helpers')(app)
     , makeRequest = helpers.makeRequest
     , ensureCurrentOrganization = helpers.ensureCurrentOrganization
-    , ensureCurrentTeam = helpers.ensureCurrentTeam;
+    , ensureCurrentTeam = helpers.ensureCurrentTeam
+    , parsePortfolioFilters = helpers.parsePortfolioFilters;
 
 
   app.get('/api/portfolios', ensureCurrentOrganization, ensureCurrentTeam,
     makeRequest({
-      path: '/res/teamportfolios'
-    })
+      path: '/res/teamportfolios',
+      processData: true
+    }),
+    function(req, res){
+      res.end(parsePortfolioFilters(res.body));
+    }
   );
 
   app.post('/api/portfolios', ensureCurrentOrganization, ensureCurrentTeam,
+    function(req, res, next){
+      // Stringify filter for API
+      req.body.filter = JSON.stringify(req.body.filter);
+      next();
+    },
     makeRequest({
-      path: '/res/portfolio'
-    })
+      path: '/res/portfolio',
+      processData: true
+    }),
+    function(req, res){
+      res.end(parsePortfolioFilters(res.body));
+    }
   );
 
   app.put('/api/portfolios', ensureCurrentOrganization, ensureCurrentTeam,
+    function(req, res, next){
+      // Stringify filter for API
+      req.body.filter = JSON.stringify(req.body.filter);
+      next();
+    },
     makeRequest({
-      path: '/res/portfolio'
-    })
+      path: '/res/portfolio',
+      processData: true
+    }),
+    function(req, res){
+      res.end(parsePortfolioFilters(res.body));
+    }
   );
 
   app.del('/api/portfolios', ensureCurrentOrganization, ensureCurrentTeam, function(req, res){
