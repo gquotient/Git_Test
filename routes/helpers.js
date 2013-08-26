@@ -153,7 +153,7 @@ module.exports = function(app){
           form: _.extend({}, req.body)
         });
 
-        if (req.method === 'DELETE') {
+        if (options.method === 'DELETE') {
           _.extend(options.qs, options.form);
           delete options.form;
         }
