@@ -159,7 +159,6 @@ module.exports = function(app){
         }
 
         _req = request(options, function(error, response, body){
-          var stat = response.statusCode;
 
           if (error) {
             req.flash('error', error.message);
