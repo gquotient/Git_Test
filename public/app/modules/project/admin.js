@@ -65,6 +65,12 @@ define([
       template: adminDetailTemplate
     },
 
+    templateHelpers: function(){
+      return {
+        label: this.model.get('site_label') || this.model.id
+      };
+    },
+
     schema: {
       display_name: {
         el: '#name',
@@ -141,11 +147,12 @@ define([
       this.ui = {};
 
       _.each(this.schema, function(obj, key){
-        var $el = this.$(obj.el);
+        var $el = this.$(obj.el),
+          editable = !(obj.editable === false) || this.model.isNew();
 
         if (!$el) { return; }
 
-        if (obj.editable === false && !this.model.isNew()) {
+        if (!editable) {
           $el.attr('disabled', true);
         }
 
@@ -156,10 +163,12 @@ define([
             value = obj.parse.call(this, value);
           }
 
-          if (!obj.validate || obj.validate.call(this, value)) {
-            this.model.set(key, value);
-          } else {
-            $el.addClass('invalid');
+          if (editable) {
+            if (!obj.validate || obj.validate.call(this, value)) {
+              this.model.set(key, value);
+            } else {
+              $el.addClass('invalid');
+            }
           }
         };
 
