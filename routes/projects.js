@@ -25,19 +25,16 @@ module.exports = function(app){
   //////
 
   app.get('/api/projects',
-    makeRequest({
-      path: '/res/projects',
-      setup: function(req, res, next){
-        _.defaults(req.query, {
-          project_label: 'ALL',
-          index_name: 'StagedProjects'
-        });
+    function(req, res, next){
+      _.defaults(req.query, {
+        project_label: 'ALL',
+        index_name: 'StagedProjects'
+      });
 
-        next(req, res);
-      },
-      translate: function(body, next){
-        next(_.map(body, combineProperties));
-      }
+      next();
+    },
+    helpers.request({
+      path: '/res/projects'
     }));
 
   app.get('/api/projects/:label',

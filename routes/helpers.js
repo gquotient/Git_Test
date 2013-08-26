@@ -130,6 +130,63 @@ module.exports = function(app){
       } else {
         return _request;
       }
+    },
+
+    // Adds a wrapper around request
+    request: function(options){
+      return function(req, res, next){
+        var host = options.host || app.get('modelUrl'),
+          path = options.path || '',
+          _req;
+
+        _.defaults(options, {
+          method: req.method,
+          uri: host + path,
+
+          headers: {
+            currentUser: req.user.email,
+            access_token: req.user.access_token,
+            clientSecret: app.get('clientSecret')
+          },
+
+          qs: _.extend({}, req.query),
+          form: _.extend({}, req.body)
+        });
+
+        if (req.method === 'DELETE') {
+          _.extend(options.qs, options.form);
+          delete options.form;
+        }
+
+        _req = request(options, function(error, response, body){
+          var stat = response.statusCode;
+
+          if (error) {
+            req.flash('error', error.message);
+            console.log('error!:', error);
+            res.redirect('/ia');
+          }
+
+          if (options.middleware) {
+            res.statusCode = response.statusCode;
+
+            try {
+              res.body = JSON.parse(body);
+            } catch (e) {
+              res.body = body;
+            }
+
+            next();
+
+          } else if (!options.pipe) {
+            res.send(response.statusCode, body);
+          }
+        });
+
+        if (options.pipe && !options.middleware) {
+          _req.pipe(res);
+        }
+      };
     }
   };
 };
