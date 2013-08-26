@@ -64,11 +64,8 @@ define([
         }
       }, this);
 
-      // Parse filter if it's one defined by the client side
-      if (typeof this.get('filter') === 'string' && this.get('filter').charAt(0) === '[') {
-        this.set('filter', JSON.parse(this.get('filter')));
-
-        // Get filtered project list and add them to collection
+      // If filter is a smart filter, fetch projects
+      if (_.isArray(this.get('filter'))) {
         this.projects.add(this.filteredProjects());
       }
 
@@ -267,11 +264,14 @@ define([
       'click .cancel': 'cancel',
       'click .addFilter': 'addFilter'
     },
+    itemViewContainer: '.filters',
+    itemView: Portfolio.views.Filter,
+    initialize: function(){
+      this.collection = new Backbone.Collection();
+    },
     onAddFilter: function(){
       this.addFilter({});
     },
-    itemViewContainer: '.filters',
-    itemView: Portfolio.views.Filter,
     addFilter: function(filter){
       this.collection.add(new Backbone.Model(filter));
     },
@@ -359,17 +359,10 @@ define([
       if (this.validate(portfolio)){
         var that = this;
 
-        // Stringify filter for the API
-        // NOTE - We may want to do this on the server
-        portfolio.filter = JSON.stringify(portfolio.filter);
-
         this.model.save(portfolio, {wait: true}).done(function(){
           that.updateMessage('Portfolio saved');
         });
       }
-    },
-    initialize: function(){
-      this.collection = new Backbone.Collection();
     }
   });
 
