@@ -25,19 +25,16 @@ module.exports = function(app){
   //////
 
   app.get('/api/projects',
-    makeRequest({
-      path: '/res/projects',
-      setup: function(req, res, next){
-        _.defaults(req.query, {
-          project_label: 'ALL',
-          index_name: 'StagedProjects'
-        });
+    function(req, res, next){
+      _.defaults(req.query, {
+        project_label: 'ALL',
+        index_name: 'StagedProjects'
+      });
 
-        next(req, res);
-      },
-      translate: function(body, next){
-        next(_.map(body, combineProperties));
-      }
+      next();
+    },
+    helpers.request({
+      path: '/res/projects'
     }));
 
   app.get('/api/projects/:label',
@@ -79,16 +76,16 @@ module.exports = function(app){
 
             _.each(body.devices, function(node){
               if (/^PV[ASC]/.test(node.did)) {
-                _.extend(project, _.omit(node, 'devices', 'rels'));
+                _.extend(project, _.omit(node, 'id', 'devices', 'rels'), {
+                  node_id: node.id
+                });
 
               } else if (!/^EQT/.test(node.did)) {
-                node.project_label = project_label;
-
-                if (node.renderings) {
-                  node.renderings = JSON.parse(node.renderings);
-                }
-
-                project.devices.push(node);
+                project.devices.push(_.extend(_.omit(node, 'id'), {
+                  node_id: node.id,
+                  project_label: project_label,
+                  renderings: node.renderings ? JSON.parse(node.renderings) : {}
+                }));
               }
             });
 
@@ -108,13 +105,10 @@ module.exports = function(app){
     makeRequest({
       path: '/res/projects',
       setup: separateProperties([
-        'display_name',
         'site_label',
-        'latitude',
-        'longitude',
-        'elevation',
         'index_name'
       ], [
+        'id',
         'dataSources',
         'kpis',
         'status',
@@ -128,9 +122,10 @@ module.exports = function(app){
     makeRequest({
       path: '/res/projects',
       setup: separateProperties([
-        'id',
+        'node_id',
         'project_label'
       ], [
+        'id',
         'site_label',
         'index_name',
 
@@ -174,6 +169,14 @@ module.exports = function(app){
         });
 
         next(req, res);
+      },
+      error: function(body, stat, res){
+        var match = body.match(/locked by ([^"]+)/);
+
+        res.send(match ? {
+          locked: true,
+          editor: match[1]
+        } : stat);
       }
     }));
 

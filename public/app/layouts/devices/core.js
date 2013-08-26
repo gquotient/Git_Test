@@ -57,8 +57,8 @@ define([
 
       var powerAndIrradiance = new Chart.views.Basic({
         traces: [
-          Chart.dataDefaults(project, this.model, 'irradiance'),
-          Chart.dataDefaults(project, this.model, 'power')
+          Chart.dataDefaults(project, this.model, 'irradiance', this.options.date),
+          Chart.dataDefaults(project, this.model, 'power', this.options.date)
         ],
         series: [
           Chart.seriesDefaults.irradiance,
@@ -68,8 +68,8 @@ define([
 
       var currentAndVoltage = new Chart.views.Basic({
         traces: [
-          Chart.dataDefaults(project, this.model, 'current'),
-          Chart.dataDefaults(project, this.model, 'voltage')
+          Chart.dataDefaults(project, this.model, 'current', this.options.date),
+          Chart.dataDefaults(project, this.model, 'voltage', this.options.date)
         ],
         series: [
           Chart.seriesDefaults.current,

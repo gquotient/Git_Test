@@ -19,7 +19,8 @@ module.exports = function(app){
         'parent_id',
         'relationship_label'
       ], [
-        'id'
+        'id',
+        'node_id'
       ]),
       translate: function(body, next){
         body = _.extend({},
@@ -39,9 +40,10 @@ module.exports = function(app){
     makeRequest({
       path: '/res/devices',
       setup: separateProperties([
-        'id',
+        'node_id',
         'project_label'
       ], [
+        'id',
         'parent_id',
         'relationship_label'
       ]),

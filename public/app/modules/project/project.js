@@ -88,8 +88,6 @@ define([
       this.outgoing = new Device.Collection();
       this.issues = new Issue.Collection([], {projectId: this.id});
 
-      this.lazySave = _.debounce(Backbone.Model.prototype.save, 1000);
-
       // This might be a bit convoluted and potentially fire too often but it works
       this.listenTo(this.issues, 'change reset add remove', function(){
         var status = this.issues.getSeverity();
@@ -104,11 +102,11 @@ define([
         type: 'PUT',
         data: {
           project_label: this.id,
-          lock: arguments.length > 0 ? lock : true
+          lock: _.isBoolean(lock) ? lock : true
         },
         dataType: 'json'
-      }).always(function(data){
-        that.set({locked: _.isBoolean(data.locked) ? data.locked : true});
+      }).done(function(data){
+        that.set(_.pick(data, 'locked', 'editor'));
       });
     },
 
@@ -241,6 +239,53 @@ define([
       return defer;
     },
 
+    save: function(key, val, options){
+      var that = this,
+        attrs = {},
+        saveNow;
+
+      // Duplicated in order to get proper options obj.
+      if (key == null || typeof key === 'object') {
+        attrs = key;
+        options = val || {};
+      } else {
+        attrs[key] = val;
+        options = options || {};
+      }
+
+      // Might as well handle this here as well.
+      if (attrs && !options.wait) {
+        if (!this.set(attrs)) { return false; }
+        attrs = null;
+      }
+
+      // Clear the lock after saving for existing projects.
+      if (!this.isNew() && !options.persistLock) {
+        options.success = _.wrap(options.success, function(success, resp){
+          that.setLock(false).done(success);
+        });
+      }
+
+      saveNow = options.immediate && !this.saveTimeout;
+      clearTimeout(this.saveTimeout);
+
+      if (options.lazy) {
+        this.saveTimeout = setTimeout(function(){
+          that.saveTimeout = null;
+
+          if (!options.immediate) {
+            Backbone.Model.prototype.save.call(that, attrs, options);
+          }
+        }, 1000);
+      } else {
+        saveNow = true;
+      }
+
+      if (saveNow) {
+        return Backbone.Model.prototype.save.call(this, attrs, options);
+      }
+    },
+
     parse: function(resp, options){
       if (resp.devices) {
         this.devices.reset(resp.devices, {
@@ -253,7 +298,7 @@ define([
               target = this.devices.get(rel[0]),
               relationship = rel[1];
 
-            if (!target && rel[0] === resp.id) {
+            if (!target && rel[0] === resp.node_id) {
               target = this;
             }
 
@@ -289,8 +334,9 @@ define([
     },
 
     addNote: function(note, user){
-      this.set({notes: this.formatNote(note, user) + this.get('notes')});
-      this.lazySave();
+      this.set({
+        notes: this.formatNote(note, user) + this.get('notes')
+      }, {lazy: true});
     },
 
     formatNote: function(msg, user){
@@ -347,29 +393,32 @@ define([
     },
 
     fetchProjectKpis: function(){
-      var that = this;
-      var traces = [];
+      // Don't fetch data if there are no projects
+      if(this.length) {
+        var that = this;
+        var traces = [];
 
-      this.each(function(project){
-        traces.push({
-          project_label: project.id,
-          project_timezone: project.get('timezone')
+        this.each(function(project){
+          traces.push({
+            project_label: project.id,
+            project_timezone: project.get('timezone')
+          });
         });
-      });
 
-      return $.ajax({
-        url: '/api/kpis',
-        cache: false,
-        type: 'POST',
-        dataType: 'json',
-        data: {
-          traces: traces
-        }
-      })
-      .done(function(data){
-        that.trigger('data:done', data);
-        that.parseProjectKpis(data.response);
-      });
+        return $.ajax({
+          url: '/api/kpis',
+          cache: false,
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            traces: traces
+          }
+        })
+        .done(function(data){
+          that.trigger('data:done', data);
+          that.parseProjectKpis(data.response);
+        });
+      }
     },
 
     parseProjectKpis: function(data){

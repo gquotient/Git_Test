@@ -37,18 +37,33 @@ define([
 
     tableOptions: {
       columnSorting: true,
-      stretchH: 'all'
+      stretchH: 'all',
+      readOnly: true
     },
 
-    initialize: function(options){
-      if (!options.editable) {
-        this.tableOptions.readOnly = true;
+    initialize: function(){
+      this.listenTo(Backbone, 'editor:change:editable', function(editable){
+        this.updateEditable(editable);
+      });
+    },
+
+    updateEditable: function(editable){
+      if (this.table) {
+        this.table.updateSettings({readOnly: !editable});
+      }
+
+      this.editable = editable;
+    },
+
+    onShow: function(){
+      if (this.options.editable) {
+        this.updateEditable(true);
       }
     },
 
     collectionEvents: {
       'change': function(model) {
-        if (this.options.editable) {
+        if (this.editable) {
           model.lazySave();
         }
       }

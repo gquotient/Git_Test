@@ -93,7 +93,7 @@ define([
     },
     events: {
       'click .edit': function(){
-        Backbone.history.navigate('/admin/project/' + this.model.id + '/edit', true);
+        Backbone.history.navigate('/admin/projects/' + this.model.id, true);
       },
       'click .toggleView': 'toggleView'
     },
@@ -118,7 +118,7 @@ define([
 
       this.contentNavigation.show(this.projectNavigationListView);
 
-      this.buildSettingsDropdown();
+      //this.buildSettingsDropdown();
 
       this.selectProject(this.options.model);
     },
@@ -129,19 +129,17 @@ define([
       var settingsDropdown = new Marionette.ItemView({
         tagName: 'li',
         className: 'menu dropdown',
-        template: _.template('<ul><li><a href="#" class="edit">Edit Project</a></li></ul>')
+        template: _.template('<ul><li><a href="#" class="edit">Edit Project</a></li></ul>'),
+        events: {
+          'click .edit': function(event){
+            event.preventDefault();
+            Backbone.history.navigate('/project/' + that.model.id + '/edit', true);
+          }
+        }
       });
 
       //Show ItemView in cached region
       this.options.settingsRegion.show(settingsDropdown);
-
-      //Define listeners
-      this.options.settingsRegion.$el.find('.edit').on('click', function(event){
-        event.preventDefault();
-
-        //Navigate to edit view
-        Backbone.history.navigate('/project/' + that.model.id + '/edit', true);
-      });
     },
 
     selectProject: function(project) {

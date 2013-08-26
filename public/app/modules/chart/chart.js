@@ -83,7 +83,7 @@ function(
     })
   };
 
-  Chart.dataDefaults = function(project, device, dataType) {
+  Chart.dataDefaults = function(project, device, dataType, date) {
     var
       ddl = {
         'Panel': 'pnl',
@@ -130,8 +130,8 @@ function(
       dataDefinition = {
         'project_label': project.id,
         'ddl': 'pgen-env',
-        'dtstart': 'today',
-        'dtstop': 'now',
+        'dtstart': date ? date.start/1000 : 'today',
+        'dtstop': date ? date.stop/1000 : 'now',
         'columns': ['freezetime', 'irradiance'],
         project_timezone: project.get('timezone')
       };
@@ -141,8 +141,8 @@ function(
       dataDefinition = {
         'project_label': project.id,
         'ddl': ddl[device.get('devtype')],
-        'dtstart': 'today',
-        'dtstop': 'now',
+        'dtstart': date ? date.start/1000 : 'today',
+        'dtstop': date ? date.stop/1000 : 'now',
         'columns': ['freezetime', deviceDefinition[dataType]],
         'filters': [
           {
@@ -358,9 +358,12 @@ function(
       if (series.length) {
         _.each(this.chart.series, function(serie, index){
           // Update series data
-          if (series[index].data && series[index].data.length) {
+          if (series[index].data) {
             serie.setData(series[index].data);
-          } else {
+          }
+
+          // If trace data is empty, handle no data error
+          if (!series[index].data.length) {
             //throw no data error
             console.warn('No data found on trace:', series[index]);
           }

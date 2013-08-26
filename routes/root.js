@@ -18,7 +18,9 @@ fs.readFile('./roles.json', 'utf8', function (err, data) {
 module.exports = function(app){
 
   var helpers = require('./helpers')(app),
-      ensureAuthenticated = helpers.ensureAuthenticated;
+      ensureAuthenticated = helpers.ensureAuthenticated,
+      parsePortfolioFilters = helpers.parsePortfolioFilters;
+
 
   app.all('/', ensureAuthenticated, function(req, res){
     res.redirect('/ia');
@@ -86,7 +88,7 @@ module.exports = function(app){
       requestOptions.uri = app.get('modelUrl') + '/res/teamportfolios?team_label='+req.session.team_label+'&org_label='+req.session.org_label;
 
       request(requestOptions, function(error, response, portfolios){
-        myPortfolios = portfolios;
+        myPortfolios = parsePortfolioFilters(portfolios);
 
         resolveEverythingLoaded();
       });

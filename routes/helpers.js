@@ -62,8 +62,36 @@ module.exports = function(app){
         next(req, res);
       };
     },
+    parsePortfolioFilters: function(portfolios){
+      // Parse json
+      portfolios = JSON.parse(portfolios);
+
+      var parseFilters = function(filter){
+        // Only parse if the filter is an array (smart filter)
+        if (typeof filter === 'string' && filter.charAt(0) === '[') {
+          filter = JSON.parse(filter);
+        }
+
+        return filter;
+      };
+
+      // Since the body can come back as an array or a single object,
+      // handle each case
+      if (_.isArray(portfolios)) {
+        _.each(portfolios, function(portfolio){
+          portfolio.filter = parseFilters(portfolio.filter);
+        });
+      } else if (_.isObject(portfolios)) {
+        portfolios.filter = parseFilters(portfolios.filter);
+      }
+
+      // Re-stringify to send back to the browser
+      portfolios = JSON.stringify(portfolios);
+
+      return portfolios;
+    },
     makeRequest: function(options){
-      var _request = function(req, res){
+      var _request = function(req, res, next){
 
         var opts = _.extend({
           method: req.method,
@@ -91,21 +119,37 @@ module.exports = function(app){
         }
 
         request(opts, function(error, response, body){
+          var stat = response.statusCode;
+
           if (error) {
             req.flash('error', error.message);
             console.log('error!:', error);
             res.redirect('/ia');
-          } else if (response.statusCode !== 200) {
-            console.log('error!:', response.statusCode, body);
-            res.send(response.statusCode);
-          } else {
-            if (opts.translate) {
-              opts.translate(JSON.parse(body), function(translatedData){
-                res.end(JSON.stringify(translatedData));
-              });
+          }
+
+          if (stat < 200 || stat > 299) {
+            console.log('error!:', stat, body);
+
+            if (options.error) {
+              options.error(body, stat, res);
             } else {
-              res.end(body);
+              res.send(stat);
             }
+
+          } else if (options.success) {
+            options.success(body, stat, res);
+
+          } else if (options.translate) {
+            options.translate(JSON.parse(body), function(translatedData){
+              res.send(JSON.stringify(translatedData));
+            });
+
+          } else if (options.processData) {
+            // Manipulate the response after the request returns
+            res.body = body;
+            next();
+          } else {
+            res.end(body);
           }
         });
       };
@@ -118,6 +162,62 @@ module.exports = function(app){
       } else {
         return _request;
       }
+    },
+
+    // Adds a wrapper around request
+    request: function(options){
+      return function(req, res, next){
+        var host = options.host || app.get('modelUrl'),
+          path = options.path || '',
+          _req;
+
+        _.defaults(options, {
+          method: req.method,
+          uri: host + path,
+
+          headers: {
+            currentUser: req.user.email,
+            access_token: req.user.access_token,
+            clientSecret: app.get('clientSecret')
+          },
+
+          qs: _.extend({}, req.query),
+          form: _.extend({}, req.body)
+        });
+
+        if (options.method === 'DELETE') {
+          _.extend(options.qs, options.form);
+          delete options.form;
+        }
+
+        _req = request(options, function(error, response, body){
+
+          if (error) {
+            req.flash('error', error.message);
+            console.log('error!:', error);
+            res.redirect('/ia');
+          }
+
+          if (options.middleware) {
+            res.statusCode = response.statusCode;
+
+            try {
+              res.body = JSON.parse(body);
+            } catch (e) {
+              res.body = body;
+            }
+
+            next();
+
+          } else if (!options.pipe) {
+            res.send(response.statusCode, body);
+          }
+        });
+
+        if (options.pipe && !options.middleware) {
+          _req.pipe(res);
+        }
+      };
     }
   };
 };

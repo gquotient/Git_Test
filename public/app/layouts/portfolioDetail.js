@@ -58,9 +58,17 @@ define([
       var settingsDropdown = new Marionette.ItemView({
         tagName: 'li',
         className: 'menu dropdown',
-        template: _.template('<ul><li><a href="#" class="edit">Operator Dashboard</a></li></ul>')
+        template: _.template('<ul><li><a href="#dashboard" class="viewDashboard">Operator Dashboard</a></li></ul>'),
+        onViewDashboard: function(){
+          console.log('view dashboard');
+        },
+        events: {
+          'click .viewDashboard': function(event){
+            event.preventDefault();
+            Backbone.history.navigate('/portfolio/dashboard/' + that.model.id, true);
+          }
+        }
       });
-
 
       //Create settings view
       this.options.settingsRegion.show(settingsDropdown);

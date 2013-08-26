@@ -34,12 +34,12 @@ define([
     },
 
     ui: {
-      map: '#map'
+      map: '.map'
     },
 
     regions: {
-      list: '#projectList',
-      detail: '#projectDetail'
+      list: '.projectList',
+      detail: '.projectDetail'
     },
 
     initialize: function(options){
@@ -80,6 +80,14 @@ define([
         this.showDetail(args.model);
       });
 
+      // Update breadcrumbs
+      Backbone.trigger('reset:breadcrumbs', {
+        state:'admin',
+        display_name: 'Admin'
+      });
+
+      Backbone.trigger('set:breadcrumbs', {state:'projects', display_name:'Projects'});
+
       // Update history
       Backbone.history.navigate('/admin/projects');
     },
@@ -115,7 +123,7 @@ define([
     },
 
     onSave: function(){
-      var that = this;
+      var existing = this.collection.get(this.model);
 
       // Don't save if there isn't currently a detail view.
       if (!this.detail.currentView) { return; }
@@ -125,14 +133,14 @@ define([
       // Don't save if any data is invalid.
       if (this.detail.$el.find('.invalid').length > 0) { return; }
 
-      // Don't save if the model already exists.
-      if (this.collection.contains(this.model)) { return; }
-
-      this.collection.create(this.model, {
-        wait: true,
-        success: function(){
-          that.model.addNote('created project', that.options.user);
-        }
+      this.model.save(existing ? null : {
+        notes: this.model.formatNote('created project', this.options.user)
+      }, {
+        success: _.bind(function(){
+          if (!existing) {
+            this.collection.add(this.model);
+          }
+        }, this)
       });
     },
 
@@ -161,7 +169,11 @@ define([
       var view;
 
       if (!(model instanceof Backbone.Model)) {
-        model = new Project.Model(model, {silent: false});
+        model = new Project.Model(model, {
+          collection: this.collection,
+          silent: false
+        });
+
         this.listenTo(model, 'change:latitude change:longitude', this.setMarker);
         this.setMarker(model);
       }
@@ -180,15 +192,15 @@ define([
         this.model = null;
       });
 
-      this.model = model;
       this.focusMap(model);
-
       this.detail.show(view);
       this.$('.save, .cancel').show();
 
       if (model.id) {
-        Backbone.history.navigate('/admin/project/' + model.id);
+        Backbone.history.navigate('/admin/projects/' + model.id);
       }
+
+      this.model = model;
     },
 
     hideDetail: function(){

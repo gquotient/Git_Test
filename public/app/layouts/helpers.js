@@ -7,6 +7,19 @@ function(
   _,
   Handlebars
 ){
+
+  Handlebars.registerHelper('debug', function(optionalValue) {
+    console.log('Current Context');
+    console.log('====================');
+    console.log(this);
+
+    if (optionalValue) {
+      console.log('Value');
+      console.log('====================');
+      console.log(optionalValue);
+    }
+  });
+
   // Unit conversion
   var roundNumber = function(num, dec) {
     var result = (num !== null)?Math.round(num*Math.pow(10,dec))/Math.pow(10,dec):null;
@@ -88,6 +101,13 @@ function(
     var date = new Date(epoch * 1000);
 
     return date.toDateString();
+  });
+
+  Handlebars.registerHelper('ifCond', function(v1, v2, options) {
+    if(v1 === v2) {
+      return options.fn(this);
+    }
+    return options.inverse(this);
   });
 
 });
