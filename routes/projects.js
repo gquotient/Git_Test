@@ -40,10 +40,16 @@ module.exports = function(app){
   app.get('/api/projects/:label',
     helpers.request({
       path: function(req){
+        var project_label = req.params.label,
+          index_name = req.query.index_name || 'StagedProjects';
+
+        // Remove index_name from query string.
+        delete req.query.index_name;
+
         return [
           '/api/project/devices',
-          req.params.label,
-          req.query.index_name || 'StagedProjects'
+          project_label,
+          index_name
         ].join('/');
       },
       pipe: true
