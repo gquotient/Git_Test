@@ -168,7 +168,7 @@ header {
   height: 100%;
   position: relative;
   z-index: 200;
-  background: colorBGDarkGrey;
+  background: #202020;
   border-right: borderBasicDark;
   color: #aaa;
   > div {
@@ -332,12 +332,56 @@ header {
             border-right: 3px solid colorDrakerOrange;
           }
         }
+        // This is way ugly but I want the background to be the full width of the nav container
         ul {
-          padding: 0 0 0 9px;
+          li {
+            .label {
+              padding-left: 6px + 9px;
+            }
+            ul {
+              li {
+                .label {
+                  padding-left: 6px + 18px;
+                }
+                ul {
+                  li {
+                    .label {
+                      padding-left: 6px + 27px;
+                    }
+                    ul {
+                      li {
+                        .label {
+                          padding-left: 6px + 36px;
+                        }
+                        ul {
+                          li {
+                            .label {
+                              padding-left: 6px + 45px;
+                            }
+                            ul {
+                              li {
+                                .label {
+                                  padding-left: 6px + 54px;
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
+        // /uglyiness
         .label {
           padding: 0 0 0 6px;
           line-height: 30px;
+          border-top: borderBasicMedium;
+          border-bottom: borderBasicDark;
+          background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
           .expand {
             background: url(../../img/icon_expand.png) right center no-repeat;
             opacity: 0;
@@ -353,6 +397,8 @@ header {
             border-left: 1px dotted #202020;
           }
           &:hover {
+            color: #fff;
+            transition: all 0.2s ease-in-out;
             > .expand {
               opacity: 1;
             }
