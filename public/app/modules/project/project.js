@@ -83,9 +83,15 @@ define([
       statusValue: -1
     },
 
-    initialize: function(){
+    constructor: function(){
+      // Need these initialized here for parsing.
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
+
+      Backbone.Model.prototype.constructor.apply(this, arguments);
+    },
+
+    initialize: function(){
       this.issues = new Issue.Collection([], {projectId: this.id});
 
       // This might be a bit convoluted and potentially fire too often but it works
@@ -287,33 +293,36 @@ define([
     },
 
     parse: function(resp, options){
-      if (resp.devices) {
-        this.devices.reset(resp.devices, {
-          equipment: options.equipment
-        });
+      // Check if this is a simple project object.
+      if (resp.project_label) { return resp; }
 
-        if (resp.rels) {
-          _.each(resp.rels, function(rel) {
-            var source = this.devices.get(rel[2]),
-              target = this.devices.get(rel[0]),
-              relationship = rel[1];
+      this.devices.reset(resp.devices, {
+        equipment: options.equipment,
+        project: this,
+        parse: true
+      });
 
-            if (!target && rel[0] === resp.node_id) {
-              target = this;
-            }
+      // Parse relationships.
+      _.each(resp.rels, function(rel) {
+        var source = this.devices.get(rel[2]),
+          target = this.devices.get(rel[0]),
+          relationship = rel[1];
 
-            if (source && target) {
-              source.connectTo(target, relationship);
-            }
-          }, this);
+        if (!target && rel[0] === resp.project.node_id) {
+          target = this;
         }
 
-        _.each(_.keys(Equipment.renderings), function(label){
-          this.checkOutgoing(this, label);
-        }, this);
-      }
+        if (source && target) {
+          source.connectTo(target, relationship);
+        }
+      }, this);
 
-      return _.omit(resp, 'devices', 'rels');
+      // Check rendering information for each device recursivly.
+      _.each(_.keys(Equipment.renderings), function(label){
+        this.checkOutgoing(this, label);
+      }, this);
+
+      return resp.project;
     },
 
     checkOutgoing: function(target, label){
