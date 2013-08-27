@@ -173,66 +173,57 @@ header {
   color: #aaa;
   > div {
     width: 100%;
-    transition: 0.25s ease-in-out;
     height: 100%;
     position: relative;
+    // This is for animation
+    transition: 0.25s ease-in-out;
     &.hidden {
       margin-left: 100%;
     }
+    // Make the immediate child 100% height so only its contents scroll
+    > ul {
+      height: 100%;
+      overflow: auto;
+    }
   }
-  .sort {
+  .controls {
+    width: 100%;
     position: absolute;
     z-index: 1;
-    top: 0;
-    width: 100%;
-    padding: 0 6px;
-    line-height: 30px;
-    background: #f00;
     border-top: borderBasicMedium;
     border-bottom: borderBasicDark;
     background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   }
+  .sort {
+    top: 0;
+    padding: 0 6px;
+    line-height: 30px;
+  }
   .actions {
-    position: absolute;
-    z-index: 1;
     bottom: 0;
-    width: 100%;
     padding: 6px;
-    border-top: borderBasicMedium;
-    border-bottom: borderBasicDark;
-    background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
   }
   ul {
     padding: 0;
     margin: 0;
     list-style-type: none;
-    height: 100%;
-    overflow: auto;
-    > li {
-      padding: 0px;
+    li {
+      padding: 6px;
       text-shadow: 0 1px 0 #222;
       margin: 0;
       border-top: borderBasicMedium;
       border-bottom: borderBasicDark;
       background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
       cursor: pointer;
-      a {
-        display: block;
-        padding: 6px;
-        text-decoration: none;
-      }
       &.active {
-        > a {
-          border-right: 3px solid colorDrakerOrange;
-          color: colorPrimaryText;
-          transition:.2s;
-        }
+        border-right: 3px solid colorDrakerOrange;
+        color: colorPrimaryText;
+        transition:.2s;
       }
       &.empty {
         background: none;
         border: none;
-        padding: 6px;
         font-style: italic;
         box-shadow: none;
         cursor: default;
@@ -240,43 +231,13 @@ header {
           background: none;
         }
       }
-      &.nav-item {
-        padding: 6px;
-        h3 {
-          margin: 0 0 6px;
-          white-space: nowrap;
-          overflow: ellipsis;
-          font-size: 1.25em;
-          font-weight: 100;
-          color: #eee;
-        }
-        ul {
-          background: none;
-          border: none;
-          padding: 0;
-          margin: 0;
-          overflow: hidden;
-          list-style-type: none;
-          li {
-            background-position: left center;
-            background-repeat: no-repeat;
-            border: none;
-            padding: 0 0 0 12px;
-            margin: 0 12px 0 0;
-            float: left;
-            &.projects {
-              background-image: url(../../img/icon_project_9x12.png);
-            }
-            &.subPortfolios {
-              background-image: url(../../img/icon_portfolio_12x9.png);
-              padding: 0 0 0 15px;
-            }
-            &.DCCapacity {
-              background-image: url(../../img/icon_energy_12x12.png);
-              padding: 0 0 0 15px;
-            }
-          }
-        }
+      h3 {
+        margin: 0 0 6px;
+        white-space: nowrap;
+        overflow: ellipsis;
+        font-size: 1.25em;
+        font-weight: 100;
+        color: #eee;
       }
       &:hover {
         background: linear-gradient(#252627, #282828);
@@ -291,12 +252,30 @@ header {
     // Add padding so sort/new doesn't cover up an item
     padding-top: 30px;
     padding-bottom: 38px;
-    > .active {
-      border-right: 3px solid colorDrakerOrange;
-      color: colorPrimaryText;
-      transition:.2s;
-    }
     li {
+      ul {
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        list-style-type: none;
+        li {
+          background-position: left center;
+          background-repeat: no-repeat;
+          border: none;
+          padding: 0 0 0 12px;
+          margin: 0 12px 0 0;
+          float: left;
+          &.projects {
+            background-image: url(../../img/icon_project_9x12.png);
+          }
+          &.DCCapacity {
+            background-image: url(../../img/icon_energy_12x12.png);
+            padding: 0 0 0 15px;
+          }
+        }
+      }
       h3 {
         .statusIndicator {
           margin: 2px 6px 0 0;
@@ -307,35 +286,24 @@ header {
   ul.issues-list {
     li {
       overflow: ellipsis;
-      span.statusIndicator {
+      .statusIndicator {
         margin-right: 6px;
       }
-    }
-    > .active {
-      border-right: 3px solid colorDrakerOrange;
-      color: colorPrimaryText;
-      transition:.2s;
     }
   }
   > div.devices {
     > ul {
+      height: auto;
+    }
+    ul {
       border: none;
       background: none;
-      > li {
-        > a {
-          border-top: borderBasicMedium;
-          border-bottom: borderBasicDark;
-          background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-          &:hover {
-            background: linear-gradient(#252627, #282828);
-          }
-        }
-      }
       li {
         width: 100%;
         position: relative;
         background: none;
         border: none;
+        padding: 0;
         > div {
           > ul {
             height: 0;
@@ -351,11 +319,21 @@ header {
               transition: all 1s ease-in-out;
             }
           }
-          > a > .expand {
+          > .label > .expand {
             background: url(../../img/icon_collapse.png) right center no-repeat;
           }
         }
-        a {
+        &.active {
+          color: #aaa;
+          > .label {
+            border-right: 3px solid colorDrakerOrange;
+            color: colorPrimaryText;
+            transition:.2s;
+          }
+        }
+        .label {
+          padding: 0 0 0 6px;
+          line-height: 30px;
           .expand {
             background: url(../../img/icon_expand.png) right center no-repeat;
             opacity: 0;
@@ -376,9 +354,6 @@ header {
             }
           }
         }
-      }
-      ul {
-        padding: 0 0 0 6px;
       }
     }
   }
