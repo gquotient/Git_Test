@@ -228,6 +228,12 @@ define([
         }
       }
     },
+    onShow: function(){
+      // Immediately expand if array level so you can see inverters
+      if (this.model.get('devtype') === 'PV Array') {
+        this.toggleExpand();
+      }
+    },
     onClose: function(){
       // Close children view
       if (this.children) {
