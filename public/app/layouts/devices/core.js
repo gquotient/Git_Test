@@ -7,6 +7,7 @@ define([
 
   'device',
   'chart',
+  'issue',
 
   'hbs!layouts/devices/templates/core'
 ], function(
@@ -18,6 +19,7 @@ define([
 
   Device,
   Chart,
+  Issue,
 
   CoreTemplate
 ){
@@ -31,7 +33,7 @@ define([
       powerAndIrradiance: '.chart.powerAndIrradiance',
       currentAndVoltage: '.chart.currentAndVoltage',
       children: '.chart.children',
-      issues: '.issus'
+      issues: '.issues'
     },
 
     onShow: function(){
@@ -53,6 +55,24 @@ define([
       if (this.model.get('devtype') !== 'Panel' && this.model.outgoing.length) {
         this.buildChildChart();
       }
+
+      this.buildIssues();
+    },
+
+    buildIssues: function(){
+      var project = this.options.project || this.model;
+
+      // Build issues
+      var issueView = new Issue.views.Table({
+        project: project,
+        collection: project.issues,
+        filter: { identifier: this.model.get('graph_key') }
+      });
+
+      // Update issues
+      project.issues.fetch();
+
+      this.issues.show(issueView);
     },
 
     buildCharts: function(){

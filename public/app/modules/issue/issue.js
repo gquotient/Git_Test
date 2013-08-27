@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'backbone.virtualCollection',
 
   'navigation',
 
@@ -17,6 +18,7 @@ function(
   _,
   Backbone,
   Marionette,
+  VirtualCollection,
 
   Navigation,
 
@@ -96,6 +98,12 @@ function(
         event.preventDefault();
         Backbone.trigger('click:issue', 'all');
       }
+    },
+    initialize: function(options){
+      this.collection = new Backbone.VirtualCollection(options.collection, {
+        filter: options.filter,
+        close_with: this
+      });
     }
   });
 
