@@ -161,7 +161,7 @@ define([
       // Add project to devices view and activate it.
       this.devicesView.showProject(project);
 
-      that.model.findDataSources().done(function(dataSources){
+      this.model.findDataSources().done(function(dataSources){
         // Build charts
         var chart_powerHistory = new Chart.views.Basic({
           chartOptions: {

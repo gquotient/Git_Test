@@ -35,7 +35,10 @@ define([
     },
 
     onShow: function(){
-      console.log(this.model);
+      if (this.model.get('devtype') !== 'PV Array') {
+        Backbone.history.navigate('/project/' + this.options.project.id + '/devices/' + this.model.get('graph_key'));
+      }
+
       Backbone.trigger(
         'set:breadcrumbs',
         {
@@ -100,7 +103,6 @@ define([
         series: series
       });
 
-      console.log(children);
       this.$('.children').show();
 
       this.children.show(children);

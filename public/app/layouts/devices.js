@@ -12,6 +12,7 @@ define([
 
   'layouts/devices/core',
   'layouts/devices/inverter',
+  'layouts/devices/project',
 
   'hbs!layouts/templates/devices'
 ], function(
@@ -28,6 +29,7 @@ define([
 
   CoreLayout,
   InverterLayout,
+  ProjectLayout,
 
   devicesTemplate
 ){
@@ -48,7 +50,8 @@ define([
 
     deviceLayouts: {
       core: CoreLayout,
-      Inverter: InverterLayout
+      Inverter: InverterLayout,
+      'PV Array': ProjectLayout
     },
 
     date: null,
@@ -75,10 +78,10 @@ define([
     },
 
     selectDevice: function(device){
-      Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'));
+      var deviceType = device.get('devtype') || null;
 
       // Build device specific detail layout
-      var SubLayout = (this.deviceLayouts[device.get('devtype')]) ? this.deviceLayouts[device.get('devtype')] : this.deviceLayouts.core;
+      var SubLayout = (deviceType && this.deviceLayouts[deviceType]) ? this.deviceLayouts[deviceType] : this.deviceLayouts.core;
 
       // Show layout
       this.deviceDetail.show(new SubLayout({model: device, project: this.model, date: this.date}));
@@ -107,6 +110,8 @@ define([
         if (that.options.currentDevice) {
           var myDevice = that.model.devices.findWhere({graph_key: that.options.currentDevice});
           that.selectDevice(myDevice);
+        } else {
+          that.selectDevice(that.model);
         }
       };
 
