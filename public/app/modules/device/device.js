@@ -8,8 +8,7 @@ define([
   './canvas',
   './table',
 
-  'hbs!device/templates/li',
-  'hbs!device/templates/ul'
+  'hbs!device/templates/li'
 ], function(
   $,
   _,
@@ -20,8 +19,7 @@ define([
   Canvas,
   Table,
 
-  deviceListItemViewTemplate,
-  deviceListViewTemplate
+  deviceListItemTemplate
 ){
   var Device = { views: {} };
 
@@ -160,7 +158,7 @@ define([
     tagName: 'li',
     template: {
       type: 'handlebars',
-      template: deviceListItemViewTemplate
+      template: deviceListItemTemplate
     },
     className: 'device collapsed',
     expanded: false,
