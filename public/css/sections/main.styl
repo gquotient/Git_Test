@@ -218,8 +218,12 @@ header {
       cursor: pointer;
       &.active {
         border-right: 3px solid colorDrakerOrange;
-        color: colorPrimaryText;
         transition:.2s;
+        > .label {
+          font-weight: bold;
+          color: #fff;
+          transition:.2s;
+        }
       }
       &.empty {
         background: none;
@@ -304,7 +308,7 @@ header {
         background: none;
         border: none;
         padding: 0;
-        > div {
+        > div {// Animation stuffs
           > ul {
             height: 0;
             overflow: hidden;
@@ -312,7 +316,7 @@ header {
           }
         }
         &.expanded {
-          > div {
+          > div {// Animation stuffs
             > ul {
               max-height: 10000px; // Not sure, at the moment, why this makes it work but it does
               height: auto;
@@ -324,12 +328,12 @@ header {
           }
         }
         &.active {
-          color: #aaa;
           > .label {
             border-right: 3px solid colorDrakerOrange;
-            color: colorPrimaryText;
-            transition:.2s;
           }
+        }
+        ul {
+          padding: 0 0 0 9px;
         }
         .label {
           padding: 0 0 0 6px;

@@ -75,7 +75,7 @@ function(
     var list = '';
 
     _.each(this.views, function(view, key){
-      list += '<li id="' + key + '" class="'+ key +'">' + view.title + '</li>';
+      list += '<li id="' + key + '" class="'+ key +'"><span class="label">' + view.title + '</span></li>';
     });
     return new Handlebars.SafeString(list);
   });
