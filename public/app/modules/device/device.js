@@ -150,16 +150,13 @@ define([
     className: 'device collapsed',
     expanded: false,
     events: {
-      'click a': function(event){
-        event.preventDefault();
+      'click .label': function(event){
         event.stopPropagation();
 
         Backbone.trigger('click:device', this.model);
       },
       'click .expand': function(event){
-        event.preventDefault();
         event.stopPropagation();
-
         this.toggleExpand();
       }
     },
@@ -200,7 +197,7 @@ define([
           var devices = new Device.Collection();
 
           // Add expand-o-matic
-          this.$el.find('> a').append('<span class="expand">Expand</span>');
+          this.$el.find('> .label').append('<span class="expand">Expand</span>');
 
           // Make sure models have a devtype and push them to devices
           devices.reset(filteredDevices);
