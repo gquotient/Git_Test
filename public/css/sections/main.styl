@@ -326,10 +326,13 @@ header {
         &.active {
           color: #aaa;
           > .label {
+            border-right: 3px solid colorDrakerOrange;
             color: colorPrimaryText;
+            transition:.2s;
           }
         }
         .label {
+          padding: 0 0 0 6px;
           line-height: 30px;
           .expand {
             background: url(../../img/icon_expand.png) right center no-repeat;
