@@ -296,29 +296,19 @@ define([
       // Check if this is a simple project object.
       if (resp.project_label) { return resp; }
 
-      var project = resp.project || {};
+      this.devices.reset(resp.devices, {
+        equipment: options.equipment,
+        project: this,
+        parse: true
+      });
 
-      this.devices.reset();
-
-      // Parse devices.
-      _.each(resp.devices, function(device){
-        _.extend(device, {
-          project_label: this.id,
-          renderings: JSON.parse(device.renderings || '{}')
-        });
-
-        this.devices.add(device, {
-          equipment: options.equipment
-        });
-      }, this);
-
-      // Parse device relationships.
+      // Parse relationships.
       _.each(resp.rels, function(rel) {
         var source = this.devices.get(rel[2]),
           target = this.devices.get(rel[0]),
           relationship = rel[1];
 
-        if (!target && rel[0] === project.node_id) {
+        if (!target && rel[0] === resp.project.node_id) {
           target = this;
         }
 
@@ -327,12 +317,12 @@ define([
         }
       }, this);
 
-      // Add rendering information to each device recursivly.
+      // Check rendering information for each device recursivly.
       _.each(_.keys(Equipment.renderings), function(label){
         this.checkOutgoing(this, label);
       }, this);
 
-      return project;
+      return resp.project;
     },
 
     checkOutgoing: function(target, label){
