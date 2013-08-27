@@ -105,27 +105,61 @@ define([
     },
 
     buildChildChart: function(){
-      var traces = [],
-          series = [];
+      var
+        that = this,
+        traces = [],
+        series = [],
+        date = this.options.date,
+        project = this.options.project,
+        filter = [
+          'AC Bus',
+          'SPT Site Server',
+          'Site Server',
+          'SPT Gateway'
+        ]
+      ;
 
-      this.model.outgoing.each(function(child, index){
-        if (index < 100) {
-          traces.push(Chart.dataDefaults(this.options.project, child, 'power'));
-          series.push({
-            name: 'Power (' + child.get('did') + ')',
-            unit: 'W'
-          });
-        }
-      }, this);
+      project.findDataSources().done(function(dataSources){
+        that.model.outgoing.each(function(child, index){
+          console.log(child.get('devtype'));
+          if (_.indexOf(filter, child.get('devtype')) < 0) {
+            if (child.get('devtype') === 'Inverter') {
+              if (dataSources.inverter.ac_power) {
+                traces.push({
+                  'project_label': project.id,
+                  'ddl': 'inv',
+                  'dtstart': date ? date.start/1000 : 'today',
+                  'dtstop': date ? date.stop/1000 : 'now',
+                  'columns': ['freezetime', 'ac_power_mean'],
+                  'filters': [
+                    {
+                      'column': 'identifier',
+                      'in_set': [that.model.get('graph_key')]
+                    }
+                  ],
+                  project_timezone: project.get('timezone')
+                });
+              }
+            } else {
+              traces.push(Chart.dataDefaults(that.options.project, child, 'power'));
+            }
 
-      var children = new Chart.views.Basic({
-        traces: traces,
-        series: series
+            series.push({
+              name: 'Power (' + child.get('did') + ')',
+              unit: 'W'
+            });
+          }
+        });
+
+        var children = new Chart.views.Basic({
+          traces: traces,
+          series: series
+        });
+
+        that.$('.children').show();
+
+        that.children.show(children);
       });
-
-      this.$('.children').show();
-
-      this.children.show(children);
     }
   });
 });

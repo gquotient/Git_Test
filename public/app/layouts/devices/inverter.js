@@ -39,7 +39,7 @@ define([
         traces.push(Chart.dataDefaults(project, that.model, 'irradiance'));
         series.push(Chart.seriesDefaults.irradiance);
 
-        // Selectively populate power traces
+        // Populate chart w/ AC power if available
         if (dataSources.inverter.ac_power) {
           traces.push({
             'project_label': project.id,
@@ -57,33 +57,6 @@ define([
           });
 
           series.push(Chart.seriesDefaults.power);
-        }
-
-        if (dataSources.inverter.bus) {
-          that.model.outgoing.each(function(device){
-            if (device.get('devtype') === 'DC Bus') {
-              traces.push({
-                'project_label': project.id,
-                'ddl': 'bus-str-calc',
-                'dtstart': date ? date.start/1000 : 'today',
-                'dtstop': date ? date.stop/1000 : 'now',
-                'columns': ['freezetime', 'dc_power'],
-                'filters': [
-                  {
-                    'column': 'identifier',
-                    'in_set': [device.get('graph_key')]
-                  }
-                ],
-                project_timezone: project.get('timezone')
-              });
-
-              series.push({
-                name: 'Power ' + device.get('did'),
-                unit: 'W',
-                color: null
-              });
-            }
-          });
         }
 
         var chart_powerAndIrradiance = new Chart.views.Basic({
