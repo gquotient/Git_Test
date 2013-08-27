@@ -187,12 +187,19 @@ define([
       this.trigger('expand');
     },
     onRender: function(){
+      var filter = [
+        'AC Bus',
+        'SPT Site Server',
+        'Site Server',
+        'SPT Gateway',
+        'Draker Panel Monitor'
+      ];
       if (this.model.outgoing.length) {
         // Create new collection
         var filteredDevices = this.model.outgoing.filter(function(device){
           var devtype = device.get('devtype');
 
-          return devtype && devtype !== 'Draker Panel Monitor' && devtype !== 'AC Bus';
+          return devtype && _.indexOf(filter, devtype) < 0;
         });
 
         // Only build children if whitelisted devices exist

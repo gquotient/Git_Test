@@ -105,7 +105,7 @@ define([
       var initialView = function(){
         that.contentNavigation.show(that.devicesTree);
 
-        that.devices.reset(that.model.devices.where({devtype: 'Inverter'}));
+        that.devices.reset(that.model);
         // If router passes a device, build detail view
         if (that.options.currentDevice) {
           var myDevice = that.model.devices.findWhere({graph_key: that.options.currentDevice});
