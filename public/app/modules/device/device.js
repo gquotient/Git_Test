@@ -30,12 +30,18 @@ define([
     url: '/api/devices',
 
     initialize: function(attrs, options){
-      if (options && options.equipment) {
+      options = options || {};
+
+      if (options.equipment) {
         this.equipment = options.equipment.findOrCreateForDevice(this);
       }
 
       if (!this.has('name') && this.equipment) {
         this.set({name: this.equipment.generateName(this)});
+      }
+
+      if (options.project) {
+        this.set({project_label: options.project.id});
       }
 
       this.relationships = {};
@@ -113,9 +119,18 @@ define([
     },
 
     parse: function(resp, options){
+      var rend = resp.renderings;
 
-      // Prevent overwritting client side position data.
-      return _.omit(resp, 'renderings');
+      // Only use the server position data when the device is created.
+      if (this.isNew()) {
+        resp.renderings = _.isString(rend) ? JSON.parse(rend) : rend || {};
+
+      // Otherwise prevent overwriting the client position data.
+      } else {
+        delete resp.renderings;
+      }
+
+      return resp;
     }
   });
 
