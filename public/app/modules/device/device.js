@@ -192,7 +192,8 @@ define([
         'SPT Site Server',
         'Site Server',
         'SPT Gateway',
-        'Draker Panel Monitor'
+        'Draker Panel Monitor',
+        'Generation Meter'
       ];
       if (this.model.outgoing.length) {
         // Create new collection

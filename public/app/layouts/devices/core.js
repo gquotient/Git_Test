@@ -116,7 +116,8 @@ define([
           'AC Bus',
           'SPT Site Server',
           'Site Server',
-          'SPT Gateway'
+          'SPT Gateway',
+          'Generation Meter'
         ]
       ;
 
