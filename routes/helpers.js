@@ -169,13 +169,13 @@ module.exports = function(app){
       return function(req, res, next){
         var host = options.host || app.get('modelUrl'),
           path = options.path || '',
-          _req;
+          requestOptions, _req;
 
         if (_.isFunction(path)) {
           path = path(req);
         }
 
-        _.defaults(options, {
+        requestOptions = {
           method: req.method,
           uri: host + path,
 
@@ -185,16 +185,16 @@ module.exports = function(app){
             clientSecret: app.get('clientSecret')
           },
 
-          qs: _.extend({}, req.query),
-          form: _.extend({}, req.body)
-        });
+          qs: _.clone(req.query)
+        };
 
-        if (options.method === 'DELETE') {
-          _.extend(options.qs, options.form);
-          delete options.form;
+        if (req.method === 'DELETE') {
+          _.extend(requestOptions.qs, req.body);
+        } else {
+          requestOptions.form = req.body;
         }
 
-        _req = request(options, function(error, response, body){
+        _req = request(requestOptions, function(error, response, body){
 
           if (error) {
             req.flash('error', error.message);
