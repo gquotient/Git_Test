@@ -31,6 +31,9 @@ define([
         date = this.options.date
       ;
 
+      // Hide current and voltage chart
+      $('.currentAndVoltage').hide();
+
       project.findDataSources().done(function(dataSources){
         // Add irradiance trace
         traces.push(Chart.dataDefaults(project, that.model, 'irradiance'));

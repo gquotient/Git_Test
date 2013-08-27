@@ -31,6 +31,9 @@ define([
         date = this.options.date
       ;
 
+      // Hide current and voltage chart
+      $('.currentAndVoltage').hide();
+
       this.model.findDataSources().done(function(dataSources){
         // Build charts
         var powerAndIrradiance = new Chart.views.Basic({
