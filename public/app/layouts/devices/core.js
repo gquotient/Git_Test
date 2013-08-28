@@ -7,6 +7,7 @@ define([
 
   'device',
   'chart',
+  'issue',
 
   'hbs!layouts/devices/templates/core'
 ], function(
@@ -18,6 +19,7 @@ define([
 
   Device,
   Chart,
+  Issue,
 
   CoreTemplate
 ){
@@ -28,11 +30,17 @@ define([
     },
 
     regions: {
-      chart_powerAndIrradiance: '.chart_powerAndIrradiance',
-      chart_currentAndVoltage: '.chart_currentAndVoltage'
+      powerAndIrradiance: '.chart.powerAndIrradiance',
+      currentAndVoltage: '.chart.currentAndVoltage',
+      children: '.chart.children',
+      issues: '.issues'
     },
 
     onShow: function(){
+      if (this.model.get('devtype') !== 'PV Array') {
+        Backbone.history.navigate('/project/' + this.options.project.id + '/devices/' + this.model.get('graph_key'));
+      }
+
       Backbone.trigger(
         'set:breadcrumbs',
         {
@@ -43,12 +51,34 @@ define([
       );
 
       this.buildCharts();
+
+      if (this.model.get('devtype') !== 'Panel' && this.model.outgoing.length) {
+        this.buildChildChart();
+      }
+
+      this.buildIssues();
+    },
+
+    buildIssues: function(){
+      var project = this.options.project || this.model;
+
+      // Build issues
+      var issueView = new Issue.views.Table({
+        project: project,
+        collection: project.issues,
+        filter: { identifier: this.model.get('graph_key') }
+      });
+
+      // Update issues
+      project.issues.fetch();
+
+      this.issues.show(issueView);
     },
 
     buildCharts: function(){
       var project = this.options.project;
 
-      var chart_powerAndIrradiance = new Chart.views.Basic({
+      var powerAndIrradiance = new Chart.views.Basic({
         traces: [
           Chart.dataDefaults(project, this.model, 'irradiance', this.options.date),
           Chart.dataDefaults(project, this.model, 'power', this.options.date)
@@ -59,7 +89,7 @@ define([
         ]
       });
 
-      var chart_currentAndVoltage = new Chart.views.Basic({
+      var currentAndVoltage = new Chart.views.Basic({
         traces: [
           Chart.dataDefaults(project, this.model, 'current', this.options.date),
           Chart.dataDefaults(project, this.model, 'voltage', this.options.date)
@@ -70,8 +100,71 @@ define([
         ]
       });
 
-      this.chart_powerAndIrradiance.show(chart_powerAndIrradiance);
-      this.chart_currentAndVoltage.show(chart_currentAndVoltage);
+      this.powerAndIrradiance.show(powerAndIrradiance);
+      this.currentAndVoltage.show(currentAndVoltage);
+    },
+
+    buildChildChart: function(){
+      var
+        that = this,
+        traces = [],
+        series = [],
+        date = this.options.date,
+        project = this.options.project,
+        // Don't show these devices in charts
+        filter = [
+          'AC Bus',
+          'SPT Site Server',
+          'Site Server',
+          'SPT Gateway',
+          'Generation Meter'
+        ]
+      ;
+
+      // Loop through child nodes
+      that.model.outgoing.each(function(child, index){
+        // Make sure it's not a filtered device
+        if (_.indexOf(filter, child.get('devtype')) < 0) {
+          // Special case the inverter logic
+          if (child.get('devtype') === 'Inverter') {
+            traces.push({
+              'project_label': project.id,
+              'ddl': 'inv',
+              'dtstart': date ? date.start/1000 : 'today',
+              'dtstop': date ? date.stop/1000 : 'now',
+              'columns': ['freezetime', 'ac_power_mean'],
+              'filters': [
+                {
+                  'column': 'identifier',
+                  'in_set': [child.get('graph_key')]
+                }
+              ],
+              project_timezone: project.get('timezone')
+            });
+          } else {
+            // If not inverter, use the magic trace builder
+            traces.push(Chart.dataDefaults(that.options.project, child, 'power'));
+          }
+
+          // Custom series to show device ids in the legend
+          series.push({
+            name: 'Power (' + child.get('did') + ')',
+            unit: 'W'
+          });
+        }
+      });
+
+      // Instantiate child chart
+      var children = new Chart.views.Basic({
+        traces: traces,
+        series: series
+      });
+
+      // Unhide the div
+      that.$('.children').show();
+
+      // Show the chart
+      that.children.show(children);
     }
   });
 });

@@ -72,6 +72,8 @@
   "Save": "Save",
   "Delete": "Delete",
 
+  "Alarm Description": "Alarm Description",
+  "View all alarms": "View all alarms",
   "Alarm Status": "Alarm Status",
   "There are currently no active alarms": "There are currently no active alarms"
 }

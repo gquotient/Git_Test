@@ -8,8 +8,7 @@ define([
   './canvas',
   './table',
 
-  'hbs!device/templates/li',
-  'hbs!device/templates/ul'
+  'hbs!device/templates/li'
 ], function(
   $,
   _,
@@ -20,8 +19,7 @@ define([
   Canvas,
   Table,
 
-  deviceListItemViewTemplate,
-  deviceListViewTemplate
+  deviceListItemTemplate
 ){
   var Device = { views: {} };
 
@@ -160,7 +158,7 @@ define([
     tagName: 'li',
     template: {
       type: 'handlebars',
-      template: deviceListItemViewTemplate
+      template: deviceListItemTemplate
     },
     className: 'device collapsed',
     expanded: false,
@@ -199,12 +197,20 @@ define([
       this.trigger('expand');
     },
     onRender: function(){
+      var filter = [
+        'AC Bus',
+        'SPT Site Server',
+        'Site Server',
+        'SPT Gateway',
+        'Draker Panel Monitor',
+        'Generation Meter'
+      ];
       if (this.model.outgoing.length) {
         // Create new collection
         var filteredDevices = this.model.outgoing.filter(function(device){
           var devtype = device.get('devtype');
 
-          return devtype && devtype !== 'Draker Panel Monitor' && devtype !== 'AC Bus';
+          return devtype && _.indexOf(filter, devtype) < 0;
         });
 
         // Only build children if whitelisted devices exist
@@ -231,6 +237,12 @@ define([
           // Append the child element to this view
           this.$el.append(this.children.$el);
         }
+      }
+    },
+    onShow: function(){
+      // Immediately expand if array level so you can see inverters
+      if (this.model.get('devtype') === 'PV Array') {
+        this.toggleExpand();
       }
     },
     onClose: function(){
