@@ -52,8 +52,11 @@ define([
     },
 
     onRender: function(){
-      this.ui.lock.toggleClass('active', this.model.isEditable());
-      this.ui.del.attr('disabled', this.model.isLocked());
+      var editable = this.model.isEditable(),
+        locked = this.model.isLocked();
+
+      this.ui.lock.toggleClass('active', editable);
+      this.ui.del.attr('disabled', !editable && locked);
     },
 
     onUnlock: function(){
