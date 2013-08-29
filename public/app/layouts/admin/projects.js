@@ -34,7 +34,9 @@ define([
     },
 
     ui: {
-      map: '.map'
+      map: '.map',
+      save: 'button.save',
+      cancel: 'button.cancel'
     },
 
     regions: {
@@ -196,7 +198,8 @@ define([
 
       this.focusMap(model);
       this.detail.show(view);
-      this.$('.save, .cancel').show();
+      this.ui.save.toggle(model.isEditable() || !model.isLocked());
+      this.ui.cancel.show();
 
       if (model.id) {
         Backbone.history.navigate('/admin/projects/' + model.id);
@@ -207,7 +210,8 @@ define([
 
     hideDetail: function(){
       this.detail.close();
-      this.$('.save, .cancel').hide();
+      this.ui.save.hide();
+      this.ui.cancel.hide();
     },
 
     focusMap: function(loc){
