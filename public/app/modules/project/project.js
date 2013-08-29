@@ -103,6 +103,7 @@ define([
       });
 
       this.on('change:editor', this.updateLockTimeout);
+      this.updateLockTimeout();
     },
 
     isLocked: function(){
@@ -139,7 +140,7 @@ define([
 
       if (this.isEditable()) {
         this.lockTimeout = setTimeout(function(){
-          that.model.setLock(false);
+          that.setLock(false);
         }, 5 * 60 * 1000);
       }
     },
