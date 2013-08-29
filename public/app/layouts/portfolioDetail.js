@@ -8,7 +8,8 @@ define([
   'portfolio',
   'project',
 
-  'hbs!layouts/templates/portfolioDetail'
+  'hbs!layouts/templates/portfolioDetail',
+  'hbs!layouts/templates/portfolioDetailSettings'
 ], function(
   _,
   $,
@@ -19,7 +20,8 @@ define([
   Portfolio,
   Project,
 
-  portfolioDetailTemplate
+  portfolioDetailTemplate,
+  portfolioDetailSettingsTemplate
 ){
   return Marionette.Layout.extend({
     template: {
@@ -57,15 +59,20 @@ define([
 
       var settingsDropdown = new Marionette.ItemView({
         tagName: 'li',
+        template: {
+          type: 'handlebars',
+          template: portfolioDetailSettingsTemplate
+        },
         className: 'menu dropdown',
-        template: _.template('<ul><li><a href="#dashboard" class="viewDashboard">Operator Dashboard</a></li></ul>'),
         onViewDashboard: function(){
           console.log('view dashboard');
         },
         events: {
           'click .viewDashboard': function(event){
-            event.preventDefault();
-            Backbone.history.navigate('/portfolio/dashboard/' + that.model.id, true);
+            Backbone.history.navigate('/portfolio/operatorview/' + that.model.id, true);
+          },
+          'click .edit': function(event){
+            Backbone.history.navigate('/admin/portfolios/' + that.model.id, true);
           }
         }
       });

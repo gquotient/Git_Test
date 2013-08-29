@@ -29,9 +29,9 @@ define([
       return ia.portfolios.get(id) || ia.allPortfolio;
     },
 
-    portfolioDashboard: function(id){
+    operatorView: function(id){
       var portfolio = this.findPortfolio(id);
-      this.mainLayout.showPortfolioDashboard(portfolio);
+      this.mainLayout.showOperatorView(portfolio);
     },
 
     portfolioDetail: function(id){
@@ -117,8 +117,8 @@ define([
     appRoutes: {
       '': 'index',
 
-      'portfolio/dashboard/:id': 'portfolioDashboard',
-      'portfolio/dashboard': 'portfolioDashboard',
+      'portfolio/operatorview/:id': 'operatorView',
+      'portfolio/operatorview': 'operatorView',
       'portfolio/:id': 'portfolioDetail',
       'portfolio': 'index',
 
