@@ -28,10 +28,38 @@ define([
       template: adminListItemTemplate
     },
 
+    templateHelpers: function(){
+      return {
+        locked: this.model.isLocked()
+      };
+    },
+
+    ui: {
+      lock: '.lock-icon',
+      del: 'button.delete'
+    },
+
     triggers: {
       'click': 'show:detail',
+      'click .lock-icon': 'unlock',
       'click button.model': 'editor',
       'click button.delete': 'delete'
+    },
+
+    modelEvents: {
+      'change:display_name': 'render',
+      'change:editor': 'render'
+    },
+
+    onRender: function(){
+      this.ui.lock.toggleClass('active', this.model.isEditable());
+      this.ui.del.attr('disabled', this.model.isLocked());
+    },
+
+    onUnlock: function(){
+      if (this.model.isEditable()) {
+        this.model.setLock(false);
+      }
     },
 
     onEditor: function(){
