@@ -83,7 +83,17 @@ define([
     },
 
     itemView: views.AdminListItem,
-    itemViewContainer: 'tbody'
+    itemViewContainer: 'tbody',
+
+    setActive: function(model){
+      var view = model && this.children.findByModel(model);
+
+      this.$('tr.active').removeClass('active');
+
+      if (view) {
+        view.$el.addClass('active');
+      }
+    }
   });
 
   views.AdminDetail = Marionette.ItemView.extend({

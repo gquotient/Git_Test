@@ -196,8 +196,10 @@ define([
         this.model = null;
       });
 
-      this.focusMap(model);
       this.detail.show(view);
+
+      this.focusMap(model);
+      this.listView.setActive(model);
       this.ui.save.toggle(model.isEditable() || !model.isLocked());
       this.ui.cancel.show();
 
@@ -210,6 +212,8 @@ define([
 
     hideDetail: function(){
       this.detail.close();
+
+      this.listView.setActive();
       this.ui.save.hide();
       this.ui.cancel.hide();
     },
