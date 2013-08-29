@@ -92,7 +92,12 @@ function(
         'Generation Meter': 'acm'
       },
       column = {
-        'Panel': {
+        Default: {
+          power: 'dc_power',
+          current: 'dc_current',
+          voltage: 'dc_voltage'
+        },
+        Panel: {
           power: 'dc_power_output',
           current: 'dc_current_output_mean',
           voltage: 'dc_voltage_output_mean'
@@ -109,8 +114,15 @@ function(
           current: 'dc_current',
           voltage: 'dc_voltage'
         },
+        'AC Bus': {
+          power: 'ac_power',
+          current: 'ac_current',
+          voltage: 'ac_voltage'
+        },
         'Generation Meter': {
           power: 'ac_power_mean'
+          //current: ac_current_a_mean, ac_current_b_mean, ac_current_c_mean, ac_current_n_mean
+          //voltage: `ac_voltage_<phase>_mean`, the phases are `ab, an, bc, bn, ca, cn`
         }
       },
       dataDefinition
@@ -126,12 +138,14 @@ function(
         project_timezone: project.get('timezone')
       };
     } else {
+      var deviceDefinition = column[device.get('devtype')] || column.Default;
+
       dataDefinition = {
         'project_label': project.id,
         'ddl': ddl[device.get('devtype')],
         'dtstart': date ? date.start/1000 : 'today',
         'dtstop': date ? date.stop/1000 : 'now',
-        'columns': ['freezetime', column[device.get('devtype')][dataType]],
+        'columns': ['freezetime', deviceDefinition[dataType]],
         'filters': [
           {
             'column': 'identifier',
@@ -196,7 +210,6 @@ function(
       ],
       plotOptions: {
         series: {
-          stacking: 'normal',
           marker: {
             enabled: false,
             radius: 1.5,
@@ -207,7 +220,11 @@ function(
             }
           }
         },
+        line: {
+          stacking: null
+        },
         column: {
+          stacking: 'normal',
           borderWidth: 0
         }
       },

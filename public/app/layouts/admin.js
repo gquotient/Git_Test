@@ -149,11 +149,11 @@ define([
     },
 
     events: {
-      'click .nav_content a': function(event){
+      'click .nav_content li': function(event){
         event.preventDefault();
 
         // This seems kind of hacky, but (shrug)
-        var route = event.target.hash.replace('#', '');
+        var route = event.target.id;
 
         Backbone.trigger('select:' + route);
       }

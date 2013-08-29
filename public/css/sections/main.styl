@@ -168,71 +168,66 @@ header {
   height: 100%;
   position: relative;
   z-index: 200;
-  background: colorBGDarkGrey;
+  background: #222;
   border-right: borderBasicDark;
   color: #aaa;
   > div {
     width: 100%;
-    transition: 0.25s ease-in-out;
     height: 100%;
     position: relative;
+    // This is for animation
+    transition: 0.25s ease-in-out;
     &.hidden {
       margin-left: 100%;
     }
+    // Make the immediate child 100% height so only its contents scroll
+    > ul {
+      height: 100%;
+      overflow: auto;
+    }
   }
-  .sort {
+  .controls {
+    width: 100%;
     position: absolute;
     z-index: 1;
-    top: 0;
-    width: 100%;
-    padding: 0 6px;
-    line-height: 30px;
-    background: #f00;
     border-top: borderBasicMedium;
     border-bottom: borderBasicDark;
     background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   }
+  .sort {
+    top: 0;
+    padding: 0 6px;
+    line-height: 30px;
+  }
   .actions {
-    position: absolute;
-    z-index: 1;
     bottom: 0;
-    width: 100%;
     padding: 6px;
-    border-top: borderBasicMedium;
-    border-bottom: borderBasicDark;
-    background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
   }
   ul {
     padding: 0;
     margin: 0;
     list-style-type: none;
-    height: 100%;
-    overflow: auto;
-    > li {
-      padding: 0px;
+    li {
+      padding: 6px;
       text-shadow: 0 1px 0 #222;
       margin: 0;
       border-top: borderBasicMedium;
       border-bottom: borderBasicDark;
       background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
       cursor: pointer;
-      a {
-        display: block;
-        padding: 6px;
-        text-decoration: none;
-      }
       &.active {
-        > a {
-          border-right: 3px solid colorDrakerOrange;
-          color: colorPrimaryText;
+        border-right: 3px solid colorDrakerOrange;
+        transition:.2s;
+        > .label {
+          font-weight: bold;
+          color: #fff;
           transition:.2s;
         }
       }
       &.empty {
         background: none;
         border: none;
-        padding: 6px;
         font-style: italic;
         box-shadow: none;
         cursor: default;
@@ -240,47 +235,16 @@ header {
           background: none;
         }
       }
-      &.nav-item {
-        padding: 6px;
-        h3 {
-          margin: 0 0 6px;
-          white-space: nowrap;
-          overflow: ellipsis;
-          font-size: 1.25em;
-          font-weight: 100;
-          color: #eee;
-        }
-        ul {
-          background: none;
-          border: none;
-          padding: 0;
-          margin: 0;
-          overflow: hidden;
-          list-style-type: none;
-          li {
-            background-position: left center;
-            background-repeat: no-repeat;
-            border: none;
-            padding: 0 0 0 12px;
-            margin: 0 12px 0 0;
-            float: left;
-            &.projects {
-              background-image: url(../../img/icon_project_9x12.png);
-            }
-            &.subPortfolios {
-              background-image: url(../../img/icon_portfolio_12x9.png);
-              padding: 0 0 0 15px;
-            }
-            &.DCCapacity {
-              background-image: url(../../img/icon_energy_12x12.png);
-              padding: 0 0 0 15px;
-            }
-          }
-        }
+      h3 {
+        margin: 0 0 6px;
+        white-space: nowrap;
+        overflow: ellipsis;
+        font-size: 1.25em;
+        font-weight: 100;
+        color: #eee;
       }
       &:hover {
-        background: linear-gradient(#252627, #282828);
-
+        background: linear-gradient(colorSoftGradientGreyHoverStop, colorSoftGradientGreyHoverStart);
       }
       &:first-child {
         border-top: none;
@@ -291,12 +255,30 @@ header {
     // Add padding so sort/new doesn't cover up an item
     padding-top: 30px;
     padding-bottom: 38px;
-    > .active {
-      border-right: 3px solid colorDrakerOrange;
-      color: colorPrimaryText;
-      transition:.2s;
-    }
     li {
+      ul {
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        list-style-type: none;
+        li {
+          background-position: left center;
+          background-repeat: no-repeat;
+          border: none;
+          padding: 0 0 0 12px;
+          margin: 0 12px 0 0;
+          float: left;
+          &.projects {
+            background-image: url(../../img/icon_project_9x12.png);
+          }
+          &.DCCapacity {
+            background-image: url(../../img/icon_energy_12x12.png);
+            padding: 0 0 0 15px;
+          }
+        }
+      }
       h3 {
         .statusIndicator {
           margin: 2px 6px 0 0;
@@ -307,36 +289,25 @@ header {
   ul.issues-list {
     li {
       overflow: ellipsis;
-      span.statusIndicator {
+      .statusIndicator {
         margin-right: 6px;
       }
-    }
-    > .active {
-      border-right: 3px solid colorDrakerOrange;
-      color: colorPrimaryText;
-      transition:.2s;
     }
   }
   > div.devices {
     > ul {
+      height: auto;
+    }
+    ul {
       border: none;
       background: none;
-      > li {
-        > a {
-          border-top: borderBasicMedium;
-          border-bottom: borderBasicDark;
-          background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-          &:hover {
-            background: linear-gradient(#252627, #282828);
-          }
-        }
-      }
       li {
         width: 100%;
         position: relative;
         background: none;
         border: none;
-        > div {
+        padding: 0 0 0 15px;
+        > div {// Animation stuffs
           > ul {
             height: 0;
             overflow: hidden;
@@ -344,18 +315,71 @@ header {
           }
         }
         &.expanded {
-          > div {
+          > div {// Animation stuffs
             > ul {
               max-height: 10000px; // Not sure, at the moment, why this makes it work but it does
               height: auto;
               transition: all 1s ease-in-out;
             }
           }
-          > a > .expand {
+          > .label > .expand {
             background: url(../../img/icon_collapse.png) right center no-repeat;
           }
         }
-        a {
+        &.active {
+          > .label {
+            opacity: 1;
+            border-right: 3px solid colorDrakerOrange;
+          }
+        }
+        &.Array, &.Inverter {
+          padding: 0;
+          background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+          > .label {
+            border-top: borderBasicMedium;
+            border-bottom: borderBasicDark;
+          }
+        }
+        &.Array {
+          >.label {
+            background-image: url(../../img/icon_array.png);
+          }
+        }
+        &.Inverter {
+          >.label {
+            background-image: url(../../img/icon_inverter.png);
+          }
+        }
+        &.Meter {
+          >.label {
+            background-image: url(../../img/icon_meter.png);
+          }
+        }
+        &.Combiner, &.Recombiner, &.Bus {
+          >.label {
+            background-image: url(../../img/icon_combiner.png);
+          }
+        }
+        &.String {
+          >.label {
+            background-image: url(../../img/icon_string.png);
+          }
+        }
+        &.Panel {
+          >.label {
+            background-image: url(../../img/icon_panel.png);
+          }
+        }
+        .label {
+          color: #fff;
+          padding: 0 0 0 18px;
+          line-height: 30px;
+          //border-top: borderBasicMedium;
+          //border-bottom: borderBasicDark;
+          //background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+          background-position: 3px center;
+          background-repeat: no-repeat;
+          opacity: 0.66;
           .expand {
             background: url(../../img/icon_expand.png) right center no-repeat;
             opacity: 0;
@@ -371,14 +395,14 @@ header {
             border-left: 1px dotted #202020;
           }
           &:hover {
+            opacity: 1;
+            //background: linear-gradient(colorSoftGradientGreyHoverStop, colorSoftGradientGreyHoverStart);
+            transition: all 0.2s ease-in-out;
             > .expand {
               opacity: 1;
             }
           }
         }
-      }
-      ul {
-        padding: 0 0 0 6px;
       }
     }
   }
