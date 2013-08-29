@@ -35,6 +35,7 @@ define([
 
     ui: {
       map: '.map',
+      refresh: '.refresh-icon',
       save: 'button.save',
       cancel: 'button.cancel'
     },
@@ -96,6 +97,7 @@ define([
     },
 
     triggers: {
+      'click .refresh-icon': 'refresh',
       'click button.create': 'create',
       'click button.save': 'save',
       'click button.cancel': 'cancel'
@@ -119,6 +121,18 @@ define([
       this.resetMarkers();
 
       this.list.show(this.listView);
+    },
+
+    onRefresh: function(){
+      this.ui.refresh.addClass('active');
+      this.collection.fetch({
+        data: {
+          index_name: 'AlignedProjects'
+        },
+        success: _.bind(function(){
+          this.ui.refresh.removeClass('active');
+        }, this)
+      });
     },
 
     onCreate: function(){
