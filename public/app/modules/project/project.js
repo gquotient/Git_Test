@@ -321,36 +321,39 @@ define([
     },
 
     parse: function(resp, options){
-      // Check if this is a simple project object.
-      if (resp.project_label) { return resp; }
+      // Check if the response includes devices.
+      if (resp.devices && !resp.project_label) {
 
-      this.devices.reset(resp.devices, {
-        equipment: options.equipment,
-        project: this,
-        parse: true
-      });
+        this.devices.reset(resp.devices, {
+          equipment: options.equipment,
+          project: this,
+          parse: true
+        });
 
-      // Parse relationships.
-      _.each(resp.rels, function(rel) {
-        var source = this.devices.get(rel[2]),
-          target = this.devices.get(rel[0]),
-          relationship = rel[1];
+        // Parse relationships.
+        _.each(resp.rels, function(rel) {
+          var source = this.devices.get(rel[2]),
+            target = this.devices.get(rel[0]),
+            relationship = rel[1];
 
-        if (!target && rel[0] === resp.project.node_id) {
-          target = this;
-        }
+          if (!target && rel[0] === resp.project.node_id) {
+            target = this;
+          }
 
-        if (source && target) {
-          source.connectTo(target, relationship);
-        }
-      }, this);
+          if (source && target) {
+            source.connectTo(target, relationship);
+          }
+        }, this);
 
-      // Check rendering information for each device recursivly.
-      _.each(_.keys(Equipment.renderings), function(label){
-        this.checkOutgoing(this, label);
-      }, this);
+        // Check rendering information for each device recursivly.
+        _.each(_.keys(Equipment.renderings), function(label){
+          this.checkOutgoing(this, label);
+        }, this);
 
-      return resp.project;
+        resp = resp.project;
+      }
+
+      return resp;
     },
 
     checkOutgoing: function(target, label){
