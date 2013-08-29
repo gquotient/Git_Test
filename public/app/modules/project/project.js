@@ -91,7 +91,9 @@ define([
       Backbone.Model.prototype.constructor.apply(this, arguments);
     },
 
-    initialize: function(){
+    initialize: function(attrs, options){
+      this.user = options.user;
+
       this.issues = new Issue.Collection([], {projectId: this.id});
 
       // This might be a bit convoluted and potentially fire too often but it works
@@ -99,11 +101,19 @@ define([
         var status = this.issues.getSeverity();
         this.set(status);
       });
+
+      this.on('change:editor', this.updateLockTimeout);
+    },
+
+    isLocked: function(){
+      return this.has('editor') && this.get('editor') !== 'unlocked';
+    },
+
+    isEditable: function(){
+      return this.user && this.get('editor') === this.user.get('email');
     },
 
     setLock: function(lock){
-      var that = this;
-
       return $.ajax(_.result(this, 'url') + '/edit', {
         type: 'PUT',
         data: {
@@ -111,9 +121,27 @@ define([
           lock: _.isBoolean(lock) ? lock : true
         },
         dataType: 'json'
-      }).done(function(data){
-        that.set(_.pick(data, 'locked', 'editor'));
-      });
+      }).done(_.bind(function(data){
+        var editor = data.editor;
+
+        if (!editor) {
+          editor = data.locked === true ? this.user.get('email') : 'unlocked';
+        }
+
+        this.set({editor: editor});
+      }, this));
+    },
+
+    updateLockTimeout: function(){
+      var that = this;
+
+      clearTimeout(this.lockTimeout);
+
+      if (this.isEditable()) {
+        this.lockTimeout = setTimeout(function(){
+          that.model.setLock(false);
+        }, 5 * 60 * 1000);
+      }
     },
 
     makeEditable: function(){
@@ -350,10 +378,15 @@ define([
 
     formatNote: function(msg, user){
       var now = new Date(),
-        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ',
-        who = user ? user.get('name') + ' ' : '';
+        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ';
 
-      return when + who + msg + '\n';
+      user = user || this.user;
+
+      if (user) {
+        msg = user.get('name') + ' ' + msg;
+      }
+
+      return when + msg + '\n';
     }
   });
 

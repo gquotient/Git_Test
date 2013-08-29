@@ -260,7 +260,6 @@ define([
 
     initialize: function(options){
       this.rendering = options.rendering;
-      this.editable = options.editable;
 
       this.paper = new paper.PaperScope();
       this.paper.setup(this.el);
@@ -283,10 +282,6 @@ define([
       this.listenTo(this.selection, 'remove', function(model){
         Backbone.trigger('canvas:selection', this.selection);
         model.trigger('deselected');
-      });
-
-      this.listenTo(Backbone, 'editor:change:editable', function(editable){
-        this.editable = editable;
       });
 
       _.bindAll(this, 'handleMouseEvent', 'handleKeyEvent', 'handleWheelEvent');
@@ -432,7 +427,7 @@ define([
         this.paper.view.scrollBy(obj.delta.divide(this.paper.view.zoom).negate());
 
       // Or move those devices if editable.
-      } else if (this.editable) {
+      } else if (this.model.isEditable()) {
         this.moveSelection(obj.projectDelta);
       }
     },
@@ -452,7 +447,7 @@ define([
         this.eraseSelect();
 
       // Otherwise snap any devices that may have moved if editable.
-      } else if (this.editable) {
+      } else if (this.model.isEditable()) {
         this.snapSelection();
       }
     },

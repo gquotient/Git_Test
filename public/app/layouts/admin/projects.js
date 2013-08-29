@@ -46,6 +46,7 @@ define([
       this.markers = {};
 
       this.collection.fetch({
+        user: options.user,
         data: {
           index_name: 'AlignedProjects'
         },
@@ -134,7 +135,7 @@ define([
       if (this.detail.$el.find('.invalid').length > 0) { return; }
 
       this.model.save(existing ? null : {
-        notes: this.model.formatNote('created project', this.options.user)
+        notes: this.model.formatNote('created project')
       }, {
         success: _.bind(function(){
           if (!existing) {
@@ -171,6 +172,7 @@ define([
       if (!(model instanceof Backbone.Model)) {
         model = new Project.Model(model, {
           collection: this.collection,
+          user: this.options.user,
           silent: false
         });
 
