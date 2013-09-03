@@ -187,8 +187,8 @@ define([
         existing = !this.model.isNew(),
         events = {};
 
-      // Clear current ui elements.
       this.ui = {};
+      this.changed = {};
 
       _.each(this.schema, function(obj, key){
         var $el = this.$(obj.el);
@@ -200,7 +200,7 @@ define([
         if (locked || (existing && obj.editable === false)) {
           $el.attr('disabled', true);
 
-        // Otherwise add a listener.
+        // Otherwise add a validation listener.
         } else {
           events['blur ' + obj.el] = function(){
             var value = $el.val().trim();
@@ -209,10 +209,10 @@ define([
               value = obj.parse.call(this, value);
             }
 
-            if (!obj.validate || obj.validate.call(this, value)) {
-              this.model.set(key, value);
-            } else {
+            if (obj.validate && !obj.validate.call(this, value)) {
               $el.addClass('invalid');
+            } else {
+              this.changed[key] = value;
             }
           };
         }
@@ -223,13 +223,18 @@ define([
       this.delegateEvents(events);
     },
 
+    isValid: function(){
+      this.$el.find('input').blur();
+      return !this.$el.find('.invalid').length;
+    },
+
     modelEvents: {
-      'change': 'update',
+      'change': 'updateValues',
       'change:display_name': 'generateLabel',
       'destroy': 'close'
     },
 
-    update: function(){
+    updateValues: function(){
       _.each(this.model.changed, function(value, key){
         if (_.has(this.ui, key)) {
           this.ui[key].val(value).removeClass('invalid');
