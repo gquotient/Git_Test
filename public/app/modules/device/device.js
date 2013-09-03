@@ -160,7 +160,9 @@ define([
       type: 'handlebars',
       template: deviceListItemTemplate
     },
-    className: 'device collapsed',
+    className: function(){
+      return 'device collapsed ' + this.model.get('devtype');
+    },
     expanded: false,
     events: {
       'click .label': function(event){

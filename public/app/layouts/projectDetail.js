@@ -283,7 +283,7 @@ define([
       fetchData();
 
       // Fetch data every 15 minutes
-      this.fetchInterval = setInterval(900000, fetchData);
+      this.fetchInterval = setInterval(fetchData, 900000);
 
       this.listenTo(Backbone, 'click:project', function(project){
         this.selectProject(project);

@@ -34,7 +34,10 @@ define([
     },
 
     ui: {
-      map: '.map'
+      map: '.map',
+      refresh: '.refresh-icon',
+      save: 'button.save',
+      cancel: 'button.cancel'
     },
 
     regions: {
@@ -46,6 +49,7 @@ define([
       this.markers = {};
 
       this.collection.fetch({
+        user: options.user,
         data: {
           index_name: 'AlignedProjects'
         },
@@ -93,6 +97,7 @@ define([
     },
 
     triggers: {
+      'click .refresh-icon': 'refresh',
       'click button.create': 'create',
       'click button.save': 'save',
       'click button.cancel': 'cancel'
@@ -118,6 +123,18 @@ define([
       this.list.show(this.listView);
     },
 
+    onRefresh: function(){
+      this.ui.refresh.addClass('active');
+      this.collection.fetch({
+        data: {
+          index_name: 'AlignedProjects'
+        },
+        success: _.bind(function(){
+          this.ui.refresh.removeClass('active');
+        }, this)
+      });
+    },
+
     onCreate: function(){
       this.showDetail();
     },
@@ -134,7 +151,7 @@ define([
       if (this.detail.$el.find('.invalid').length > 0) { return; }
 
       this.model.save(existing ? null : {
-        notes: this.model.formatNote('created project', this.options.user)
+        notes: this.model.formatNote('created project')
       }, {
         success: _.bind(function(){
           if (!existing) {
@@ -171,6 +188,7 @@ define([
       if (!(model instanceof Backbone.Model)) {
         model = new Project.Model(model, {
           collection: this.collection,
+          user: this.options.user,
           silent: false
         });
 
@@ -192,9 +210,12 @@ define([
         this.model = null;
       });
 
-      this.focusMap(model);
       this.detail.show(view);
-      this.$('.save, .cancel').show();
+
+      this.focusMap(model);
+      this.listView.setActive(model);
+      this.ui.save.toggle(model.isEditable() || !model.isLocked());
+      this.ui.cancel.show();
 
       if (model.id) {
         Backbone.history.navigate('/admin/projects/' + model.id);
@@ -205,7 +226,10 @@ define([
 
     hideDetail: function(){
       this.detail.close();
-      this.$('.save, .cancel').hide();
+
+      this.listView.setActive();
+      this.ui.save.hide();
+      this.ui.cancel.hide();
     },
 
     focusMap: function(loc){

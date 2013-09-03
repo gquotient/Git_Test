@@ -121,6 +121,8 @@ function(
         },
         'Generation Meter': {
           power: 'ac_power_mean'
+          //current: ac_current_a_mean, ac_current_b_mean, ac_current_c_mean, ac_current_n_mean
+          //voltage: `ac_voltage_<phase>_mean`, the phases are `ab, an, bc, bn, ca, cn`
         }
       },
       dataDefinition

@@ -28,10 +28,41 @@ define([
       template: adminListItemTemplate
     },
 
+    templateHelpers: function(){
+      return {
+        locked: this.model.isLocked()
+      };
+    },
+
+    ui: {
+      lock: '.lock-icon',
+      del: 'button.delete'
+    },
+
     triggers: {
       'click': 'show:detail',
+      'click .lock-icon': 'unlock',
       'click button.model': 'editor',
       'click button.delete': 'delete'
+    },
+
+    modelEvents: {
+      'change:display_name': 'render',
+      'change:editor': 'render'
+    },
+
+    onRender: function(){
+      var editable = this.model.isEditable(),
+        locked = this.model.isLocked();
+
+      this.ui.lock.toggleClass('active', editable);
+      this.ui.del.attr('disabled', !editable && locked);
+    },
+
+    onUnlock: function(){
+      if (this.model.isEditable()) {
+        this.model.setLock(false);
+      }
     },
 
     onEditor: function(){
@@ -55,7 +86,17 @@ define([
     },
 
     itemView: views.AdminListItem,
-    itemViewContainer: 'tbody'
+    itemViewContainer: 'tbody',
+
+    setActive: function(model){
+      var view = model && this.children.findByModel(model);
+
+      this.$('tr.active').removeClass('active');
+
+      if (view) {
+        view.$el.addClass('active');
+      }
+    }
   });
 
   views.AdminDetail = Marionette.ItemView.extend({
@@ -142,35 +183,39 @@ define([
     },
 
     onShow: function(){
-      var events = {};
+      var locked = this.model.isLocked() && !this.model.isEditable(),
+        existing = !this.model.isNew(),
+        events = {};
 
+      // Clear current ui elements.
       this.ui = {};
 
       _.each(this.schema, function(obj, key){
-        var $el = this.$(obj.el),
-          editable = obj.editable !== false || this.model.isNew();
+        var $el = this.$(obj.el);
 
+        // Skip if no matching element.
         if (!$el) { return; }
 
-        if (!editable) {
+        // Disable the element if not editable.
+        if (locked || (existing && obj.editable === false)) {
           $el.attr('disabled', true);
-        }
 
-        events['blur ' + obj.el] = function(){
-          var value = $el.val().trim();
+        // Otherwise add a listener.
+        } else {
+          events['blur ' + obj.el] = function(){
+            var value = $el.val().trim();
 
-          if (obj.parse) {
-            value = obj.parse.call(this, value);
-          }
+            if (obj.parse) {
+              value = obj.parse.call(this, value);
+            }
 
-          if (editable) {
             if (!obj.validate || obj.validate.call(this, value)) {
               this.model.set(key, value);
             } else {
               $el.addClass('invalid');
             }
-          }
-        };
+          };
+        }
 
         this.ui[key] = $el;
       }, this);

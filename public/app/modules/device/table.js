@@ -41,31 +41,23 @@ define([
       readOnly: true
     },
 
-    initialize: function(){
-      this.listenTo(Backbone, 'editor:change:editable', function(editable){
-        this.updateEditable(editable);
-      });
+    modelEvents: {
+      'change:editor': 'updateReadOnly'
     },
 
-    updateEditable: function(editable){
+    updateReadOnly: function(){
       if (this.table) {
-        this.table.updateSettings({readOnly: !editable});
+        this.table.updateSettings({readOnly: !this.model.isEditable()});
       }
-
-      this.editable = editable;
     },
 
     onShow: function(){
-      if (this.options.editable) {
-        this.updateEditable(true);
-      }
+      this.updateReadOnly();
     },
 
     collectionEvents: {
       'change': function(model) {
-        if (this.editable) {
-          model.lazySave();
-        }
+        model.lazySave();
       }
     },
 

@@ -306,7 +306,7 @@ header {
         position: relative;
         background: none;
         border: none;
-        padding: 0;
+        padding: 0 0 0 15px;
         > div {// Animation stuffs
           > ul {
             height: 0;
@@ -328,76 +328,75 @@ header {
         }
         &.active {
           > .label {
+            opacity: 1;
             border-right: 3px solid colorDrakerOrange;
           }
         }
-        // This is way ugly but I want the background to be the full width of the nav container
-        ul {
-          li {
-            .label {
-              padding-left: 6px + 9px;
-            }
-            ul {
-              li {
-                .label {
-                  padding-left: 6px + 18px;
-                }
-                ul {
-                  li {
-                    .label {
-                      padding-left: 6px + 27px;
-                    }
-                    ul {
-                      li {
-                        .label {
-                          padding-left: 6px + 36px;
-                        }
-                        ul {
-                          li {
-                            .label {
-                              padding-left: 6px + 45px;
-                            }
-                            ul {
-                              li {
-                                .label {
-                                  padding-left: 6px + 54px;
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+        &.Array, &.Inverter {
+          padding: 0;
+          background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+          > .label {
+            border-top: borderBasicMedium;
+            border-bottom: borderBasicDark;
           }
         }
-        // /uglyiness
+        &.Array {
+          >.label {
+            background-image: url(../../img/icon_array.png);
+          }
+        }
+        &.Inverter {
+          >.label {
+            background-image: url(../../img/icon_inverter.png);
+          }
+        }
+        &.Meter {
+          >.label {
+            background-image: url(../../img/icon_meter.png);
+          }
+        }
+        &.Combiner, &.Recombiner, &.Bus {
+          >.label {
+            background-image: url(../../img/icon_combiner.png);
+          }
+        }
+        &.String {
+          >.label {
+            background-image: url(../../img/icon_string.png);
+          }
+        }
+        &.Panel {
+          >.label {
+            background-image: url(../../img/icon_panel.png);
+          }
+        }
         .label {
-          padding: 0 0 0 6px;
+          color: #fff;
+          padding: 0 0 0 18px;
           line-height: 30px;
-          border-top: borderBasicMedium;
-          border-bottom: borderBasicDark;
-          background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+          //border-top: borderBasicMedium;
+          //border-bottom: borderBasicDark;
+          //background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+          background-position: 3px center;
+          background-repeat: no-repeat;
+          opacity: 0.66;
           .expand {
             background: url(../../img/icon_expand.png) right center no-repeat;
             opacity: 0;
             position: absolute;
             top: 0;
             right: 0;
-            display: block;
+            display: inline-block;
             width: 30px;
             height: 30px;
             padding: 0 30px 0 0;
-            text-indent: -200%;
+            text-indent: -9999px;
             overflow: hidden;
             border-left: 1px dotted #202020;
           }
           &:hover {
-            background: linear-gradient(colorSoftGradientGreyHoverStop, colorSoftGradientGreyHoverStart);
-            color: #fff;
+            opacity: 1;
+            //background: linear-gradient(colorSoftGradientGreyHoverStop, colorSoftGradientGreyHoverStart);
             transition: all 0.2s ease-in-out;
             > .expand {
               opacity: 1;
@@ -610,6 +609,15 @@ header {
   padding: 0 !important;
   min-width: 825px;
 
+  [class*="-icon"] {
+    font-family: FontAwesome;
+
+    &.active {
+      color: colorDrakerOrange;
+      cursor: pointer;
+    }
+  }
+
   .map {
     width: 100%;
     height: 100%;
@@ -665,6 +673,12 @@ header {
         border-top: borderBasicMedium;
         border-bottom: borderBasicDark;
         box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
+
+        .refresh-icon {
+          float: right;
+          padding: 6px;
+          cursor: pointer;
+        }
       }
 
       .projectList {
@@ -678,6 +692,14 @@ header {
 
           .actions {
             text-align: right;
+          }
+
+          tr {
+            border-right: 3px solid transparent;
+
+            &.active {
+              border-right-color: colorDrakerOrange;
+            }
           }
         }
       }

@@ -39,6 +39,8 @@ define([
     onShow: function(){
       if (this.model.get('devtype') !== 'PV Array') {
         Backbone.history.navigate('/project/' + this.options.project.id + '/devices/' + this.model.get('graph_key'));
+      } else {
+        Backbone.history.navigate('/project/' + this.options.project.id + '/devices');
       }
 
       Backbone.trigger(

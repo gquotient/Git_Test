@@ -94,7 +94,11 @@ define([
 
     initialize: function(options){
       this.equipment = options.equipment;
-      this.user = options.user;
+
+      // Make sure the model has a user.
+      if (!this.model.user && options.user) {
+        this.model.user = options.user;
+      }
 
       // Fetch project from server.
       this.model.fetch({
@@ -104,15 +108,21 @@ define([
         equipment: this.equipment
       });
 
-      this.listenTo(Backbone, 'editor:change:editable', function(editable){
-        this.$el.find('input:not(.nav)').attr('disabled', !editable);
-      });
-
       this.listenTo(Backbone, 'canvas:selection', function(selection){
         this.selection = selection.length > 0 ? selection : null;
       });
 
       _.bindAll(this, 'handleKeyEvent');
+    },
+
+    modelEvents: {
+      'change:editor': 'disableInputs'
+    },
+
+    disableInputs: function(){
+      var disabled = !this.model.isEditable();
+
+      this.$el.find('input:not(.nav)').attr('disabled', disabled);
     },
 
     keydownEvents: {
@@ -223,6 +233,10 @@ define([
           });
         }, this);
 
+        this.on('close', function(){
+          view.close();
+        });
+
         Marionette.triggerMethod.call(view, 'show');
       }, this);
     },
@@ -230,14 +244,21 @@ define([
     _initLockView: function(){
       this.lockView = new views.EditorLock({
         el: this.$('.lock'),
-        model: this.model,
-        user: this.user
+        model: this.model
       });
+
+      this.on('close', function(){
+        this.lockView.close();
+      });
+
+      this.lockView.render();
     },
 
     onShow: function(){
       this._initLockView();
       this._initInputFields();
+
+      this.disableInputs();
 
       $(document).on('keydown keypress', this.handleKeyEvent);
     },
@@ -342,8 +363,7 @@ define([
 
         Backbone.trigger('editor:change:view', _.extend(model.toJSON(), {
           model: this.model,
-          collection: this.model.devices,
-          editable: this.lockView.editable
+          collection: this.model.devices
         }));
       }
     },
@@ -381,7 +401,7 @@ define([
     },
 
     onDelete: function(){
-      if (this.lockView && this.lockView.editable && this.selection) {
+      if (this.model.isEditable() && this.selection) {
         _.each(this.selection.models.slice(0), function(device){
           this.deleteDevice(device);
         }, this);
@@ -415,7 +435,7 @@ define([
             ].concat(parnt.equipment ? [
               parnt.equipment.get('name').toLowerCase(),
               parnt.get('did')
-            ] : 'project').join(' '), this.user);
+            ] : 'project').join(' '));
 
             if (target && target !== parnt) {
               this.connectDevice(device, target);
@@ -445,7 +465,7 @@ define([
               'deleted',
               equip.get('name').toLowerCase(),
               device.get('did')
-            ].join(' '), this.user);
+            ].join(' '));
           }, this)
         });
 
@@ -500,7 +520,7 @@ define([
             'to',
             target.equipment.get('name').toLowerCase(),
             target.get('did')
-          ].join(' '), this.user);
+          ].join(' '));
         }, this));
       }
     },
@@ -537,7 +557,7 @@ define([
             'from',
             target.equipment.get('name').toLowerCase(),
             target.get('did')
-          ].join(' '), this.user);
+          ].join(' '));
         }, this));
       }
     }
@@ -551,19 +571,17 @@ define([
 
     templateHelpers: function(){
       return {
-        editable: this.editable,
-        editor: this.editor
+        editable: this.model.isEditable(),
+        locked: this.model.isLocked()
       };
     },
 
     initialize: function(){
-      var devices = this.model.devices;
-
       // Update the lock timeout no more then once a minute as long as changes
       // are still being made to devices.
-      this.listenTo(devices, 'change', _.throttle(this.updateTimeout, 60 * 1000));
-
-      this.updateEditable();
+      this.listenTo(this.model.devices, 'change', _.throttle(function(){
+        this.model.updateLockTimeout();
+      }, 60 * 1000));
     },
 
     triggers: {
@@ -572,41 +590,7 @@ define([
     },
 
     modelEvents: {
-      'change:locked': 'updateEditable',
-      'change:editor': 'updateEditable'
-    },
-
-    updateEditable: function(){
-      var editable = this.model.get('locked') || false,
-        editor = this.model.get('editor'),
-        user = this.options.user.get('email');
-
-      this.editor = !_.contains(['', 'unlocked', user], editor) && editor;
-
-      if (this.editor) {
-        editable = false;
-      }
-
-      if (this.editable !== editable) {
-        this.editable = editable;
-
-        Backbone.trigger('editor:change:editable', editable);
-      }
-
-      this.render();
-      this.updateTimeout();
-    },
-
-    updateTimeout: function(){
-      var that = this;
-
-      clearTimeout(this.lockTimeout);
-
-      if (this.editable) {
-        this.lockTimeout = setTimeout(function(){
-          that.model.setLock(false);
-        }, 5 * 60 * 1000);
-      }
+      'change:editor': 'render'
     },
 
     onEdit: function(){
@@ -618,12 +602,9 @@ define([
     },
 
     onClose: function(){
-      if (this.editable) {
+      if (this.model.isEditable()) {
         this.model.setLock(false);
-        this.editable = false;
       }
-
-      this.updateTimeout();
     }
   });
 

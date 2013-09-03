@@ -91,7 +91,9 @@ define([
       Backbone.Model.prototype.constructor.apply(this, arguments);
     },
 
-    initialize: function(){
+    initialize: function(attrs, options){
+      this.user = options.user;
+
       this.issues = new Issue.Collection([], {projectId: this.id});
 
       // This might be a bit convoluted and potentially fire too often but it works
@@ -99,11 +101,20 @@ define([
         var status = this.issues.getSeverity();
         this.set(status);
       });
+
+      this.on('change:editor', this.updateLockTimeout);
+      this.updateLockTimeout();
+    },
+
+    isLocked: function(){
+      return this.has('editor') && this.get('editor') !== 'unlocked';
+    },
+
+    isEditable: function(){
+      return this.user && this.get('editor') === this.user.get('email');
     },
 
     setLock: function(lock){
-      var that = this;
-
       return $.ajax(_.result(this, 'url') + '/edit', {
         type: 'PUT',
         data: {
@@ -111,9 +122,27 @@ define([
           lock: _.isBoolean(lock) ? lock : true
         },
         dataType: 'json'
-      }).done(function(data){
-        that.set(_.pick(data, 'locked', 'editor'));
-      });
+      }).done(_.bind(function(data){
+        var editor = data.editor;
+
+        if (!editor) {
+          editor = data.locked === true ? this.user.get('email') : 'unlocked';
+        }
+
+        this.set({editor: editor});
+      }, this));
+    },
+
+    updateLockTimeout: function(){
+      var that = this;
+
+      clearTimeout(this.lockTimeout);
+
+      if (this.isEditable()) {
+        this.lockTimeout = setTimeout(function(){
+          that.setLock(false);
+        }, 5 * 60 * 1000);
+      }
     },
 
     makeEditable: function(){
@@ -293,36 +322,39 @@ define([
     },
 
     parse: function(resp, options){
-      // Check if this is a simple project object.
-      if (resp.project_label) { return resp; }
+      // Check if the response includes devices.
+      if (resp.devices && !resp.project_label) {
 
-      this.devices.reset(resp.devices, {
-        equipment: options.equipment,
-        project: this,
-        parse: true
-      });
+        this.devices.reset(resp.devices, {
+          equipment: options.equipment,
+          project: this,
+          parse: true
+        });
 
-      // Parse relationships.
-      _.each(resp.rels, function(rel) {
-        var source = this.devices.get(rel[2]),
-          target = this.devices.get(rel[0]),
-          relationship = rel[1];
+        // Parse relationships.
+        _.each(resp.rels, function(rel) {
+          var source = this.devices.get(rel[2]),
+            target = this.devices.get(rel[0]),
+            relationship = rel[1];
 
-        if (!target && rel[0] === resp.project.node_id) {
-          target = this;
-        }
+          if (!target && rel[0] === resp.project.node_id) {
+            target = this;
+          }
 
-        if (source && target) {
-          source.connectTo(target, relationship);
-        }
-      }, this);
+          if (source && target) {
+            source.connectTo(target, relationship);
+          }
+        }, this);
 
-      // Check rendering information for each device recursivly.
-      _.each(_.keys(Equipment.renderings), function(label){
-        this.checkOutgoing(this, label);
-      }, this);
+        // Check rendering information for each device recursivly.
+        _.each(_.keys(Equipment.renderings), function(label){
+          this.checkOutgoing(this, label);
+        }, this);
 
-      return resp.project;
+        resp = resp.project;
+      }
+
+      return resp;
     },
 
     checkOutgoing: function(target, label){
@@ -350,10 +382,15 @@ define([
 
     formatNote: function(msg, user){
       var now = new Date(),
-        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ',
-        who = user ? user.get('name') + ' ' : '';
+        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ';
 
-      return when + who + msg + '\n';
+      user = user || this.user;
+
+      if (user) {
+        msg = user.get('name') + ' ' + msg;
+      }
+
+      return when + msg + '\n';
     }
   });
 
