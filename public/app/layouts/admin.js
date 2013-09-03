@@ -150,10 +150,8 @@ define([
 
     events: {
       'click .nav_content li': function(event){
-        event.preventDefault();
-
-        // This seems kind of hacky, but (shrug)
-        var route = event.target.id;
+        // Get current target so it works on bubbled up event
+        var route = event.currentTarget.id;
 
         Backbone.trigger('select:' + route);
       }
