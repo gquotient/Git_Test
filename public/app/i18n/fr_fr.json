@@ -3,12 +3,15 @@
 
   "DC Capacity": "DC Capacity",
   "AC Capacity": "AC Capacity",
-  "DC Cap": "DC Cap",
-  "AC Cap": "AC Cap",
+  "DC Cap.": "DC Cap.",
+  "AC Cap.": "AC Cap.",
   "Irradiance Now": "Irradiance Now",
+  "Irr.": "Irr.",
   "Power Now": "Power Now",
+  "Pow.": "Pow.",
   "PR": "PR",
   "Performance Ratio": "Performance Ratio",
+  "Energy YTD": "Energy YTD",
 
   "All Portfolios": "All Portfolios",
   "Portfolios": "Portfolios",
@@ -37,6 +40,7 @@
   "New Project": "New Project",
 
   "Label": "Label",
+  "Site Label": "Site Label",
   "Description": "Description",
   "Address": "Address",
   "City": "City",

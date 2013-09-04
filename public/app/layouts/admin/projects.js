@@ -140,30 +140,35 @@ define([
     },
 
     onSave: function(){
-      var existing = this.collection.get(this.model);
+      var existing = this.collection.get(this.model),
+        detailView = this.detail.currentView,
+        values;
 
-      // Don't save if there isn't currently a detail view.
-      if (!this.detail.currentView) { return; }
+      if (detailView && detailView.isValid()) {
+        this.ui.save.addClass('loading-left');
 
-      this.detail.$el.find('input').blur();
+        values = _.clone(detailView.changed);
 
-      // Don't save if any data is invalid.
-      if (this.detail.$el.find('.invalid').length > 0) { return; }
+        if (!existing) {
+          values.notes = this.model.formatNote('created project');
+        }
 
-      this.model.save(existing ? null : {
-        notes: this.model.formatNote('created project')
-      }, {
-        success: _.bind(function(){
-          if (!existing) {
-            this.collection.add(this.model);
-          }
-        }, this)
-      });
+        this.model.save(values, {
+          success: _.bind(function(){
+            this.ui.save.removeClass('loading-left');
+
+            if (!existing) {
+              this.collection.add(this.model);
+            }
+
+            this.showDetail(this.model);
+          }, this)
+        });
+      }
     },
 
     onCancel: function(){
       this.hideDetail();
-      Backbone.history.navigate('/admin/projects');
     },
 
     onClose: function(){
@@ -208,6 +213,8 @@ define([
         }
 
         this.model = null;
+
+        Backbone.history.navigate('/admin/projects');
       });
 
       this.detail.show(view);

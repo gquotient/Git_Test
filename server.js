@@ -116,7 +116,7 @@ app.configure('production', function(){
   app.set('authPort', 80);
   app.set('authUrl', 'auth.intelligentarray.com');
   app.set('modelUrl', 'http://model.intelligentarray.com');
-  app.set('dataUrl', 'http://data.stage.intelligentarray.com');
+  app.set('dataUrl', 'http://data.intelligentarray.com');
   app.set('staticDir', 'app.build');
 });
 

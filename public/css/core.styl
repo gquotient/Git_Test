@@ -704,3 +704,21 @@ leftColumnWidthSml = 200px;
   top: 125px;
   right: 50%;
 }
+
+.button.loading-left:before,
+.button.loading-right:after {
+  @extend .loadingIndicator;
+  border-color: #555;
+  vertical-align: middle;
+  content: "";
+}
+.button.loading-left:before {
+  margin: 0 3px 0 -3px;
+}
+.button.loading-right:after {
+  margin: 0 -3px 0 3px;
+}
+.button.primary.loading-left:before,
+.button.primary.loading-right:after {
+  border-color: #fff;
+}

@@ -106,17 +106,25 @@ define([
       template: adminDetailTemplate
     },
 
-    templateHelpers: function(){
-      return {
-        label: this.model.get('site_label') || this.model.id
-      };
-    },
-
     schema: {
       display_name: {
         el: '#name',
         validate: function(value){
           return value && value !== '';
+        },
+        success: function(value){
+          var label;
+
+          if (this.model.isNew() && this.ui.site_label.val() === '') {
+            label = _.reduce(value.split(' '), function(memo, word){
+              if (memo.length < 8) {
+                memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
+              }
+              return memo;
+            }, '');
+
+            this.ui.site_label.val(label).removeClass('invalid');
+          }
         }
       },
 
@@ -187,8 +195,8 @@ define([
         existing = !this.model.isNew(),
         events = {};
 
-      // Clear current ui elements.
       this.ui = {};
+      this.changed = {};
 
       _.each(this.schema, function(obj, key){
         var $el = this.$(obj.el);
@@ -200,7 +208,7 @@ define([
         if (locked || (existing && obj.editable === false)) {
           $el.attr('disabled', true);
 
-        // Otherwise add a listener.
+        // Otherwise add a validation listener.
         } else {
           events['blur ' + obj.el] = function(){
             var value = $el.val().trim();
@@ -209,10 +217,18 @@ define([
               value = obj.parse.call(this, value);
             }
 
-            if (!obj.validate || obj.validate.call(this, value)) {
-              this.model.set(key, value);
-            } else {
+            if (obj.validate && !obj.validate.call(this, value)) {
               $el.addClass('invalid');
+
+              if (obj.error) {
+                obj.error.call(this, value);
+              }
+            } else {
+              this.changed[key] = value;
+
+              if (obj.success) {
+                obj.success.call(this, value);
+              }
             }
           };
         }
@@ -223,32 +239,22 @@ define([
       this.delegateEvents(events);
     },
 
+    isValid: function(){
+      this.$el.find('input').blur();
+      return !this.$el.find('.invalid').length;
+    },
+
     modelEvents: {
-      'change': 'update',
-      'change:display_name': 'generateLabel',
+      'change': 'updateValues',
       'destroy': 'close'
     },
 
-    update: function(){
+    updateValues: function(){
       _.each(this.model.changed, function(value, key){
         if (_.has(this.ui, key)) {
           this.ui[key].val(value).removeClass('invalid');
         }
       }, this);
-    },
-
-    generateLabel: function(){
-      if (this.ui.site_label.val() !== '') { return; }
-
-      var parts = this.model.get('display_name').split(' ');
-
-      this.ui.site_label.val(_.reduce(parts, function(memo, part){
-        if (memo.length < 8) {
-          memo += part.toUpperCase().replace(/[^A-Z]+/g, '');
-        }
-
-        return memo;
-      }, ''));
     }
   });
 
