@@ -78,8 +78,6 @@ define([
         localTime = this.model.getLocalDate()
       ;
 
-      console.log(new Date(localTime.start), new Date(localTime.stop));
-
       // Add link to device
       this.$el.find('.deviceName').html('<a href="#' + device.get('graph_key') + '" class="device">' + device.get('did') + '</a>');
 
@@ -88,7 +86,7 @@ define([
         chartOptions: {
           xAxis: {
             plotBands: {
-              color: '#f00',
+              color: 'rgba(201, 77, 30, .25)',
               from: localTime.start,
               to: localTime.stop
             }
@@ -124,7 +122,7 @@ define([
         ]
       });
 
-      console.log
+      console.log(chart_powerAndIrradiance);
 
       this.chart.show(chart_powerAndIrradiance);
     },

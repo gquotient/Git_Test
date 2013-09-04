@@ -37,7 +37,8 @@ function(
     getLocalDate: function(){
       var timezone = this.collection.project.get('timezone'),
         walltime = WallTime.UTCToWallTime(new Date(), timezone),
-        offset = (walltime.offset.negative) ? -walltime.offset.hours : walltime.offset.hours;
+        offsetHours = (walltime.offset.negative) ? -walltime.offset.hours : walltime.offset.hours,
+        offset = offsetHours * 60 * 60 * 1000;
 
       return {
         start: (this.get('fault_start') * 1000) + offset,
@@ -48,7 +49,6 @@ function(
 
   Issue.Collection = Backbone.Collection.extend({
     url: function(options){
-      console.log(this, options);
       return '/api/alarms/active/' + this.project.id;
     },
     model: Issue.Model,
