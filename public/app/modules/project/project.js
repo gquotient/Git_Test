@@ -80,7 +80,14 @@ define([
       notes: '',
       // Status as an array for sorting purposes
       status: 'Unknown',
-      statusValue: -1
+      statusValue: -1,
+
+      surface_area: 0,
+      ac_capacity: 0,
+      dc_capacity: 0,
+      capacity_units: 'watts',
+      dm_push: false,
+      rollup_intervals: ''
     },
 
     constructor: function(){
@@ -147,6 +154,15 @@ define([
 
     makeEditable: function(){
       return $.ajax(_.result(this.collection, 'url') + '/edit', {
+        type: 'POST',
+        data: {
+          project_label: this.id
+        }
+      });
+    },
+
+    commission: function(){
+      return $.ajax(_.result(this.collection, 'url') + '/commission', {
         type: 'POST',
         data: {
           project_label: this.id

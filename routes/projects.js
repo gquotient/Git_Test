@@ -136,6 +136,11 @@ module.exports = function(app){
       path: '/res/projects'
     }));
 
+  app.post('/api/projects/commission', ensureAuthorized(['vendor_admin']),
+    helpers.request({
+      path: '/res/commission'
+    }));
+
   app.post('/api/projects/edit', ensureAuthorized(['vendor_admin']),
     helpers.request({
       path: '/res/edit'

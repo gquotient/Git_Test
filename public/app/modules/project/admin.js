@@ -36,12 +36,14 @@ define([
 
     ui: {
       lock: '.lock-icon',
+      commission: 'button.commission',
       del: 'button.delete'
     },
 
     triggers: {
       'click': 'show:detail',
       'click .lock-icon': 'unlock',
+      'click button.commission': 'commission',
       'click button.model': 'editor',
       'click button.delete': 'delete'
     },
@@ -53,16 +55,21 @@ define([
 
     onRender: function(){
       var editable = this.model.isEditable(),
-        locked = this.model.isLocked();
+        disabled = !editable && this.model.isLocked();
 
       this.ui.lock.toggleClass('active', editable);
-      this.ui.del.attr('disabled', !editable && locked);
+      this.ui.commission.attr('disabled', disabled);
+      this.ui.del.attr('disabled', disabled);
     },
 
     onUnlock: function(){
       if (this.model.isEditable()) {
         this.model.setLock(false);
       }
+    },
+
+    onCommission: function(){
+      this.model.commission();
     },
 
     onEditor: function(){

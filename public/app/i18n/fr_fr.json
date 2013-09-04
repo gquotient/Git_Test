@@ -58,6 +58,7 @@
   "Target": "Target",
   "Source": "Source",
 
+  "Commission": "Commission",
   "Model": "Model",
   "Edit Model": "Edit Model",
   "Release Lock": "Release Lock",
