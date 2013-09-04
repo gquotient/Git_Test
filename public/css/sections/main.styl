@@ -526,19 +526,22 @@ header {
           tr {
             cursor: pointer;
             td {
-              //width: 25%;
-              //text-align: center;
+              // Set a small min width for most columns
+              min-width: 50px;
               span.statusIndicator {
                 margin-right: 6px;
               }
-              &.PerformanceRatio {
-                min-width: 42px;
-              }
+              // Adjust for larger labels
+              // This is necessary because the fixed positioned headers take their width
+              // out of the table
               &.ACCapacity {
                 min-width: 100px;
               }
               &.DCCapacity {
                 min-width: 100px;
+              }
+              &.EnergyYTD {
+                min-width: 125px;
               }
             }
             td.name {
