@@ -7,8 +7,7 @@ module.exports = function(app){
   , ensureAuthorized = helpers.ensureAuthorized
   , ensureCurrentOrganization = helpers.ensureCurrentOrganization
   , ensureCurrentTeam = helpers.ensureCurrentTeam
-  , makeRequest = helpers.makeRequest
-  , separateProperties = helpers.separateProperties;
+  , makeRequest = helpers.makeRequest;
 
 
   //////
