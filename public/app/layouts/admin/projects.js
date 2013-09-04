@@ -150,7 +150,7 @@ define([
         values = _.clone(detailView.changed);
 
         if (!existing) {
-          values.notes = this.model.formatNote('created project')
+          values.notes = this.model.formatNote('created project');
         }
 
         this.model.save(values, {

@@ -55,20 +55,25 @@ module.exports = function(app){
       pipe: true
     }));
 
+  var IGNORE_PROPS = [
+    'id',
+    'node_id',
+    'index_name',
+    'type',
+    'kpis',
+    'dataSources',
+    'status',
+    'statusValue',
+    'editor'
+  ];
+
   app.post('/api/projects', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/projects',
       setup: separateProperties([
         'site_label',
         'index_name'
-      ], [
-        'id',
-        'dataSources',
-        'kpis',
-        'status',
-        'statusValue',
-        'type'
-      ]),
+      ], IGNORE_PROPS),
       translate: combineProperties
     }));
 
@@ -78,20 +83,7 @@ module.exports = function(app){
       setup: separateProperties([
         'node_id',
         'project_label'
-      ], [
-        'id',
-        'site_label',
-        'index_name',
-
-        'editor',
-        'locked',
-
-        'dataSources',
-        'kpis',
-        'status',
-        'statusValue',
-        'type'
-      ]),
+      ], IGNORE_PROPS),
       translate: combineProperties
     }));
 

@@ -106,17 +106,25 @@ define([
       template: adminDetailTemplate
     },
 
-    templateHelpers: function(){
-      return {
-        label: this.model.get('site_label') || this.model.id
-      };
-    },
-
     schema: {
       display_name: {
         el: '#name',
         validate: function(value){
           return value && value !== '';
+        },
+        success: function(value){
+          var label;
+
+          if (this.model.isNew() && this.ui.site_label.val() === '') {
+            label = _.reduce(value.split(' '), function(memo, word){
+              if (memo.length < 8) {
+                memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
+              }
+              return memo;
+            }, '');
+
+            this.ui.site_label.val(label);
+          }
         }
       },
 
@@ -211,8 +219,16 @@ define([
 
             if (obj.validate && !obj.validate.call(this, value)) {
               $el.addClass('invalid');
+
+              if (obj.error) {
+                obj.error.call(this, value);
+              }
             } else {
               this.changed[key] = value;
+
+              if (obj.success) {
+                obj.success.call(this, value);
+              }
             }
           };
         }
@@ -230,7 +246,6 @@ define([
 
     modelEvents: {
       'change': 'updateValues',
-      'change:display_name': 'generateLabel',
       'destroy': 'close'
     },
 
@@ -240,20 +255,6 @@ define([
           this.ui[key].val(value).removeClass('invalid');
         }
       }, this);
-    },
-
-    generateLabel: function(){
-      if (this.ui.site_label.val() !== '') { return; }
-
-      var parts = this.model.get('display_name').split(' ');
-
-      this.ui.site_label.val(_.reduce(parts, function(memo, part){
-        if (memo.length < 8) {
-          memo += part.toUpperCase().replace(/[^A-Z]+/g, '');
-        }
-
-        return memo;
-      }, ''));
     }
   });
 

@@ -11,6 +11,13 @@ module.exports = function(app){
   // DEVICES
   //////
 
+  var IGNORE_PROPS = [
+    'id',
+    'node_id',
+    'parent_id',
+    'relationship_label'
+  ];
+
   app.post('/api/devices', ensureAuthorized(['vendor_admin']),
     makeRequest({
       path: '/res/devices',
@@ -18,10 +25,7 @@ module.exports = function(app){
         'project_label',
         'parent_id',
         'relationship_label'
-      ], [
-        'id',
-        'node_id'
-      ]),
+      ], IGNORE_PROPS),
       translate: function(body, next){
         body = _.extend({},
           body.properties,
@@ -42,11 +46,7 @@ module.exports = function(app){
       setup: separateProperties([
         'node_id',
         'project_label'
-      ], [
-        'id',
-        'parent_id',
-        'relationship_label'
-      ]),
+      ], IGNORE_PROPS),
       translate: function(body, next){
         body = _.extend({},
           body.properties,
