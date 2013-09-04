@@ -6,6 +6,7 @@ define([
   'backbone.virtualCollection',
 
   'navigation',
+  'walltime',
 
   'hbs!issue/templates/table',
   'hbs!issue/templates/tableRow',
@@ -21,6 +22,7 @@ function(
   VirtualCollection,
 
   Navigation,
+  WallTime,
 
   tableTemplate,
   tableRowTemplate,
@@ -31,11 +33,28 @@ function(
   var Issue = { views: {} };
 
   Issue.Model = Backbone.Model.extend({
-    idAttribute: 'uid'
+    idAttribute: 'uid',
+    getLocalDate: function(){
+      var timezone = this.collection.project.get('timezone'),
+        walltime = WallTime.UTCToWallTime(new Date(), timezone),
+        offset = (walltime.offset.negative) ? -walltime.offset.hours : walltime.offset.hours;
+
+      return {
+        start: (this.get('fault_start') * 1000) + offset,
+        stop: (this.get('fault_stop') * 1000) + offset
+      };
+    }
   });
 
   Issue.Collection = Backbone.Collection.extend({
+    url: function(options){
+      console.log(this, options);
+      return '/api/alarms/active/' + this.project.id;
+    },
     model: Issue.Model,
+    initialize: function(models, options){
+      this.project = options.project;
+    },
     parse: function(data){
       return data.alarms;
     },
@@ -57,9 +76,6 @@ function(
         status: status,
         statusValue: statusValue
       };
-    },
-    initialize: function(models, options){
-      this.url = '/api/alarms/active/' + options.projectId;
     }
   });
 

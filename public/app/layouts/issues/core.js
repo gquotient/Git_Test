@@ -74,12 +74,26 @@ define([
         device = this.device,
         // Add an hour to either side of time range
         startTime = this.model.get('fault_start') - (60 * 60),
-        stopTime = this.model.get('fault_stop') + (60 * 60)
+        stopTime = this.model.get('fault_stop') + (60 * 60),
+        localTime = this.model.getLocalDate()
       ;
 
+      console.log(new Date(localTime.start), new Date(localTime.stop));
+
+      // Add link to device
       this.$el.find('.deviceName').html('<a href="#' + device.get('graph_key') + '" class="device">' + device.get('did') + '</a>');
 
+      // Instantiate chart
       var chart_powerAndIrradiance = new Chart.views.Basic({
+        chartOptions: {
+          xAxis: {
+            plotBands: {
+              color: '#f00',
+              from: localTime.start,
+              to: localTime.stop
+            }
+          }
+        },
         traces: [
           {
             'project_label': project.id,
@@ -110,9 +124,12 @@ define([
         ]
       });
 
+      console.log
+
       this.chart.show(chart_powerAndIrradiance);
     },
     initialize: function(options){
+      console.log(this.model);
       var that = this;
 
       this.project = options.project;
