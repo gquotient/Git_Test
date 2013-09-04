@@ -123,7 +123,7 @@ define([
               return memo;
             }, '');
 
-            this.ui.site_label.val(label);
+            this.ui.site_label.val(label).removeClass('invalid');
           }
         }
       },

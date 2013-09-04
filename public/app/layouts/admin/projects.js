@@ -155,10 +155,13 @@ define([
 
         this.model.save(values, {
           success: _.bind(function(){
+            this.ui.save.removeClass('loading-left');
+
             if (!existing) {
               this.collection.add(this.model);
             }
-            this.ui.save.removeClass('loading-left');
+
+            this.showDetail(this.model);
           }, this)
         });
       }
@@ -166,7 +169,6 @@ define([
 
     onCancel: function(){
       this.hideDetail();
-      Backbone.history.navigate('/admin/projects');
     },
 
     onClose: function(){
@@ -211,6 +213,8 @@ define([
         }
 
         this.model = null;
+
+        Backbone.history.navigate('/admin/projects');
       });
 
       this.detail.show(view);
