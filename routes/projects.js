@@ -46,7 +46,6 @@ module.exports = function(app){
       pipe: true
     }));
 
-
   var IGNORE_PROPS = [
     'id',
     'node_id',
