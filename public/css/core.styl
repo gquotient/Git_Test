@@ -705,19 +705,18 @@ leftColumnWidthSml = 200px;
   right: 50%;
 }
 
-.button.loading-left:before {
+.button.loading-left:before,
+.button.loading-right:after {
   @extend .loadingIndicator;
-  margin: 0 3px 0 -3px;
   border-color: #555;
   vertical-align: middle;
   content: "";
 }
+.button.loading-left:before {
+  margin: 0 3px 0 -3px;
+}
 .button.loading-right:after {
-  @extend .loadingIndicator;
   margin: 0 -3px 0 3px;
-  border-color: #555;
-  vertical-align: middle;
-  content: "";
 }
 .button.primary.loading-left:before,
 .button.primary.loading-right:after {
