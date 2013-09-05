@@ -765,6 +765,50 @@ header {
   }
 }
 
+#page-equipmentAdmin {
+  padding: 0 !important;
+  min-width: 800px;
+
+  > div {
+    float: left;
+    width: 50%;
+    min-width: 400px;
+    height: 100%;
+  }
+
+  .equipment-detail {
+    padding: 12px;
+    overflow-y: auto;
+
+    fieldset {
+      padding: 12px;
+
+      & > div {
+        float: left;
+        width: 50%;
+        padding-left: 12px;
+
+        &:first-child {
+          padding-left: 0;
+        }
+      }
+
+      label {
+        display: block;
+      }
+
+      input, textarea {
+        width: 100%;
+        margin: 3px 0 12px 0;
+
+        &.invalid {
+          background: pink;
+        }
+      }
+    }
+  }
+}
+
 #page-projectEditor {
   position: relative;
   background: #bbb;

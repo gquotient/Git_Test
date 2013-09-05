@@ -1,0 +1,16 @@
+<fieldset class="name">
+  <div>
+    <label for="name">{{$ 'Name' }}</label>
+    <input id="name" name="name" type="text" tabindex="1" value="{{ name }}">
+  </div>
+
+  <div>
+    <label for="label">{{$ 'Label' }}</label>
+    <input id="label" name="label" type="text" tabindex="3" value="{{ label }}">
+  </div>
+</fieldset>
+
+<fieldset>
+  <label for="description">{{$ 'Description' }}</label>
+  <textarea id="description" name="description" tabindex="2">{{ description }}</textarea>
+</fieldset>

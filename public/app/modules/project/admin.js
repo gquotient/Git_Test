@@ -247,7 +247,7 @@ define([
     },
 
     isValid: function(){
-      this.$el.find('input').blur();
+      this.$el.find('input textarea').blur();
       return !this.$el.find('.invalid').length;
     },
 

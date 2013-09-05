@@ -92,6 +92,10 @@ define([
       // this.mainLayout.showAdmin().showAlarms();
     },
 
+    portfoliosAdmin: function(id){
+      this.mainLayout.showAdmin().showPortfolios(id);
+    },
+
     projectAdmin: function(id){
       this.mainLayout.showAdmin().showProject(id);
     },
@@ -102,8 +106,8 @@ define([
       });
     },
 
-    portfoliosAdmin: function(id){
-      this.mainLayout.showAdmin().showPortfolios(id);
+    equipmentAdmin: function(id){
+      this.mainLayout.showAdmin().showEquipment(id);
     },
 
     initialize: function(){
@@ -131,17 +135,22 @@ define([
       'profile': 'profile',
 
       //Admin Routes
-      'admin': 'admin',
       'admin/users': 'usersAdmin',
-      'admin/teams': 'teamsAdmin',
+
       'admin/teams/:id': 'teamAdminDetail',
+      'admin/teams': 'teamsAdmin',
+
+      'admin/portfolios/:id': 'portfoliosAdmin',
+      'admin/portfolios': 'portfoliosAdmin',
 
       'admin/projects/:id/:view': 'projectEditor',
       'admin/projects/:id': 'projectAdmin',
       'admin/projects': 'projectAdmin',
 
-      'admin/portfolios': 'portfoliosAdmin',
-      'admin/portfolios/:id': 'portfoliosAdmin'
+      'admin/equipment/:id': 'equipmentAdmin',
+      'admin/equipment': 'equipmentAdmin',
+
+      'admin': 'admin'
     }
   });
 

@@ -20,6 +20,7 @@
   "Total Projects": "Total Projects",
   "Status": "Status",
   "New Portfolio": "New Portfolio",
+  "New Project": "New Project",
   "Add Filter": "Add Filter",
 
   "Users": "Users",
@@ -31,13 +32,21 @@
   "Login": "Login",
   "Logout": "Logout",
 
+  "Add": "Add",
+  "Create": "Create",
+  "Edit": "Edit",
+  "Apply": "Apply",
+  "Cancel": "Cancel",
+  "Close": "Close",
+  "Reset": "Reset",
+  "Save": "Save",
+  "Delete": "Delete",
+
   "Type": "Type",
   "Name": "Name",
   "Email": "Email",
   "Actions": "Actions",
   "Filter By": "Filter By",
-
-  "New Project": "New Project",
 
   "Label": "Label",
   "Site Label": "Site Label",
@@ -67,15 +76,6 @@
   "Edit Model": "Edit Model",
   "Release Lock": "Release Lock",
   "has this project locked": "has this project locked",
-
-  "Add": "Add",
-  "Edit": "Edit",
-  "Apply": "Apply",
-  "Cancel": "Cancel",
-  "Close": "Close",
-  "Reset": "Reset",
-  "Save": "Save",
-  "Delete": "Delete",
 
   "Alarm Description": "Alarm Description",
   "View all alarms": "View all alarms",

@@ -2,7 +2,7 @@
 
   "admin": {
     "admin": {
-      "views": ["users", "teams", "projects", "portfolios"]
+      "views": ["users", "teams", "portfolios"]
     },
     "header": {
       "showAdmin": true
@@ -11,7 +11,7 @@
 
   "vendor_admin": {
     "admin": {
-      "views": ["users", "teams", "projects", "portfolios"]
+      "views": ["users", "teams", "portfolios", "projects", "equipment"]
     },
     "header": {
       "showAdmin": true

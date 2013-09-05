@@ -13,8 +13,9 @@ define([
 
   'layouts/admin/users',
   'layouts/admin/teams',
-  'layouts/admin/projects',
   'layouts/admin/portfolios',
+  'layouts/admin/projects',
+  'layouts/admin/equipment',
 
   'hbs!layouts/templates/admin'
 ], function(
@@ -32,8 +33,9 @@ define([
 
   UsersLayout,
   TeamsLayout,
-  ProjectsLayout,
   PortfoliosLayout,
+  ProjectsLayout,
+  EquipmentLayout,
 
   adminTemplate
 ){
@@ -48,20 +50,23 @@ define([
         title: 'Teams',
         trigger: 'select:teams'
       },
-      'projects': {
-        title: 'Projects',
-        trigger: 'select:projects'
+      'organizations': {
+        title: 'All Organizations',
+        trigger: 'select:allOrganizations'
       },
       'portfolios': {
         title: 'Portfolios',
         trigger: 'select:portfolios'
       },
-      'organizations': {
-        title: 'All Organizations',
-        trigger: 'select:allOrganizations'
+      'projects': {
+        title: 'Projects',
+        trigger: 'select:projects'
+      },
+      'equipment': {
+        title: 'Equipment',
+        trigger: 'select:equipment'
       },
       'alarms': {
-
       }
     }
   };
@@ -110,19 +115,6 @@ define([
       return teamAdminLayout;
     },
 
-    showProject: function(id){
-      var layout = new ProjectsLayout({
-        collection: ia.alignedProjects,
-        user: ia.currentUser,
-        current: id
-      });
-
-      this.pageContent.show(layout);
-      this.highlightLink('projects');
-
-      return layout;
-    },
-
     showPortfolios: function(id){
       // Force id to be a number
       id = +id;
@@ -140,6 +132,32 @@ define([
       } else if (id && id === 'new') {
         layout.edit();
       }
+
+      return layout;
+    },
+
+    showProject: function(id){
+      var layout = new ProjectsLayout({
+        collection: ia.alignedProjects,
+        user: ia.currentUser,
+        current: id
+      });
+
+      this.pageContent.show(layout);
+      this.highlightLink('projects');
+
+      return layout;
+    },
+
+    showEquipment: function(id){
+      var layout = new EquipmentLayout({
+        collection: ia.equipment,
+        user: ia.currentUser,
+        current: id
+      });
+
+      this.pageContent.show(layout);
+      this.highlightLink('equipment');
 
       return layout;
     },
@@ -175,12 +193,16 @@ define([
         this.showTeams();
       });
 
+      this.listenTo(Backbone, 'select:portfolios', function(){
+        this.showPortfolios();
+      });
+
       this.listenTo(Backbone, 'select:projects', function(){
         this.showProject();
       });
 
-      this.listenTo(Backbone, 'select:portfolios', function(){
-        this.showPortfolios();
+      this.listenTo(Backbone, 'select:equipment', function(){
+        this.showEquipment();
       });
 
     }

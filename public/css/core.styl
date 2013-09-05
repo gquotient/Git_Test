@@ -201,6 +201,17 @@ a, a:active, a:hover, a:visited {
   margin: 0 0 12px;
 }
 
+/* Icons */
+
+span[class*="-icon"] {
+  font-family: FontAwesome;
+  cursor: pointer;
+
+  &.active {
+    color: colorDrakerOrange;
+  }
+}
+
 /* Tables */
 
 table.basic {
@@ -559,6 +570,77 @@ leftColumnWidthSml = 200px;
       &:hover {
         background: linear-gradient(#252627, #282828);
       }
+    }
+  }
+}
+
+.navigation-admin-list {
+  position: relative;
+  height: 100%;
+  padding: projectTableHeaderHeight 0 38px 0;
+  border-right: borderBasicDark;
+  overflow: hidden;
+
+  .list-container {
+    height: 100%;
+    overflow-y: auto;
+
+    table {
+      width: 100%;
+      margin: 0;
+      border: none;
+      border-bottom: borderBasicDark;
+
+      .actions {
+        text-align: right;
+      }
+
+      tr {
+        border-right: 3px solid transparent;
+
+        &.active {
+          border-right-color: colorDrakerOrange;
+        }
+      }
+    }
+  }
+
+  .header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: projectTableHeaderHeight;
+    z-index: 100;
+    background: colorBGDarkGrey;
+    background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+    border-top: borderBasicMedium;
+    border-bottom: borderBasicDark;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
+
+    .refresh-icon {
+      float: right;
+      padding: 3px 6px;
+    }
+  }
+
+  .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 6px;
+    padding-right: 0;
+    border-top: borderBasicMedium;
+    border-bottom: borderBasicDark;
+    background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+
+    text-align: right;
+
+    .create {
+      float: left;
+    }
+
+    .save, .cancel {
+      display: none;
     }
   }
 }
