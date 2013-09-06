@@ -150,6 +150,9 @@ define([
         },
         validate: function(value){
           return !isNaN(value);
+        },
+        success: function(value){
+          this.model.set({latitude: value});
         }
       },
 
@@ -160,13 +163,16 @@ define([
         },
         validate: function(value){
           return !isNaN(value);
+        },
+        success: function(value){
+          this.model.set({longitude: value});
         }
       },
 
       elevation: {
         el: '#elevation',
         parse: function(value){
-          return value !== '' ? parseFloat(value) : 0;
+          return parseFloat(value);
         },
         validate: function(value){
           return !isNaN(value);

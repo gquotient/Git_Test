@@ -77,17 +77,20 @@ define([
         energy: '',
         inverter: ''
       },
-      notes: '',
+
       // Status as an array for sorting purposes
       status: 'Unknown',
       statusValue: -1,
 
-      surface_area: 0,
+      // Defaults for persisted model.
+      rollup_intervals: '',
       ac_capacity: 0,
       dc_capacity: 0,
       capacity_units: 'watts',
+      surface_area: 0,
       dm_push: false,
-      rollup_intervals: ''
+      elevation: 0,
+      notes: ''
     },
 
     constructor: function(){
