@@ -130,7 +130,9 @@ define([
       });
 
       this.detail.show(view);
-      this.listView.setActive(model);
+      this.listView.setActive(model, {
+        showSave: model.isEditable() || !model.isLocked()
+      });
       this.mapView.focusMap(model);
 
       if (model.id) {

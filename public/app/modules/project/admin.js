@@ -338,7 +338,8 @@ define([
             opacity: 0.99
           })
         ],
-        center: [0, 0],
+        // Center on the US by default.
+        center: [39.8, -98.6],
         zoom: 3
       });
 
