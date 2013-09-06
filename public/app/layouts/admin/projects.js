@@ -45,6 +45,14 @@ define([
       this.listenTo(this.listView, 'save', this.saveDetail);
       this.listenTo(this.listView, 'cancel', this.hideDetail);
 
+      // Create the map view.
+      this.mapView = new Project.views.AdminMap({
+        collection: this.collection
+      });
+
+      this.listenTo(this.mapView, 'select', this.showDetail);
+      this.listenTo(this.mapView, 'locate', this.updateLocation);
+
       // Update breadcrumbs
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
@@ -59,6 +67,7 @@ define([
 
     onShow: function(){
       this.list.show(this.listView);
+      this.map.show(this.mapView);
 
       // Update the collection by triggering a refresh.
       this.refresh({
@@ -68,6 +77,8 @@ define([
           if (current) {
             this.showDetail(current);
           }
+
+          this.mapView.centerMap();
         }, this)
       });
     },
@@ -98,6 +109,8 @@ define([
           user: this.options.user,
           silent: false
         });
+
+        this.mapView.addMarker(model);
       }
 
       this.model = model;
@@ -108,12 +121,17 @@ define([
       });
 
       this.listenToOnce(view, 'close', function(){
+        if (!this.collection.contains(model)) {
+          this.mapView.removeMarker(model);
+        }
+
         this.model = null;
         Backbone.history.navigate('/admin/projects');
       });
 
       this.detail.show(view);
       this.listView.setActive(model);
+      this.mapView.focusMap(model);
 
       if (model.id) {
         Backbone.history.navigate('/admin/projects/' + model.id);
@@ -148,6 +166,18 @@ define([
     hideDetail: function(){
       this.detail.close();
       this.listView.setActive();
+    },
+
+    updateLocation: function(attr, model){
+      if (!this.model) {
+        this.showDetail(attr);
+
+      } else if (this.model.isNew() && (!model || model === this.model)) {
+        this.model.set(attr);
+
+      } else {
+        this.mapView.focusMap(attr);
+      }
     }
   });
 });
