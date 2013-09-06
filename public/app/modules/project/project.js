@@ -104,7 +104,7 @@ define([
     initialize: function(attrs, options){
       this.user = options.user;
 
-      this.issues = new Issue.Collection([], {projectId: this.id});
+      this.issues = new Issue.Collection([], {project: this});
 
       // This might be a bit convoluted and potentially fire too often but it works
       this.listenTo(this.issues, 'change reset add remove', function(){

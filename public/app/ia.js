@@ -49,6 +49,11 @@ define([
     comparator: 'display_name'
   });
 
+  // Throw no portfolios error
+  if (!ia.portfolios.length) {
+    throw 'No portfolios found for selected team';
+  }
+
   ia.equipment = new Equipment.Collection( JSON.parse($('#bootstrapEquipment').html()) );
 
   ia.allPortfolio = ia.portfolios.findWhere({display_name: 'All Projects'});
