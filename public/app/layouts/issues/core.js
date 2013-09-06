@@ -122,12 +122,9 @@ define([
         ]
       });
 
-      console.log(chart_powerAndIrradiance);
-
       this.chart.show(chart_powerAndIrradiance);
     },
     initialize: function(options){
-      console.log(this.model);
       var that = this;
 
       this.project = options.project;
