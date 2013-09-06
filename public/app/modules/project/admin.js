@@ -4,7 +4,8 @@ define([
   'backbone',
   'backbone.marionette',
 
-  'hbs!project/templates/adminList',
+  'navigation',
+
   'hbs!project/templates/adminListItem',
   'hbs!project/templates/adminDetail',
   'hbs!project/templates/adminGeosearch'
@@ -14,15 +15,15 @@ define([
   Backbone,
   Marionette,
 
-  adminListTemplate,
+  Navigation,
+
   adminListItemTemplate,
   adminDetailTemplate,
   adminGeosearchTemplate
 ){
   var views = {};
 
-  views.AdminListItem = Marionette.ItemView.extend({
-    tagName: 'tr',
+  views.AdminListItem = Navigation.views.AdminListItem.extend({
     template: {
       type: 'handlebars',
       template: adminListItemTemplate
@@ -41,16 +42,11 @@ define([
     },
 
     triggers: {
-      'click': 'show:detail',
+      'click': 'detail',
       'click .lock-icon': 'unlock',
       'click button.commission': 'commission',
       'click button.model': 'editor',
       'click button.delete': 'delete'
-    },
-
-    modelEvents: {
-      'change:display_name': 'render',
-      'change:editor': 'render'
     },
 
     onRender: function(){
@@ -74,36 +70,11 @@ define([
 
     onEditor: function(){
       Backbone.history.navigate('/admin/projects/' + this.model.id + '/power', true);
-    },
-
-    onDelete: function(){
-      if (window.confirm('Are you sure you want to delete this project?')) {
-        this.model.destroy({
-          wait: true
-        });
-      }
     }
   });
 
-  views.AdminList = Marionette.CompositeView.extend({
-    tagName: 'form',
-    template: {
-      type: 'handlebars',
-      template: adminListTemplate
-    },
-
-    itemView: views.AdminListItem,
-    itemViewContainer: 'tbody',
-
-    setActive: function(model){
-      var view = model && this.children.findByModel(model);
-
-      this.$('tr.active').removeClass('active');
-
-      if (view) {
-        view.$el.addClass('active');
-      }
-    }
+  views.AdminList = Navigation.views.AdminList.extend({
+    itemView: views.AdminListItem
   });
 
   views.AdminDetail = Marionette.ItemView.extend({
