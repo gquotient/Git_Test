@@ -8,8 +8,7 @@ define([
   './canvas',
   './table',
 
-  'hbs!device/templates/li',
-  'hbs!device/templates/ul'
+  'hbs!device/templates/li'
 ], function(
   $,
   _,
@@ -20,21 +19,27 @@ define([
   Canvas,
   Table,
 
-  deviceListItemViewTemplate,
-  deviceListViewTemplate
+  deviceListItemTemplate
 ){
   var Device = { views: {} };
 
   Device.Model = Backbone.Model.extend({
+    idAttribute: 'node_id',
     url: '/api/devices',
 
     initialize: function(attrs, options){
-      if (options && options.equipment) {
+      options = options || {};
+
+      if (options.equipment) {
         this.equipment = options.equipment.findOrCreateForDevice(this);
       }
 
       if (!this.has('name') && this.equipment) {
         this.set({name: this.equipment.generateName(this)});
+      }
+
+      if (options.project) {
+        this.set({project_label: options.project.id});
       }
 
       this.relationships = {};
@@ -112,9 +117,18 @@ define([
     },
 
     parse: function(resp, options){
+      var rend = resp.renderings;
 
-      // Prevent overwritting client side position data.
-      return _.omit(resp, 'renderings');
+      // Only use the server position data when the device is created.
+      if (this.isNew()) {
+        resp.renderings = _.isString(rend) ? JSON.parse(rend) : rend || {};
+
+      // Otherwise prevent overwriting the client position data.
+      } else {
+        delete resp.renderings;
+      }
+
+      return resp;
     }
   });
 
@@ -144,21 +158,20 @@ define([
     tagName: 'li',
     template: {
       type: 'handlebars',
-      template: deviceListItemViewTemplate
+      template: deviceListItemTemplate
     },
-    className: 'device collapsed',
+    className: function(){
+      return 'device collapsed ' + this.model.get('devtype');
+    },
     expanded: false,
     events: {
-      'click a': function(event){
-        event.preventDefault();
+      'click .label': function(event){
         event.stopPropagation();
 
         Backbone.trigger('click:device', this.model);
       },
       'click .expand': function(event){
-        event.preventDefault();
         event.stopPropagation();
-
         this.toggleExpand();
       }
     },
@@ -186,12 +199,20 @@ define([
       this.trigger('expand');
     },
     onRender: function(){
+      var filter = [
+        'AC Bus',
+        'SPT Site Server',
+        'Site Server',
+        'SPT Gateway',
+        'Draker Panel Monitor',
+        'Generation Meter'
+      ];
       if (this.model.outgoing.length) {
         // Create new collection
         var filteredDevices = this.model.outgoing.filter(function(device){
           var devtype = device.get('devtype');
 
-          return devtype && devtype !== 'Draker Panel Monitor' && devtype !== 'AC Bus';
+          return devtype && _.indexOf(filter, devtype) < 0;
         });
 
         // Only build children if whitelisted devices exist
@@ -199,7 +220,7 @@ define([
           var devices = new Device.Collection();
 
           // Add expand-o-matic
-          this.$el.find('> a').append('<span class="expand">Expand</span>');
+          this.$el.find('> .label').append('<span class="expand">Expand</span>');
 
           // Make sure models have a devtype and push them to devices
           devices.reset(filteredDevices);
@@ -218,6 +239,12 @@ define([
           // Append the child element to this view
           this.$el.append(this.children.$el);
         }
+      }
+    },
+    onShow: function(){
+      // Immediately expand if array level so you can see inverters
+      if (this.model.get('devtype') === 'PV Array') {
+        this.toggleExpand();
       }
     },
     onClose: function(){

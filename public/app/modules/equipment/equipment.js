@@ -4,14 +4,18 @@ define([
   'backbone',
   'backbone.marionette',
 
-  'device'
+  'device',
+
+  './admin'
 ], function(
   $,
   _,
   Backbone,
   Marionette,
 
-  Device
+  Device,
+
+  adminViews
 ){
   var Equip = { views: {} };
 
@@ -204,6 +208,8 @@ define([
       }
     }
   });
+
+  _.extend(Equip.views, adminViews);
 
   return Equip;
 });

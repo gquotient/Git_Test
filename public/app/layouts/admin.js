@@ -13,8 +13,9 @@ define([
 
   'layouts/admin/users',
   'layouts/admin/teams',
+  'layouts/admin/portfolios',
   'layouts/admin/projects',
-  'layouts/admin/alarmManagement',
+  'layouts/admin/equipment',
 
   'hbs!layouts/templates/admin'
 ], function(
@@ -32,8 +33,9 @@ define([
 
   UsersLayout,
   TeamsLayout,
+  PortfoliosLayout,
   ProjectsLayout,
-  AlarmManagementTemplate,
+  EquipmentLayout,
 
   adminTemplate
 ){
@@ -42,30 +44,29 @@ define([
     views: {
       'users': {
         title: 'Users',
-        trigger: 'show:users'
+        trigger: 'select:users'
       },
       'teams': {
         title: 'Teams',
-        trigger: 'show:teams'
-      },
-      'projects': {
-        title: 'Projects',
-        trigger: 'show:project'
-      },
-      'all_users': {
-        title: 'All Users',
-        trigger: 'show:allUsers'
-      },
-      'all_teams': {
-        title: 'All Teams',
-        trigger: 'show:allTeams'
+        trigger: 'select:teams'
       },
       'organizations': {
         title: 'All Organizations',
-        trigger: 'show:allOrganizations'
+        trigger: 'select:allOrganizations'
+      },
+      'portfolios': {
+        title: 'Portfolios',
+        trigger: 'select:portfolios'
+      },
+      'projects': {
+        title: 'Projects',
+        trigger: 'select:projects'
+      },
+      'equipment': {
+        title: 'Equipment',
+        trigger: 'select:equipment'
       },
       'alarms': {
-
       }
     }
   };
@@ -114,6 +115,27 @@ define([
       return teamAdminLayout;
     },
 
+    showPortfolios: function(id){
+      // Force id to be a number
+      id = +id;
+
+      var layout = new PortfoliosLayout({
+        collection: ia.portfolios
+      });
+
+      this.pageContent.show(layout);
+      this.highlightLink('portfolios');
+
+      if (id && id !== 'new') {
+        var portfolio = ia.portfolios.findWhere({portfolio_id: id});
+        layout.edit(portfolio);
+      } else if (id && id === 'new') {
+        layout.edit();
+      }
+
+      return layout;
+    },
+
     showProject: function(id){
       var layout = new ProjectsLayout({
         collection: ia.alignedProjects,
@@ -127,36 +149,61 @@ define([
       return layout;
     },
 
+    showEquipment: function(id){
+      var layout = new EquipmentLayout({
+        collection: ia.equipment,
+        user: ia.currentUser,
+        current: id
+      });
+
+      this.pageContent.show(layout);
+      this.highlightLink('equipment');
+
+      return layout;
+    },
+
     showAlarms: function(){
 
     },
 
     events: {
-      'click .nav_content a': function(event){
-        event.preventDefault();
+      'click .nav_content li': function(event){
+        // Get current target so it works on bubbled up event
+        var route = event.currentTarget.id;
 
-        // This seems kind of hacky, but (shrug)
-        var route = event.target.hash.replace('#', '');
-
-        Backbone.trigger(config.views[route].trigger);
+        Backbone.trigger('select:' + route);
       }
     },
 
     initialize: function(options){
-
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
         display_name: 'Admin'
       });
 
-      // this.listenTo(Backbone, 'detail', function(model){
-      //   this.renderDetailView({ model: model, page: this.view });
-      //   Backbone.history.navigate('/admin/'+ this.view + '/' + model.id);
-      // }, this);
+      this.listenTo(Backbone, 'select:admin', function(){
+        this.showUsers();
+      });
 
-      this.listenTo(Backbone, 'show:users', this.showUsers);
-      this.listenTo(Backbone, 'show:teams', this.showTeams);
-      this.listenTo(Backbone, 'show:project', this.showProject);
+      this.listenTo(Backbone, 'select:users', function(){
+        this.showUsers();
+      });
+
+      this.listenTo(Backbone, 'select:teams', function(){
+        this.showTeams();
+      });
+
+      this.listenTo(Backbone, 'select:portfolios', function(){
+        this.showPortfolios();
+      });
+
+      this.listenTo(Backbone, 'select:projects', function(){
+        this.showProject();
+      });
+
+      this.listenTo(Backbone, 'select:equipment', function(){
+        this.showEquipment();
+      });
 
     }
   });

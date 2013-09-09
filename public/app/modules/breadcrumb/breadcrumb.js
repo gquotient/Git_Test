@@ -72,9 +72,7 @@ define([
   Breadcrumb.views.Breadcrumbs = Marionette.CollectionView.extend({
     tagName: 'ul',
     itemView: Breadcrumb.views.BreadcrumbItemView,
-    attributes: {
-      class: 'breadcrumbs'
-    },
+    className: 'breadcrumbs',
     initialize: function(options){
       var that = this;
 

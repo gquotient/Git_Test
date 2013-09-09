@@ -6,7 +6,7 @@ define([
   'portfolio',
   'project',
 
-  'hbs!layouts/templates/portfolioDashboard'
+  'hbs!layouts/templates/operatorview'
 ], function(
   Backbone,
   Marionette,
@@ -23,7 +23,7 @@ define([
       template: portfolioDashboardTemplate
     },
     attributes: {
-      id: 'page-portfolioDashboard'
+      id: 'page-operatorview'
     },
     regions: {
       dashboard: '#dashboard',
@@ -38,7 +38,7 @@ define([
     },
 
     setPortfolio: function(portfolio){
-      Backbone.history.navigate('/portfolio/dashboard/' + portfolio.id);
+      Backbone.history.navigate('/portfolio/operatorview/' + portfolio.id);
 
       // Clear existing interval
       // NOTE - I'm not sure how necessary this is
@@ -48,8 +48,8 @@ define([
 
       // Fetch issues on the new portfolio
       var fetchProjectData = function(){
-        portfolio.fetchIssues();
-        portfolio.fetchProjectKpis();
+        portfolio.projects.fetchIssues();
+        portfolio.projects.fetchProjectKpis();
       };
 
       // Run initially to get latest data
@@ -58,7 +58,7 @@ define([
       // Fetch issues every five minutes
       this.fetchIssuesInterval = setInterval(fetchProjectData, 300000);
 
-      Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolioDashboard', display_name: portfolio.get('display_name') + ' Dashboard'});
+      Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'operatorview', display_name: portfolio.get('display_name') + ' Operator View'});
 
       // Update the collection.
       this.projectList.set(portfolio.projects.models);

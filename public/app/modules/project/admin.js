@@ -4,7 +4,11 @@ define([
   'backbone',
   'backbone.marionette',
 
-  'hbs!project/templates/adminList',
+  'leaflet',
+  'css!leaflet.css',
+
+  'navigation',
+
   'hbs!project/templates/adminListItem',
   'hbs!project/templates/adminDetail',
   'hbs!project/templates/adminGeosearch'
@@ -14,53 +18,69 @@ define([
   Backbone,
   Marionette,
 
-  adminListTemplate,
+  L,
+  leafletCSS,
+
+  Navigation,
+
   adminListItemTemplate,
   adminDetailTemplate,
   adminGeosearchTemplate
 ){
   var views = {};
 
-  views.AdminListItem = Marionette.ItemView.extend({
-    tagName: 'tr',
+  views.AdminListItem = Navigation.views.AdminListItem.extend({
     template: {
       type: 'handlebars',
       template: adminListItemTemplate
     },
 
+    templateHelpers: function(){
+      return {
+        locked: this.model.isLocked()
+      };
+    },
+
+    ui: {
+      lock: '.lock-icon',
+      commission: 'button.commission',
+      del: 'button.delete'
+    },
+
     triggers: {
-      'click': 'show:detail',
-      'click button.edit': 'edit',
-      'click button.view': 'view',
+      'click': 'detail',
+      'click .lock-icon': 'unlock',
+      'click button.commission': 'commission',
+      'click button.model': 'editor',
       'click button.delete': 'delete'
     },
 
-    onEdit: function(){
-      Backbone.history.navigate('/admin/project/' + this.model.id + '/edit', true);
+    onRender: function(){
+      var editable = this.model.isEditable(),
+        disabled = !editable && this.model.isLocked();
+
+      this.ui.lock.toggleClass('active', editable);
+      this.ui.commission.attr('disabled', disabled);
+      this.ui.del.attr('disabled', disabled);
     },
 
-    onView: function(){
-      Backbone.history.navigate('/admin/project/' + this.model.id + '/view', true);
-    },
-
-    onDelete: function(){
-      if (window.confirm('Are you sure you want to delete this project?')) {
-        this.model.destroy({
-          wait: true
-        });
+    onUnlock: function(){
+      if (this.model.isEditable()) {
+        this.model.setLock(false);
       }
+    },
+
+    onCommission: function(){
+      this.model.commission();
+    },
+
+    onEditor: function(){
+      Backbone.history.navigate('/admin/projects/' + this.model.id + '/power', true);
     }
   });
 
-  views.AdminList = Marionette.CompositeView.extend({
-    tagName: 'form',
-    template: {
-      type: 'handlebars',
-      template: adminListTemplate
-    },
-
-    itemView: views.AdminListItem,
-    itemViewContainer: 'tbody'
+  views.AdminList = Navigation.views.AdminList.extend({
+    itemView: views.AdminListItem
   });
 
   views.AdminDetail = Marionette.ItemView.extend({
@@ -72,12 +92,33 @@ define([
 
     schema: {
       display_name: {
-        el: '#name'
+        el: '#name',
+        validate: function(value){
+          return value && value !== '';
+        },
+        success: function(value){
+          var label;
+
+          if (this.model.isNew() && this.ui.site_label.val() === '') {
+            label = _.reduce(value.split(' '), function(memo, word){
+              if (memo.length < 8) {
+                memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
+              }
+              return memo;
+            }, '');
+
+            this.ui.site_label.val(label).removeClass('invalid');
+          }
+        }
       },
 
       site_label: {
         el: '#site_label',
-        validate: function(value) {
+        editable: false,
+        parse: function(value){
+          return value.toUpperCase().replace(/[^A-Z]+/g, '');
+        },
+        validate: function(value){
           return (/^[A-Z]{3,}$/).test(value);
         }
       },
@@ -98,6 +139,10 @@ define([
         el: '#zipcode'
       },
 
+      description: {
+        el: '#description'
+      },
+
       latitude: {
         el: '#latitude',
         parse: function(value){
@@ -105,6 +150,9 @@ define([
         },
         validate: function(value){
           return !isNaN(value);
+        },
+        success: function(value){
+          this.model.set({latitude: value});
         }
       },
 
@@ -115,13 +163,16 @@ define([
         },
         validate: function(value){
           return !isNaN(value);
+        },
+        success: function(value){
+          this.model.set({longitude: value});
         }
       },
 
       elevation: {
         el: '#elevation',
         parse: function(value){
-          return value !== '' ? parseFloat(value) : 0;
+          return parseFloat(value);
         },
         validate: function(value){
           return !isNaN(value);
@@ -129,64 +180,71 @@ define([
       }
     },
 
-    ui: {},
+    onShow: function(){
+      var locked = this.model.isLocked() && !this.model.isEditable(),
+        existing = !this.model.isNew(),
+        events = {};
 
-    events: function(){
-      var result = {};
+      this.ui = {};
+      this.changed = {};
 
       _.each(this.schema, function(obj, key){
-        this.ui[key] = obj.el;
+        var $el = this.$(obj.el);
 
-        result['blur ' + obj.el] = function(){
-          var value = this.ui[key].val().trim(), valid;
+        // Skip if no matching element.
+        if (!$el) { return; }
 
-          if (obj.parse) {
-            value = obj.parse.call(this, value);
-          }
+        // Disable the element if not editable.
+        if (locked || (existing && obj.editable === false)) {
+          $el.attr('disabled', true);
 
-          if (obj.validate) {
-            valid = obj.validate.call(this, value);
-          } else {
-            valid = value && value !== '';
-          }
+        // Otherwise add a validation listener.
+        } else {
+          events['blur ' + obj.el] = function(){
+            var value = $el.val().trim();
 
-          if (valid) {
-            this.model.set(key, value);
-          } else {
-            this.ui[key].addClass('invalid');
-          }
-        };
+            if (obj.parse) {
+              value = obj.parse.call(this, value);
+            }
+
+            if (obj.validate && !obj.validate.call(this, value)) {
+              $el.addClass('invalid');
+
+              if (obj.error) {
+                obj.error.call(this, value);
+              }
+            } else {
+              this.changed[key] = value;
+
+              if (obj.success) {
+                obj.success.call(this, value);
+              }
+            }
+          };
+        }
+
+        this.ui[key] = $el;
       }, this);
 
-      return result;
+      this.delegateEvents(events);
+    },
+
+    isValid: function(){
+      this.$el.find('input textarea').blur();
+      return !this.$el.find('.invalid').length;
     },
 
     modelEvents: {
-      'change': 'update',
-      'change:display_name': 'generateLabel',
+      'change': 'updateValues',
       'destroy': 'close'
     },
 
-    update: function(){
+    updateValues: function(){
       _.each(this.model.changed, function(value, key){
         if (_.has(this.ui, key)) {
           this.ui[key].val(value).removeClass('invalid');
         }
       }, this);
-    },
-
-    generateLabel: function(){
-      if (this.ui.site_label.val() !== '') { return; }
-
-      var parts = this.model.get('display_name').split(' ');
-
-      this.ui.site_label.val(_.reduce(parts, function(memo, part){
-        if (memo.length < 8) {
-          memo += part.replace(/[\W_]+/g, '').toUpperCase();
-        }
-
-        return memo;
-      }, ''));
     }
   });
 
@@ -196,9 +254,7 @@ define([
       template: adminGeosearchTemplate
     },
 
-    attributes: {
-      id: 'geosearch'
-    },
+    className: 'geosearch',
 
     ui: {
       input: 'input'
@@ -237,7 +293,7 @@ define([
         timeout: 3000
       }).done(function(data){
         if (data.length > 0) {
-          that.triggerMethod('found', data[0]);
+          that.trigger('found', data[0]);
         } else {
           window.alert('No address matches your query');
         }
@@ -245,6 +301,150 @@ define([
         window.alert('Address search failed (' + stat + ')');
       });
     }, 1000)
+  });
+
+  views.AdminMap = Marionette.View.extend({
+    initialize: function(){
+      this.markers = {};
+
+      this.geosearch = new views.AdminGeosearch();
+
+      this.listenTo(this.geosearch, 'found', function(loc){
+        this.trigger('locate', {
+          address: _.compact([
+            loc.address.house_number,
+            loc.address.road
+          ]).join(' '),
+          city: loc.address.city,
+          state: loc.address.state,
+          zipcode: loc.address.postcode,
+          latitude: parseFloat(loc.lat),
+          longitude: parseFloat(loc.lon)
+        });
+      });
+    },
+
+    collectionEvents: {
+      'add': 'addMarker',
+      'remove': 'removeMarker',
+      'reset': 'resetMarkers'
+    },
+
+    onShow: function(){
+      this.map = L.map(this.el, {
+        layers: [
+          L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>',
+            opacity: 0.99
+          })
+        ],
+        // Center on the US by default.
+        center: [39.8, -98.6],
+        zoom: 3
+      });
+
+      this.$el.append( this.geosearch.render().el );
+      this.resetMarkers();
+    },
+
+    onClose: function(){
+      this.map.remove();
+    },
+
+    parseLocation: function(model){
+      var lat, lng;
+
+      if (model instanceof Backbone.Model) {
+        lat = model.get('latitude');
+        lng = model.get('longitude');
+
+      } else if (_.isArray(model)) {
+        lat = model[0];
+        lng = model[1];
+
+      } else if (_.isObject(model)) {
+        lat = model.latitude;
+        lng = model.longitude;
+      }
+
+      if ((lat || lat === 0) && (lng || lng === 0)) {
+        return [lat, lng];
+      }
+    },
+
+    focusMap: function(model){
+      var loc = this.parseLocation(model),
+        zoom = this.map.getZoom();
+
+      if (loc && this.map) {
+        if (zoom < 10) {
+          this.map.setZoom(15);
+        }
+
+        this.map.panTo(loc);
+      }
+    },
+
+    centerMap: function(){
+      if (this.map) {
+        this.map.fitBounds(this.collection.map(this.parseLocation));
+      }
+    },
+
+    addMarker: function(model){
+      var loc = this.parseLocation(model), marker;
+
+      if (loc && this.map  && !this.markers[model.cid]) {
+        marker = this.markers[model.cid] = L.marker(loc, {
+          title: model.get('display_name'),
+          draggable: model.isNew(),
+          icon: L.divIcon({
+            className: 'ok',
+            iconSize: [15,32]
+          })
+        });
+
+        this.listenTo(model, 'change:latitude change:longitude', function(){
+          var loc = this.parseLocation(model);
+
+          if (loc) {
+            marker.setLatLng(loc);
+            this.focusMap(loc);
+          }
+        });
+
+        marker.on('click', function(){
+          this.trigger('select', model);
+        }, this);
+
+        marker.on('dragend', function(){
+          var loc = marker.getLatLng();
+
+          this.trigger('locate', {
+            latitude: loc.lat,
+            longitude: loc.lng
+          }, model);
+        }, this);
+
+        marker.addTo(this.map);
+      }
+    },
+
+    removeMarker: function(model){
+      var marker = this.markers[model.cid];
+
+      if (marker) {
+        this.stopListening(model);
+        this.map.removeLayer(marker);
+        delete this.markers[model.cid];
+      }
+    },
+
+    resetMarkers: function(collection, options){
+      options = options || {};
+      _.each(options.previousModels, this.removeMarker, this);
+      this.collection.each(this.addMarker, this);
+    }
   });
 
   return views;

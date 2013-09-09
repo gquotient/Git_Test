@@ -4,9 +4,6 @@ define([
   'backbone',
   'backbone.marionette',
 
-  'leaflet',
-  'css!leaflet.css',
-
   'project',
 
   'hbs!layouts/admin/templates/projects'
@@ -15,9 +12,6 @@ define([
   $,
   Backbone,
   Marionette,
-
-  L,
-  leafletCSS,
 
   Project,
 
@@ -33,137 +27,90 @@ define([
       id: 'page-projectsAdmin'
     },
 
-    ui: {
-      map: '#map'
-    },
-
     regions: {
-      list: '#projectList',
-      detail: '#projectDetail'
+      list: '.project-list',
+      detail: '.project-detail',
+      map: '.project-map'
     },
 
     initialize: function(options){
-      this.markers = {};
 
-      this.collection.fetch({
-        data: {
-          index_name: 'AlignedProjects'
-        },
-        success: _.bind(function(collection){
-          var model = collection.get(options.current);
-
-          if (model) { this.showDetail(model); }
-        }, this)
-      });
-
-      this.geosearch = new Project.views.AdminGeosearch();
-
-      this.listenTo(this.geosearch, 'found', function(loc){
-        this.triggerMethod('new:location', {
-          address: _.compact([
-            loc.address.house_number,
-            loc.address.road
-          ]).join(' '),
-          city: loc.address.city,
-          state: loc.address.state,
-          zipcode: loc.address.postcode,
-          latitude: parseFloat(loc.lat),
-          longitude: parseFloat(loc.lon)
-        });
-      });
-
+      // Create the list view.
       this.listView = new Project.views.AdminList({
         collection: this.collection
       });
 
-      this.listenTo(this.listView, 'itemview:show:detail', function(view, args){
-        this.showDetail(args.model);
+      this.listenTo(this.listView, 'refresh', this.refresh);
+      this.listenTo(this.listView, 'select', this.showDetail);
+      this.listenTo(this.listView, 'save', this.saveDetail);
+      this.listenTo(this.listView, 'cancel', this.hideDetail);
+
+      // Create the map view.
+      this.mapView = new Project.views.AdminMap({
+        collection: this.collection
       });
+
+      this.listenTo(this.mapView, 'select', this.showDetail);
+      this.listenTo(this.mapView, 'locate', this.updateLocation);
+
+      // Update breadcrumbs
+      Backbone.trigger('reset:breadcrumbs', {
+        state:'admin',
+        display_name: 'Admin'
+      });
+
+      Backbone.trigger('set:breadcrumbs', {state:'projects', display_name:'Projects'});
 
       // Update history
       Backbone.history.navigate('/admin/projects');
     },
 
-    triggers: {
-      'click button.create': 'create',
-      'click button.save': 'save',
-      'click button.cancel': 'cancel'
-    },
-
-    collectionEvents: {
-      'add': 'setMarker',
-      'remove': 'removeMarker',
-      'reset': 'resetMarkers'
-    },
-
     onShow: function(){
-      this.map = L.map(this.ui.map[0]).setView([35, 0], 3);
-
-      // add an OpenStreetMap tile layer
-      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-      }).addTo(this.map).setOpacity(0.99);
-
-      this.ui.map.append( this.geosearch.render().el );
-      this.resetMarkers();
-
       this.list.show(this.listView);
-    },
+      this.map.show(this.mapView);
 
-    onCreate: function(){
-      this.showDetail();
-    },
+      // Update the collection by triggering a refresh.
+      this.refresh({
+        success: _.bind(function(){
+          var current = this.collection.get(this.options.current);
 
-    onSave: function(){
-      var that = this;
+          if (current) {
+            this.showDetail(current);
+          }
 
-      // Don't save if there isn't currently a detail view.
-      if (!this.detail.currentView) { return; }
-
-      this.detail.$el.find('input').blur();
-
-      // Don't save if any data is invalid.
-      if (this.detail.$el.find('.invalid').length > 0) { return; }
-
-      // Don't save if the model already exists.
-      if (this.collection.contains(this.model)) { return; }
-
-      this.collection.create(this.model, {
-        wait: true,
-        success: function(){
-          that.model.addNote('created project', that.options.user);
-        }
+          this.mapView.centerMap();
+        }, this)
       });
     },
 
-    onCancel: function(){
-      this.hideDetail();
-      Backbone.history.navigate('/admin/projects');
-    },
+    refresh: function(options){
+      options = options || {};
 
-    onClose: function(){
-      this.map.remove();
-    },
+      this.listView.toggleRefresh(true);
 
-    onNewLocation: function(attr){
-      if (!this.model) {
-        this.showDetail(attr);
-
-      } else if (this.model && this.model.isNew()) {
-        this.model.set(attr);
-
-      } else {
-        this.focusMap([attr.latitude, attr.longitude]);
-      }
+      this.collection.fetch({
+        user: this.options.user,
+        data: {
+          index_name: 'AlignedProjects'
+        },
+        success: options.success,
+        complete: _.bind(function(){
+          this.listView.toggleRefresh(false);
+        }, this)
+      });
     },
 
     showDetail: function(model){
       var view;
 
       if (!(model instanceof Backbone.Model)) {
-        model = new Project.Model(model, {silent: false});
-        this.listenTo(model, 'change:latitude change:longitude', this.setMarker);
-        this.setMarker(model);
+        model = new Project.Model(model, {
+          collection: this.collection,
+          user: this.options.user,
+          silent: false
+        });
+
+        this.mapView.addMarker(model);
       }
 
       view = new Project.views.AdminDetail({
@@ -173,114 +120,66 @@ define([
 
       this.listenToOnce(view, 'close', function(){
         if (!this.collection.contains(model)) {
-          this.stopListening(model);
-          this.removeMarker(model);
+          this.mapView.removeMarker(model);
         }
 
         this.model = null;
+        Backbone.history.navigate('/admin/projects');
       });
 
-      this.model = model;
-      this.focusMap(model);
-
+      this.listView.setActive(model, {
+        showSave: model.isEditable() || !model.isLocked()
+      });
+      this.mapView.focusMap(model);
       this.detail.show(view);
-      this.$('.save, .cancel').show();
+
+      this.model = model;
 
       if (model.id) {
-        Backbone.history.navigate('/admin/project/' + model.id);
+        Backbone.history.navigate('/admin/projects/' + model.id);
+      }
+    },
+
+    saveDetail: function(){
+      var detailView = this.detail.currentView,
+        model = this.model,
+        values;
+
+      if (detailView && detailView.isValid()) {
+        this.listView.toggleSaving(true);
+
+        values = _.clone(detailView.changed);
+
+        if (model.isNew()) {
+          values.notes = model.formatNote('created project');
+        }
+
+        model.save(values, {
+          success: _.bind(function(){
+            this.collection.add(model);
+          }, this),
+          complete: _.bind(function(){
+            this.listView.toggleSaving(false);
+          }, this)
+        });
       }
     },
 
     hideDetail: function(){
       this.detail.close();
-      this.$('.save, .cancel').hide();
+      this.listView.setActive();
     },
 
-    focusMap: function(loc){
-      if (loc instanceof Backbone.Model) {
-        loc = this.getLocation(loc);
-      }
+    updateLocation: function(attr, model){
+      if (!this.model) {
+        this.showDetail(attr);
 
-      if (loc) {
-        this.map.setView(loc, 18);
-      }
-    },
-
-    setMarker: function(model){
-      var marker = this.markers[model.cid],
-        loc = this.getLocation(model);
-
-      if (!loc || !this.map) { return; }
-
-      if (marker) {
-        marker.setLatLng(loc);
+      } else if (this.model.isNew() && (!model || model === this.model)) {
+        this.model.set(attr);
 
       } else {
-        marker = this.markers[model.cid] = L.marker(loc, {
-          title: model.get('display_name'),
-          draggable: model.isNew(),
-          icon: L.divIcon({
-            className: 'ok',
-            iconSize: [15,32]
-          })
-        });
-
-        marker.on('click', function(){
-          if (model !== this.model) {
-            this.showDetail(model);
-          }
-        }, this);
-
-        marker.on('dragend', function(){
-          if (model === this.model && model.isNew()) {
-            this.setLocation(model, marker.getLatLng());
-          }
-        }, this);
-
-        marker.addTo(this.map);
+        this.mapView.focusMap(attr);
       }
-
-      if (model === this.model) {
-        this.focusMap(loc);
-      }
-    },
-
-    removeMarker: function(model){
-      var marker = this.markers[model.cid];
-
-      if (marker) {
-        this.map.removeLayer(marker);
-        delete this.markers[model.cid];
-      }
-    },
-
-    resetMarkers: function(){
-      _.each(this.markers, function(marker, cid){
-        // Don't remove markers for projects still in the collection.
-        if (this.collection.get(cid)) { return; }
-
-        // Don't remove the marker for the current project.
-        if (this.model && this.model.cid === cid) { return; }
-
-        this.removeMarker({cid: cid});
-      }, this);
-
-      this.collection.each(function(model){
-        this.setMarker(model);
-      }, this);
-    },
-
-    getLocation: function(model){
-      if (model.has('latitude') && model.has('longitude')) {
-        return [model.get('latitude'), model.get('longitude')];
-      }
-    },
-
-    setLocation: function(model, loc){
-      model.set({
-        latitude: loc.lat,
-        longitude: loc.lng
-      });
     }
   });
 });

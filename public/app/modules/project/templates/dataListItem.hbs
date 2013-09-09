@@ -2,6 +2,9 @@
   <span class="statusIndicator {{ status }}">{{ status }}</span>
   {{ display_name }}
 </td>
-<td class="PerformanceRatio">{{ roundNumber kpis.pr 0 }}</td>
 <td class="DCCapacity">{{ unitConversion dc_capacity 'k' }}</td>
 <td class="ACCapacity">{{ unitConversion ac_capacity 'k' }}</td>
+<td class="PerformanceRatio">{{ roundNumber kpis.pr 0 }}</td>
+<td class="Power">{{ unitConversion kpis.power 'k' }}</td>
+<td class="Irradiance">{{ roundNumber kpis.irradiance 0 }}</td>
+<td class="EnergyYTD">{{ unitConversion kpis.energyProduction.year 'M' }}</td>

@@ -29,9 +29,9 @@ define([
       return ia.portfolios.get(id) || ia.allPortfolio;
     },
 
-    portfolioDashboard: function(id){
+    operatorView: function(id){
       var portfolio = this.findPortfolio(id);
-      this.mainLayout.showPortfolioDashboard(portfolio);
+      this.mainLayout.showOperatorView(portfolio);
     },
 
     portfolioDetail: function(id){
@@ -92,22 +92,22 @@ define([
       // this.mainLayout.showAdmin().showAlarms();
     },
 
+    portfoliosAdmin: function(id){
+      this.mainLayout.showAdmin().showPortfolios(id);
+    },
+
     projectAdmin: function(id){
       this.mainLayout.showAdmin().showProject(id);
     },
 
-    projectAdminEdit: function(id, view){
+    projectEditor: function(id, view){
       this.mainLayout.showProjectEditor(id, {
-        editable: true,
         view: view
       });
     },
 
-    projectAdminView: function(id, view){
-      this.mainLayout.showProjectEditor(id, {
-        editable: false,
-        view: view
-      });
+    equipmentAdmin: function(id){
+      this.mainLayout.showAdmin().showEquipment(id);
     },
 
     initialize: function(){
@@ -121,8 +121,8 @@ define([
     appRoutes: {
       '': 'index',
 
-      'portfolio/dashboard/:id': 'portfolioDashboard',
-      'portfolio/dashboard': 'portfolioDashboard',
+      'portfolio/operatorview/:id': 'operatorView',
+      'portfolio/operatorview': 'operatorView',
       'portfolio/:id': 'portfolioDetail',
       'portfolio': 'index',
 
@@ -135,18 +135,22 @@ define([
       'profile': 'profile',
 
       //Admin Routes
-      'admin': 'admin',
       'admin/users': 'usersAdmin',
-      'admin/teams': 'teamsAdmin',
-      'admin/teams/:id': 'teamAdminDetail',
 
-      'admin/project/:id/edit/:view': 'projectAdminEdit',
-      'admin/project/:id/edit': 'projectAdminEdit',
-      'admin/project/:id/view/:view': 'projectAdminView',
-      'admin/project/:id/view': 'projectAdminView',
-      'admin/project/:id': 'projectAdmin',
+      'admin/teams/:id': 'teamAdminDetail',
+      'admin/teams': 'teamsAdmin',
+
+      'admin/portfolios/:id': 'portfoliosAdmin',
+      'admin/portfolios': 'portfoliosAdmin',
+
+      'admin/projects/:id/:view': 'projectEditor',
+      'admin/projects/:id': 'projectAdmin',
       'admin/projects': 'projectAdmin',
-      'admin/project': 'projectAdmin'
+
+      'admin/equipment/:id': 'equipmentAdmin',
+      'admin/equipment': 'equipmentAdmin',
+
+      'admin': 'admin'
     }
   });
 

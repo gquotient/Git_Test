@@ -39,9 +39,15 @@ define([
     },
 
     initialize: function(options){
+      Backbone.trigger('reset:breadcrumbs', {
+        state:'admin',
+        display_name: 'Admin'
+      });
+
+      Backbone.trigger('set:breadcrumbs', {state:'teams', display_name:'Teams'});
+
       this.collection = new Team.collections.Teams();
       this.view = new Team.views.EditTable({ collection: this.collection });
-      this.collection.fetch({reset: true});
 
       this.listenTo(Backbone, 'detail', function(model){
         this.showTeam(model);

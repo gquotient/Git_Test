@@ -3,6 +3,7 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'backbone.virtualCollection',
 
   'leaflet',
   'css!leaflet.css', //This seems silly but also seems to work, sooooo...
@@ -29,6 +30,7 @@ define([
   _,
   Backbone,
   Marionette,
+  VirtualCollection,
 
   L,
   leafletCSS,
@@ -75,52 +77,95 @@ define([
         energy: '',
         inverter: ''
       },
-      notes: '',
-      status: 'OK'
+
+      // Status as an array for sorting purposes
+      status: 'Unknown',
+      statusValue: -1,
+
+      // Defaults for persisted model.
+      rollup_intervals: '',
+      ac_capacity: 0,
+      dc_capacity: 0,
+      capacity_units: 'watts',
+      surface_area: 0,
+      dm_push: false,
+      elevation: 0,
+      notes: ''
     },
 
-    initialize: function(){
+    constructor: function(){
+      // Need these initialized here for parsing.
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
-      this.issues = new Issue.Collection([], {projectId: this.id});
 
-      this.lazySave = _.debounce(Backbone.Model.prototype.save, 1000);
-
-      this.listenTo(this.issues, 'reset', this.setStatus);
+      Backbone.Model.prototype.constructor.apply(this, arguments);
     },
 
-    setStatus: function(issues){
-      var statusLevels = ['OK', 'Warning', 'Alert'],
-          status = 'OK';
+    initialize: function(attrs, options){
+      this.user = options.user;
 
-      issues.each(function(issue){
-        var priority = issue.get('active_conditions')[0].priority;
+      this.issues = new Issue.Collection([], {project: this});
 
-        if (_.indexOf(statusLevels, priority) > _.indexOf(statusLevels, status)) {
-          status = priority;
-        }
+      // This might be a bit convoluted and potentially fire too often but it works
+      this.listenTo(this.issues, 'change reset add remove', function(){
+        var status = this.issues.getSeverity();
+        this.set(status);
       });
 
-      this.set('status', status);
+      this.on('change:editor', this.updateLockTimeout);
+      this.updateLockTimeout();
+    },
+
+    isLocked: function(){
+      return this.has('editor') && this.get('editor') !== 'unlocked';
+    },
+
+    isEditable: function(){
+      return this.user && this.get('editor') === this.user.get('email');
     },
 
     setLock: function(lock){
-      var that = this;
-
       return $.ajax(_.result(this, 'url') + '/edit', {
         type: 'PUT',
         data: {
           project_label: this.id,
-          lock: arguments.length > 0 ? lock : true
+          lock: _.isBoolean(lock) ? lock : true
         },
         dataType: 'json'
-      }).always(function(data){
-        that.set({locked: _.isBoolean(data.locked) ? data.locked : true});
-      });
+      }).done(_.bind(function(data){
+        var editor = data.editor;
+
+        if (!editor) {
+          editor = data.locked === true ? this.user.get('email') : 'unlocked';
+        }
+
+        this.set({editor: editor});
+      }, this));
+    },
+
+    updateLockTimeout: function(){
+      var that = this;
+
+      clearTimeout(this.lockTimeout);
+
+      if (this.isEditable()) {
+        this.lockTimeout = setTimeout(function(){
+          that.setLock(false);
+        }, 5 * 60 * 1000);
+      }
     },
 
     makeEditable: function(){
       return $.ajax(_.result(this.collection, 'url') + '/edit', {
+        type: 'POST',
+        data: {
+          project_label: this.id
+        }
+      });
+    },
+
+    commission: function(){
+      return $.ajax(_.result(this.collection, 'url') + '/commission', {
         type: 'POST',
         data: {
           project_label: this.id
@@ -248,34 +293,87 @@ define([
       return defer;
     },
 
+    save: function(key, val, options){
+      var that = this,
+        attrs = {},
+        saveNow;
+
+      // Duplicated in order to get proper options obj.
+      if (key == null || typeof key === 'object') {
+        attrs = key;
+        options = val || {};
+      } else {
+        attrs[key] = val;
+        options = options || {};
+      }
+
+      // Might as well handle this here as well.
+      if (attrs && !options.wait) {
+        if (!this.set(attrs)) { return false; }
+        attrs = null;
+      }
+
+      // Clear the lock after saving for existing projects.
+      if (!this.isNew() && !options.persistLock) {
+        options.success = _.wrap(options.success, function(success, resp){
+          that.setLock(false).done(success);
+        });
+      }
+
+      saveNow = options.immediate && !this.saveTimeout;
+      clearTimeout(this.saveTimeout);
+
+      if (options.lazy) {
+        this.saveTimeout = setTimeout(function(){
+          that.saveTimeout = null;
+
+          if (!options.immediate) {
+            Backbone.Model.prototype.save.call(that, attrs, options);
+          }
+        }, 1000);
+      } else {
+        saveNow = true;
+      }
+
+      if (saveNow) {
+        return Backbone.Model.prototype.save.call(this, attrs, options);
+      }
+    },
+
     parse: function(resp, options){
-      if (resp.devices) {
+      // Check if the response includes devices.
+      if (resp.devices && !resp.project_label) {
+
         this.devices.reset(resp.devices, {
-          equipment: options.equipment
+          equipment: options.equipment,
+          project: this,
+          parse: true
         });
 
-        if (resp.rels) {
-          _.each(resp.rels, function(rel) {
-            var source = this.devices.get(rel[2]),
-              target = this.devices.get(rel[0]),
-              relationship = rel[1];
+        // Parse relationships.
+        _.each(resp.rels, function(rel) {
+          var source = this.devices.get(rel[2]),
+            target = this.devices.get(rel[0]),
+            relationship = rel[1];
 
-            if (!target && rel[0] === resp.id) {
-              target = this;
-            }
+          if (!target && rel[0] === resp.project.node_id) {
+            target = this;
+          }
 
-            if (source && target) {
-              source.connectTo(target, relationship);
-            }
-          }, this);
-        }
+          if (source && target) {
+            source.connectTo(target, relationship);
+          }
+        }, this);
 
+        // Check rendering information for each device recursivly.
         _.each(_.keys(Equipment.renderings), function(label){
           this.checkOutgoing(this, label);
         }, this);
+
+        resp = resp.project;
       }
 
-      return _.omit(resp, 'devices', 'rels');
+      return resp;
     },
 
     checkOutgoing: function(target, label){
@@ -296,16 +394,22 @@ define([
     },
 
     addNote: function(note, user){
-      this.set({notes: this.formatNote(note, user) + this.get('notes')});
-      this.lazySave();
+      this.set({
+        notes: this.formatNote(note, user) + this.get('notes')
+      }, {lazy: true});
     },
 
     formatNote: function(msg, user){
       var now = new Date(),
-        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ',
-        who = user ? user.get('name') + ' ' : '';
+        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ';
 
-      return when + who + msg + '\n';
+      user = user || this.user;
+
+      if (user) {
+        msg = user.get('name') + ' ' + msg;
+      }
+
+      return when + msg + '\n';
     }
   });
 
@@ -315,6 +419,80 @@ define([
 
     getOrCreate: function(label){
       return this.get(label) || this.push({project_label: label});
+    },
+
+    fetchIssues: function(){
+      var that = this,
+          projectIds = [];
+
+      this.each(function(project){
+        projectIds.push(project.id);
+      });
+
+      return $.ajax({
+        url: '/api/alarms/active/' + projectIds.join(','),
+        cache: false,
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done(function(data){
+        that.trigger('data:done', data);
+        that.parseIssues(data);
+      });
+    },
+
+    parseIssues: function(data){
+      var issues = data.alarms;
+
+      this.each(function(project){
+        var projectIssues = [];
+
+        _.each(issues, function(issue){
+          if (issue.project_label === project.id) {
+            projectIssues.push(issue);
+          }
+        });
+
+        project.issues.reset(projectIssues);
+      });
+    },
+
+    fetchProjectKpis: function(){
+      // Don't fetch data if there are no projects
+      if(this.length) {
+        var that = this;
+        var traces = [];
+
+        this.each(function(project){
+          traces.push({
+            project_label: project.id,
+            project_timezone: project.get('timezone')
+          });
+        });
+
+        return $.ajax({
+          url: '/api/kpis',
+          cache: false,
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            traces: traces
+          }
+        })
+        .done(function(data){
+          that.trigger('data:done', data);
+          that.parseProjectKpis(data.response);
+        });
+      }
+    },
+
+    parseProjectKpis: function(data){
+      // Loop through returned KPIs and send the data to their respective projects
+      _.each(data, function(kpi){
+        var project = this.findWhere({project_label: kpi.project_label});
+
+        project.parseKpis(kpi);
+      }, this);
     }
   });
 
@@ -363,8 +541,10 @@ define([
     },
     itemViewContainer: 'tbody',
     itemView: Project.views.DataListItem,
-    onClose: function(){
-      this.collection = null;
+    initialize: function(options){
+      this.collection = new Backbone.VirtualCollection(options.collection, {
+        close_with: this
+      });
     }
   });
 
@@ -441,6 +621,11 @@ define([
 
       this.listenTo(this.model, 'change:status', function(model){
         this.marker.setIcon(this.markerStyles[model.get('status')]);
+
+        // This shouldn't have to be here but the markers occassionally end up behind
+        // the map layer. This brings focus back to them and makes them visble.
+        // There is probably a better solution to this...
+        this.highlight();
       });
 
       this.listenTo(Backbone, 'mouseover:project', this.highlight);
@@ -462,6 +647,10 @@ define([
       }),
       Alert: L.divIcon({
         className: 'alert',
+        iconSize: [15,32]
+      }),
+      Unknown: L.divIcon({
+        className: 'unknown',
         iconSize: [15,32]
       })
     },
@@ -520,11 +709,13 @@ define([
       });
     },
     onClose: function(){
+      this.marker.off();
       this.popUp.close();
     },
     remove: function(){
       var that = this;
       this.stopListening();
+      this.marker.off();
       this.fadeTo(250, 0, function(){ that.options.markers.removeLayer(that.marker); } );
       this.popUp.close();
     }
@@ -702,17 +893,17 @@ define([
       // add an OpenStreetMap tile layer
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-      }).addTo(map).setOpacity(0.99);
+      }).addTo(map);
 
       this.markers = new L.layerGroup([]);
 
       this.markers.addTo(this.map);
 
-      this.addLayers();
-
       this._renderChildren();
 
       this.fitToBounds();
+
+      this.addLayers();
 
       this.initFullscreen();
 
@@ -743,6 +934,9 @@ define([
       'click': function(){
         Backbone.trigger('click:project', this.model);
       }
+    },
+    modelEvents: {
+      'change': 'render'
     }
   });
 

@@ -13,7 +13,7 @@ define([
   'layouts/projectDetail',
   'layouts/issues',
   'layouts/devices',
-  'layouts/portfolioDashboard',
+  'layouts/operatorview',
   'layouts/projectEditor',
   'layouts/profile',
   'layouts/admin',
@@ -34,7 +34,7 @@ define([
   ProjectDetailLayout,
   IssuesLayout,
   DevicesLayout,
-  PortfolioDashboardLayout,
+  OperatorViewLayout,
   ProjectEditorLayout,
   ProfileLayout,
   AdminLayout,
@@ -80,8 +80,8 @@ define([
       }));
     },
 
-    showPortfolioDashboard: function(portfolio){
-      this.mainContent.show( new PortfolioDashboardLayout({
+    showOperatorView: function(portfolio){
+      this.mainContent.show( new OperatorViewLayout({
         model: portfolio,
         portfolios: this.app.portfolios
       }));
@@ -160,9 +160,9 @@ define([
         },
         success: function(){
           that.app.portfolios.fetch().done(function(portfolios){
-            var myPortfolio = that.app.portfolios.findWhere({label: 'ALL'});
+            that.app.allPortfolio = that.app.portfolios.findWhere({label: 'ALL'});
 
-            Backbone.trigger('select:portfolio', myPortfolio);
+            Backbone.trigger('select:portfolio', that.app.allPortfolio);
           });
 
           // Once more APIs are implemented, we can make sure everything else syncs up with the team.

@@ -37,20 +37,27 @@ define([
 
     tableOptions: {
       columnSorting: true,
-      stretchH: 'all'
+      stretchH: 'all',
+      readOnly: true
     },
 
-    initialize: function(options){
-      if (!options.editable) {
-        this.tableOptions.readOnly = true;
+    modelEvents: {
+      'change:editor': 'updateReadOnly'
+    },
+
+    updateReadOnly: function(){
+      if (this.table) {
+        this.table.updateSettings({readOnly: !this.model.isEditable()});
       }
+    },
+
+    onShow: function(){
+      this.updateReadOnly();
     },
 
     collectionEvents: {
       'change': function(model) {
-        if (this.options.editable) {
-          model.lazySave();
-        }
+        model.lazySave();
       }
     },
 

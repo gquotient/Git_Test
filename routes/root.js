@@ -18,7 +18,9 @@ fs.readFile('./roles.json', 'utf8', function (err, data) {
 module.exports = function(app){
 
   var helpers = require('./helpers')(app),
-      ensureAuthenticated = helpers.ensureAuthenticated;
+      ensureAuthenticated = helpers.ensureAuthenticated,
+      parsePortfolioFilters = helpers.parsePortfolioFilters;
+
 
   app.all('/', ensureAuthenticated, function(req, res){
     res.redirect('/ia');
@@ -48,7 +50,19 @@ module.exports = function(app){
       var defer = Q.defer();
 
       request(requestOptions, function(error, response, userJSON){
-        var user = JSON.parse(userJSON);
+        var user;
+        try {
+          user = JSON.parse(userJSON);
+        }
+        catch(e) {
+          console.error('User JSON is malformed');
+        }
+
+        if (!user) {
+          res.send(500);
+          return false;
+        }
+
         // Until we have a default team option for the user, assume first team or last selected. Or, you know. No team at all.
         var team = user.default_team ? user.default_team : user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
         req.session.team_label = req.session.team_label || team;
@@ -86,7 +100,7 @@ module.exports = function(app){
       requestOptions.uri = app.get('modelUrl') + '/res/teamportfolios?team_label='+req.session.team_label+'&org_label='+req.session.org_label;
 
       request(requestOptions, function(error, response, portfolios){
-        myPortfolios = portfolios;
+        myPortfolios = parsePortfolioFilters(portfolios);
 
         resolveEverythingLoaded();
       });

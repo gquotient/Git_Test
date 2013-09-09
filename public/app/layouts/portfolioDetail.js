@@ -8,7 +8,8 @@ define([
   'portfolio',
   'project',
 
-  'hbs!layouts/templates/portfolioDetail'
+  'hbs!layouts/templates/portfolioDetail',
+  'hbs!layouts/templates/portfolioDetailSettings'
 ], function(
   _,
   $,
@@ -19,7 +20,8 @@ define([
   Portfolio,
   Project,
 
-  portfolioDetailTemplate
+  portfolioDetailTemplate,
+  portfolioDetailSettingsTemplate
 ){
   return Marionette.Layout.extend({
     template: {
@@ -57,10 +59,23 @@ define([
 
       var settingsDropdown = new Marionette.ItemView({
         tagName: 'li',
+        template: {
+          type: 'handlebars',
+          template: portfolioDetailSettingsTemplate
+        },
         className: 'menu dropdown',
-        template: _.template('<ul><li><a href="#" class="edit">Operator Dashboard</a></li></ul>')
+        onViewDashboard: function(){
+          console.log('view dashboard');
+        },
+        events: {
+          'click .viewDashboard': function(event){
+            Backbone.history.navigate('/portfolio/operatorview/' + that.model.id, true);
+          },
+          'click .edit': function(event){
+            Backbone.history.navigate('/admin/portfolios/' + that.model.id, true);
+          }
+        }
       });
-
 
       //Create settings view
       this.options.settingsRegion.show(settingsDropdown);
@@ -76,8 +91,8 @@ define([
 
       // Fetch issues on the new portfolio
       var fetchProjectData = function(){
-        portfolio.fetchIssues();
-        portfolio.fetchProjectKpis();
+        portfolio.projects.fetchIssues();
+        portfolio.projects.fetchProjectKpis();
       };
 
       // Run initially to get latest data

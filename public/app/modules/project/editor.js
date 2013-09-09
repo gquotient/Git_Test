@@ -9,8 +9,9 @@ define([
 
   './inputField',
 
+  'hbs!project/templates/notes',
   'hbs!project/templates/editor',
-  'hbs!project/templates/notes'
+  'hbs!project/templates/editorLock'
 ], function(
   $,
   _,
@@ -22,8 +23,9 @@ define([
 
   InputField,
 
+  notesTemplate,
   editorTemplate,
-  notesTemplate
+  editorLockTemplate
 ){
   var views = {};
 
@@ -42,6 +44,10 @@ define([
       textarea: 'textarea'
     },
 
+    initialize: function(){
+      this.editable = false;
+    },
+
     events: {
       'keyup textarea': function(e){
         this.model.set('notes', this.ui.textarea.val());
@@ -52,7 +58,7 @@ define([
       },
 
       'blur textarea': function(){
-        if (this.options.editable) {
+        if (this.editable) {
           this.model.save();
         }
       }
@@ -65,11 +71,11 @@ define([
     },
 
     onShow: function(){
-      this.ui.textarea.attr('disabled', !this.options.editable);
+      this.ui.textarea.attr('disabled', !this.editable);
     },
 
     onClose: function(){
-      if (this.options.editable) {
+      if (this.editable) {
         this.model.save();
       }
     }
@@ -88,7 +94,11 @@ define([
 
     initialize: function(options){
       this.equipment = options.equipment;
-      this.user = options.user;
+
+      // Make sure the model has a user.
+      if (!this.model.user && options.user) {
+        this.model.user = options.user;
+      }
 
       // Fetch project from server.
       this.model.fetch({
@@ -98,11 +108,6 @@ define([
         equipment: this.equipment
       });
 
-      // Attempt to get the lock if editable.
-      if (options.editable) {
-        this.model.setLock(true);
-      }
-
       this.listenTo(Backbone, 'canvas:selection', function(selection){
         this.selection = selection.length > 0 ? selection : null;
       });
@@ -110,7 +115,19 @@ define([
       _.bindAll(this, 'handleKeyEvent');
     },
 
+    modelEvents: {
+      'change:editor': 'disableInputs'
+    },
+
+    disableInputs: function(){
+      var disabled = !this.model.isEditable();
+
+      this.$el.find('input:not(.nav)').attr('disabled', disabled);
+    },
+
     keydownEvents: {
+      // Adding support for backspace key (because Apple)
+      8: 'delete',
       46: 'delete'
     },
 
@@ -120,46 +137,6 @@ define([
       if (value && !_.contains(['INPUT', 'TEXTAREA'], e.target.nodeName)) {
         e.preventDefault();
         this.triggerMethod(value);
-      }
-    },
-
-    modelEvents: {
-      'change:locked': 'updateEditable',
-      'change:editor': 'updateEditable'
-    },
-
-    updateTimer: function(){
-      if (this.timer) { clearTimeout(this.timer); }
-
-      if (!this.editable) { return; }
-
-      this.timer = setTimeout(_.bind(function(){
-        Backbone.history.navigate('/admin/project/' + this.model.id, true);
-      }, this), 5 * 60 * 1000);
-    },
-
-    updateEditable: function(){
-      var editable = this.options.editable,
-        who = this.model.get('editor'),
-        user = this.user.get('email'),
-        locked = this.model.get('locked');
-
-      if (!who || who === '' || who === 'unlocked' || who === user) {
-        who = null;
-
-      } else if (locked) {
-        editable = false;
-      }
-
-      if (this.editable !== editable) {
-        this.editable = editable;
-        this.$el.find('input:not(.nav)').attr('disabled', !editable);
-
-        if (who && !editable) {
-          this.$('#lock-message').html(who + ' has this project locked');
-        } else {
-          this.$('#lock-message').empty();
-        }
       }
     },
 
@@ -188,62 +165,64 @@ define([
           }
         ]),
 
-        onShow: function(){
-          var model = this.collection.findWhere({uri: this.options.view});
+        extend: {
+          onShow: function(){
+            var model = this.collection.findWhere({uri: this.options.view});
 
-          this.triggerMethod('key:enter', model || this.collection.first());
-        },
+            this.triggerMethod('key:enter', model || this.collection.first());
+          },
 
-        onApply: function(model){
-          this.placeholder = model.get('name');
+          onApply: function(model){
+            this.placeholder = model.get('name');
+          }
         }
       },
 
       add: {
         hotKey: 97,
-        collection: new Backbone.Collection([], {comparator: 'name'}),
+        comparator: 'name',
 
-        parseInput: function(){
-          var input = InputField.prototype.parseInput.call(this),
-            re = /^\d+\s*/,
-            match = re.exec(input),
-            times = match && parseInt(match[0], 10);
+        extend: {
+          parseInput: function(){
+            var input = InputField.prototype.parseInput.call(this),
+              re = /^\d+\s*/,
+              match = re.exec(input),
+              times = match && parseInt(match[0], 10);
 
-          this.times = times < 1 ? 1 : times > 100 ? 100 : times;
+            this.times = times < 1 ? 1 : times > 100 ? 100 : times;
 
-          return input.replace(re, '');
-        },
+            return input.replace(re, '');
+          },
 
-        getAutocomplete: function(){
-          var value = InputField.prototype.getAutocomplete.call(this);
+          getAutocomplete: function(){
+            var value = InputField.prototype.getAutocomplete.call(this);
 
-          return value && this.times > 1 ? this.times + ' ' + value : value;
+            return value && this.times > 1 ? this.times + ' ' + value : value;
+          }
         }
       },
 
       connect: {
         hotKey: 99,
-        collection: new Backbone.Collection([], {comparator: 'name'})
+        comparator: 'name',
+        applyAll: true
       },
 
       disconnect: {
         hotKey: 100,
-        collection: new Backbone.Collection([], {comparator: 'name'})
-      },
-
-      import: {
-        hotKey: 105
+        comparator: 'name',
+        applyAll: true
       }
     },
 
     _initInputFields: function(){
       _.each(this.inputFields, function(obj, name){
-        var view = new InputField(_.extend({}, this.options, {
-          collection: obj.collection,
+        var view = new InputField(_.extend({}, _.omit(obj, 'extend'), {
+          view: this.options.view,
           el: this.$('#' + name)
         }));
 
-        _.extend(view, _.omit(obj, 'collection'));
+        _.extend(view, obj.extend);
 
         _.each(['focus', 'apply'], function(evnt){
           this.listenTo(view, evnt, function(){
@@ -254,27 +233,38 @@ define([
           });
         }, this);
 
+        this.on('close', function(){
+          view.close();
+        });
+
         Marionette.triggerMethod.call(view, 'show');
       }, this);
     },
 
+    _initLockView: function(){
+      this.lockView = new views.EditorLock({
+        el: this.$('.lock'),
+        model: this.model
+      });
+
+      this.on('close', function(){
+        this.lockView.close();
+      });
+
+      this.lockView.render();
+    },
+
     onShow: function(){
+      this._initLockView();
       this._initInputFields();
-      this.updateEditable();
+
+      this.disableInputs();
 
       $(document).on('keydown keypress', this.handleKeyEvent);
     },
 
     onClose: function(){
       $(document).off('keydown keypress', this.handleKeyEvent);
-
-      if (this.editable) {
-        this.model.setLock(false);
-      }
-
-      if (this.timer) {
-        clearTimeout(this.timer);
-      }
     },
 
     onAddFocus: function(view){
@@ -373,8 +363,7 @@ define([
 
         Backbone.trigger('editor:change:view', _.extend(model.toJSON(), {
           model: this.model,
-          collection: this.model.devices,
-          editable: this.editable
+          collection: this.model.devices
         }));
       }
     },
@@ -412,7 +401,7 @@ define([
     },
 
     onDelete: function(){
-      if (this.selection) {
+      if (this.model.isEditable() && this.selection) {
         _.each(this.selection.models.slice(0), function(device){
           this.deleteDevice(device);
         }, this);
@@ -425,7 +414,7 @@ define([
         parnt = equip.isRoot() ? project : target,
         rel = parnt && equip.getRelationship(parnt);
 
-      if (rel && parnt.has('id')) {
+      if (rel && parnt.has('node_id')) {
         _.each(_.keys(Equipment.renderings), function(label){
           equip.addRendering(device, project, label, target);
         });
@@ -434,7 +423,7 @@ define([
         device.connectTo(parnt, rel);
 
         device.save({
-          parent_id: parnt.get('id'),
+          parent_id: parnt.get('node_id'),
           relationship_label: rel
         }, {
           success: _.bind(function(){
@@ -446,7 +435,7 @@ define([
             ].concat(parnt.equipment ? [
               parnt.equipment.get('name').toLowerCase(),
               parnt.get('did')
-            ] : 'project').join(' '), this.user);
+            ] : 'project').join(' '));
 
             if (target && target !== parnt) {
               this.connectDevice(device, target);
@@ -465,9 +454,10 @@ define([
       // If the device has no outgoing relationships then delete it.
       if (device.outgoing.length === 0) {
         device.destroy({
+          wait: true,
           data: {
             project_label: project.id,
-            id: device.get('id')
+            node_id: device.id
           },
           processData: true,
           success: _.bind(function(){
@@ -475,7 +465,7 @@ define([
               'deleted',
               equip.get('name').toLowerCase(),
               device.get('did')
-            ].join(' '), this.user);
+            ].join(' '));
           }, this)
         });
 
@@ -512,8 +502,8 @@ define([
           data: {
             relationship_label: rel,
             project_label: project.id,
-            from_id: target.get('id'),
-            to_id: device.get('id')
+            from_id: target.id,
+            to_id: device.id
           }
         }).done(_.bind(function(){
           if (!device.getPosition(rendering)) {
@@ -530,7 +520,7 @@ define([
             'to',
             target.equipment.get('name').toLowerCase(),
             target.get('did')
-          ].join(' '), this.user);
+          ].join(' '));
         }, this));
       }
     },
@@ -548,8 +538,8 @@ define([
           data: {
             relationship_label: rel,
             project_label: project.id,
-            from_id: target.get('id'),
-            to_id: device.get('id')
+            from_id: target.id,
+            to_id: device.id
           }
         }).done(_.bind(function(){
           device.disconnectFrom(target);
@@ -567,8 +557,53 @@ define([
             'from',
             target.equipment.get('name').toLowerCase(),
             target.get('did')
-          ].join(' '), this.user);
+          ].join(' '));
         }, this));
+      }
+    }
+  });
+
+  views.EditorLock = Marionette.ItemView.extend({
+    template: {
+      type: 'handlebars',
+      template: editorLockTemplate
+    },
+
+    templateHelpers: function(){
+      return {
+        editable: this.model.isEditable(),
+        locked: this.model.isLocked()
+      };
+    },
+
+    initialize: function(){
+      // Update the lock timeout no more then once a minute as long as changes
+      // are still being made to devices.
+      this.listenTo(this.model.devices, 'change', _.throttle(function(){
+        this.model.updateLockTimeout();
+      }, 60 * 1000));
+    },
+
+    triggers: {
+      'click button.edit': 'edit',
+      'click button.release': 'release'
+    },
+
+    modelEvents: {
+      'change:editor': 'render'
+    },
+
+    onEdit: function(){
+      this.model.setLock(true);
+    },
+
+    onRelease: function(){
+      this.model.setLock(false);
+    },
+
+    onClose: function(){
+      if (this.model.isEditable()) {
+        this.model.setLock(false);
       }
     }
   });

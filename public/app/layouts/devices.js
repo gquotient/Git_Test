@@ -12,10 +12,9 @@ define([
 
   'layouts/devices/core',
   'layouts/devices/inverter',
+  'layouts/devices/project',
 
-  'hbs!layouts/templates/devices',
-
-
+  'hbs!layouts/templates/devices'
 ], function(
   $,
   _,
@@ -30,6 +29,7 @@ define([
 
   CoreLayout,
   InverterLayout,
+  ProjectLayout,
 
   devicesTemplate
 ){
@@ -50,17 +50,41 @@ define([
 
     deviceLayouts: {
       core: CoreLayout,
-      Inverter: InverterLayout
+      Inverter: InverterLayout,
+      'PV Array': ProjectLayout
+    },
+
+    date: null,
+
+    initialize: function(options){
+      var that = this;
+
+      Backbone.trigger('set:breadcrumbs', {state:'device', display_name:'Devices'});
+
+      // Instantiate devices collection view
+      this.devices = new Device.Collection();
+      this.devicesTree = new Device.views.NavigationList({
+        collection: this.devices
+      });
+
+      // Listen for a device to be clicked and change view
+      this.listenTo(Backbone, 'click:device', function(device){
+        that.selectDevice(device);
+      });
+
+      this.listenTo(Backbone, 'set:date', function(date){
+        this.date = date;
+      });
     },
 
     selectDevice: function(device){
-      Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'));
+      var deviceType = device.get('devtype') || null;
 
       // Build device specific detail layout
-      var SubLayout = (this.deviceLayouts[device.get('devtype')]) ? this.deviceLayouts[device.get('devtype')] : this.deviceLayouts.core;
+      var SubLayout = (deviceType && this.deviceLayouts[deviceType]) ? this.deviceLayouts[deviceType] : this.deviceLayouts.core;
 
       // Show layout
-      this.deviceDetail.show(new SubLayout({model: device, project: this.model}));
+      this.deviceDetail.show(new SubLayout({model: device, project: this.model, date: this.date}));
 
       // Set active nav el
       //NOTE - this is a special recursive method on the device tree
@@ -81,11 +105,13 @@ define([
       var initialView = function(){
         that.contentNavigation.show(that.devicesTree);
 
-        that.devices.reset(that.model.devices.where({devtype: 'Inverter'}));
+        that.devices.reset(that.model);
         // If router passes a device, build detail view
         if (that.options.currentDevice) {
           var myDevice = that.model.devices.findWhere({graph_key: that.options.currentDevice});
           that.selectDevice(myDevice);
+        } else {
+          that.selectDevice(that.model);
         }
       };
 
@@ -104,23 +130,6 @@ define([
     onClose: function(){
       // Close settings dropdown views
       this.options.settingsRegion.close();
-    },
-
-    initialize: function(options){
-      var that = this;
-
-      Backbone.trigger('set:breadcrumbs', {state:'device', display_name:'Devices'});
-
-      // Instantiate devices collection view
-      this.devices = new Device.Collection();
-      this.devicesTree = new Device.views.NavigationList({
-        collection: this.devices
-      });
-
-      // Listen for a device to be clicked and change view
-      this.listenTo(Backbone, 'click:device', function(device){
-        that.selectDevice(device);
-      });
     }
   });
 });

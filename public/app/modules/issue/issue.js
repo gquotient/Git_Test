@@ -3,11 +3,14 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
+  'backbone.virtualCollection',
 
   'navigation',
+  'walltime',
 
   'hbs!issue/templates/table',
   'hbs!issue/templates/tableRow',
+  'hbs!issue/templates/tableRowEmpty',
   'hbs!issue/templates/navigationItem',
   'hbs!issue/templates/navigationList'
 ],
@@ -16,27 +19,63 @@ function(
   _,
   Backbone,
   Marionette,
+  VirtualCollection,
 
   Navigation,
+  WallTime,
 
   tableTemplate,
   tableRowTemplate,
+  tableRowEmptyTemplate,
   navigationItemTemplate,
   navigationListTemplate
 ){
   var Issue = { views: {} };
 
   Issue.Model = Backbone.Model.extend({
-    idAttribute: 'uid'
+    idAttribute: 'uid',
+    getLocalDate: function(){
+      var timezone = this.collection.project.get('timezone'),
+        walltime = WallTime.UTCToWallTime(new Date(), timezone),
+        offsetHours = (walltime.offset.negative) ? -walltime.offset.hours : walltime.offset.hours,
+        offset = offsetHours * 60 * 60 * 1000;
+
+      return {
+        start: (this.get('fault_start') * 1000) + offset,
+        stop: (this.get('fault_stop') * 1000) + offset
+      };
+    }
   });
 
   Issue.Collection = Backbone.Collection.extend({
-    model: Issue.Model,
-    parse: function(response){
-      return response.alarms;
+    url: function(options){
+      return '/api/alarms/active/' + this.project.id;
     },
+    model: Issue.Model,
     initialize: function(models, options){
-      this.url = '/api/alarms/active/' + options.projectId;
+      this.project = options.project;
+    },
+    parse: function(data){
+      return data.alarms;
+    },
+    getSeverity: function(){
+      var statusLevels = ['OK', 'Warning', 'Alert'],
+          status = 'OK',
+          statusValue = 0;
+
+      this.each(function(issue){
+        var priority = issue.get('active_conditions')[0].priority;
+
+        if (_.indexOf(statusLevels, priority) > _.indexOf(statusLevels, status)) {
+          status = priority;
+          statusValue = _.indexOf(statusLevels, priority);
+        }
+      });
+
+      return {
+        status: status,
+        statusValue: statusValue
+      };
     }
   });
 
@@ -63,16 +102,24 @@ function(
     },
     itemViewContainer: 'tbody',
     itemView: Issue.views.TableRow,
-    onRender: function(){
-      if (!this.collection.length) {
-        this.$('tbody').append('<tr><td colspan="2">There are currently no active alarms</td></tr>');
+    emptyView: Marionette.ItemView.extend({
+      tagName: 'tr',
+      template: {
+        type: 'handlebars',
+        template: tableRowEmptyTemplate
       }
-    },
+    }),
     events: {
       'click .viewAll': function(event){
         event.preventDefault();
         Backbone.trigger('click:issue', 'all');
       }
+    },
+    initialize: function(options){
+      this.collection = new Backbone.VirtualCollection(options.collection, {
+        filter: options.filter,
+        close_with: this
+      });
     }
   });
 

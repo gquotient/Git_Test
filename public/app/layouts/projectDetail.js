@@ -93,7 +93,7 @@ define([
     },
     events: {
       'click .edit': function(){
-        Backbone.history.navigate('/admin/project/' + this.model.id + '/edit', true);
+        Backbone.history.navigate('/admin/projects/' + this.model.id, true);
       },
       'click .toggleView': 'toggleView'
     },
@@ -118,7 +118,7 @@ define([
 
       this.contentNavigation.show(this.projectNavigationListView);
 
-      this.buildSettingsDropdown();
+      //this.buildSettingsDropdown();
 
       this.selectProject(this.options.model);
     },
@@ -129,19 +129,17 @@ define([
       var settingsDropdown = new Marionette.ItemView({
         tagName: 'li',
         className: 'menu dropdown',
-        template: _.template('<ul><li><a href="#" class="edit">Edit Project</a></li></ul>')
+        template: _.template('<ul><li><a href="#" class="edit">Edit Project</a></li></ul>'),
+        events: {
+          'click .edit': function(event){
+            event.preventDefault();
+            Backbone.history.navigate('/project/' + that.model.id + '/edit', true);
+          }
+        }
       });
 
       //Show ItemView in cached region
       this.options.settingsRegion.show(settingsDropdown);
-
-      //Define listeners
-      this.options.settingsRegion.$el.find('.edit').on('click', function(event){
-        event.preventDefault();
-
-        //Navigate to edit view
-        Backbone.history.navigate('/project/' + that.model.id + '/edit', true);
-      });
     },
 
     selectProject: function(project) {
@@ -163,7 +161,7 @@ define([
       // Add project to devices view and activate it.
       this.devicesView.showProject(project);
 
-      that.model.findDataSources().done(function(dataSources){
+      this.model.findDataSources().done(function(dataSources){
         // Build charts
         var chart_powerHistory = new Chart.views.Basic({
           chartOptions: {
@@ -240,8 +238,6 @@ define([
 
       this.issues.show(issueView);
 
-      issueView.collection.fetch();
-
       // Build kpi view
       var kpisView = new Project.views.Kpis({model: this.model});
 
@@ -254,6 +250,9 @@ define([
     onClose: function(){
       // Clean up contextual settings
       this.options.settingsRegion.close();
+
+      // Clear data fetch
+      clearInterval(this.fetchInterval);
     },
 
     initialize: function(options){
@@ -274,6 +273,17 @@ define([
       this.projectNavigationListView = new Project.views.NavigationListView({
         collection: options.collection
       });
+
+      // Fetch data for all projects
+      var fetchData = function(){
+        options.collection.fetchIssues();
+      };
+
+      // Fetch data right away
+      fetchData();
+
+      // Fetch data every 15 minutes
+      this.fetchInterval = setInterval(fetchData, 900000);
 
       this.listenTo(Backbone, 'click:project', function(project){
         this.selectProject(project);

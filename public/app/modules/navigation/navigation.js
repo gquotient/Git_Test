@@ -6,7 +6,9 @@ define([
   'backbone.virtualCollection',
 
   'hbs!navigation/templates/list',
-  'hbs!navigation/templates/listItem'
+  'hbs!navigation/templates/listItem',
+  'hbs!navigation/templates/adminList',
+  'hbs!navigation/templates/adminListItem'
 ], function(
   $,
   _,
@@ -15,7 +17,9 @@ define([
   VirtualCollection,
 
   listTemplate,
-  listItemTemplate
+  listItemTemplate,
+  adminListTemplate,
+  adminListItemTemplate
 ){
   var Navigation = { views: {} };
 
@@ -58,9 +62,23 @@ define([
     },
     sort: function(comparator){
       // Set new comparator on collection
-      this.collection.comparator = comparator;
+      if (_.indexOf(comparator, '-') === 0) {
+        // Remove minus
+        comparator = comparator.slice(1);
+
+        // Reverse sort
+        this.collection.comparator = function(valueA, valueB){
+          if (valueA.get(comparator) > valueB.get(comparator)){ return -1; }
+          if (valueA.get(comparator) < valueB.get(comparator)){ return 1; }
+          return 0;
+        };
+      } else {
+        this.collection.comparator = comparator;
+      }
+
       // Sort collection
       this.collection.sort();
+
       // Re-render only the child views
       this._renderChildren();
       // Reset the active el since render blows it away
@@ -88,10 +106,93 @@ define([
       this.activeFilter = options;
     },
     initialize: function(options){
-      this.collection = new Backbone.VirtualCollection(options.collection);
+      this.collection = new Backbone.VirtualCollection(options.collection, {
+        close_with: this
+      });
+    }
+  });
 
-      // This is need to kill listeners
-      this.collection.closeWith(this);
+  Navigation.views.AdminListItem = Marionette.ItemView.extend({
+    tagName: 'tr',
+    template: {
+      type: 'handlebars',
+      template: adminListItemTemplate
+    },
+
+    triggers: {
+      'click': 'detail',
+      'click button.delete': 'delete'
+    },
+
+    modelEvents: {
+      'change': 'render'
+    },
+
+    onDelete: function(){
+      if (window.confirm('Are you sure you want to delete this item?')) {
+        this.model.destroy({wait: true});
+      }
+    }
+  });
+
+  Navigation.views.AdminList = Marionette.CompositeView.extend({
+    constructor: function(){
+      Marionette.CompositeView.prototype.constructor.apply(this, arguments);
+
+      this.listenTo(this, 'itemview:detail', function(view){
+        this.trigger('select', view.model);
+      });
+    },
+
+    template: {
+      type: 'handlebars',
+      template: adminListTemplate
+    },
+
+    className: 'navigation-admin-list',
+
+    itemView: Navigation.views.AdminListItem,
+    itemViewContainer: 'tbody',
+
+    ui: {
+      refresh: '.refresh-icon',
+      create: 'button.create',
+      save: 'button.save',
+      cancel: 'button.cancel'
+    },
+
+    triggers: {
+      'click .refresh-icon': 'refresh',
+      'click button.create': 'create',
+      'click button.save': 'save',
+      'click button.cancel': 'cancel'
+    },
+
+    onCreate: function(){
+      this.trigger('select');
+    },
+
+    setActive: function(model, options){
+      var view = model && this.children.findByModel(model);
+
+      options = options || {};
+
+      this.$('tr.active').removeClass('active');
+
+      if (view) {
+        view.$el.addClass('active');
+      }
+
+      this.ui.save.toggle(!!model && options.showSave !== false);
+      this.ui.cancel.toggle(!!model);
+    },
+
+    toggleRefresh: function(state){
+      this.ui.refresh.toggleClass('active', state === true);
+    },
+
+    toggleSaving: function(state){
+      this.ui.save.toggleClass('loading-left', state === true);
     }
   });
 
