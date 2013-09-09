@@ -83,10 +83,11 @@ define([
 
       // Instantiate chart
       var chart_powerAndIrradiance = new Chart.views.Basic({
+        autoUpdate: false,
         chartOptions: {
           xAxis: {
             plotBands: {
-              color: 'rgba(201, 77, 30, .25)',
+              color: 'rgba(201, 77, 30, 0.1)',
               from: localTime.start,
               to: localTime.stop
             }
@@ -123,6 +124,14 @@ define([
       });
 
       this.chart.show(chart_powerAndIrradiance);
+    },
+    serializeData: function(){
+      // Since we need the project info, we need to return a special context
+      // to our template
+      return {
+        project: this.project.toJSON(),
+        alarm: this.model.toJSON()
+      };
     },
     initialize: function(options){
       var that = this;
