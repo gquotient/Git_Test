@@ -86,7 +86,7 @@ define([
         chartOptions: {
           xAxis: {
             plotBands: {
-              color: 'rgba(201, 77, 30, .25)',
+              color: 'rgba(201, 77, 30, 0.1)',
               from: localTime.start,
               to: localTime.stop
             }
