@@ -95,8 +95,6 @@ define([
         });
       }
 
-      this.model = model;
-
       view = new Equipment.views.AdminDetail({
         collection: this.collection,
         model: model
@@ -107,8 +105,10 @@ define([
         Backbone.history.navigate('/admin/equipment');
       });
 
-      this.detail.show(view);
       this.listView.setActive(model);
+      this.detail.show(view);
+
+      this.model = model;
 
       if (model.id) {
         Backbone.history.navigate('/admin/equipment/' + model.id);

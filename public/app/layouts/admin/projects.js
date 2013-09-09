@@ -113,8 +113,6 @@ define([
         this.mapView.addMarker(model);
       }
 
-      this.model = model;
-
       view = new Project.views.AdminDetail({
         collection: this.collection,
         model: model
@@ -129,11 +127,13 @@ define([
         Backbone.history.navigate('/admin/projects');
       });
 
-      this.detail.show(view);
       this.listView.setActive(model, {
         showSave: model.isEditable() || !model.isLocked()
       });
       this.mapView.focusMap(model);
+      this.detail.show(view);
+
+      this.model = model;
 
       if (model.id) {
         Backbone.history.navigate('/admin/projects/' + model.id);
