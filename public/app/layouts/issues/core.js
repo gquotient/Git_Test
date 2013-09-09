@@ -83,6 +83,7 @@ define([
 
       // Instantiate chart
       var chart_powerAndIrradiance = new Chart.views.Basic({
+        autoUpdate: false,
         chartOptions: {
           xAxis: {
             plotBands: {
