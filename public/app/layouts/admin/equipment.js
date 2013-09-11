@@ -132,6 +132,7 @@ define([
         model.save(values, {
           success: _.bind(function(){
             this.collection.add(model);
+            this.showDetail(model);
           }, this),
           complete: _.bind(function(){
             this.listView.toggleSaving(false);
