@@ -17,6 +17,21 @@ module.exports = function(grunt){
     watch: {
       files: ['<%= jshint.files %>'],
       tasks: ['jshint']
+    },
+
+    apipost: {
+      equip: {
+        host: 'http://127.0.0.1:8600',
+        path: function(record){
+          var label = record.equipment_label.replace(/_(v\d+)$/, '/$1');
+
+          return '/api/equipment/' + label;
+        },
+        form: function(record){
+          return {data: JSON.stringify(record)};
+        },
+        src: 'data/json/equipment.json'
+      }
     }
   });
 
@@ -25,6 +40,4 @@ module.exports = function(grunt){
   grunt.loadTasks('tasks');
 
   grunt.registerTask('dev', ['jshint', 'watch']);
-
-  grunt.registerTask('default', ['serve']);
 };
