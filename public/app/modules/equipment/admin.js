@@ -54,7 +54,7 @@ define([
           return value.toUpperCase().replace(/[^A-Z]+/g, '');
         },
         validate: function(value){
-          return (/^[A-Z]{3,}$/).test(value);
+          return (/^[A-Z]+$/).test(value);
         }
       },
 
@@ -63,15 +63,59 @@ define([
       }
     },
 
-    onShow: function(){
-      var existing = !this.model.isNew(),
-        events = {};
-
-      this.ui = {};
+    initialize: function(){
       this.changed = {};
+    },
+
+    ui: function(){
+      return _.reduce(this.schema, function(memo, obj, key){
+        memo[key] = obj.el;
+
+        return memo;
+      }, {});
+    },
+
+    events: function(){
+      return _.reduce(this.schema, function(memo, obj, key){
+        memo['blur ' + obj.el] = function(){
+          var $el = this.ui[key],
+            value = $el.val().trim();
+
+          if (obj.parse) {
+            value = obj.parse.call(this, value);
+          }
+
+          if (obj.validate && !obj.validate.call(this, value)) {
+            $el.addClass('invalid');
+
+            if (obj.error) {
+              obj.error.call(this, value);
+            }
+          } else {
+            $el.removeClass('invalid');
+
+            this.changed[key] = value;
+
+            if (obj.success) {
+              obj.success.call(this, value);
+            }
+          }
+        };
+
+        return memo;
+      }, {});
+    },
+
+    modelEvents: {
+      'change': 'render',
+      'destroy': 'close'
+    },
+
+    onRender: function(){
+      var existing = !this.model.isNew();
 
       _.each(this.schema, function(obj, key){
-        var $el = this.$(obj.el);
+        var $el = this.ui[key];
 
         // Skip if no matching element.
         if (!$el) { return; }
@@ -79,54 +123,15 @@ define([
         // Disable the element if not editable.
         if (existing && obj.editable === false) {
           $el.attr('disabled', true);
-
-        // Otherwise add a validation listener.
-        } else {
-          events['blur ' + obj.el] = function(){
-            var value = $el.val().trim();
-
-            if (obj.parse) {
-              value = obj.parse.call(this, value);
-            }
-
-            if (obj.validate && !obj.validate.call(this, value)) {
-              $el.addClass('invalid');
-
-              if (obj.error) {
-                obj.error.call(this, value);
-              }
-            } else {
-              this.changed[key] = value;
-
-              if (obj.success) {
-                obj.success.call(this, value);
-              }
-            }
-          };
         }
-
-        this.ui[key] = $el;
       }, this);
 
-      this.delegateEvents(events);
+      this.changed = {};
     },
 
     isValid: function(){
       this.$el.find('input textarea').blur();
       return !this.$el.find('.invalid').length;
-    },
-
-    modelEvents: {
-      'change': 'updateValues',
-      'destroy': 'close'
-    },
-
-    updateValues: function(){
-      _.each(this.model.changed, function(value, key){
-        if (_.has(this.ui, key)) {
-          this.ui[key].val(value).removeClass('invalid');
-        }
-      }, this);
     }
   });
 

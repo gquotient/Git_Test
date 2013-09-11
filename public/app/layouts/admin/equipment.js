@@ -101,13 +101,17 @@ define([
       });
 
       this.listenToOnce(view, 'close', function(){
+        if (!this.listView.isClosed) {
+          this.listView.setActive();
+        }
+
         this.model = null;
         Backbone.history.navigate('/admin/equipment');
       });
 
-      this.listView.setActive(model);
       this.detail.show(view);
 
+      this.listView.setActive(model);
       this.model = model;
 
       if (model.id) {
@@ -138,7 +142,6 @@ define([
 
     hideDetail: function(){
       this.detail.close();
-      this.listView.setActive();
     }
   });
 });
