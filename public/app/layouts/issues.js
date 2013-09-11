@@ -12,6 +12,8 @@ define([
 
   'layouts/issues/core',
 
+  'layouts/issues/templates/helpers',
+
   'hbs!layouts/templates/issues'
 ], function(
   $,
@@ -27,6 +29,8 @@ define([
 
   CoreLayout,
 
+  TemplateHelpers,
+
   projectIssuesTemplate
 ){
   return Marionette.Layout.extend({
@@ -36,12 +40,12 @@ define([
     },
 
     attributes: {
-      id: 'page-issues'
+      id: 'page-alarms'
     },
 
     regions: {
       contentNavigation: '.nav_content',
-      issueDetail: '.issueDetail',
+      issueDetail: '.detail',
       charts: '.charts'
     },
 
