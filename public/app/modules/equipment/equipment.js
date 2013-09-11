@@ -62,13 +62,23 @@ define([
 
 
   Equip.Model = Backbone.Model.extend({
-    idAttribute: 'label',
+    idAttribute: 'equipment_label',
+
+    localAttributes: [
+      'equipment_label',
+      'extends_from',
+      'label'
+    ],
 
     initialize: function(){
       this.relationships = {};
 
       this.outgoing = new Equip.Collection();
       this.incoming = new Equip.Collection();
+
+      if (this.isExtension()) {
+        this.extension = this.collection.get(this.get('extends_from'));
+      }
 
       _.each(this.get('relationships'), function(rel){
         var other = this.collection.get(rel.target);
@@ -81,6 +91,22 @@ define([
           }
         }
       }, this);
+    },
+
+    isExtension: function(){
+      return this.id && this.id.indexOf(':') !== -1;
+    },
+
+    get: function(attr){
+      // If the attr exists locally return it.
+      if (_.has(this.attributes, attr)) {
+        return this.attributes[attr];
+
+      // Otherwise if this is an extension and the attr is not exclusivly local
+      // then try and find it up the chain.
+      } else if (this.extension && !_.contains(this.localAttributes, attr)) {
+        return this.extension.get(attr);
+      }
     },
 
     connectTo: function(target, rel){
@@ -196,7 +222,31 @@ define([
     model: Equip.Model,
     url: '/api/equipment',
 
-    findOrCreateForDevice: function(device){
+    getBase: function(label){
+      if (!_.isString(label)) { return; }
+
+      label = label.split(':')[0];
+
+      if (label.length && label.indexOf('_') === -1) {
+        label += '_v1';
+      }
+
+      return this.get(label);
+    },
+
+    getEquipment: function(label, options){
+      var model = this.get(label);
+
+      options = options || {};
+
+      if (!model || options.base) {
+        model = this.getBase(label);
+      }
+
+      return model;
+    },
+
+    getForDevice: function(device){
       var label = device.get('equipment_label');
 
       if (!label && device.has('did')) {
@@ -204,7 +254,7 @@ define([
       }
 
       if (label) {
-        return this.get(label) || this.push({label: label});
+        return this.getEquipment(label);
       }
     }
   });

@@ -39,6 +39,12 @@ define([
       template: adminDetailTemplate
     },
 
+    templateHelpers: function(){
+      return {
+        extension: this.model.isNew() || this.model.isExtension()
+      };
+    },
+
     schema: {
       display_name: {
         el: '#name',
@@ -55,6 +61,32 @@ define([
         },
         validate: function(value){
           return (/^[A-Z]+$/).test(value);
+        }
+      },
+
+      make: {
+        el: '#make'
+      },
+
+      model: {
+        el: '#model'
+      },
+
+      extends_from: {
+        el: '#extends',
+        editable: false,
+        parse: function(value){
+          var model;
+
+          if (value) {
+            model = this.collection.getEquipment(value);
+            value = model ? model.id : 'invalid';
+          }
+
+          return value;
+        },
+        validate: function(value){
+          return value !== 'invalid';
         }
       },
 

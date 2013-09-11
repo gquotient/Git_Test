@@ -31,7 +31,7 @@ define([
       options = options || {};
 
       if (options.equipment) {
-        this.equipment = options.equipment.findOrCreateForDevice(this);
+        this.equipment = options.equipment.getForDevice(this);
       }
 
       if (!this.has('name') && this.equipment) {
