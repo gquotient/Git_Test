@@ -56,6 +56,14 @@ function(
           title: 'Email',
           required: true
         },
+        'phone': {
+          type: 'tel',
+          title: 'Phone'
+        },
+        'title': {
+          type: 'text',
+          title: 'Title'
+        },
         'org_label': {
           type: 'text',
           title: 'Org Label'
@@ -147,7 +155,7 @@ function(
 
   // Table CompositeView extended from form
   User.views.EditTable = Forms.views.table.extend({
-    fields: ['name', 'email'],
+    fields: ['name', 'email', 'phone', 'title'],
     itemView: User.views.EditRow,
     model: User.Model,
     actions: ['edit', 'delete', 'resetPassword']
