@@ -48,7 +48,9 @@ module.exports = function(app){
 
     var defer = Q.defer();
 
+    // Request the current user model
     request(requestOptions, function(error, response, userJSON){
+      // Make sure the model is valid json
       try {
         user = JSON.parse(userJSON);
       }
@@ -56,6 +58,7 @@ module.exports = function(app){
         console.error('User JSON is malformed');
       }
 
+      // Send 500 if no user model is returned
       if (!user) {
         res.send(500);
         return false;
@@ -66,6 +69,8 @@ module.exports = function(app){
       req.session.team_label = req.session.team_label || team;
       req.session.org_label = user.org_label;
 
+      // Handle errors
+      // NOTE - We should probably abstract error handling to it's own module
       if (error) {
         console.log('***************************************');
         console.log('Model service returned an error:', error);
@@ -85,10 +90,12 @@ module.exports = function(app){
         res.location('/login');
         res.render('login', { flash: 'There was an issue, please try logging in again.' });
       } else {
+        // If everything is happy, resolve the defer
         defer.resolve(user);
       }
     });
 
+    // Get portfolios
     defer.promise.then( function(){
       requestOptions.uri = app.get('modelUrl') + '/res/teamportfolios?team_label='+req.session.team_label+'&org_label='+req.session.org_label;
 
@@ -99,6 +106,7 @@ module.exports = function(app){
       });
     });
 
+    // Get projects
     defer.promise.then( function(){
       requestOptions.uri = app.get('modelUrl') + '/res/teamprojects?team_label'+req.session.team_label+'&org_label='+req.session.org_label;
 
@@ -122,6 +130,7 @@ module.exports = function(app){
       resolveEverythingLoaded();
     });
 
+    // Once user, portfolios and projects are loaded, render the index page with the bootstrapped data
     everythingLoaded.promise.then( function(obj){
       res.render('index', {
         user: JSON.stringify(_.extend({}, user, {
