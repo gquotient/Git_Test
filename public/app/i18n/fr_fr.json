@@ -45,6 +45,8 @@
   "Type": "Type",
   "Name": "Name",
   "Email": "Email",
+  "Phone": "Phone",
+  "Title": "Title",
   "Actions": "Actions",
   "Filter By": "Filter By",
 
