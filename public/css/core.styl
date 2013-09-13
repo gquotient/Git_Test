@@ -611,6 +611,7 @@ leftColumnWidthSml = 200px;
     top: 0;
     width: 100%;
     height: projectTableHeaderHeight;
+    padding: 3px 6px;
     z-index: 100;
     background: colorBGDarkGrey;
     background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
@@ -618,9 +619,14 @@ leftColumnWidthSml = 200px;
     border-bottom: borderBasicDark;
     box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
 
+    .title {
+      font-weight: bold;
+      text-shadow: 0 1px 0 #222;
+    }
+
     .refresh-icon {
       float: right;
-      padding: 3px 6px;
+      padding: 0 6px;
     }
   }
 
