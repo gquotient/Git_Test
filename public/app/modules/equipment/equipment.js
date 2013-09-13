@@ -94,7 +94,7 @@ define([
     },
 
     isExtension: function(){
-      return this.id && this.id.indexOf(':') !== -1;
+      return this.id && this.id.indexOf(':') >= 0;
     },
 
     get: function(attr){

@@ -139,7 +139,8 @@ define([
 
               // And a relationship in the current rendering.
               model.equipment.getRelationship(options.model, options.rendering);
-          }
+          },
+          close_with: this
         });
 
         this.paper = options.paper || paper;
