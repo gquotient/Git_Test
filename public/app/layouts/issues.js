@@ -51,7 +51,6 @@ define([
 
     selectIssue: function(issue){
       var that = this;
-      console.log('selectIssue');
 
       Backbone.history.navigate('/project/' + this.model.id + '/issues/' + issue.id);
 
@@ -76,9 +75,11 @@ define([
     },
 
     getContactInfo: function(){
+      // Maintenance contact info
       var that = this,
         defer = new $.Deferred();
 
+      // If contact info hasn't been fetched yet, get it
       if (!this.contactInfo) {
         $.ajax({
           url: '/api/teams/contact',
@@ -87,15 +88,16 @@ define([
             team_id: this.options.org_team
           }
         }).done(function(contactInfo){
+          // Set contact info
           that.contactInfo = new Backbone.Model(contactInfo);
-          defer.resolve(that.contactInfo);
 
-          console.log(that.contactInfo);
+          defer.resolve(that.contactInfo);
         });
       } else {
         defer.resolve(this.contactInfo);
       }
 
+      // Return the deferred object for other methods to use
       return defer;
     },
 
