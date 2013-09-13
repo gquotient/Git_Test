@@ -76,17 +76,19 @@ define([
       this.outgoing = new Equip.Collection();
       this.incoming = new Equip.Collection();
 
-      _.each(this.get('relationships'), function(rel){
-        var other = this.collection.get(rel.target);
+      if (!this.has('extends_from')) {
+        _.each(this.get('relationships'), function(rel){
+          var other = this.collection.findWhere({label: rel.target});
 
-        if (other) {
-          if (rel.direction === 'INCOMING') {
-            this.connectTo(other, rel.label);
-          } else {
-            other.connectTo(this, rel.label);
+          if (other) {
+            if (rel.direction === 'INCOMING') {
+              this.connectTo(other, rel.label);
+            } else {
+              other.connectTo(this, rel.label);
+            }
           }
-        }
-      }, this);
+        }, this);
+      }
     },
 
     get: function(attr){
@@ -125,10 +127,16 @@ define([
     },
 
     getRelationship: function(target, rendering){
-      var label;
+      var base = this.getBase(),
+        label;
 
-      if (_.has(this.relationships, target.cid)) {
-        label = this.relationships[target.cid];
+      if (base !== this) {
+        return base && base.getRelationship(target, rendering);
+      }
+
+      if (target instanceof Equip.Model) {
+        label = this.relationships[target.getBase().cid];
+
       } else if (target.has('did')) {
         label = (_.findWhere(this.get('relationships'), {
           target: target.get('did').replace(/-\d*$/, ''),
@@ -156,7 +164,15 @@ define([
     },
 
     getRootLabel: function(){
-      return this.get('label');
+      var base = this.getBase();
+
+      return base && base.get('label');
+    },
+
+    getBaseName: function(){
+      var base = this.getBase();
+
+      return base && base.get('display_name');
     },
 
     factory: function(project){
@@ -176,7 +192,7 @@ define([
     },
 
     generateName: function(index){
-      var name = this.get('name'), did;
+      var name = this.get('display_name'), did;
 
       if (index instanceof Backbone.Model) {
         did = index.get('did');
