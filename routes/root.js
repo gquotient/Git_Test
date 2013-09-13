@@ -64,8 +64,6 @@ module.exports = function(app){
         return false;
       }
 
-      console.log(user);
-
       // Until we have a default team option for the user, assume first team or last selected. Or, you know. No team at all.
       var team = user.default_team ? user.default_team : user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
       req.session.team_label = req.session.team_label || team;
