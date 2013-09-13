@@ -55,7 +55,6 @@ define([
       Backbone.history.navigate('/project/' + this.model.id + '/issues/' + issue.id);
 
       this.getContactInfo().done(function(){
-        console.log(that.contactInfo);
         that.issueDetail.show(new CoreLayout({
           model: issue,
           project: that.model,
