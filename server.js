@@ -2,7 +2,8 @@
  * Module dependencies.
  */
 
-var express = require('express'),
+var clientInfo = require('./public/app/bower'),
+  express = require('express'),
   stylus = require('stylus'),
   nib = require('nib'),
   _ = require('lodash'),
@@ -23,6 +24,8 @@ var express = require('express'),
 
 var app = express();
 
+console.log('Client Version:', clientInfo.version);
+
 app.configure(function(){
   var compile = function(str, path) {
     return stylus(str)
@@ -32,7 +35,7 @@ app.configure(function(){
       .use(nib()); // Use nib for cross-browser CSS3 help
   };
 
-  app.set('app_version', '0.1.1');
+  app.set('app_version', clientInfo.version);
   app.set('port', process.env.PORT || 3005);
   app.set('view engine', 'hbs');
   app.set('views', __dirname + '/templates');
