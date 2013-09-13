@@ -114,7 +114,8 @@ define([
       this.mainContent.show( new IssuesLayout({
         model: project,
         currentIssue: issueId,
-        app: this.app
+        // NOTE - There might be a better way to do this but this works
+        org_team: this.app.currentUser.get('org_label') + '_' + this.app.currentTeam
       }));
     },
 

@@ -1,8 +1,19 @@
-<div class="info">
+<div class="alarmInfo">
   <h3>{{ alarm.alarm_type }}</h3>
-  <strong>Device</strong>: <span class="deviceName"></span><br>
-  <strong>Created on</strong>: {{ date alarm.activated_at }}<br>
-  <strong>Trigger Condition</strong>: {{ prettyColumnName alarm.device_column }} {{ alarm.active_conditions.0.comparator }} {{ roundNumber alarm.active_conditions.0.threshold 0 }}W
+  <strong>{{$ 'Device' }}</strong>: <span class="deviceName"></span><br>
+  <strong>{{$ 'Created On'}}</strong>: {{ date alarm.activated_at }}<br>
+  <strong>{{$ 'Trigger Condition' }}</strong>: {{ prettyColumnName alarm.device_column }} {{ alarm.active_conditions.0.comparator }} {{ roundNumber alarm.active_conditions.0.threshold 0 }}W
+</div>
+
+<div class="contactInfo">
+  <h3>{{$ 'Maintenance Contact' }}</h3>
+  {{#if contactInfo.contact_name }}
+  <strong>{{$ 'Name' }}</strong>: {{ contactInfo.contact_name }}<br>
+  <strong>{{$ 'Email' }}</strong>: {{ contactInfo.contact_email }}<br>
+  <strong>{{$ 'Phone' }}</strong>: {{ contactInfo.contact_phone }}
+  {{else}}
+  {{$ 'No contact provided' }}
+  {{/if}}
 </div>
 
 <div class="module chart"></div>
