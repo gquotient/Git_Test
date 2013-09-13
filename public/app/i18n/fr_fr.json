@@ -22,6 +22,8 @@
   "New Portfolio": "New Portfolio",
   "New Project": "New Project",
   "Add Filter": "Add Filter",
+  "Device": "Device",
+  "Devices": "Devices",
 
   "Users": "Users",
   "Teams": "Teams",
@@ -49,6 +51,9 @@
   "Title": "Title",
   "Actions": "Actions",
   "Filter By": "Filter By",
+
+  "Maintenance Contact": "Maintenance Contact",
+  "No contact provided": "No contact provided",
 
   "Label": "Label",
   "Site Label": "Site Label",
@@ -82,5 +87,7 @@
   "Alarm Description": "Alarm Description",
   "View all alarms": "View all alarms",
   "Alarm Status": "Alarm Status",
+  "Created On": "Created On",
+  "Trigger Condition": "Trigger Condition",
   "There are currently no active alarms": "There are currently no active alarms"
 }
