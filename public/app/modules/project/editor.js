@@ -363,7 +363,8 @@ define([
 
         Backbone.trigger('editor:change:view', _.extend(model.toJSON(), {
           model: this.model,
-          collection: this.model.devices
+          collection: this.model.devices,
+          equipment: this.options.equipment
         }));
       }
     },

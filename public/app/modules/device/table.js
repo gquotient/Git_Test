@@ -19,6 +19,10 @@ define([
       id: 'device-table'
     },
 
+    initialize: function(options){
+      this.equipment = options.equipment;
+    },
+
     columns: [
       {
         name: 'ID',
@@ -31,7 +35,13 @@ define([
       },
       {
         name: 'Equipment',
-        readOnly: true
+        type: 'dropdown',
+        source: function(model){
+          var base = model.equipment && model.equipment.getBase();
+            source = base && base.getExtends();
+
+          return _.invoke(source, 'get', 'display_name');
+        }
       }
     ],
 
@@ -73,7 +83,16 @@ define([
     },
 
     getEquipment: function(model){
-      return model.equipment.get('name');
+      return model.equipment.get('display_name');
+    },
+
+    setEquipment: function(model, value){
+      var equip = this.equipment.findWhere({display_name: value});
+
+      if (equip) {
+        model.set({equipment_label: equip.id});
+        model.equipment = equip;
+      }
     }
   });
 });
