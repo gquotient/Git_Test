@@ -54,23 +54,24 @@ define([
       );
 
       // This stuff needs to be in the onShow because it needs the dom elements to work
-      var that = this;
+      var that = this,
+        project = this.options.project;
 
       var initialView = function(){
-        that.device = that.project.devices.findWhere({graph_key: that.model.get('identifier')});
+        that.device = project.devices.findWhere({graph_key: that.model.get('identifier')});
         that.buildChart();
       };
       // Fetch project to get devices
-      if (this.options.project.devices.length) {
+      if (project.devices.length) {
         initialView();
       } else {
-        this.options.project.fetch({data: {project_label: this.project.id}}).done(initialView);
+        project.fetch({data: {project_label: project.id}}).done(initialView);
       }
     },
 
     buildChart: function(){
       var
-        project = this.project,
+        project = this.options.project,
         device = this.device,
         // Add an hour to either side of time range
         startTime = this.model.get('fault_start') - (60 * 60),
@@ -129,14 +130,10 @@ define([
       // Since we need the project info, we need to return a special context
       // to our template
       return {
-        project: this.project.toJSON(),
-        alarm: this.model.toJSON()
+        project: this.options.project.toJSON(),
+        alarm: this.model.toJSON(),
+        contactInfo: this.options.contactInfo.toJSON()
       };
-    },
-    initialize: function(options){
-      var that = this;
-
-      this.project = options.project;
     }
   });
 });

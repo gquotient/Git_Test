@@ -50,9 +50,19 @@ define([
     },
 
     selectIssue: function(issue){
+      var that = this;
+      console.log('selectIssue');
+
       Backbone.history.navigate('/project/' + this.model.id + '/issues/' + issue.id);
 
-      this.issueDetail.show(new CoreLayout({model: issue, project: this.model}));
+      this.getContactInfo().done(function(){
+        console.log(that.contactInfo);
+        that.issueDetail.show(new CoreLayout({
+          model: issue,
+          project: that.model,
+          contactInfo: that.contactInfo
+        }));
+      });
 
       this.issueNavigation.setActive(issue.id);
     },
@@ -65,18 +75,32 @@ define([
       this.contentNavigation.show(this.issueNavigation);
     },
 
-    initialize: function(options){
-      console.log(options.team);
-      var that = this;
+    getContactInfo: function(){
+      var that = this,
+        defer = new $.Deferred();
 
-      $.ajax({
-        url: '/api/teams/contact',
-        data: {
-          team_id: options.team
-        }
-      }).done(function(){
-        console.log(arguments);
-      });
+      if (!this.contactInfo) {
+        $.ajax({
+          url: '/api/teams/contact',
+          dataType: 'json',
+          data: {
+            team_id: this.options.org_team
+          }
+        }).done(function(contactInfo){
+          that.contactInfo = new Backbone.Model(contactInfo);
+          defer.resolve(that.contactInfo);
+
+          console.log(that.contactInfo);
+        });
+      } else {
+        defer.resolve(this.contactInfo);
+      }
+
+      return defer;
+    },
+
+    initialize: function(options){
+      var that = this;
 
       Backbone.trigger('set:breadcrumbs', {state: 'issue', display_name: 'Issues'});
 
