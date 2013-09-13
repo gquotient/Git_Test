@@ -37,7 +37,7 @@ module.exports = function(app){
       }
     };
 
-    var myTeams,
+    var user,
         portfolios,
         projects,
         equipment,
@@ -49,59 +49,60 @@ module.exports = function(app){
       }
     };
 
-    var user = (function(){
-      var defer = Q.defer();
+    var defer = Q.defer();
 
-      request(_.extend({}, requestOptions, {
-        uri: app.get('modelUrl') + '/res/user'
-      }), function(error, response, body){
-        var user;
-        try {
-          user = JSON.parse(body);
-        }
-        catch(e) {
-          console.error('User JSON is malformed');
-        }
+    // Request the current user model
+    request(_.extend({}, requestOptions, {
+      uri: app.get('modelUrl') + '/res/user'
+    }), function(error, response, body){
 
-        if (!user) {
-          res.send(500);
-          return false;
-        }
+      // Make sure the model is valid json
+      try {
+        user = JSON.parse(body);
+      }
+      catch(e) {
+        console.error('User JSON is malformed');
+      }
 
-        // Until we have a default team option for the user, assume first team or last selected. Or, you know. No team at all.
-        var team = user.default_team ? user.default_team : user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
-        req.session.team_label = req.session.team_label || team;
-        req.session.org_label = user.org_label;
-        myTeams = user.teams;
+      // Send 500 if no user model is returned
+      if (!user) {
+        res.send(500);
+        return false;
+      }
 
-        if (error) {
-          console.log('***************************************');
-          console.log('Model service returned an error:', error);
-          console.log('***************************************');
+      // Until we have a default team option for the user, assume first team or last selected. Or, you know. No team at all.
+      var team = user.default_team ? user.default_team : user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
+      req.session.team_label = req.session.team_label || team;
+      req.session.org_label = user.org_label;
 
-          defer.reject();
-          req.session.destroy();
-          res.location('/login');
-          res.render('login', { flash: 'There was an issue, please try logging in again.' });
-        } else if (typeof user !== 'object') {
-          console.log('***************************************');
-          console.log('Something is wrong with the returned user model.');
-          console.log('***************************************');
+      // Handle errors
+      // NOTE - We should probably abstract error handling to it's own module
+      if (error) {
+        console.log('***************************************');
+        console.log('Model service returned an error:', error);
+        console.log('***************************************');
 
-          defer.reject();
-          req.session.destroy();
-          res.location('/login');
-          res.render('login', { flash: 'There was an issue, please try logging in again.' });
-        } else {
-          defer.resolve(user);
-        }
-      });
+        defer.reject();
+        req.session.destroy();
+        res.location('/login');
+        res.render('login', { flash: 'There was an issue, please try logging in again.' });
+      } else if (typeof user !== 'object') {
+        console.log('***************************************');
+        console.log('Something is wrong with the returned user model.');
+        console.log('***************************************');
 
-      return defer.promise;
-    })();
+        defer.reject();
+        req.session.destroy();
+        res.location('/login');
+        res.render('login', { flash: 'There was an issue, please try logging in again.' });
+      } else {
+        // If everything is happy, resolve the defer
+        defer.resolve(user);
+      }
+    });
 
-
-    user.then( function(){
+    // Get portfolios
+    defer.promise.then( function(){
       request(_.extend({}, requestOptions, {
         uri: app.get('modelUrl') + '/res/teamportfolios',
         qs: {
@@ -110,12 +111,12 @@ module.exports = function(app){
         }
       }), function(error, response, body){
         portfolios = parsePortfolioFilters(body);
-
         resolveEverythingLoaded();
       });
     });
 
-    user.then( function(){
+    // Get projects
+    defer.promise.then( function(){
       request(_.extend({}, requestOptions, {
         uri: app.get('modelUrl') + '/res/teamprojects',
         qs: {
@@ -127,7 +128,6 @@ module.exports = function(app){
         // (i.e. { projects: [] } )
         // sooooo, we have to do this to keep our stuff consistent
         projects = JSON.stringify(JSON.parse(body).projects || []);
-
         resolveEverythingLoaded();
       });
     });
@@ -140,16 +140,14 @@ module.exports = function(app){
       resolveEverythingLoaded();
     });
 
+    // Once user, portfolios and projects are loaded, render the index page with the bootstrapped data
     everythingLoaded.promise.then( function(obj){
       res.render('index', {
-        user: JSON.stringify({
-          name: req.user.name,
-          email: req.user.email,
-          teams: myTeams,
+        user: JSON.stringify(_.extend({}, user, {
           currentTeam: req.session.team_label,
           currentOrganization: req.session.org_label,
           role: roles[req.user.role]
-        }),
+        })),
         portfolios: portfolios,
         projects: projects,
         equipment: equipment,

@@ -56,6 +56,14 @@ function(
           title: 'Email',
           required: true
         },
+        'phone': {
+          type: 'tel',
+          title: 'Phone'
+        },
+        'title': {
+          type: 'text',
+          title: 'Title'
+        },
         'org_label': {
           type: 'text',
           title: 'Org Label'
@@ -126,10 +134,17 @@ function(
 
   User.views.EditRow = Forms.views.tableRow.extend({
     onResetPassword: function(){
-      return $.ajax('/api/reset_password', {
-        type: 'PUT',
-        data: { email: this.model.get('email') }
-      });
+      // Get the name of the model and prompt user on resetting the password
+      var name = this.model.get(this.options.fields[0]),
+          prompt = confirm('Are you sure you want to reset the password for ' + name + ' ?');
+
+      // If user clicks ok, reset password
+      if (prompt) {
+        return $.ajax('/api/reset_password', {
+          type: 'PUT',
+          data: { email: this.model.get('email') }
+        });
+      }
     },
     triggers: function(){
       return _.extend({}, Forms.views.tableRow.prototype.triggers, {
@@ -140,7 +155,7 @@ function(
 
   // Table CompositeView extended from form
   User.views.EditTable = Forms.views.table.extend({
-    fields: ['name', 'email'],
+    fields: ['name', 'email', 'phone', 'title'],
     itemView: User.views.EditRow,
     model: User.Model,
     actions: ['edit', 'delete', 'resetPassword']
