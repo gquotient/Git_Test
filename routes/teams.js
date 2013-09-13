@@ -59,6 +59,12 @@ module.exports = function(app){
     })
   );
 
+  app.get('/api/teams/contact', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
+    makeRequest({
+      path: '/res/teamcontact'
+    })
+  );
+
   app.put('/api/teams/current', function(req, res){
       req.session.team_label = req.body.team_label;
       res.send(200);

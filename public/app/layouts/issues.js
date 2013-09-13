@@ -66,7 +66,17 @@ define([
     },
 
     initialize: function(options){
+      console.log(options.team);
       var that = this;
+
+      $.ajax({
+        url: '/api/teams/contact',
+        data: {
+          team_id: options.team
+        }
+      }).done(function(){
+        console.log(arguments);
+      });
 
       Backbone.trigger('set:breadcrumbs', {state: 'issue', display_name: 'Issues'});
 

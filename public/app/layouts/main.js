@@ -114,6 +114,7 @@ define([
       this.mainContent.show( new IssuesLayout({
         model: project,
         currentIssue: issueId,
+        team: this.app.currentTeam,
         app: this.app
       }));
     },
