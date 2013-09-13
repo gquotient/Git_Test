@@ -1,8 +1,8 @@
-var _ = require('lodash')
-, fs = require('fs')
-, request = require('request')
-, Q = require('q')
-, roles;
+var _ = require('lodash'),
+  fs = require('fs'),
+  request = require('request'),
+  Q = require('q'),
+  roles;
 
 
 fs.readFile('./roles.json', 'utf8', function (err, data) {
@@ -136,7 +136,6 @@ module.exports = function(app){
       uri: app.get('equipUrl') + '/api/equipment'
     }), function(error, response, body){
       equipment = JSON.stringify(parseEquipment(body));
-
       resolveEverythingLoaded();
     });
 
