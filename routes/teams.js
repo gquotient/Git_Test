@@ -1,9 +1,9 @@
 module.exports = function(app){
 
-  var helpers = require('./helpers')(app)
-  , makeRequest = helpers.makeRequest
-  , ensureAuthorized = helpers.ensureAuthorized
-  , ensureCurrentOrganization = helpers.ensureCurrentOrganization;
+  var helpers = require('./helpers')(app),
+    makeRequest = helpers.makeRequest,
+    ensureAuthorized = helpers.ensureAuthorized,
+    ensureCurrentOrganization = helpers.ensureCurrentOrganization;
 
 
   //////
@@ -16,7 +16,8 @@ module.exports = function(app){
       translate: function(data, next){
         next(data.teams);
       }
-    }));
+    })
+  );
 
   app.get('/api/teams/:team_id/users', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
@@ -31,35 +32,48 @@ module.exports = function(app){
           console.log('You\'re not allowed to look at that team.');
         }
       }
-    }));
+    })
+  );
 
   app.post('/api/teams', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
     makeRequest({
       path: '/res/teams'
-    }));
+    })
+  );
 
   app.put('/api/teams', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/teams'
-    }));
+    })
+  );
 
   app.del('/api/teams', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/teams'
-    }));
+    })
+  );
+
+  app.get('/api/teams/maintenance', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
+    makeRequest({
+      path: '/res/maintenanceteam'
+    })
+  );
 
   app.put('/api/teams/current', function(req, res){
       req.session.team_label = req.body.team_label;
       res.send(200);
-    });
+    }
+  );
 
   app.put('/api/user_team', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/userteammgt'
-    }));
+    })
+  );
 
   app.del('/api/user_team', ensureAuthorized(['vendor_admin', 'admin']),
     makeRequest({
       path: '/res/userteammgt'
-    }));
+    })
+  );
 };
