@@ -32,6 +32,7 @@ app.configure(function(){
       .use(nib()); // Use nib for cross-browser CSS3 help
   };
 
+  app.set('app_version', '0.1.1');
   app.set('port', process.env.PORT || 3005);
   app.set('view engine', 'hbs');
   app.set('views', __dirname + '/templates');
@@ -102,7 +103,7 @@ app.configure('stage', function(){
   app.set('authUrl', 'auth.stage.intelligentarray.com');
   app.set('modelUrl', 'http://model.stage.intelligentarray.com');
   app.set('dataUrl', 'http://data.stage.intelligentarray.com');
-  app.set('staticDir', 'app.build');
+  app.set('staticDir', 'app.build.' + app.get('app_version'));
 });
 
 app.configure('production', function(){
@@ -117,7 +118,7 @@ app.configure('production', function(){
   app.set('authUrl', 'auth.intelligentarray.com');
   app.set('modelUrl', 'http://model.intelligentarray.com');
   app.set('dataUrl', 'http://data.intelligentarray.com');
-  app.set('staticDir', 'app.build');
+  app.set('staticDir', 'app.build.' + app.get('app_version'));
 });
 
 app.configure('development-vagrant', function(){
