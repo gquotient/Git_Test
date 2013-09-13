@@ -1,7 +1,7 @@
 ({
   baseUrl: '.',
   appDir: 'app',
-  dir: 'app.build.0.1.1',
+  dir: 'build/0.1.1/app',
 
   mainConfigFile: 'app/config.js',
 
@@ -22,6 +22,6 @@
   ],
 
   skipDirOptimize: true, // Only minifies modules in the build
-  optimizeCss: 'none'//ß, //Stylus does this for us
+  optimizeCss: 'none' //Stylus does this for us
   //optimize: 'none' //Use for debugging
 })

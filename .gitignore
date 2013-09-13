@@ -8,4 +8,4 @@ dump.rdb
 
 bin/auth_service.sh
 
-*.build
+build
