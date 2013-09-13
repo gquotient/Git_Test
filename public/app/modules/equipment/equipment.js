@@ -76,10 +76,6 @@ define([
       this.outgoing = new Equip.Collection();
       this.incoming = new Equip.Collection();
 
-      if (this.isExtension()) {
-        this.extension = this.collection.get(this.get('extends_from'));
-      }
-
       _.each(this.get('relationships'), function(rel){
         var other = this.collection.get(rel.target);
 
@@ -93,20 +89,30 @@ define([
       }, this);
     },
 
-    isExtension: function(){
-      return this.id && this.id.indexOf(':') >= 0;
-    },
-
     get: function(attr){
+      var extension;
+
       // If the attr exists locally return it.
       if (_.has(this.attributes, attr)) {
         return this.attributes[attr];
 
-      // Otherwise if this is an extension and the attr is not exclusivly local
-      // then try and find it up the chain.
-      } else if (this.extension && !_.contains(this.localAttributes, attr)) {
-        return this.extension.get(attr);
+      // Otherwise if this isn't exclusivly local then try and find it.
+      } else if (!_.contains(this.localAttributes, attr)) {
+        extension = this.collection.get(this.get('extends_from'));
+        return extension && extension.get(attr);
       }
+    },
+
+    getBase: function(){
+      var extension = this.collection.get(this.get('extends_from'));
+
+      return extension ? extension.getBase() : this;
+    },
+
+    getExtends: function(){
+      return this.collection.filter(function(model){
+        return model !== this && model.id.indexOf(this.id) >= 0;
+      }, this);
     },
 
     connectTo: function(target, rel){
@@ -222,28 +228,8 @@ define([
     model: Equip.Model,
     url: '/api/equipment',
 
-    getBase: function(label){
-      if (!_.isString(label)) { return; }
-
-      label = label.split(':')[0];
-
-      if (label.length && label.indexOf('_') === -1) {
-        label += '_v1';
-      }
-
-      return this.get(label);
-    },
-
-    getEquipment: function(label, options){
-      var model = this.get(label);
-
-      options = options || {};
-
-      if (!model || options.base) {
-        model = this.getBase(label);
-      }
-
-      return model;
+    getEquipment: function(label){
+      return this.get(label) || this.findWhere({label: label});
     },
 
     getForDevice: function(device){

@@ -23,12 +23,6 @@ define([
 ){
   var views = {};
 
-  function parseBaseLabel(label){
-    var match = /^([A-Z]+)_/.exec(label);
-
-    return match && match[1];
-  }
-
   views.AdminListItem = Navigation.views.AdminListItem.extend({
     template: {
       type: 'handlebars',
@@ -74,9 +68,7 @@ define([
           },
           {
             display_name: 'Base Equipment',
-            filter: function(model){
-              return !model.isExtension();
-            }
+            base: true
           }
         ])
       });
@@ -104,13 +96,14 @@ define([
 
     onShow: function(){
       var label = this.options.current,
-        category;
+        category, match;
 
       if (label && label.indexOf(':') < 0) {
-        category = this.dropdown.collection.last();
+        category = this.dropdown.collection.findWhere({base: true});
 
       } else {
-        label = parseBaseLabel(label);
+        match = /^([A-Z]+)_/.exec(label);
+        label = match && match[1];
 
         if (label) {
           category = this.dropdown.collection.find(function(model){
@@ -131,14 +124,19 @@ define([
     },
 
     setCategory: function(model){
-      this.dropdown.$el.hide();
+      var isBase = model.get('base') || false;
 
+      this.dropdown.$el.hide();
       this.ui.title.html(model.get('display_name'));
 
       this.collection.filter = model.get('filter') || function(equip) {
-        if (!equip.isExtension()) { return false; }
+        var base = equip.getBase();
 
-        return _.contains(model.get('extends_from'), parseBaseLabel(equip.id));
+        if (equip === base) {
+          return isBase;
+        } else {
+          return _.contains(model.get('extends_from'), base.get('label'));
+        }
       };
       this.collection._onReset();
     }
@@ -153,7 +151,7 @@ define([
 
     templateHelpers: function(){
       return {
-        extension: this.model.isNew() || this.model.isExtension()
+        extension: this.model.getBase() !== this.model
       };
     },
 
