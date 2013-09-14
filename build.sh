@@ -43,4 +43,4 @@ echo "* Restarting server... *"
 echo "************************"
 echo ""
 
-#sudo /etc/init.d/intelligentarray restart
+sudo /etc/init.d/intelligentarray restart
