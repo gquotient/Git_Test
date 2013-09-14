@@ -128,6 +128,9 @@ define([
         delete resp.renderings;
       }
 
+      // Force node_id to always be a string.
+      resp.node_id = '' + resp.node_id;
+
       return resp;
     }
   });

@@ -48,6 +48,7 @@ define([
     tableOptions: {
       columnSorting: true,
       stretchH: 'all',
+      fillHandle: 'vertical',
       readOnly: true
     },
 
@@ -63,12 +64,6 @@ define([
 
     onShow: function(){
       this.updateReadOnly();
-    },
-
-    collectionEvents: {
-      'change': function(model) {
-        model.lazySave();
-      }
     },
 
     comparator: function(model){

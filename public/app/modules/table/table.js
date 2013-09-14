@@ -129,16 +129,37 @@ define([
     },
 
     renderTable: function(){
+      var that = this, options;
+
       this.closeTable();
 
       if (this._rows.length > 0) {
-        this.$el.handsontable(_.extend({
+        options = {
           columns: this._columns,
           colHeaders: _.pluck(this.columns, 'name'),
           data: this._rows,
-          height: _.bind(this.$el.height, this.$el)
-        }, this.tableOptions));
+          height: _.bind(this.$el.height, this.$el),
 
+          afterChange: function(changes, source){
+            var models = {};
+
+            _.each(changes, function(row){
+              var model = that.table.getDataAtRow(row[0]);
+
+              if (model) {
+                models[model.cid] = model;
+              }
+            });
+
+            _.invoke(models, 'save');
+          }
+        };
+
+        _.each(this.tableOptions, function(value, key){
+          options[key] = _.isFunction(value) ? _.bind(value, that) : value;
+        });
+
+        this.$el.handsontable(options);
         this.table = this.$el.handsontable('getInstance');
       }
     },
