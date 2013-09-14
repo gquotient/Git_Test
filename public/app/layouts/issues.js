@@ -50,9 +50,17 @@ define([
     },
 
     selectIssue: function(issue){
+      var that = this;
+
       Backbone.history.navigate('/project/' + this.model.id + '/issues/' + issue.id);
 
-      this.issueDetail.show(new CoreLayout({model: issue, project: this.model}));
+      this.getContactInfo().done(function(){
+        that.issueDetail.show(new CoreLayout({
+          model: issue,
+          project: that.model,
+          contactInfo: that.contactInfo
+        }));
+      });
 
       this.issueNavigation.setActive(issue.id);
     },
@@ -63,6 +71,33 @@ define([
 
     onShow: function(){
       this.contentNavigation.show(this.issueNavigation);
+    },
+
+    getContactInfo: function(){
+      // Maintenance contact info
+      var that = this,
+        defer = new $.Deferred();
+
+      // If contact info hasn't been fetched yet, get it
+      if (!this.contactInfo) {
+        $.ajax({
+          url: '/api/teams/contact',
+          dataType: 'json',
+          data: {
+            team_id: this.options.org_team
+          }
+        }).done(function(contactInfo){
+          // Set contact info
+          that.contactInfo = new Backbone.Model(contactInfo);
+
+          defer.resolve(that.contactInfo);
+        });
+      } else {
+        defer.resolve(this.contactInfo);
+      }
+
+      // Return the deferred object for other methods to use
+      return defer;
     },
 
     initialize: function(options){
