@@ -1,3 +1,5 @@
+var clientInfo = require('./public/app/bower');
+
 /*global module:false*/
 module.exports = function(grunt){
 
@@ -17,14 +19,90 @@ module.exports = function(grunt){
     watch: {
       files: ['<%= jshint.files %>'],
       tasks: ['jshint']
+    },
+
+    requirejs: {
+      std: {
+        options: {
+          baseUrl: '.',
+          appDir: 'public/app',
+          dir: 'public/build/' + clientInfo.version + '/app',
+
+          mainConfigFile: 'public/app/config.js',
+
+          modules: [
+            {
+              name: 'config',
+              include: [
+                'init'
+              ],
+              exclude: [
+                'bower_components/requirejs/require',
+                'paper'
+              ]
+            },
+            {
+              name: 'paper'
+            }
+          ],
+
+          skipDirOptimize: true, // Only minifies modules in the build
+          optimizeCss: 'none', //Stylus does this for us
+          optimize: 'none' //Use for debugging
+        }
+      }
+    },
+
+    stylus: {
+      compile: {
+        options: {
+          paths: ['public/css'],
+          urlfunc: 'url'
+        },
+        files: [
+          {
+            expand: true,
+            cwd: './public/css/',
+            src: 'index.styl',
+            dest: './public/build/' + clientInfo.version + '/css/',
+            rename: function(src, dest){
+              // Rename index file to have css extension
+              return src + dest.split('.')[0] + '.css';
+            }
+          }
+        ]
+      }
+    },
+
+    copy: {
+      main: {
+        files: [
+          {
+            expand: true,
+            cwd: './public/img/',
+            src: '*',
+            dest: './public/build/' + clientInfo.version + '/img/'
+          }
+        ]
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  // Compile Stylus
+  grunt.loadNpmTasks('grunt-contrib-stylus');
+  // Abstraction of fs
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  // Compile js with r.js
+  grunt.loadNpmTasks('grunt-requirejs');
+
   grunt.loadTasks('tasks');
 
   grunt.registerTask('dev', ['jshint', 'watch']);
 
   grunt.registerTask('default', ['serve']);
+
+  // Run build tasks
+  grunt.registerTask('build', ['requirejs', 'stylus', 'copy']);
 };

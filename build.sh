@@ -1,3 +1,10 @@
+echo ""
+echo "**************************"
+echo "* Build IA Client App... *"
+echo "**************************"
+echo ""
+
+
 # Install server deps
 echo ""
 echo "*************************************"
@@ -6,6 +13,7 @@ echo "*************************************"
 echo ""
 
 npm install
+npm update
 
 # Navigate to client app and install deps
 echo ""
@@ -25,17 +33,8 @@ echo "* Compiling app... *"
 echo "********************"
 echo ""
 
-cd ../
-r.js -o app.build.js
-
-# Compile CSS
-echo ""
-echo "********************"
-echo "* Compiling CSS... *"
-echo "********************"
-echo ""
-
-stylus css -I ../node_modules/nib/lib --use url
+cd ../../
+grunt build
 
 # Restart server
 echo ""
@@ -44,4 +43,4 @@ echo "* Restarting server... *"
 echo "************************"
 echo ""
 
-sudo /etc/init.d/intelligentarray restart
+#sudo /etc/init.d/intelligentarray restart

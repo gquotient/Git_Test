@@ -142,7 +142,7 @@ module.exports = function(app){
         projects: myProjects,
         equipment: equipment,
         locale: req.user.locale || req.acceptedLanguages[0].toLowerCase(),
-        staticDir: app.get('staticDir') || 'app'
+        staticPath: app.get('staticPath')
       });
     });
   });
