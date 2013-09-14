@@ -271,10 +271,10 @@ define([
 
     onInput: function(){
       var regex = new RegExp('^' + this.parseInput(), 'i'),
-        attr = this.attribute;
+        attribute = this.attribute;
 
       this._collection.updateFilter(function(model){
-        return regex.test(model.get(attr));
+        return regex.test(model.get(attribute));
       });
     },
 
