@@ -39,6 +39,14 @@ From your project root folder, install the server dependencies: `npm install`.
 Then, install browser dependencies: `cd public/app && bower install`.
 
 
+To Build
+--------
+
+The build runs with Grunt which installs locally but needs the Grunt CLI to run. Install Grunt CLI with `npm install -g grunt-cli`.
+
+To run the build, navigate to the root directory and run `bash build.sh`.
+
+
 To run
 ------
 
