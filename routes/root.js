@@ -16,10 +16,10 @@ fs.readFile('./roles.json', 'utf8', function (err, data) {
 
 module.exports = function(app){
 
-  var helpers = require('./helpers')(app)
-  , ensureAuthenticated = helpers.ensureAuthenticated
-  , parsePortfolioFilters = helpers.parsePortfolioFilters
-  , parseEquipment = helpers.parseEquipment;
+  var helpers = require('./helpers')(app),
+    ensureAuthenticated = helpers.ensureAuthenticated,
+    parsePortfolioFilters = helpers.parsePortfolioFilters,
+    parseEquipment = helpers.parseEquipment;
 
 
   app.all('/', ensureAuthenticated, function(req, res){
@@ -38,10 +38,10 @@ module.exports = function(app){
     };
 
     var user,
-        portfolios,
-        projects,
-        equipment,
-        everythingLoaded = Q.defer();
+      portfolios,
+      projects,
+      equipment,
+      everythingLoaded = Q.defer();
 
     var resolveEverythingLoaded = function(){
       if (portfolios && projects && equipment) {
