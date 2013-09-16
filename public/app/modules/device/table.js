@@ -66,6 +66,10 @@ define([
       this.updateReadOnly();
     },
 
+    onAfterChange: function(models, source){
+      _.invoke(models, 'lazySave');
+    },
+
     comparator: function(model){
       var equip = model.equipment,
         order = equip ? '' + equip.get('order') : '9999';

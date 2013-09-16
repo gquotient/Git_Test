@@ -147,17 +147,27 @@ define([
           observeChanges: false,
 
           afterChange: function(changes, source){
-            var models = {};
+            var models = [],
+              seen = [];
 
             _.each(changes, function(row){
-              var model = that.table.getDataAtRow(row[0]);
+              var model;
 
+              // Don't include duplicate models or non-changes.
+              if (_.contains(seen, row[0]) || _.isEqual(row[2], row[3])) {
+                return;
+              }
+              seen.push(row[0]);
+
+              model = that.table.getDataAtRow(row[0]);
               if (model) {
-                models[model.cid] = model;
+                models.push(model);
               }
             });
 
-            _.invoke(models, 'save');
+            if (models.length) {
+              that.triggerMethod('after:change', models, source);
+            }
           }
         };
 
