@@ -131,6 +131,11 @@ define([
     renderTable: function(){
       var that = this, options;
 
+      // Hack to avoid errors when $.contextMenu plugin doesn't exist
+      if (!_.isFunction($.contextMenu)) {
+        $.contextMenu = function() {};
+      }
+
       this.closeTable();
 
       if (this._rows.length > 0) {
@@ -139,6 +144,7 @@ define([
           colHeaders: _.pluck(this.columns, 'name'),
           data: this._rows,
           height: _.bind(this.$el.height, this.$el),
+          observeChanges: false,
 
           afterChange: function(changes, source){
             var models = {};
@@ -171,12 +177,6 @@ define([
 
     closeTable: function(){
       if (this.table) {
-
-        // Hack to avoid errors when $.contextMenu plugin doesn't exist
-        if (!_.isFunction($.contextMenu)) {
-          $.contextMenu = function() {};
-        }
-
         this.table.destroy();
       }
     }
