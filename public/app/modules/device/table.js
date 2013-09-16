@@ -37,7 +37,7 @@ define([
         name: 'Equipment',
         type: 'dropdown',
         source: function(model){
-          var base = model.equipment && model.equipment.getBase();
+          var base = model.equipment && model.equipment.getBase(),
             source = base && base.getExtends();
 
           return _.invoke(source, 'get', 'display_name');
