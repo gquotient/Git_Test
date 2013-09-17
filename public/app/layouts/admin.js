@@ -168,7 +168,7 @@ define([
 
     showAlarms: function(){
       var layout = new AlarmsLayout({
-
+        projects: ia.projects
       });
 
       this.pageContent.show(layout);
