@@ -38,9 +38,9 @@ define([
         type: 'dropdown',
         source: function(model){
           var base = model.equipment && model.equipment.getBase(),
-            source = base && base.getExtends();
+            models = base && base.getExtends();
 
-          return _.invoke(source, 'get', 'display_name');
+          return _.invoke(models, 'get', 'display_name');
         }
       }
     ],
@@ -86,9 +86,11 @@ define([
     },
 
     setEquipment: function(model, value){
-      var equip = this.equipment.findWhere({display_name: value});
+      var equip = this.equipment.findWhere({display_name: value}),
+        base = model.equipment && model.equipment.getBase(),
+        models = base && [base].concat(base.getExtends());
 
-      if (equip) {
+      if (equip && _.contains(models, equip)) {
         model.set({equipment_label: equip.id});
         model.equipment = equip;
       }
