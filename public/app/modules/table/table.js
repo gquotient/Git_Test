@@ -157,9 +157,10 @@ define([
               if (_.contains(seen, row[0]) || _.isEqual(row[2], row[3])) {
                 return;
               }
-              seen.push(row[0]);
 
+              seen.push(row[0]);
               model = that.table.getDataAtRow(row[0]);
+
               if (model) {
                 models.push(model);
               }

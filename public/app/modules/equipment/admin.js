@@ -151,7 +151,7 @@ define([
 
     templateHelpers: function(){
       return {
-        extension: this.model.getBase() !== this.model
+        extension: this.model.isNew() || this.model.getBase() !== this.model
       };
     },
 
