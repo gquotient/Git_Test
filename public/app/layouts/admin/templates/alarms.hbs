@@ -1,1 +1,8 @@
 <h3>Alarms</h3>
+{{ debug }}
+Select Project:
+<select class="project">
+  {{#each projects}}
+  <option value="{{ project_label }}">{{ display_name }}</option>
+  {{/each}}
+</select>

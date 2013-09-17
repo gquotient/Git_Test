@@ -88,8 +88,8 @@ define([
       });
     },
 
-    alarmAdmin: function(){
-      // this.mainLayout.showAdmin().showAlarms();
+    alarmsAdmin: function(){
+      this.mainLayout.showAdmin().showAlarms();
     },
 
     portfoliosAdmin: function(id){
@@ -142,6 +142,8 @@ define([
 
       'admin/portfolios/:id': 'portfoliosAdmin',
       'admin/portfolios': 'portfoliosAdmin',
+
+      'admin/alarms': 'alarmsAdmin',
 
       'admin/projects/:id/:view': 'projectEditor',
       'admin/projects/:id': 'projectAdmin',

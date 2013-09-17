@@ -192,14 +192,6 @@ define([
         display_name: 'Admin'
       });
 
-      $.ajax({
-        url: '/api/project_alarms',
-        data: {
-          project_label: 'DDEALER_01'
-        }
-      })
-      .always(function(){console.log(arguments);});
-
       this.listenTo(Backbone, 'select:admin', function(){
         this.showUsers();
       });
