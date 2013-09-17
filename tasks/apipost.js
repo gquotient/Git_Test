@@ -6,6 +6,7 @@ module.exports = function(grunt){
   grunt.registerMultiTask('apipost', 'Post data to an API', function(){
     var records = [],
       data = this.data,
+      host = grunt.option('host') || this.data.host,
       done = this.async();
 
     this.filesSrc.forEach(function(filepath){
@@ -17,20 +18,19 @@ module.exports = function(grunt){
     });
 
     grunt.util.async.forEach(records, function(record, callback){
-      var uri = data.host;
+      var path = _.isFunction(data.path) ? data.path(record) : data.path;
 
-      uri += (_.isFunction(data.path) ? data.path(record) : data.path)
-        .replace(/:(\w+)(?=\/|$)/g, function(match, label){
-          return record[label];
-        });
+      path = path.replace(/:(\w+)(?=\/|$)/g, function(match, label){
+        return record[label];
+      });
 
       request({
         method: 'POST',
-        uri: uri,
+        uri: host + path,
         form: _.isFunction(data.form) ? data.form(record) : record
       },
       function(err, resp, body){
-        grunt.log.subhead(uri);
+        grunt.log.subhead(host + path);
 
         if (err) {
           grunt.fail.fatal(err);

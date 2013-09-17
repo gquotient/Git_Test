@@ -118,4 +118,13 @@ module.exports = function(grunt){
 
   // Run build tasks
   grunt.registerTask('build', ['requirejs', 'stylus', 'copy']);
+
+  // Post equipment.json data to equipment database.
+  grunt.registerTask('postequip', function(){
+    if (grunt.option('staging')) {
+      grunt.option('host', 'http://equip.stage.intelligentarray.com');
+    }
+
+    grunt.task.run('apipost:equip');
+  });
 };
