@@ -7,6 +7,8 @@ define([
 
   'ia',
 
+  'layouts/admin/alarms/projectAlarms',
+
   'hbs!layouts/admin/templates/alarms'
 ], function(
   _,
@@ -17,12 +19,17 @@ define([
 
   ia,
 
+  ProjectAlarmsLayout,
+
   alarmsTemplate
 ){
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',
       template: alarmsTemplate
+    },
+    regions: {
+      projectAlarms: '.projectAlarms'
     },
     initialize: function(options) {
       // Update breadcrumbs
@@ -37,13 +44,25 @@ define([
       Backbone.history.navigate('/admin/alarms');
     },
     selectProject: function(project){
+      var that = this,
+        projectAlarmsLayout;
+
       $.ajax({
         url: '/api/project_alarms',
+        dataType: 'json',
         data: {
           project_label: project.get('project_label')
         }
       })
-      .always(function(){console.log(arguments);});
+      .done(function(alarms){
+        console.log(alarms);
+        projectAlarmsLayout = new ProjectAlarmsLayout({
+          model: project,
+          alarms: alarms
+        });
+
+        that.projectAlarms.show(projectAlarmsLayout);
+      });
     },
     events: {
       'change select.project': function(event){
@@ -52,7 +71,9 @@ define([
           project_label: event.target.value
         });
 
-        this.selectProject(project);
+        if (project) {
+          this.selectProject(project);
+        }
       }
     },
     serializeData: function(){

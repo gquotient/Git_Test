@@ -1,0 +1,18 @@
+<thead>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Trigger Condition</th>
+  </tr>
+</thead>
+<tbody>
+  {{#each alarms}}
+  <tr>
+    <td>{{ name }}</td>
+    <td>{{ description }}</td>
+    <td>
+      {{ prettyColumnName column_name }} {{ comparator }} {{ roundNumber threshold 0 }}
+    </td>
+  </tr>
+  {{/each}}
+</tbody>

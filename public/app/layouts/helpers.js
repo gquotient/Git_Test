@@ -110,4 +110,13 @@ function(
     return options.inverse(this);
   });
 
+  Handlebars.registerHelper('prettyColumnName', function(name) {
+    var columnNames = {
+      ac_power_mean: 'AC Power'
+    };
+
+    return columnNames[name] || name;
+  });
+
+  return Handlebars.helpers;
 });
