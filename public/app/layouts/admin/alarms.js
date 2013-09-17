@@ -31,6 +31,9 @@ define([
     regions: {
       projectAlarms: '.projectAlarms'
     },
+    ui: {
+      projectAlarms: '.projectAlarms'
+    },
     initialize: function(options) {
       // Update breadcrumbs
       Backbone.trigger('reset:breadcrumbs', {
@@ -46,6 +49,9 @@ define([
     selectProject: function(project){
       var that = this,
         projectAlarmsLayout;
+
+      this.projectAlarms.close();
+      this.ui.projectAlarms.append('<span class="loadingIndicator"></span>');
 
       $.ajax({
         url: '/api/project_alarms',
