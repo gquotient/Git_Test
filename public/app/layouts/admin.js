@@ -140,7 +140,7 @@ define([
       return layout;
     },
 
-    showProject: function(id){
+    showProjects: function(id){
       var layout = new ProjectsLayout({
         collection: ia.alignedProjects,
         user: ia.currentUser,
@@ -182,7 +182,7 @@ define([
         // Get current target so it works on bubbled up event
         var route = event.currentTarget.id;
 
-        Backbone.trigger('select:' + route);
+        Backbone.trigger('select:' + route, {route: route});
       }
     },
 
@@ -192,35 +192,14 @@ define([
         display_name: 'Admin'
       });
 
-      this.listenTo(Backbone, 'select:admin', function(){
-        this.showUsers();
-      });
+      // NOTE - This may not be the best way to handle admin routes but,
+      // it's less ugly than before
+      this.listenTo(Backbone, 'select', function(data){
+        var route = data.route;
+        route = route.charAt(0).toUpperCase() + route.slice(1);
 
-      this.listenTo(Backbone, 'select:users', function(){
-        this.showUsers();
+        this['show' + route]();
       });
-
-      this.listenTo(Backbone, 'select:teams', function(){
-        this.showTeams();
-      });
-
-      this.listenTo(Backbone, 'select:portfolios', function(){
-        this.showPortfolios();
-      });
-
-      this.listenTo(Backbone, 'select:alarms', function(){
-        this.showAlarms();
-      });
-
-      this.listenTo(Backbone, 'select:projects', function(){
-        this.showProject();
-      });
-
-      this.listenTo(Backbone, 'select:equipment', function(){
-        this.showEquipment();
-      });
-
     }
   });
-
 });

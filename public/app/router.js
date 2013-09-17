@@ -97,7 +97,7 @@ define([
     },
 
     projectAdmin: function(id){
-      this.mainLayout.showAdmin().showProject(id);
+      this.mainLayout.showAdmin().showProjects(id);
     },
 
     projectEditor: function(id, view){
