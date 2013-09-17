@@ -6,7 +6,7 @@ module.exports = function(app){
     , ensureAuthorized = helpers.ensureAuthorized
     , ensureCurrentOrganization = helpers.ensureCurrentOrganization
     , makeRequest = helpers.makeRequest;
-    
+
 
   app.get('/api/alarms', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
     makeRequest({
@@ -24,5 +24,11 @@ module.exports = function(app){
         }
       }).pipe(res);
     }
+  );
+
+  app.get('/api/project_alarms', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
+    makeRequest({
+      path: '/res/project_alarms'
+    })
   );
 };

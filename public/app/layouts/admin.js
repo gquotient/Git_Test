@@ -16,6 +16,7 @@ define([
   'layouts/admin/portfolios',
   'layouts/admin/projects',
   'layouts/admin/equipment',
+  'layouts/admin/alarms',
 
   'hbs!layouts/templates/admin'
 ], function(
@@ -36,6 +37,7 @@ define([
   PortfoliosLayout,
   ProjectsLayout,
   EquipmentLayout,
+  AlarmsLayout,
 
   adminTemplate
 ){
@@ -67,6 +69,8 @@ define([
         trigger: 'select:equipment'
       },
       'alarms': {
+        title: 'Alarms',
+        trigger: 'select:alarms'
       }
     }
   };
@@ -163,7 +167,14 @@ define([
     },
 
     showAlarms: function(){
+      var layout = new AlarmsLayout({
 
+      });
+
+      this.pageContent.show(layout);
+      this.highlightLink('alarms');
+
+      return layout;
     },
 
     events: {
@@ -181,6 +192,14 @@ define([
         display_name: 'Admin'
       });
 
+      $.ajax({
+        url: '/api/project_alarms',
+        data: {
+          project_label: 'DDEALER_01'
+        }
+      })
+      .always(function(){console.log(arguments);});
+
       this.listenTo(Backbone, 'select:admin', function(){
         this.showUsers();
       });
@@ -195,6 +214,10 @@ define([
 
       this.listenTo(Backbone, 'select:portfolios', function(){
         this.showPortfolios();
+      });
+
+      this.listenTo(Backbone, 'select:alarms', function(){
+        this.showAlarms();
       });
 
       this.listenTo(Backbone, 'select:projects', function(){
