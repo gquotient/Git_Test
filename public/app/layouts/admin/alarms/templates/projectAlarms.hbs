@@ -2,16 +2,16 @@
   <tr>
     <th>Name</th>
     <th>Description</th>
-    <th>Trigger Condition</th>
+    <th>Conditions</th>
   </tr>
 </thead>
 <tbody>
   {{#each alarms}}
   <tr>
-    <td>{{ name }}</td>
+    <td>{{ display_name }}</td>
     <td>{{ description }}</td>
     <td>
-      {{ prettyColumnName column_name }} {{ comparator }} {{ roundNumber threshold 0 }}
+      {{ conditions.length }}
     </td>
   </tr>
   {{/each}}
