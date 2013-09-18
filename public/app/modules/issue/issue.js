@@ -49,10 +49,9 @@ function(
       };
     },
     acknowledge: function(userId){
-      console.log('acknowledge', this, arguments);
+      // Ask user for an acknowledge comment
       var comment = window.prompt('Please enter a comment to acknowledge this alarm');
 
-      console.log(comment);
       var that = this;
 
       return $.ajax({
@@ -68,13 +67,11 @@ function(
       });
     },
     resolve: function(){
-      console.log('resolve', this);
       var that = this;
 
       return $.ajax({
         url: '/api/alarms/resolve/' + this.collection.project.id + '/' + this.id,
       }).done(function(data){
-        console.log(data.alarm);
         // Update model
         that.set(data.alarm);
       });
