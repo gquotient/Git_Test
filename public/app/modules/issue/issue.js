@@ -56,7 +56,8 @@ function(
       var that = this;
 
       return $.ajax({
-        url: '/api/alarms/' + this.collection.project + '/' + this.id,
+        url: '/api/alarms/' + this.collection.project.id + '/' + this.id,
+        type: 'PUT',
         data: {
           user_info: userId,
           comment: comment
@@ -64,6 +65,18 @@ function(
       }).done(function(model){
         // Update model
         that.set(model);
+      });
+    },
+    resolve: function(){
+      console.log('resolve', this);
+      var that = this;
+
+      return $.ajax({
+        url: '/api/alarms/resolve/' + this.collection.project.id + '/' + this.id,
+      }).done(function(data){
+        console.log(data.alarm);
+        // Update model
+        that.set(data.alarm);
       });
     }
   });

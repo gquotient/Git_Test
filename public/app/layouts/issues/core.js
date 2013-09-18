@@ -54,6 +54,9 @@ define([
         if (confirm) {
           this.model.destroy();
         }
+      },
+      'click .resolve': function(event){
+        this.model.resolve();
       }
     },
 

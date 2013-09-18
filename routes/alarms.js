@@ -14,6 +14,7 @@ module.exports = function(app){
     })
   );
 
+  // Get project alarms
   app.get('/api/alarms/:projectId?',
     function(req, res){
       request({
@@ -26,11 +27,13 @@ module.exports = function(app){
     }
   );
 
+  // Acknowledge
   app.put('/api/alarms/:projectId?/:alarmId?',
     function(req, res){
       request({
-        method: 'GET',
+        method: 'POST',
         uri: app.get('dataUrl') + '/alarms/ack/' + req.params.projectId + '/' + req.params.alarmId,
+        form: req.body,
         headers: {
           'accept-encoding' : 'gzip,deflate'
         }
@@ -38,12 +41,27 @@ module.exports = function(app){
     }
   );
 
-  app.del('/api/alarms/:projectId?/:alarmId?',
+  // Resolve
+  app.get('/api/alarms/resolve/:projectId?/:alarmId?',
     function(req, res){
       console.log('delete', req.params.alarmId);
       request({
         method: 'POST',
-        uri: app.get('dataUrl') + '/alarms/delete/' + req.params.projectId + '/' + req.params.alarmId,
+        uri: app.get('dataUrl') + '/alarms/resolve/' + req.params.projectId + '/' + req.params.alarmId,
+        headers: {
+          'accept-encoding' : 'gzip,deflate'
+        }
+      }).pipe(res);
+    }
+  );
+
+  // Delete
+  app.del('/api/alarms/:projectId?/:alarmId?',
+    function(req, res){
+      console.log('delete', req.params.alarmId);
+      request({
+        method: 'DEL',
+        uri: app.get('dataUrl') + '/alarms/' + req.params.projectId + '/' + req.params.alarmId,
         headers: {
           'accept-encoding' : 'gzip,deflate'
         }
