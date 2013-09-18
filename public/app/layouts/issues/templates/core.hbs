@@ -5,7 +5,7 @@
   <strong>{{$ 'Device' }}</strong>: <span class="deviceName"></span><br>
   <strong>{{$ 'Created On'}}</strong>: {{ date alarm.activated_at }}<br>
   <strong>{{$ 'Trigger Condition' }}</strong>: {{ prettyColumnName alarm.device_column }} {{ alarm.active_conditions.0.comparator }} {{ roundNumber alarm.active_conditions.0.threshold 0 }} <br>
-  <strong>{{$ 'Acknowledged' }}</strong>: {{ alarm.acked }} <br>
+  <strong>{{$ 'Acknowledged' }}</strong>: {{ alarm.acked }} {{#unless alarm.acked}}False{{/unless}} <br>
   <br>
   {{#unless alarm.acked}}
   <button class="button acknowledge sml">Acknowledge</button>
