@@ -82,14 +82,6 @@ define([
       }, this);
     },
     initialize: function(options){
-      // Update breadcrumbs
-      Backbone.trigger('reset:breadcrumbs', {
-        state:'admin',
-        display_name: 'Admin'
-      });
-
-      Backbone.trigger('set:breadcrumbs', {state:'portfolios', display_name:'Portfolios'});
-
       // Cache portfolio table
       this.portfolioTable = new Portfolio.views.EditTable({
         collection: this.options.collection,
@@ -102,9 +94,6 @@ define([
       this.listenTo(this.portfolioTable, 'itemview:edit', function(itemView){
         this.edit(itemView.model);
       });
-
-      // Update history
-      Backbone.history.navigate('/admin/portfolios');
     }
   });
 

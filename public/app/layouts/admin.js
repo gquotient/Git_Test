@@ -177,6 +177,22 @@ define([
       return layout;
     },
 
+    showRoute: function(route, id){
+      var routeCapital = route.charAt(0).toUpperCase() + route.slice(1);
+
+      Backbone.trigger('reset:breadcrumbs', {
+        state:'admin',
+        display_name: 'Admin'
+      });
+
+      Backbone.trigger('set:breadcrumbs', {state: route, display_name: routeCapital});
+
+      // Update history
+      Backbone.history.navigate('/admin/' + route);
+
+      this['show' + routeCapital](id);
+    },
+
     events: {
       'click .nav_content li': function(event){
         // Get current target so it works on bubbled up event
@@ -195,10 +211,7 @@ define([
       // NOTE - This may not be the best way to handle admin routes but,
       // it's less ugly than before
       this.listenTo(Backbone, 'select', function(data){
-        var route = data.route;
-        route = route.charAt(0).toUpperCase() + route.slice(1);
-
-        this['show' + route]();
+        this.showRoute(data.route);
       });
     }
   });

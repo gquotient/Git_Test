@@ -74,11 +74,11 @@ define([
     },
 
     usersAdmin: function(){
-      this.mainLayout.showAdmin().showUsers();
+      this.mainLayout.showAdmin().showRoute('users');
     },
 
     teamsAdmin: function(){
-      this.mainLayout.showAdmin().showTeams();
+      this.mainLayout.showAdmin().showRoute('teams');
     },
 
     teamAdminDetail: function(teamID){
@@ -89,25 +89,25 @@ define([
     },
 
     alarmsAdmin: function(){
-      this.mainLayout.showAdmin().showAlarms();
+      this.mainLayout.showAdmin().showRoute('alarms');
     },
 
     portfoliosAdmin: function(id){
-      this.mainLayout.showAdmin().showPortfolios(id);
+      this.mainLayout.showAdmin().showRoute('portfolios', id);
     },
 
-    projectAdmin: function(id){
-      this.mainLayout.showAdmin().showProjects(id);
+    projectsAdmin: function(id){
+      this.mainLayout.showAdmin().showRoute('projects', id);
     },
 
-    projectEditor: function(id, view){
+    projectsEditor: function(id, view){
       this.mainLayout.showProjectEditor(id, {
         view: view
       });
     },
 
     equipmentAdmin: function(id){
-      this.mainLayout.showAdmin().showEquipment(id);
+      this.mainLayout.showAdmin().showRoute('equipment', id);
     },
 
     initialize: function(){
@@ -145,9 +145,9 @@ define([
 
       'admin/alarms': 'alarmsAdmin',
 
-      'admin/projects/:id/:view': 'projectEditor',
-      'admin/projects/:id': 'projectAdmin',
-      'admin/projects': 'projectAdmin',
+      'admin/projects/:id/:view': 'projectsEditor',
+      'admin/projects/:id': 'projectsAdmin',
+      'admin/projects': 'projectsAdmin',
 
       'admin/equipment/:id': 'equipmentAdmin',
       'admin/equipment': 'equipmentAdmin',

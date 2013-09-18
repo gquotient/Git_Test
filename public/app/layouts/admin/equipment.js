@@ -43,17 +43,6 @@ define([
       this.listenTo(this.listView, 'select', this.showDetail);
       this.listenTo(this.listView, 'save', this.saveDetail);
       this.listenTo(this.listView, 'cancel', this.hideDetail);
-
-      // Update breadcrumbs
-      Backbone.trigger('reset:breadcrumbs', {
-        state:'admin',
-        display_name: 'Admin'
-      });
-
-      Backbone.trigger('set:breadcrumbs', {state:'equipment', display_name:'Equipment'});
-
-      // Update history
-      Backbone.history.navigate('/admin/equipment');
     },
 
     onShow: function(){

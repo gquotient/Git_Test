@@ -34,23 +34,10 @@ define([
     ui: {
       projectAlarms: '.projectAlarms'
     },
-    initialize: function(options) {
-      // Update breadcrumbs
-      Backbone.trigger('reset:breadcrumbs', {
-        state:'admin',
-        display_name: 'Admin'
-      });
-
-      Backbone.trigger('set:breadcrumbs', {state:'alarms', display_name:'Alarms'});
-
-      // Update history
-      Backbone.history.navigate('/admin/alarms');
-    },
     selectProject: function(project){
       var that = this,
         projectAlarmsLayout;
 
-      this.projectAlarms.close();
       this.ui.projectAlarms.append('<span class="loadingIndicator"></span>');
 
       $.ajax({
@@ -72,6 +59,8 @@ define([
     },
     events: {
       'change select.project': function(event){
+        this.projectAlarms.close();
+
         // Get project from selected id
         var project = this.options.projects.findWhere({
           project_label: event.target.value

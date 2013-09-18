@@ -52,17 +52,6 @@ define([
 
       this.listenTo(this.mapView, 'select', this.showDetail);
       this.listenTo(this.mapView, 'locate', this.updateLocation);
-
-      // Update breadcrumbs
-      Backbone.trigger('reset:breadcrumbs', {
-        state:'admin',
-        display_name: 'Admin'
-      });
-
-      Backbone.trigger('set:breadcrumbs', {state:'projects', display_name:'Projects'});
-
-      // Update history
-      Backbone.history.navigate('/admin/projects');
     },
 
     onShow: function(){
