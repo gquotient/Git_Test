@@ -1,7 +1,7 @@
 {
   "name": "draker-core-ui",
   "description": "Awesome App of Awesomeness",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "dependencies": {
     "es5-shim": "latest",
     "underscore": "latest",
