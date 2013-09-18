@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
   'handlebars',
 
+  'ia',
+
   'project',
   'device',
   'chart',
@@ -17,6 +19,8 @@ define([
   Backbone,
   Marionette,
   Handlebars,
+
+  ia,
 
   Project,
   Device,
@@ -40,6 +44,16 @@ define([
       'click .device': function(event){
         event.preventDefault();
         Backbone.history.navigate('/project/' + this.project.id + '/devices/' + this.device.get('graph_key'), true);
+      },
+      'click .acknowledge': function(event){
+        console.log(ia.currentUser);
+        this.model.acknowledge(ia.currentUser.id);
+      },
+      'click .delete': function(event){
+        var confirm = window.confirm('Are you sure you want to delete this alarm?');
+        if (confirm) {
+          this.model.destroy();
+        }
       }
     },
 

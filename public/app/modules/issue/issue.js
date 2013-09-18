@@ -33,6 +33,9 @@ function(
   var Issue = { views: {} };
 
   Issue.Model = Backbone.Model.extend({
+    url: function(){
+      return '/api/alarms/' + this.collection.project.id + '/' + this.id;
+    },
     idAttribute: 'uid',
     getLocalDate: function(){
       var timezone = this.collection.project.get('timezone'),
@@ -44,12 +47,30 @@ function(
         start: (this.get('fault_start') * 1000) + offset,
         stop: (this.get('fault_stop') * 1000) + offset
       };
+    },
+    acknowledge: function(userId){
+      console.log('acknowledge', this, arguments);
+      var comment = window.prompt('Please enter a comment to acknowledge this alarm');
+
+      console.log(comment);
+      var that = this;
+
+      return $.ajax({
+        url: '/api/alarms/' + this.collection.project + '/' + this.id,
+        data: {
+          user_info: userId,
+          comment: comment
+        }
+      }).done(function(model){
+        // Update model
+        that.set(model);
+      });
     }
   });
 
   Issue.Collection = Backbone.Collection.extend({
     url: function(options){
-      return '/api/alarms/active/' + this.project.id;
+      return '/api/alarms/' + this.project.id;
     },
     model: Issue.Model,
     initialize: function(models, options){

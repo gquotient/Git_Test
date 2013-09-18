@@ -89,5 +89,7 @@
   "Alarm Status": "Alarm Status",
   "Created On": "Created On",
   "Trigger Condition": "Trigger Condition",
+  "Acknowledge": "Acknowledge",
+  "Acknowledged": "Acknowledged",
   "There are currently no active alarms": "There are currently no active alarms"
 }
