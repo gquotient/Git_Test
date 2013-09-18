@@ -56,7 +56,9 @@ define([
         }
       },
       'click .resolve': function(event){
-        this.model.resolve();
+        this.model.resolve().done(function(){
+          Backbone.history.navigate('/project/' + this.project.id + '/alarms', true);
+        });
       }
     },
 
