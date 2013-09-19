@@ -123,10 +123,13 @@ define([
         el: '#site_label',
         editable: false,
         parse: function(value){
-          return value.toUpperCase().replace(/[^A-Z]+/g, '');
+          return value.toUpperCase();
         },
         validate: function(value){
-          return (/^[A-Z]{3,}$/).test(value);
+          return /^[A-Z]{3,}$/.test(value);
+        },
+        success: function(value){
+          this.updateValues({site_label: value});
         }
       },
 

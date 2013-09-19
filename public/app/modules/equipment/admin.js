@@ -159,10 +159,13 @@ define([
         el: '#label',
         editable: false,
         parse: function(value){
-          return value.toUpperCase().replace(/[^A-Z]+/g, '');
+          return value.toUpperCase();
         },
         validate: function(value){
-          return (/^[A-Z]+$/).test(value);
+          return /^[A-Z0-9]+$/.test(value);
+        },
+        success: function(value){
+          this.updateValues({label: value});
         }
       },
 
