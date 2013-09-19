@@ -259,27 +259,29 @@ function(
 
     _compileSchema: function(){
       var schema = Marionette.getOption(this, 'schema'),
-        modelSchema = this.model.schema || {};
+        modelSchema = this.model.schema || {},
+        handler;
 
       if (_.isFunction(schema)) {
         schema = schema.call(this);
       }
 
       this.schemaEvents = {};
-      this.schemaUI = {};
       this._schema = {};
 
       _.each(schema, function(params, attr){
         params = _.extend({}, modelSchema[attr], params);
 
-        this.schemaEvents['blur.schema ' + params.el] = this.parser(attr, params);
-        this.schemaUI[attr] = params.el;
+        handler = this.createSchemaHandler(attr, params);
+        this.schemaEvents['blur.schema ' + params.el] = handler;
+
         this._schema[attr] = params;
       }, this);
     },
 
-    parser: function(attr, options){
-      var validator = this.validator(options);
+    createSchemaHandler: function(attr, options){
+      var parser = options.parse,
+        validator = options.validate;
 
       return function(){
         var $el = this.ui[attr], value;
@@ -287,8 +289,8 @@ function(
         if ($el && $el.val) {
           value = $el.val().trim();
 
-          if (options.parse) {
-            value = options.parse.call(this, value);
+          if (parser) {
+            value = parser.call(this, value);
           }
 
           if (validator && !validator.call(this, value)) {
@@ -310,43 +312,42 @@ function(
       };
     },
 
-    validator: function(options){
-      return options.validate;
-    },
-
     bindUIElements: function(){
       this.ui = {};
 
       Marionette.View.prototype.bindUIElements.apply(this, arguments);
 
-      _.each(this.schemaUI, function(selector, attr){
-        this.ui[attr] = this.$(selector);
-      }, this);
-
-      this.updateEditable();
+      this.bindSchemaElements();
     },
 
-    updateEditable: function(){
-      var global = Marionette.getOption(this, 'editable'),
+    bindSchemaElements: function(){
+      var editable = this.isEditable(),
         existing = !this.model.isNew();
 
-      if (_.isFunction(global)) {
-        global = global.call(this);
-      }
-
       _.each(this._schema, function(params, attr){
-        var $el = this.ui[attr],
-          local = params.editable,
-          editable = global !== false;
+        var $el = this.ui[attr] = this.$(params.el),
+          disabled = !editable || (existing && !this.isEditable(attr));
 
         if ($el) {
-          if (editable && existing) {
-            editable = (_.isFunction(local) ? local.call(this) : local) !== false;
-          }
-
-          $el.prop('disabled', !editable);
+          $el.prop('disabled', disabled);
         }
       }, this);
+    },
+
+    isEditable: function(attr){
+      var editable;
+
+      if (attr) {
+        editable = this._schema[attr].editable;
+      } else {
+        editable = Marionette.getOption(this, 'editable');
+      }
+
+      if (_.isFunction(editable)) {
+        editable = editable.call(this);
+      }
+
+      return editable !== false;
     },
 
     updateValues: function(values){
