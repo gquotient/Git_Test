@@ -162,7 +162,7 @@ define([
           return value.toUpperCase();
         },
         validate: function(value){
-          return /^[A-Z0-9]+$/.test(value);
+          return (/^[A-Z0-9]+$/).test(value);
         },
         success: function(value){
           this.updateValues({label: value});
