@@ -394,7 +394,7 @@ define([
     },
 
     addNote: function(note, user){
-      this.set({
+      this.save({
         notes: this.formatNote(note, user) + this.get('notes')
       }, {lazy: true});
     },

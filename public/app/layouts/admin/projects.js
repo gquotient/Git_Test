@@ -76,9 +76,9 @@ define([
 
           if (current) {
             this.showDetail(current);
+          } else {
+            this.mapView.centerMap();
           }
-
-          this.mapView.centerMap();
         }, this)
       });
     },
