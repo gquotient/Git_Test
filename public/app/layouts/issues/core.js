@@ -39,30 +39,34 @@ define([
       chart: '.chart',
       deviceName: '.deviceName'
     },
-
+    triggers: {
+      'click .acknowledge': 'acknowledge',
+      'click .resolve': 'resolve',
+      'click .delete': 'delete'
+    },
     events: {
       'click .device': function(event){
         event.preventDefault();
         Backbone.history.navigate('/project/' + this.project.id + '/devices/' + this.device.get('graph_key'), true);
-      },
-      'click .acknowledge': function(event){
-        this.model.acknowledge(ia.currentUser.id);
-      },
-      'click .delete': function(event){
-        // Confirm user actually wants to delete the alarm
-        var confirm = window.confirm('Are you sure you want to delete this alarm?');
+      }
+    },
+    onAcknowledge: function(){
+      this.model.acknowledge(ia.currentUser.get('email'));
+    },
+    onResolve: function(){
+      // Resolve the alarm
+      this.model.resolve().done(function(){
+        // And navigate back to main issues page
+        Backbone.history.navigate('/project/' + this.project.id + '/alarms', true);
+      });
+    },
+    onDelete: function(){
+      // Confirm user actually wants to delete the alarm
+      var confirm = window.confirm('Are you sure you want to delete this alarm?');
 
-        // If confirm returns true, destroy model
-        if (confirm) {
-          this.model.destroy();
-        }
-      },
-      'click .resolve': function(event){
-        // Resolve the alarm
-        this.model.resolve().done(function(){
-          // And navigate back to main issues page
-          Backbone.history.navigate('/project/' + this.project.id + '/alarms', true);
-        });
+      // If confirm returns true, destroy model
+      if (confirm) {
+        this.model.destroy();
       }
     },
     modelEvents: {
