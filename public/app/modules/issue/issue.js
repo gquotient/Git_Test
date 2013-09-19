@@ -12,7 +12,9 @@ define([
   'hbs!issue/templates/tableRow',
   'hbs!issue/templates/tableRowEmpty',
   'hbs!issue/templates/navigationItem',
-  'hbs!issue/templates/navigationList'
+  'hbs!issue/templates/navigationList',
+  'hbs!issue/templates/alarmTemplateTable',
+  'hbs!issue/templates/alarmTemplateTableRow'
 ],
 function(
   $,
@@ -28,7 +30,9 @@ function(
   tableRowTemplate,
   tableRowEmptyTemplate,
   navigationItemTemplate,
-  navigationListTemplate
+  navigationListTemplate,
+  alarmTemplateTableTemplate,
+  alarmTemplateTableRowTemplate
 ){
   var Issue = { views: {} };
 
@@ -93,9 +97,7 @@ function(
   });
 
   Issue.views.Table = Marionette.CompositeView.extend({
-    attributes: {
-      class: 'basic'
-    },
+    className: 'basic',
     template: {
       type: 'handlebars',
       template: tableTemplate
@@ -146,6 +148,38 @@ function(
 
     // Tell the composite view which view to use as for each portfolio.
     itemView: Issue.views.NavigationItem
+  });
+
+  Issue.TemplateCollection = Backbone.Collection.extend({
+    url: function(){
+      return '/api/project_alarms/' + this.project.id;
+    },
+    initialize: function(models, options){
+      this.project = options.project;
+    }
+  });
+
+  Issue.views.AlarmTemplateTableRow = Marionette.ItemView.extend({
+    tagName: 'tr',
+    template: {
+      type: 'handlebars',
+      template: alarmTemplateTableRowTemplate
+    },
+    triggers: {
+      'click .addCondition': 'addCondition'
+    }
+  });
+
+  Issue.views.AlarmTemplateTable = Marionette.CompositeView.extend({
+    tagName: 'table',
+    template: {
+      type: 'handlebars',
+      template: alarmTemplateTableTemplate
+    },
+    className: 'basic',
+    itemViewContainer: 'tbody',
+    itemView: Issue.views.AlarmTemplateTableRow,
+    emptyView: Marionette.ItemView.extend({template: _.template('<span class="loadingIndicator"></span>')})
   });
 
   return Issue;

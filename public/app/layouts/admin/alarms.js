@@ -7,7 +7,7 @@ define([
 
   'ia',
 
-  'layouts/admin/alarms/projectAlarms',
+  'issue',
 
   'hbs!layouts/admin/templates/alarms'
 ], function(
@@ -19,7 +19,7 @@ define([
 
   ia,
 
-  ProjectAlarmsLayout,
+  Issue,
 
   alarmsTemplate
 ){
@@ -36,36 +36,24 @@ define([
       selectProject: 'select.project'
     },
     selectProject: function(project){
-      var that = this,
-        projectAlarmsLayout;
-
       // Update history
       Backbone.history.navigate('/admin/alarms/' + project.id);
+
+      var projectAlarmsView = new Issue.views.AlarmTemplateTable({
+        collection: new Issue.TemplateCollection([], {project: project})
+      });
+
+      projectAlarmsView.collection.fetch();
 
       // Select the correct value for the select box
       if (this.ui.selectProject.val() !== project.id) {
         this.ui.selectProject.val(project.id);
       }
 
-      // Append loading indicator
-      this.ui.projectAlarms.append('<span class="loadingIndicator"></span>');
+      this.projectAlarms.show(projectAlarmsView);
 
-      // Get the alarm templates
-      $.ajax({
-        url: '/api/project_alarms',
-        dataType: 'json',
-        data: {
-          project_label: project.get('project_label')
-        }
-      })
-      .done(function(alarms){
-        console.log(alarms);
-        projectAlarmsLayout = new ProjectAlarmsLayout({
-          model: project,
-          alarms: alarms
-        });
-
-        that.projectAlarms.show(projectAlarmsLayout);
+      this.listenTo(projectAlarmsView, 'itemview:addCondition', function(){
+        console.log('heard add condition', arguments);
       });
     },
     events: {

@@ -1,11 +1,12 @@
-var request = require('request');
+var request = require('request'),
+    _ = require('lodash');
 
 module.exports = function(app){
 
-  var helpers = require('./helpers')(app)
-    , ensureAuthorized = helpers.ensureAuthorized
-    , ensureCurrentOrganization = helpers.ensureCurrentOrganization
-    , makeRequest = helpers.makeRequest;
+  var helpers = require('./helpers')(app),
+    ensureAuthorized = helpers.ensureAuthorized,
+    ensureCurrentOrganization = helpers.ensureCurrentOrganization,
+    makeRequest = helpers.makeRequest;
 
 
   app.get('/api/alarms', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
@@ -26,8 +27,12 @@ module.exports = function(app){
     }
   );
 
-  app.get('/api/project_alarms', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
-    makeRequest({
+  app.get('/api/project_alarms/:projectId?', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
+    function(req, res, next){
+      req.query = _.extend({}, req.query, {project_label: req.params.projectId});
+      next();
+    },
+    helpers.request({
       path: '/res/project_alarms'
     })
   );
