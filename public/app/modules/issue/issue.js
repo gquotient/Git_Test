@@ -71,6 +71,7 @@ function(
 
       return $.ajax({
         url: '/api/alarms/resolve/' + this.collection.project.id + '/' + this.id,
+        type: 'PUT'
       }).done(function(data){
         // Update model
         that.set(data.alarm);

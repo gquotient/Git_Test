@@ -42,7 +42,7 @@ module.exports = function(app){
   );
 
   // Resolve
-  app.get('/api/alarms/resolve/:projectId?/:alarmId?', ensureCurrentOrganization,
+  app.put('/api/alarms/resolve/:projectId?/:alarmId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'POST',
