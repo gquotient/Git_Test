@@ -14,7 +14,8 @@ define([
   'hbs!issue/templates/navigationItem',
   'hbs!issue/templates/navigationList',
   'hbs!issue/templates/alarmTemplateTable',
-  'hbs!issue/templates/alarmTemplateTableRow'
+  'hbs!issue/templates/alarmTemplateTableRow',
+  'hbs!issue/templates/alarmTemplateEdit'
 ],
 function(
   $,
@@ -32,7 +33,8 @@ function(
   navigationItemTemplate,
   navigationListTemplate,
   alarmTemplateTableTemplate,
-  alarmTemplateTableRowTemplate
+  alarmTemplateTableRowTemplate,
+  alarmTemplateEditTemplate
 ){
   var Issue = { views: {} };
 
@@ -180,6 +182,13 @@ function(
     itemViewContainer: 'tbody',
     itemView: Issue.views.AlarmTemplateTableRow,
     emptyView: Marionette.ItemView.extend({template: _.template('<span class="loadingIndicator"></span>')})
+  });
+
+  Issue.views.AlarmTemplateEdit = Marionette.ItemView.extend({
+    template: {
+      type: 'handlebars',
+      template: alarmTemplateEditTemplate
+    }
   });
 
   return Issue;

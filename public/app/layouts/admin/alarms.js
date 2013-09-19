@@ -52,9 +52,18 @@ define([
 
       this.projectAlarms.show(projectAlarmsView);
 
-      this.listenTo(projectAlarmsView, 'itemview:addCondition', function(){
-        console.log('heard add condition', arguments);
+      this.listenTo(projectAlarmsView, 'itemview:addCondition', function(alarmView){
+        this.selectAlarm(alarmView.model);
       });
+    },
+    selectAlarm: function(alarm){
+      // Update history
+      Backbone.history.navigate('/admin/alarms/' + alarm.collection.project.id + '/' + alarm.get('alarm_type'));
+
+      var alarmEditView = new Issue.views.AlarmTemplateEdit({model: alarm});
+
+      this.projectAlarms.show(alarmEditView);
+      console.log('selectAlarm', alarm);
     },
     events: {
       'change select.project': function(event){
