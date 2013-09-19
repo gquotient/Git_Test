@@ -31,7 +31,7 @@ define([
       options = options || {};
 
       if (options.equipment) {
-        this.equipment = options.equipment.findOrCreateForDevice(this);
+        this.equipment = options.equipment.getForDevice(this);
       }
 
       if (!this.has('name') && this.equipment) {
@@ -127,6 +127,9 @@ define([
       } else {
         delete resp.renderings;
       }
+
+      // Force node_id to always be a string.
+      resp.node_id = '' + resp.node_id;
 
       return resp;
     }

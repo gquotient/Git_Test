@@ -129,16 +129,54 @@ define([
     },
 
     renderTable: function(){
+      var that = this, options;
+
+      // Hack to avoid errors when $.contextMenu plugin doesn't exist
+      if (!_.isFunction($.contextMenu)) {
+        $.contextMenu = function() {};
+      }
+
       this.closeTable();
 
       if (this._rows.length > 0) {
-        this.$el.handsontable(_.extend({
+        options = {
           columns: this._columns,
           colHeaders: _.pluck(this.columns, 'name'),
           data: this._rows,
-          height: _.bind(this.$el.height, this.$el)
-        }, this.tableOptions));
+          height: _.bind(this.$el.height, this.$el),
+          observeChanges: false,
 
+          afterChange: function(changes, source){
+            var models = [],
+              seen = [];
+
+            _.each(changes, function(row){
+              var model;
+
+              // Don't include duplicate models or non-changes.
+              if (_.contains(seen, row[0]) || _.isEqual(row[2], row[3])) {
+                return;
+              }
+
+              seen.push(row[0]);
+              model = that.table.getDataAtRow(row[0]);
+
+              if (model) {
+                models.push(model);
+              }
+            });
+
+            if (models.length) {
+              that.triggerMethod('after:change', models, source);
+            }
+          }
+        };
+
+        _.each(this.tableOptions, function(value, key){
+          options[key] = _.isFunction(value) ? _.bind(value, that) : value;
+        });
+
+        this.$el.handsontable(options);
         this.table = this.$el.handsontable('getInstance');
       }
     },
@@ -150,12 +188,6 @@ define([
 
     closeTable: function(){
       if (this.table) {
-
-        // Hack to avoid errors when $.contextMenu plugin doesn't exist
-        if (!_.isFunction($.contextMenu)) {
-          $.contextMenu = function() {};
-        }
-
         this.table.destroy();
       }
     }

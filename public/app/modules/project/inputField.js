@@ -26,6 +26,12 @@ define([
         template: dropdownItemTemplate
       },
 
+      templateHelpers: function(){
+        return {
+          attribute: this.model.get(this.options.attribute)
+        };
+      },
+
       triggers: {
         'mousedown a': 'select'
       }
@@ -39,12 +45,18 @@ define([
 
       templateHelpers: function(){
         return {
-          applyAll: this.options.applyAll && this.collection.length > 0
+          applyAll: this.options.applyAll && this.collection.length > 1
         };
       },
 
       itemView: DropdownItemView,
       itemViewContainer: 'ul',
+
+      itemViewOptions: function(){
+        return {
+          attribute: this.options.attribute
+        };
+      },
 
       className: 'editorDropdown',
 
@@ -180,12 +192,15 @@ define([
         close_with: this
       });
 
+      this.attribute = options.attribute || 'name';
+
       this.ui = {input: this.$('input')};
       this.placeholder = this.ui.input.val();
 
       this.dropdown = new DropdownView({
         collection: this._collection,
-        applyAll: options.applyAll
+        applyAll: options.applyAll,
+        attribute: this.attribute
       });
       this.$el.append(this.dropdown.el);
 
@@ -255,15 +270,16 @@ define([
     },
 
     onInput: function(){
-      var regex = new RegExp('^' + this.parseInput(), 'i');
+      var regex = new RegExp('^' + this.parseInput(), 'i'),
+        attribute = this.attribute;
 
       this._collection.updateFilter(function(model){
-        return regex.test(model.get('name'));
+        return regex.test(model.get(attribute));
       });
     },
 
     getAutocomplete: function(){
-      var values = this._collection.pluck('name').sort(),
+      var values = this._collection.pluck(this.attribute).sort(),
         partial = _.first(values) || '',
         last, len;
 
@@ -289,8 +305,11 @@ define([
     },
 
     onKeyEnter: function(model){
+      var criteria = {};
+
       if (!model) {
-        model = this.collection.findWhere({name: this.parseInput()});
+        criteria[this.attribute] = this.parseInput();
+        model = this.collection.findWhere(criteria);
       }
 
       if (model) {

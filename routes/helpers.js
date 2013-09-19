@@ -92,6 +92,23 @@ module.exports = function(app){
 
       return portfolios;
     },
+    parseEquipment: function(equipment){
+
+      // Parse the json if necessary.
+      if (_.isString(equipment)) {
+        try {
+          equipment = JSON.parse(equipment);
+        } catch (e) {
+          equipment = {};
+        }
+      }
+
+      equipment = _.reduce(equipment, function(memo, equip){
+        return memo.concat(_.pluck(equip, 'doc'));
+      }, [])
+
+      return equipment;
+    },
     makeRequest: function(options){
       var _request = function(req, res, next){
 

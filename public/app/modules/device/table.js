@@ -19,6 +19,10 @@ define([
       id: 'device-table'
     },
 
+    initialize: function(options){
+      this.equipment = options.equipment;
+    },
+
     columns: [
       {
         name: 'ID',
@@ -31,13 +35,20 @@ define([
       },
       {
         name: 'Equipment',
-        readOnly: true
+        type: 'dropdown',
+        source: function(model){
+          var base = model.equipment && model.equipment.getBase(),
+            models = base && base.getExtends();
+
+          return _.invoke(models, 'get', 'display_name');
+        }
       }
     ],
 
     tableOptions: {
       columnSorting: true,
       stretchH: 'all',
+      fillHandle: 'vertical',
       readOnly: true
     },
 
@@ -55,10 +66,8 @@ define([
       this.updateReadOnly();
     },
 
-    collectionEvents: {
-      'change': function(model) {
-        model.lazySave();
-      }
+    onAfterChange: function(models, source){
+      _.invoke(models, 'lazySave');
     },
 
     comparator: function(model){
@@ -73,7 +82,18 @@ define([
     },
 
     getEquipment: function(model){
-      return model.equipment.get('name');
+      return model.equipment.get('display_name');
+    },
+
+    setEquipment: function(model, value){
+      var equip = this.equipment.findWhere({display_name: value}),
+        base = model.equipment && model.equipment.getBase(),
+        models = base && [base].concat(base.getExtends());
+
+      if (equip && _.contains(models, equip)) {
+        model.set({equipment_label: equip.id});
+        model.equipment = equip;
+      }
     }
   });
 });

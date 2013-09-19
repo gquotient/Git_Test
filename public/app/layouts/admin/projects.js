@@ -112,15 +112,20 @@ define([
           this.mapView.removeMarker(model);
         }
 
+        if (!this.listView.isClosed) {
+          this.listView.setActive();
+        }
+
         this.model = null;
         Backbone.history.navigate('/admin/projects');
       });
+
+      this.detail.show(view);
 
       this.listView.setActive(model, {
         showSave: model.isEditable() || !model.isLocked()
       });
       this.mapView.focusMap(model);
-      this.detail.show(view);
 
       this.model = model;
 
@@ -146,6 +151,7 @@ define([
         model.save(values, {
           success: _.bind(function(){
             this.collection.add(model);
+            this.showDetail(model);
           }, this),
           complete: _.bind(function(){
             this.listView.toggleSaving(false);
@@ -156,7 +162,6 @@ define([
 
     hideDetail: function(){
       this.detail.close();
-      this.listView.setActive();
     },
 
     updateLocation: function(attr, model){

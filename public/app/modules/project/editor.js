@@ -173,14 +173,15 @@ define([
           },
 
           onApply: function(model){
-            this.placeholder = model.get('name');
+            this.placeholder = model.get(this.attribute);
           }
         }
       },
 
       add: {
         hotKey: 97,
-        comparator: 'name',
+        attribute: 'display_name',
+        comparator: 'display_name',
 
         extend: {
           parseInput: function(){
@@ -273,6 +274,9 @@ define([
 
       this.equipment.each(function(equip){
 
+        // Only include base equipment.
+        if (equip !== equip.getBase()) { return; }
+
         // Don't include equipment that can't be rendered.
         if (!equip.hasRendering(rendering)) { return; }
 
@@ -284,11 +288,9 @@ define([
         } else {
 
           // Don't include equipment that doesn't have a relationship in the
-          // current rendering or that can't be added to the selected devices.
-          if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, rendering);
-
-            return !rel || !select.equipment.outgoing.contains(equip);
+          // current rendering with all the selected devices.
+          if (!this.selection.all(function(select){
+            return equip.getRelationship(select, rendering);
           }, this)) { return; }
         }
 
@@ -313,11 +315,11 @@ define([
           if (!equip.hasRendering(rendering)) { return; }
 
           // Don't include devices that don't have a relationship in the current
-          // rendering or are already children of the selected devices.
-          if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, rendering);
+          // rendering or are children of the selected devices.
+          if (!this.selection.all(function(select){
+            var rel = equip.getRelationship(select, rendering);
 
-            return !rel || select.hasChild(device, rel);
+            return rel && !select.hasChild(device, rel);
           }, this)) { return; }
 
           devices.push(device);
@@ -339,11 +341,11 @@ define([
           if (this.selection.contains(device)) { return; }
 
           // Don't include devices that don't have a relationship in the current
-          // rendering or that don't share a connection with the selected devices.
-          if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, rendering);
+          // rendering or aren't children of the selected devices.
+          if (!this.selection.all(function(select){
+            var rel = equip.getRelationship(select, rendering);
 
-            return !rel || !select.outgoing.contains(device);
+            return rel && select.hasChild(device, rel);
           }, this)) { return; }
 
           // Don't include devices that could be orphend.
@@ -363,7 +365,8 @@ define([
 
         Backbone.trigger('editor:change:view', _.extend(model.toJSON(), {
           model: this.model,
-          collection: this.model.devices
+          collection: this.model.devices,
+          equipment: this.options.equipment
         }));
       }
     },
@@ -429,11 +432,11 @@ define([
           success: _.bind(function(){
             project.addNote([
               'added',
-              equip.get('name').toLowerCase(),
+              equip.getBaseName().toLowerCase(),
               device.get('did'),
               'to'
             ].concat(parnt.equipment ? [
-              parnt.equipment.get('name').toLowerCase(),
+              parnt.equipment.getBaseName().toLowerCase(),
               parnt.get('did')
             ] : 'project').join(' '));
 
@@ -463,7 +466,7 @@ define([
           success: _.bind(function(){
             project.addNote([
               'deleted',
-              equip.get('name').toLowerCase(),
+              equip.getBaseName().toLowerCase(),
               device.get('did')
             ].join(' '));
           }, this)
@@ -515,10 +518,10 @@ define([
 
           project.addNote([
             'connected',
-            equip.get('name').toLowerCase(),
+            equip.getBaseName().toLowerCase(),
             device.get('did'),
             'to',
-            target.equipment.get('name').toLowerCase(),
+            target.equipment.getBaseName().toLowerCase(),
             target.get('did')
           ].join(' '));
         }, this));
@@ -552,10 +555,10 @@ define([
 
           project.addNote([
             'disconnected',
-            equip.get('name').toLowerCase(),
+            equip.getBaseName().toLowerCase(),
             device.get('did'),
             'from',
-            target.equipment.get('name').toLowerCase(),
+            target.equipment.getBaseName().toLowerCase(),
             target.get('did')
           ].join(' '));
         }, this));

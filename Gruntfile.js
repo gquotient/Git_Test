@@ -85,6 +85,21 @@ module.exports = function(grunt){
           }
         ]
       }
+    },
+
+    apipost: {
+      equip: {
+        host: 'http://127.0.0.1:8600',
+        path: function(record){
+          var label = record.equipment_label.replace(/_(v\d+)$/, '/$1');
+
+          return '/api/equipment/' + label;
+        },
+        form: function(record){
+          return {data: JSON.stringify(record)};
+        },
+        src: 'data/json/equipment.json'
+      }
     }
   });
 
@@ -101,8 +116,15 @@ module.exports = function(grunt){
 
   grunt.registerTask('dev', ['jshint', 'watch']);
 
-  grunt.registerTask('default', ['serve']);
-
   // Run build tasks
   grunt.registerTask('build', ['requirejs', 'stylus', 'copy']);
+
+  // Post equipment.json data to equipment database.
+  grunt.registerTask('postequip', function(){
+    if (grunt.option('staging')) {
+      grunt.option('host', 'http://equip.stage.intelligentarray.com');
+    }
+
+    grunt.task.run('apipost:equip');
+  });
 };

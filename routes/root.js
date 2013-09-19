@@ -1,9 +1,8 @@
-
-var fs = require('fs')
-  , _ = require('lodash')
-  , request = require('request')
-  , Q = require('q')
-  , roles;
+var _ = require('lodash'),
+  fs = require('fs'),
+  request = require('request'),
+  Q = require('q'),
+  roles;
 
 
 fs.readFile('./roles.json', 'utf8', function (err, data) {
@@ -18,8 +17,9 @@ fs.readFile('./roles.json', 'utf8', function (err, data) {
 module.exports = function(app){
 
   var helpers = require('./helpers')(app),
-      ensureAuthenticated = helpers.ensureAuthenticated,
-      parsePortfolioFilters = helpers.parsePortfolioFilters;
+    ensureAuthenticated = helpers.ensureAuthenticated,
+    parsePortfolioFilters = helpers.parsePortfolioFilters,
+    parseEquipment = helpers.parseEquipment;
 
 
   app.all('/', ensureAuthenticated, function(req, res){
@@ -30,18 +30,21 @@ module.exports = function(app){
 
     var requestOptions = {
       method: 'GET',
-      headers: { 'currentUser': req.user.email, 'access_token': req.user.access_token, 'clientSecret': app.get('clientSecret') },
-      uri: app.get('modelUrl') + '/res/user'
+      headers: {
+        currentUser: req.user.email,
+        access_token: req.user.access_token,
+        clientSecret: app.get('clientSecret')
+      }
     };
 
     var user,
-        myProjects,
-        myPortfolios,
-        equipment,
-        everythingLoaded = Q.defer();
+      portfolios,
+      projects,
+      equipment,
+      everythingLoaded = Q.defer();
 
     var resolveEverythingLoaded = function(){
-      if (myProjects && myPortfolios && equipment) {
+      if (portfolios && projects && equipment) {
         everythingLoaded.resolve();
       }
     };
@@ -49,10 +52,13 @@ module.exports = function(app){
     var defer = Q.defer();
 
     // Request the current user model
-    request(requestOptions, function(error, response, userJSON){
+    request(_.extend({}, requestOptions, {
+      uri: app.get('modelUrl') + '/res/user'
+    }), function(error, response, body){
+
       // Make sure the model is valid json
       try {
-        user = JSON.parse(userJSON);
+        user = JSON.parse(body);
       }
       catch(e) {
         console.error('User JSON is malformed');
@@ -97,36 +103,39 @@ module.exports = function(app){
 
     // Get portfolios
     defer.promise.then( function(){
-      requestOptions.uri = app.get('modelUrl') + '/res/teamportfolios?team_label='+req.session.team_label+'&org_label='+req.session.org_label;
-
-      request(requestOptions, function(error, response, portfolios){
-        myPortfolios = parsePortfolioFilters(portfolios);
-
+      request(_.extend({}, requestOptions, {
+        uri: app.get('modelUrl') + '/res/teamportfolios',
+        qs: {
+          team_label: req.session.team_label,
+          org_label: req.session.org_label
+        }
+      }), function(error, response, body){
+        portfolios = parsePortfolioFilters(body);
         resolveEverythingLoaded();
       });
     });
 
     // Get projects
     defer.promise.then( function(){
-      requestOptions.uri = app.get('modelUrl') + '/res/teamprojects?team_label'+req.session.team_label+'&org_label='+req.session.org_label;
-
-      request(requestOptions, function(error, response, projects){
+      request(_.extend({}, requestOptions, {
+        uri: app.get('modelUrl') + '/res/teamprojects',
+        qs: {
+          team_label: req.session.team_label,
+          org_label: req.session.org_label
+        }
+      }), function(error, response, body){
         // Portfolios returns as an array but projects returns as an array inside an object
         // (i.e. { projects: [] } )
         // sooooo, we have to do this to keep our stuff consistent
-        myProjects = JSON.stringify(JSON.parse(projects).projects || []);
-
+        projects = JSON.stringify(JSON.parse(body).projects || []);
         resolveEverythingLoaded();
       });
     });
 
-    fs.readFile('./data/json/equipment.json', 'utf8', function (err, data) {
-      if (err) {
-        return console.log(err);
-      }
-
-      equipment = data || '[]';
-
+    request(_.extend({}, requestOptions, {
+      uri: app.get('equipUrl') + '/api/equipment'
+    }), function(error, response, body){
+      equipment = JSON.stringify(parseEquipment(body));
       resolveEverythingLoaded();
     });
 
@@ -138,8 +147,8 @@ module.exports = function(app){
           currentOrganization: req.session.org_label,
           role: roles[req.user.role]
         })),
-        portfolios: myPortfolios,
-        projects: myProjects,
+        portfolios: portfolios,
+        projects: projects,
         equipment: equipment,
         locale: req.user.locale || req.acceptedLanguages[0].toLowerCase(),
         staticPath: app.get('staticPath')

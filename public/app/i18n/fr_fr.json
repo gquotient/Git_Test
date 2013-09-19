@@ -66,6 +66,8 @@
   "Longitude": "Longitude",
   "Elevation": "Elevation",
   "Owner": "Owner",
+  "Make": "Make",
+  "Extends From": "Extends From",
 
   "View": "View",
   "Add Device": "Add Device",

@@ -601,7 +601,7 @@ header {
 }
 
 #page-projectsAdmin {
-  padding: 200px 0 0 0 !important;
+  padding-top: 200px;
 
   .project-map {
     position: absolute;
@@ -635,12 +635,57 @@ header {
 }
 
 #page-equipmentAdmin {
-  padding: 0 !important;
+
+  .navigation-admin-list {
+    .title {
+      cursor: pointer;
+
+      &:after {
+        content: "\f0d7"
+        font-family: FontAwesome;
+        padding: 0 3px;
+      }
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: projectTableHeaderHeight;
+
+      ul {
+        display: inherit;
+        position: static;
+        padding: 6px;
+        box-shadow: 0 5px 5px rgba(0,0,0,0.1);
+
+        > li {
+          padding: 0;
+          margin: 0;
+          border: none;
+          font-size: inherit;
+        }
+      }
+
+      a {
+        display: block;
+        padding: 0 6px;
+        text-decoration: none;
+        color: colorPrimaryText;
+
+        &:hover {
+          color: #fff;
+        }
+      }
+    }
+  }
 }
 
 #page-projectsAdmin,
 #page-equipmentAdmin {
   min-width: 800px;
+  max-width: 1200px;
+  height: 100%;
+  margin: -6px;
 
   > div {
     float: left;
@@ -809,17 +854,18 @@ header {
       border-color: black;
     }
 
+    tr .htDimmed {
+      color: inherit;
+      font-style: inherit;
+    }
+
     td {
       background-color: rgba(255, 255, 255, 0.8);
       border-color: black;
 
-      &.htDimmed {
-        color: black;
-        font-style: normal;
-      }
-
       .htAutocompleteArrow {
         color: #bbb;
+        cursor: pointer;
 
         &:hover {
           color: black;
