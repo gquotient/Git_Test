@@ -65,12 +65,9 @@ define([
         });
       }
     },
-
-    initialize: function(options){
-      // Render when anything changes on the model
-      this.listenTo(this.model, 'change', this.render);
+    modelEvents: {
+      'change': 'render'
     },
-
     onShow: function(){
       Backbone.trigger(
         'set:breadcrumbs',

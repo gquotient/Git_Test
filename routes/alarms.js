@@ -8,14 +8,14 @@ module.exports = function(app){
     , makeRequest = helpers.makeRequest;
 
 
-  app.get('/api/alarms', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
+  app.get('/api/alarms', ensureCurrentOrganization,
     makeRequest({
       path: '/res/alarms'
     })
   );
 
   // Get project alarms
-  app.get('/api/alarms/:projectId?',
+  app.get('/api/alarms/:projectId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'GET',
@@ -28,7 +28,7 @@ module.exports = function(app){
   );
 
   // Acknowledge
-  app.put('/api/alarms/:projectId?/:alarmId?',
+  app.put('/api/alarms/:projectId?/:alarmId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'POST',
@@ -42,9 +42,8 @@ module.exports = function(app){
   );
 
   // Resolve
-  app.get('/api/alarms/resolve/:projectId?/:alarmId?',
+  app.get('/api/alarms/resolve/:projectId?/:alarmId?', ensureCurrentOrganization,
     function(req, res){
-      console.log('delete', req.params.alarmId);
       request({
         method: 'POST',
         uri: app.get('dataUrl') + '/alarms/resolve/' + req.params.projectId + '/' + req.params.alarmId,
@@ -56,9 +55,8 @@ module.exports = function(app){
   );
 
   // Delete
-  app.del('/api/alarms/:projectId?/:alarmId?',
+  app.del('/api/alarms/:projectId?/:alarmId?', ensureCurrentOrganization,
     function(req, res){
-      console.log('delete', req.params.alarmId);
       request({
         method: 'DEL',
         uri: app.get('dataUrl') + '/alarms/' + req.params.projectId + '/' + req.params.alarmId,
