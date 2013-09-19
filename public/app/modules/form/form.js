@@ -229,5 +229,170 @@ function(
     }
   });
 
+  Forms.views.Admin = Marionette.ItemView.extend({
+    constructor: function(){
+      this.changed = {};
+
+      Marionette.ItemView.prototype.constructor.apply(this, arguments);
+
+      this.listenTo(this.model, 'change', function(){
+        this.updateValues(this.model.changed);
+      });
+    },
+
+    tagName: 'form',
+
+    delegateEvents: function(events){
+
+      // Handle the events object here.
+      events = events || this.events;
+      if (_.isFunction(events)) {
+        events = events.call(this);
+      }
+
+      // Compile the schema object and add the schema events.
+      this._compileSchema();
+      events = _.extend({}, events, this.schemaEvents);
+
+      Marionette.View.prototype.delegateEvents.call(this, events);
+    },
+
+    _compileSchema: function(){
+      var schema = Marionette.getOption(this, 'schema'),
+        modelSchema = this.model.schema || {};
+
+      if (_.isFunction(schema)) {
+        schema = schema.call(this);
+      }
+
+      this.schemaEvents = {};
+      this.schemaUI = {};
+      this._schema = {};
+
+      _.each(schema, function(params, attr){
+        params = _.extend({}, modelSchema[attr], params);
+
+        this.schemaEvents['blur.schema ' + params.el] = this.parser(attr, params);
+        this.schemaUI[attr] = params.el;
+        this._schema[attr] = params;
+      }, this);
+    },
+
+    parser: function(attr, options){
+      var validator = this.validator(options);
+
+      return function(){
+        var $el = this.ui[attr], value;
+
+        if ($el && $el.val) {
+          value = $el.val().trim();
+
+          if (options.parse) {
+            value = options.parse.call(this, value);
+          }
+
+          if (validator && !validator.call(this, value)) {
+            $el.addClass('invalid');
+
+            if (options.error) {
+              options.error.call(this, value);
+            }
+          } else {
+            $el.removeClass('invalid');
+
+            this.changed[attr] = value;
+
+            if (options.success) {
+              options.success.call(this, value);
+            }
+          }
+        }
+      };
+    },
+
+    validator: function(options){
+      return options.validate;
+    },
+
+    bindUIElements: function(){
+      this.ui = {};
+
+      Marionette.View.prototype.bindUIElements.apply(this, arguments);
+
+      _.each(this.schemaUI, function(selector, attr){
+        this.ui[attr] = this.$(selector);
+      }, this);
+
+      this.updateEditable();
+    },
+
+    updateEditable: function(){
+      var global = Marionette.getOption(this, 'editable'),
+        existing = !this.model.isNew();
+
+      if (_.isFunction(global)) {
+        global = global.call(this);
+      }
+
+      _.each(this._schema, function(params, attr){
+        var $el = this.ui[attr],
+          local = params.editable,
+          editable = global !== false;
+
+        if ($el) {
+          if (editable && existing) {
+            editable = (_.isFunction(local) ? local.call(this) : local) !== false;
+          }
+
+          $el.prop('disabled', !editable);
+        }
+      }, this);
+    },
+
+    updateValues: function(values){
+      _.each(values, function(value, attr){
+        var $el = this.ui[attr];
+
+        if ($el && !$el.prop('disabled')) {
+          $el.val(value).removeClass('.invalid');
+        }
+      }, this);
+    },
+
+    parseAll: function(){
+      this.$el.find('input, textarea').blur();
+    },
+
+    hasInvalid: function(){
+      return this.$el.find('.invalid').length > 0;
+    },
+
+    saveChanges: function(options, context){
+      options = options || {};
+      context = context || this;
+
+      // Parse each field and return if any are invalid.
+      this.parseAll();
+      if (this.hasInvalid()) { return false; }
+
+      if (options.before) {
+        options.before.call(context);
+      }
+
+      return this.model.save(_.clone(this.changed), {
+        success: function(){
+          if (options.success) {
+            options.success.call(context);
+          }
+        },
+        complete: function(){
+          if (options.after) {
+            options.after.call(context);
+          }
+        }
+      });
+    }
+  });
+
   return Forms;
 });

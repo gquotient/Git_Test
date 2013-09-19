@@ -8,6 +8,7 @@ define([
   'css!leaflet.css',
 
   'navigation',
+  'form',
 
   'hbs!project/templates/adminListItem',
   'hbs!project/templates/adminDetail',
@@ -22,6 +23,7 @@ define([
   leafletCSS,
 
   Navigation,
+  Form,
 
   adminListItemTemplate,
   adminDetailTemplate,
@@ -83,11 +85,18 @@ define([
     itemView: views.AdminListItem
   });
 
-  views.AdminDetail = Marionette.ItemView.extend({
-    tagName: 'form',
+  views.AdminDetail = Form.views.Admin.extend({
     template: {
       type: 'handlebars',
       template: adminDetailTemplate
+    },
+
+    modelEvents: {
+      'destroy': 'close'
+    },
+
+    editable: function(){
+      return !this.model.isLocked() || this.model.isEditable();
     },
 
     schema: {
@@ -97,17 +106,15 @@ define([
           return value && value !== '';
         },
         success: function(value){
-          var label;
-
           if (this.model.isNew() && this.ui.site_label.val() === '') {
-            label = _.reduce(value.split(' '), function(memo, word){
-              if (memo.length < 8) {
-                memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
-              }
-              return memo;
-            }, '');
-
-            this.ui.site_label.val(label).removeClass('invalid');
+            this.updateValues({
+              site_label: _.reduce(value.split(' '), function(memo, word){
+                if (memo.length < 8) {
+                  memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
+                }
+                return memo;
+              }, '')
+            });
           }
         }
       },
@@ -178,78 +185,6 @@ define([
           return !isNaN(value);
         }
       }
-    },
-
-    initialize: function(){
-      this.changed = {};
-    },
-
-    ui: function(){
-      return _.reduce(this.schema, function(memo, obj, key){
-        memo[key] = obj.el;
-
-        return memo;
-      }, {});
-    },
-
-    events: function(){
-      return _.reduce(this.schema, function(memo, obj, key){
-        memo['blur ' + obj.el] = function(){
-          var $el = this.ui[key],
-            value = $el.val().trim();
-
-          if (obj.parse) {
-            value = obj.parse.call(this, value);
-          }
-
-          if (obj.validate && !obj.validate.call(this, value)) {
-            $el.addClass('invalid');
-
-            if (obj.error) {
-              obj.error.call(this, value);
-            }
-          } else {
-            $el.removeClass('invalid');
-
-            this.changed[key] = value;
-
-            if (obj.success) {
-              obj.success.call(this, value);
-            }
-          }
-        };
-
-        return memo;
-      }, {});
-    },
-
-    modelEvents: {
-      'change': 'render',
-      'destroy': 'close'
-    },
-
-    onRender: function(){
-      var locked = this.model.isLocked() && !this.model.isEditable(),
-        existing = !this.model.isNew();
-
-      _.each(this.schema, function(obj, key){
-        var $el = this.ui[key];
-
-        // Skip if no matching element.
-        if (!$el) { return; }
-
-        // Disable the element if not editable.
-        if (locked || (existing && obj.editable === false)) {
-          $el.attr('disabled', true);
-        }
-      }, this);
-
-      this.changed = {};
-    },
-
-    isValid: function(){
-      this.$el.find('input textarea').blur();
-      return !this.$el.find('.invalid').length;
     }
   });
 
@@ -399,7 +334,7 @@ define([
     addMarker: function(model){
       var loc = this.parseLocation(model), marker;
 
-      if (loc && this.map  && !this.markers[model.cid]) {
+      if (loc && this.map && !this.markers[model.cid]) {
         marker = this.markers[model.cid] = L.marker(loc, {
           title: model.get('display_name'),
           draggable: model.isNew(),
