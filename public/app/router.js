@@ -88,8 +88,8 @@ define([
       });
     },
 
-    alarmsAdmin: function(){
-      this.mainLayout.showAdmin().showRoute('alarms');
+    alarmsAdmin: function(id){
+      this.mainLayout.showAdmin().showRoute('alarms', id);
     },
 
     portfoliosAdmin: function(id){
@@ -144,6 +144,7 @@ define([
       'admin/portfolios': 'portfoliosAdmin',
 
       'admin/alarms': 'alarmsAdmin',
+      'admin/alarms/:id': 'alarmsAdmin',
 
       'admin/projects/:id/:view': 'projectsEditor',
       'admin/projects/:id': 'projectsAdmin',

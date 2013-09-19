@@ -166,12 +166,18 @@ define([
       return layout;
     },
 
-    showAlarms: function(){
+    showAlarms: function(id){
       var layout = new AlarmsLayout({
         projects: ia.projects
       });
 
       this.pageContent.show(layout);
+
+      // If id supplied, show project alarms
+      if (id) {
+        layout.selectProject(ia.projects.findWhere({project_label: id}));
+      }
+
       this.highlightLink('alarms');
 
       return layout;

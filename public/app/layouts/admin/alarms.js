@@ -32,14 +32,25 @@ define([
       projectAlarms: '.projectAlarms'
     },
     ui: {
-      projectAlarms: '.projectAlarms'
+      projectAlarms: '.projectAlarms',
+      selectProject: 'select.project'
     },
     selectProject: function(project){
       var that = this,
         projectAlarmsLayout;
 
+      // Update history
+      Backbone.history.navigate('/admin/alarms/' + project.id);
+
+      // Select the correct value for the select box
+      if (this.ui.selectProject.val() !== project.id) {
+        this.ui.selectProject.val(project.id);
+      }
+
+      // Append loading indicator
       this.ui.projectAlarms.append('<span class="loadingIndicator"></span>');
 
+      // Get the alarm templates
       $.ajax({
         url: '/api/project_alarms',
         dataType: 'json',
