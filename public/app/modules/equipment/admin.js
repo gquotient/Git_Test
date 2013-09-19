@@ -23,7 +23,34 @@ define([
   adminListItemTemplate,
   adminDetailTemplate
 ){
-  var views = {};
+  var views = {},
+
+    categories = [
+      {
+        display_name: 'Inverters',
+        extends_from: ['INV']
+      },
+      {
+        display_name: 'Energy Meters',
+        extends_from: ['RM']
+      },
+      {
+        display_name: 'Data Aquisition',
+        extends_from: ['DSS', 'DSC', 'ESI']
+      },
+      {
+        display_name: 'Env Sensors',
+        extends_from: ['IRRA', 'IRRZ', 'TMPC', 'TMPA', 'WSPD', 'WDIR', 'BARO', 'RAIN']
+      },
+      {
+        display_name: 'DC Equipment',
+        extends_from: ['DCB', 'APH', 'RCB', 'CMB', 'S', 'P']
+      },
+      {
+        display_name: 'AC Equipment',
+        extends_from: ['ACB', 'XFR', 'IC', 'LD']
+      }
+    ];
 
   views.AdminListItem = Navigation.views.AdminListItem.extend({
     template: {
@@ -40,39 +67,10 @@ define([
         close_with: this
       });
 
+      this.categories = new Backbone.Collection(categories);
+
       this.dropdown = new Navigation.views.Dropdown({
-        collection: new Backbone.Collection([
-          {
-            display_name: 'Inverters',
-            extends_from: ['INV']
-          },
-          {
-            display_name: 'Energy Meters',
-            extends_from: ['RM']
-          },
-          {
-            display_name: 'Data Aquisition',
-            extends_from: ['DSS', 'DSC', 'ESI']
-          },
-          {
-            display_name: 'Env Sensors',
-            extends_from: [
-              'IRRA', 'IRRZ', 'TMPC', 'TMPA', 'WSPD', 'WDIR', 'BARO', 'RAIN'
-            ]
-          },
-          {
-            display_name: 'DC Equipment',
-            extends_from: ['DCB', 'APH', 'RCB', 'CMB', 'S', 'P']
-          },
-          {
-            display_name: 'AC Equipment',
-            extends_from: ['ACB', 'XFR', 'IC', 'LD']
-          },
-          {
-            display_name: 'Base Equipment',
-            base: true
-          }
-        ])
+        collection: this.categories
       });
 
       this.listenTo(this.dropdown, 'itemview:select', function(view){
@@ -97,24 +95,17 @@ define([
     },
 
     onShow: function(){
-      var label = this.options.current,
-        category, match;
+      var match = /^([A-Z]+)_/.exec(this.options.current),
+        label = match && match[1],
+        category;
 
-      if (label && label.indexOf(':') < 0) {
-        category = this.dropdown.collection.findWhere({base: true});
-
-      } else {
-        match = /^([A-Z]+)_/.exec(label);
-        label = match && match[1];
-
-        if (label) {
-          category = this.dropdown.collection.find(function(model){
-            return _.contains(model.get('extends_from'), label);
-          });
-        }
+      if (label) {
+        category = this.categories.find(function(model){
+          return _.contains(model.get('extends_from'), label);
+        });
       }
 
-      this.setCategory(category || this.dropdown.collection.first());
+      this.setCategory(category || this.categories.first());
     },
 
     onRender: function(){
@@ -126,19 +117,15 @@ define([
     },
 
     setCategory: function(model){
-      var isBase = model.get('base') || false;
+      var extends_from = model.get('extends_from');
 
       this.dropdown.$el.hide();
       this.ui.title.html(model.get('display_name'));
 
-      this.collection.filter = model.get('filter') || function(equip) {
+      this.collection.filter = function(equip){
         var base = equip.getBase();
 
-        if (equip === base) {
-          return isBase;
-        } else {
-          return _.contains(model.get('extends_from'), base.get('label'));
-        }
+        return equip !== base && _.contains(extends_from, base.get('label'));
       };
       this.collection._onReset();
     }
