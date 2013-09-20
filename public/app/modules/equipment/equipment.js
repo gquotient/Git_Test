@@ -238,6 +238,32 @@ define([
         device.setPosition(label, position);
       }
     }
+  }, {
+    schema: {
+      label: {
+        type: 'text',
+        required: true,
+        editable: false,
+        validate: function(value){
+          return (/^[A-Z0-9]+$/).test(value);
+        }
+      },
+      extends_from: {
+        type: 'text',
+        required: true,
+        editable: false,
+        validate: function(value){
+          return value && value !== '';
+        }
+      },
+      display_name: {
+        type: 'text',
+        required: true,
+        validate: function(value){
+          return value && value !== '';
+        }
+      }
+    }
   });
 
   Equip.Collection = Backbone.Collection.extend({

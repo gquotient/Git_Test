@@ -150,20 +150,13 @@ define([
 
     schema: {
       display_name: {
-        el: '#name',
-        validate: function(value){
-          return value && value !== '';
-        }
+        el: '#name'
       },
       make: {},
       model: {},
       label: {
-        editable: false,
         parse: function(value){
           return value.toUpperCase();
-        },
-        validate: function(value){
-          return (/^[A-Z0-9]+$/).test(value);
         },
         success: function(value){
           this.updateValues({label: value});
@@ -171,7 +164,6 @@ define([
       },
       extends_from: {
         el: '#extends',
-        editable: false,
         source: function(){
           var labels = this.options.baseLabels;
 
@@ -191,9 +183,6 @@ define([
           var model = this.collection.findWhere({display_name: value});
 
           return model && model.id;
-        },
-        validate: function(value){
-          return !!value;
         }
       },
       description: {}

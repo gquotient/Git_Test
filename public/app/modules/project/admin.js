@@ -102,9 +102,6 @@ define([
     schema: {
       display_name: {
         el: '#name',
-        validate: function(value){
-          return value && value !== '';
-        },
         success: function(value){
           if (this.model.isNew() && this.ui.site_label.val() === '') {
             this.updateValues({
@@ -119,12 +116,8 @@ define([
         }
       },
       site_label: {
-        editable: false,
         parse: function(value){
           return value.toUpperCase();
-        },
-        validate: function(value){
-          return (/^[A-Z]{3,}$/).test(value);
         },
         success: function(value){
           this.updateValues({site_label: value});
@@ -139,9 +132,6 @@ define([
         parse: function(value){
           return parseFloat(value);
         },
-        validate: function(value){
-          return !isNaN(value);
-        },
         success: function(value){
           this.model.set({latitude: value});
         }
@@ -150,9 +140,6 @@ define([
         parse: function(value){
           return parseFloat(value);
         },
-        validate: function(value){
-          return !isNaN(value);
-        },
         success: function(value){
           this.model.set({longitude: value});
         }
@@ -160,9 +147,6 @@ define([
       elevation: {
         parse: function(value){
           return parseFloat(value);
-        },
-        validate: function(value){
-          return !isNaN(value);
         }
       }
     }

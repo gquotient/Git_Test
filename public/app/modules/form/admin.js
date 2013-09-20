@@ -222,7 +222,7 @@ define([
 
     compileSchema: function(){
       var schema = Marionette.getOption(this, 'schema'),
-        modelSchema = this.model.schema || {};
+        modelSchema = this.model.constructor.schema || {};
 
       if (_.isFunction(schema)) {
         schema = schema.call(this);
