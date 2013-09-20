@@ -140,7 +140,7 @@ define([
 
     templateHelpers: function(){
       return {
-        extension: this.model.isNew() || this.model.getBase() !== this.model
+        extends_from: this.model.getBase().get('display_name')
       };
     },
 

@@ -2,17 +2,7 @@
   <div>
     <label for="name">{{$ 'Name' }}</label>
     <input id="name" name="name" type="text" tabindex="1" value="{{ display_name }}">
-  </div>
 
-  <div>
-    <label for="label">{{$ 'Label' }}</label>
-    <input id="label" name="label" type="text" tabindex="2" value="{{ label }}">
-  </div>
-</fieldset>
-
-{{#if extension }}
-<fieldset>
-  <div>
     <label for="make">{{$ 'Make' }}</label>
     <input id="make" name="make" type="text" tabindex="3" value="{{ make }}">
 
@@ -21,11 +11,13 @@
   </div>
 
   <div>
+    <label for="label">{{$ 'Label' }}</label>
+    <input id="label" name="label" type="text" tabindex="2" value="{{ label }}">
+
     <label for="extends">{{$ 'Extends From' }}</label>
     <input id="extends" name="extends" type="text" tabindex="5" value="{{ extends_from }}">
   </div>
 </fieldset>
-{{/if}}
 
 <fieldset>
   <label for="description">{{$ 'Description' }}</label>
