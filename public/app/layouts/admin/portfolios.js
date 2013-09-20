@@ -82,13 +82,18 @@ define([
       }, this);
     },
     initialize: function(options){
-      // Update breadcrumbs
+      // Refresh breadcrumbs
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
-        display_name: 'Admin'
+        display_name: 'Admin',
+        url: 'admin'
       });
 
-      Backbone.trigger('set:breadcrumbs', {state:'portfolios', display_name:'Portfolios'});
+      Backbone.trigger('set:breadcrumbs', {
+        state:'portfolios',
+        display_name:'Portfolios',
+        url: '/admin/portfolios'
+      });
 
       // Cache portfolio table
       this.portfolioTable = new Portfolio.views.EditTable({
