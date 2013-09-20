@@ -86,7 +86,7 @@ define([
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
         display_name: 'Admin',
-        url: 'admin'
+        url: '/admin'
       });
 
       Backbone.trigger('set:breadcrumbs', {
