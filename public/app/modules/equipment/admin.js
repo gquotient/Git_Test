@@ -155,17 +155,9 @@ define([
           return value && value !== '';
         }
       },
-
-      make: {
-        el: '#make'
-      },
-
-      model: {
-        el: '#model'
-      },
-
+      make: {},
+      model: {},
       label: {
-        el: '#label',
         editable: false,
         parse: function(value){
           return value.toUpperCase();
@@ -177,7 +169,6 @@ define([
           this.updateValues({label: value});
         }
       },
-
       extends_from: {
         el: '#extends',
         editable: false,
@@ -205,10 +196,7 @@ define([
           return !!value;
         }
       },
-
-      description: {
-        el: '#description'
-      }
+      description: {}
     }
   });
 

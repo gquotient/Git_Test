@@ -229,7 +229,11 @@ define([
       }
 
       return _.reduce(schema, function(memo, params, attr){
-        memo[attr] = _.extend({}, modelSchema[attr], params);
+        memo[attr] = _.extend({
+          el: '#' + attr,
+          type: 'text',
+          editable: true
+        }, modelSchema[attr], params);
 
         return memo;
       }, {});

@@ -118,9 +118,7 @@ define([
           }
         }
       },
-
       site_label: {
-        el: '#site_label',
         editable: false,
         parse: function(value){
           return value.toUpperCase();
@@ -132,29 +130,12 @@ define([
           this.updateValues({site_label: value});
         }
       },
-
-      address: {
-        el: '#address'
-      },
-
-      city: {
-        el: '#city'
-      },
-
-      state: {
-        el: '#state'
-      },
-
-      zipcode: {
-        el: '#zipcode'
-      },
-
-      description: {
-        el: '#description'
-      },
-
+      address: {},
+      city: {},
+      state: {},
+      zipcode: {},
+      description: {},
       latitude: {
-        el: '#latitude',
         parse: function(value){
           return parseFloat(value);
         },
@@ -165,9 +146,7 @@ define([
           this.model.set({latitude: value});
         }
       },
-
       longitude: {
-        el: '#longitude',
         parse: function(value){
           return parseFloat(value);
         },
@@ -178,9 +157,7 @@ define([
           this.model.set({longitude: value});
         }
       },
-
       elevation: {
-        el: '#elevation',
         parse: function(value){
           return parseFloat(value);
         },
