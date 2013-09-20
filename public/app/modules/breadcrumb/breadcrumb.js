@@ -79,8 +79,16 @@ define([
       // Listen for prune event on ItemView
       Backbone.listenTo(this, 'itemview:prune', function(itemView){
         var model = itemView.model;
-        // Fire global select event
-        Backbone.trigger('select:' + model.get('state'), model.get('model'));
+
+        if (model.get('model')) {
+          // Fire global select event
+          Backbone.trigger('select:' + model.get('state'), model.get('model'));
+        }
+
+        if (model.get('url')) {
+          Backbone.history.navigate(model.get('url'));
+        }
+
         // Prune collection
         that.collection.prune(model);
       });
