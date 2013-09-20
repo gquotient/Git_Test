@@ -307,7 +307,8 @@ define([
 
     bindSchemaElements: function(){
       var editable = this.isEditable(),
-        existing = !this.model.isNew();
+        existing = !this.model.isNew(),
+        tabIndex = 1;
 
       _.each(this._schema, function(params, attr){
         var $el = this.ui[attr] = this.$(params.el),
@@ -315,7 +316,13 @@ define([
 
         if ($el) {
           $el.prop('disabled', disabled);
+
+          if (!disabled) {
+            $el.attr('tabindex', params.tabIndex || tabIndex);
+          }
         }
+
+        tabIndex += 1;
       }, this);
     },
 

@@ -156,6 +156,14 @@ define([
         }
       },
 
+      make: {
+        el: '#make'
+      },
+
+      model: {
+        el: '#model'
+      },
+
       label: {
         el: '#label',
         editable: false,
@@ -168,14 +176,6 @@ define([
         success: function(value){
           this.updateValues({label: value});
         }
-      },
-
-      make: {
-        el: '#make'
-      },
-
-      model: {
-        el: '#model'
       },
 
       extends_from: {
