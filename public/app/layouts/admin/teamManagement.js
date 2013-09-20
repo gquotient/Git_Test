@@ -39,11 +39,10 @@ define([
 
     },
     initialize: function(options){
-      console.log(options.team);
       Backbone.trigger('set:breadcrumbs', {
         state: 'team',
         display_name: options.team.get('team_label'),
-        url: 'admin/teams/' + options.team.get('team_id')
+        url: '/admin/teams/' + options.team.get('team_id')
       });
 
       this.model = this.team = this.options.team;
