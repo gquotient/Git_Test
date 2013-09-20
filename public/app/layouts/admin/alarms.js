@@ -9,6 +9,9 @@ define([
 
   'issue',
 
+  'layouts/admin/alarms/projectAlarms',
+  'layouts/admin/alarms/editAlarm',
+
   'hbs!layouts/admin/templates/alarms'
 ], function(
   _,
@@ -21,6 +24,9 @@ define([
 
   Issue,
 
+  ProjectAlarmsLayout,
+  EditAlarmLayout,
+
   alarmsTemplate
 ){
   return Marionette.Layout.extend({
@@ -29,60 +35,34 @@ define([
       template: alarmsTemplate
     },
     regions: {
-      projectAlarms: '.projectAlarms'
+      alarmsAdmin: '.alarmsAdmin'
     },
-    ui: {
-      projectAlarms: '.projectAlarms',
-      selectProject: 'select.project'
-    },
-    selectProject: function(project){
-      // Update history
-      Backbone.history.navigate('/admin/alarms/' + project.id);
+    showProjectAlarms: function(id){
+      var projectAlarmsLayout = new ProjectAlarmsLayout({projects: this.options.projects});
 
-      var projectAlarmsView = new Issue.views.AlarmTemplateTable({
-        collection: new Issue.TemplateCollection([], {project: project})
-      });
+      this.alarmsAdmin.show(projectAlarmsLayout);
 
-      projectAlarmsView.collection.fetch();
-
-      // Select the correct value for the select box
-      if (this.ui.selectProject.val() !== project.id) {
-        this.ui.selectProject.val(project.id);
+      if (id) {
+        projectAlarmsLayout.selectProject(this.options.projects.findWhere({project_label: id}));
       }
 
-      this.projectAlarms.show(projectAlarmsView);
-
-      this.listenTo(projectAlarmsView, 'itemview:addCondition', function(alarmView){
-        this.selectAlarm(alarmView.model);
+      this.listenTo(projectAlarmsLayout, 'editConditions', function(alarm){
+        this.showEditAlarm(alarm);
       });
     },
-    selectAlarm: function(alarm){
+    showEditAlarm: function(alarm){
       // Update history
       Backbone.history.navigate('/admin/alarms/' + alarm.collection.project.id + '/' + alarm.get('alarm_type'));
 
-      var alarmEditView = new Issue.views.AlarmTemplateEdit({model: alarm});
+      var editAlarmLayout = new EditAlarmLayout({
+        model: alarm,
+        project: this.options.projects.findWhere({project_label: alarm.collection.project.id })
+      });
 
-      this.projectAlarms.show(alarmEditView);
-      console.log('selectAlarm', alarm);
+      this.alarmsAdmin.show(editAlarmLayout);
     },
-    events: {
-      'change select.project': function(event){
-        this.projectAlarms.close();
-
-        // Get project from selected id
-        var project = this.options.projects.findWhere({
-          project_label: event.target.value
-        });
-
-        if (project) {
-          this.selectProject(project);
-        }
-      }
-    },
-    serializeData: function(){
-      return {
-        projects: this.options.projects.toJSON()
-      };
+    onShow: function(){
+      this.showProjectAlarms();
     }
   });
 });

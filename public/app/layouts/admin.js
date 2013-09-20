@@ -175,7 +175,7 @@ define([
 
       // If id supplied, show project alarms
       if (id) {
-        layout.selectProject(ia.projects.findWhere({project_label: id}));
+        layout.showProjectAlarms(id);
       }
 
       this.highlightLink('alarms');

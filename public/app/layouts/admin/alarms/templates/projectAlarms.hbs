@@ -1,0 +1,12 @@
+<div class="container">
+  Select Project:
+  <select class="project">
+    <option>- Select Project -</option>
+    {{#each projects}}
+    <option value="{{ project_label }}">{{ display_name }}</option>
+    {{/each}}
+  </select>
+</div>
+<br>
+
+<div class="projectAlarms"></div>

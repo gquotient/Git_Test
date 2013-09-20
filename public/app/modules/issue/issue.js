@@ -15,7 +15,9 @@ define([
   'hbs!issue/templates/navigationList',
   'hbs!issue/templates/alarmTemplateTable',
   'hbs!issue/templates/alarmTemplateTableRow',
-  'hbs!issue/templates/alarmTemplateEdit'
+  'hbs!issue/templates/alarmTemplateEdit',
+  'hbs!issue/templates/condition',
+  'hbs!issue/templates/conditions'
 ],
 function(
   $,
@@ -34,7 +36,9 @@ function(
   navigationListTemplate,
   alarmTemplateTableTemplate,
   alarmTemplateTableRowTemplate,
-  alarmTemplateEditTemplate
+  alarmTemplateEditTemplate,
+  conditionTemplate,
+  conditionsTemplate
 ){
   var Issue = { views: {} };
 
@@ -168,7 +172,7 @@ function(
       template: alarmTemplateTableRowTemplate
     },
     triggers: {
-      'click .addCondition': 'addCondition'
+      'click .editConditions': 'editConditions'
     }
   });
 
@@ -189,6 +193,25 @@ function(
       type: 'handlebars',
       template: alarmTemplateEditTemplate
     }
+  });
+
+  Issue.views.Condition = Marionette.ItemView.extend({
+    tagName: 'li',
+    className: 'condition',
+    template: {
+      type: 'handlebars',
+      template: conditionTemplate
+    }
+  });
+
+  Issue.views.Conditions = Marionette.CollectionView.extend({
+    tagName: 'ul',
+    className: 'conditions',
+    template: {
+      type: 'handlebars',
+      template: conditionsTemplate
+    },
+    itemView: Issue.views.Condition
   });
 
   return Issue;
