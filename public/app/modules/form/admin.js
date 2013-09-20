@@ -76,6 +76,7 @@ define([
         'blur': 'close'
       });
 
+      // When a dropdown item is clicked, capture it and close the view.
       this.on('itemview:select', function(view){
         this.current = view.model;
         this.close();
@@ -172,6 +173,7 @@ define([
     onKeyEnter: function(){
       var model = this.getModel();
 
+      // Capture the model and close the view on enter.
       if (model) {
         this.current = model;
         this.close();
@@ -186,6 +188,7 @@ define([
       this.undelegateInputEvents();
       $(document).off('keydown keypress', this.handleKeyEvent);
 
+      // Replace the input text with the last known good model text.
       this.$input.val(this.current.get('display_name')).blur();
     }
   });
@@ -196,6 +199,7 @@ define([
 
       Marionette.ItemView.prototype.constructor.apply(this, arguments);
 
+      // Update the input fields with any changed model values.
       this.listenTo(this.model, 'change', function(){
         this.updateValues(this.model.changed);
       });
@@ -224,10 +228,12 @@ define([
       var schema = Marionette.getOption(this, 'schema'),
         modelSchema = this.model.constructor.schema || {};
 
+      // Allow creating the schema dynamicaly.
       if (_.isFunction(schema)) {
         schema = schema.call(this);
       }
 
+      // Return the combination of the model schema, view schema and defaults.
       return _.reduce(schema, function(memo, params, attr){
         memo[attr] = _.extend({
           el: '#' + attr,
@@ -244,6 +250,8 @@ define([
         var parser = params.parse,
           validator = params.validate;
 
+        // Create listeners for each schema item that will wait for the user
+        // to finish entering data then parse and validate the value.
         memo['blur ' + params.el] = function(e){
           var $el = $(e.target), value;
 
@@ -254,12 +262,17 @@ define([
               value = parser.call(this, value);
             }
 
+            // If the value is invalid, mark the input and call an error
+            // handler if present.
             if (validator && !validator.call(this, value)) {
               $el.addClass('invalid');
 
               if (params.error) {
                 params.error.call(this, value);
               }
+
+            // Otherwise capture the changed value, clear the input and call
+            // a success handler if present.
             } else {
               $el.removeClass('invalid');
 
@@ -272,6 +285,8 @@ define([
           }
         };
 
+        // If the schema item has a set of predefined values then add a
+        // dropdown with those values when the input gets focus.
         if (params.source) {
           memo['focus ' + params.el] = function(e){
             var $el = $(e.target);
@@ -289,6 +304,7 @@ define([
     createDropdown: function($input, collection){
       var DropdownView = Marionette.getOption(this, 'dropdownView'), view;
 
+      // Allow creating the list of dropdown items dynamicaly.
       if (_.isFunction(collection)) {
         collection = collection.call(this);
       }
@@ -314,6 +330,8 @@ define([
         existing = !this.model.isNew(),
         tabIndex = 1;
 
+      // After each render, capture the element for each schema item. Also
+      // disable the input if not editable or set it's tab order.
       _.each(this._schema, function(params, attr){
         var $el = this.ui[attr] = this.$(params.el),
           disabled = !editable || (existing && !this.isEditable(attr));
@@ -356,6 +374,8 @@ define([
       }, this);
     },
 
+    // This causes the parser and validator to be run on every input and
+    // textarea field.
     parseAll: function(){
       this.$el.find('input, textarea').blur();
     },
