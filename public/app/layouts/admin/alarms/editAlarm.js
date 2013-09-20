@@ -35,7 +35,9 @@ define([
       'click .addCondition': 'addCondition'
     },
     initialize: function(options){
-      this.conditionsView = new Issue.views.Conditions({collection: new Backbone.Collection()});
+      this.conditionsView = new Issue.views.Conditions({
+        collection: new Backbone.Collection(options.model.get('conditions'))
+      });
     },
     onShow: function(){
       this.conditions.show(this.conditionsView);
