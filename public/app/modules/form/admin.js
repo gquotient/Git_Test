@@ -2,14 +2,184 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'backbone.marionette'
+  'backbone.marionette',
+
+  './util',
+
+  'hbs!form/templates/inputDropdown',
+  'hbs!form/templates/inputDropdownItem'
 ], function(
   $,
   _,
   Backbone,
-  Marionette
+  Marionette,
+
+  util,
+
+  dropdownTemplate,
+  dropdownItemTemplate
 ){
   var views = {};
+
+  views.InputDropdownItem = Marionette.ItemView.extend({
+    tagName: 'li',
+    template: {
+      type: 'handlebars',
+      template: dropdownItemTemplate
+    },
+
+    templateHelpers: function(){
+      return {
+        attribute: this.model.get('display_name')
+      };
+    },
+
+    triggers: {
+      'mousedown a': 'select'
+    }
+  });
+
+  views.InputDropdown = Marionette.CompositeView.extend({
+
+    constructor: function(options){
+      this._collection = options.collection;
+
+      options.collection = new util.Collection(options.collection, {
+        comparator: options.comparator || 'display_name',
+        close_with: this
+      });
+
+      Marionette.CompositeView.prototype.constructor.call(this, options);
+
+      this.$input = options.$input;
+      this.current = this.getModel() || this.collection.first();
+
+      this.delegateInputEvents({
+        'input': 'updateFilter',
+        'blur': 'close'
+      });
+
+      this.on('itemview:select', function(view){
+        this.current = view.model;
+        this.close();
+      });
+
+      this.on('render', function(){
+        var pos = this.$input.position(),
+          width = this.$input.innerWidth(),
+          margin = parseInt(this.$input.css('margin-top'), 10);
+
+        pos.left += (this.$input.outerWidth() - width) / 2;
+        pos.top += this.$input.outerHeight() + margin + 1;
+
+        this.$el.offset(pos).width(width);
+      });
+
+      _.bindAll(this, 'handleKeyEvent');
+      $(document).on('keydown keypress', this.handleKeyEvent);
+    },
+
+    template: {
+      type: 'handlebars',
+      template: dropdownTemplate
+    },
+
+    itemView: views.InputDropdownItem,
+    itemViewContainer: 'ul',
+
+    className: 'inputDropdown',
+
+    keydownEvents: {
+      9: 'key:tab',
+      13: 'key:enter',
+      27: 'key:esc',
+      38: 'key:up',
+      40: 'key:down'
+    },
+
+    handleKeyEvent: function(e){
+      var value = (this[e.type + 'Events'] || {})[e.which];
+
+      if (value) {
+        e.preventDefault();
+        this.triggerMethod(value);
+      }
+    },
+
+    delegateInputEvents: function(events){
+      _.each(events, function(method, name){
+        name += '.schemaEvent' + this.cid;
+        method = _.bind(_.isString(method) ? this[method] : method, this);
+        this.$input.on(name, method);
+      }, this);
+    },
+
+    undelegateInputEvents: function(){
+      this.$input.off('.schemaEvent' + this.cid);
+    },
+
+    parseInput: function(){
+      return this.$input.val();
+    },
+
+    getModel: function(){
+      return this.collection.findWhere({display_name: this.parseInput()});
+    },
+
+    updateFilter: function(){
+      var regex = new RegExp('^' + this.parseInput(), 'i');
+
+      this.collection.updateFilter(function(model){
+        return regex.test(model.get('display_name'));
+      });
+    },
+
+    getAutocomplete: function(){
+      var values = this.collection.pluck('display_name'),
+        partial = _.first(values) || '',
+        last, len;
+
+      if (values.length > 1) {
+        len = partial.length;
+        last = _.last(values);
+
+        while (len > 0 && last.indexOf(partial) !== 0) {
+          len -= 1;
+          partial = partial.substring(0, len);
+        }
+      }
+
+      return partial;
+    },
+
+    onKeyTab: function(){
+      var value = this.getAutocomplete();
+
+      if (value) {
+        this.$input.val(value);
+      }
+    },
+
+    onKeyEnter: function(){
+      var model = this.getModel();
+
+      if (model) {
+        this.current = model;
+        this.close();
+      }
+    },
+
+    onKeyEsc: function(){
+      this.close();
+    },
+
+    onClose: function(){
+      this.undelegateInputEvents();
+      $(document).off('keydown keypress', this.handleKeyEvent);
+
+      this.$input.val(this.current.get('display_name')).blur();
+    }
+  });
 
   views.Admin = Marionette.ItemView.extend({
     constructor: function(){
@@ -24,6 +194,8 @@ define([
 
     tagName: 'form',
 
+    dropdownView: views.InputDropdown,
+
     delegateEvents: function(events){
 
       // Handle the events object here.
@@ -33,65 +205,87 @@ define([
       }
 
       // Compile the schema object and add the schema events.
-      this._compileSchema();
-      events = _.extend({}, events, this.schemaEvents);
+      this._schema = this.compileSchema();
+      events = _.extend({}, events, this.schemaEvents());
 
       Marionette.View.prototype.delegateEvents.call(this, events);
     },
 
-    _compileSchema: function(){
+    compileSchema: function(){
       var schema = Marionette.getOption(this, 'schema'),
-        modelSchema = this.model.schema || {},
-        handler;
+        modelSchema = this.model.schema || {};
 
       if (_.isFunction(schema)) {
         schema = schema.call(this);
       }
 
-      this.schemaEvents = {};
-      this._schema = {};
+      return _.reduce(schema, function(memo, params, attr){
+        memo[attr] = _.extend({}, modelSchema[attr], params);
 
-      _.each(schema, function(params, attr){
-        params = _.extend({}, modelSchema[attr], params);
-
-        handler = this.createSchemaHandler(attr, params);
-        this.schemaEvents['blur.schema ' + params.el] = handler;
-
-        this._schema[attr] = params;
-      }, this);
+        return memo;
+      }, {});
     },
 
-    createSchemaHandler: function(attr, options){
-      var parser = options.parse,
-        validator = options.validate;
+    schemaEvents: function(){
+      return _.reduce(this._schema, function(memo, params, attr){
+        var parser = params.parse,
+          validator = params.validate;
 
-      return function(){
-        var $el = this.ui[attr], value;
+        memo['blur ' + params.el] = function(e){
+          var $el = $(e.target), value;
 
-        if ($el && $el.val) {
-          value = $el.val().trim();
+          if ($el && $el.val) {
+            value = $el.val().trim();
 
-          if (parser) {
-            value = parser.call(this, value);
-          }
-
-          if (validator && !validator.call(this, value)) {
-            $el.addClass('invalid');
-
-            if (options.error) {
-              options.error.call(this, value);
+            if (parser) {
+              value = parser.call(this, value);
             }
-          } else {
-            $el.removeClass('invalid');
 
-            this.changed[attr] = value;
+            if (validator && !validator.call(this, value)) {
+              $el.addClass('invalid');
 
-            if (options.success) {
-              options.success.call(this, value);
+              if (params.error) {
+                params.error.call(this, value);
+              }
+            } else {
+              $el.removeClass('invalid');
+
+              this.changed[attr] = value;
+
+              if (params.success) {
+                params.success.call(this, value);
+              }
             }
           }
+        };
+
+        if (params.source) {
+          memo['focus ' + params.el] = function(e){
+            var $el = $(e.target);
+
+            if ($el) {
+              this.createDropdown($el, params.source);
+            }
+          };
         }
-      };
+
+        return memo;
+      }, {});
+    },
+
+    createDropdown: function($input, collection){
+      var DropdownView = Marionette.getOption(this, 'dropdownView'), view;
+
+      if (_.isFunction(collection)) {
+        collection = collection.call(this);
+      }
+
+      view = new DropdownView({
+        collection: collection,
+        $input: $input
+      });
+
+      this.$el.append(view.render().el);
     },
 
     bindUIElements: function(){

@@ -117,7 +117,7 @@ define([
     },
 
     setCategory: function(model){
-      var extends_from = model.get('extends_from');
+      var labels = model.get('extends_from');
 
       this.dropdown.$el.hide();
       this.ui.title.html(model.get('display_name'));
@@ -125,9 +125,11 @@ define([
       this.collection.filter = function(equip){
         var base = equip.getBase();
 
-        return equip !== base && _.contains(extends_from, base.get('label'));
+        return equip !== base && _.contains(labels, base.get('label'));
       };
       this.collection._onReset();
+
+      this.trigger('set:category', labels);
     }
   });
 
@@ -180,18 +182,28 @@ define([
       extends_from: {
         el: '#extends',
         editable: false,
+        source: function(){
+          var labels = this.options.baseLabels;
+
+          return new Backbone.VirtualCollection(this.collection, {
+            filter: function(equip){
+
+              // Only show base equipment for now.
+              if (equip !== equip.getBase()) { return false; }
+
+              // Only show the equipment for this category.
+              return !labels || _.contains(labels, equip.get('label'));
+            },
+            close_with: this
+          });
+        },
         parse: function(value){
-          var model;
+          var model = this.collection.findWhere({display_name: value});
 
-          if (value) {
-            model = this.collection.getEquipment(value);
-            value = model ? model.id : 'invalid';
-          }
-
-          return value;
+          return model && model.id;
         },
         validate: function(value){
-          return value !== 'invalid';
+          return !!value;
         }
       },
 

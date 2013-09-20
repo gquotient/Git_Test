@@ -45,6 +45,11 @@ define([
       this.listenTo(this.listView, 'save', this.saveDetail);
       this.listenTo(this.listView, 'cancel', this.hideDetail);
 
+      this.listenTo(this.listView, 'set:category', function(labels){
+        this.baseLabels = labels;
+        this.hideDetail();
+      });
+
       // Update breadcrumbs
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
@@ -98,6 +103,7 @@ define([
 
       view = new Equipment.views.AdminDetail({
         collection: this.collection,
+        baseLabels: this.baseLabels,
         model: model
       });
 
