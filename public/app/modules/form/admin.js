@@ -271,8 +271,8 @@ define([
                 params.error.call(this, value);
               }
 
-            // Otherwise capture the changed value, clear the input and call
-            // a success handler if present.
+            // Otherwise capture the changed value, clear the input marker
+            // and call a success handler if present.
             } else {
               $el.removeClass('invalid');
 

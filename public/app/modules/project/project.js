@@ -429,21 +429,21 @@ define([
         }
       },
       latitude: {
-        type: 'numeric',
+        type: 'number',
         required: true,
         validate: function(value){
           return !isNaN(value);
         }
       },
       longitude: {
-        type: 'numeric',
+        type: 'number',
         required: true,
         validate: function(value){
           return !isNaN(value);
         }
       },
       elevation: {
-        type: 'numeric',
+        type: 'number',
         required: true,
         validate: function(value){
           return !isNaN(value);
