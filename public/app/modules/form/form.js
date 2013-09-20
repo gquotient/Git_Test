@@ -6,6 +6,7 @@ define([
 
   './helpers',
   './admin',
+  './util',
 
   'hbs!form/templates/table',
   'hbs!form/templates/editTableRow',
@@ -18,12 +19,13 @@ define([
 
   formHelpers,
   adminViews,
+  util,
 
   tableTemplate,
   editTableRowTemplate,
   newTableRowTemplate
 ){
-  var Form = { views: {} };
+  var Form = { views: {}, util: util };
 
   Form.views.basic = Marionette.ItemView.extend({
     tagName: 'form',

@@ -29,6 +29,24 @@ define([
     });
   }
 
+  function multiPart(a, b, sorter, context){
+    var result;
+
+    a = _.clone(a);
+    b = _.clone(b);
+
+    if (_.isArray(a) && _.isArray(b)) {
+      while (a.length || b.length) {
+        result = sorter.call(context, a.shift(), b.shift());
+        if (result !== 0) { return result; }
+      }
+    } else {
+      result = sorter.call(context, a, b);
+    }
+
+    return result;
+  }
+
   // Sort that takes optional iterator and sorter functions and sorts array
   // elements properly instead of joining them into a string.
   util.naturalSort = function(obj, options, context){
@@ -53,23 +71,44 @@ define([
         criteria: iterator.call(context, value, index, list)
       };
     }).sort(function(left, right){
-      var a, b, result;
+      var result = multiPart(left.criteria, right.criteria, sorter, context);
 
-      a = _.clone(left.criteria);
-      b = _.clone(right.criteria);
-
-      if (_.isArray(a) && _.isArray(b)) {
-        while (a.length || b.length) {
-          result = sorter.call(context, a.shift(), b.shift());
-          if (result !== 0) { return result; }
-        }
-      } else {
-        result = sorter.call(context, a, b);
-        if (result !== 0) { return result; }
-      }
+      if (result !== 0) { return result; }
 
       return left.index < right.index ? -1 : 1;
     }), 'value');
+  };
+
+  util.sortedIndex = function(array, obj, options, context){
+    options = options || {};
+
+    var iterator = options.iterator || _.identity,
+      sorter = options.sorter || comparator,
+      low = 0, high = array.length, mid, value, other;
+
+    if (options.natural) {
+      iterator = _.wrap(iterator, function(func){
+        var args = Array.prototype.slice.apply(arguments),
+          result = func.apply(context, args.slice(1));
+
+        return _.isString(result) ? naturalSplit(result) : result;
+      });
+    }
+
+    value = iterator.call(context, obj);
+
+    while (low < high) {
+      mid = Math.floor((low + high) / 2);
+      other = iterator.call(context, array[mid]);
+
+      if (multiPart(value, other, sorter, context) > 0) {
+        low = mid + 1;
+      } else {
+        high = mid;
+      }
+    }
+
+    return low;
   };
 
   util.Collection = Marionette.extend.call(Backbone.VirtualCollection, {
