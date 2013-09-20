@@ -56,10 +56,15 @@ define([
       // Update breadcrumbs
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
-        display_name: 'Admin'
+        display_name: 'Admin',
+        url: '/admin'
       });
 
-      Backbone.trigger('set:breadcrumbs', {state:'projects', display_name:'Projects'});
+      Backbone.trigger('set:breadcrumbs', {
+        state:'projects',
+        display_name:'Projects',
+        url: '/admin/projects'
+      });
 
       // Update history
       Backbone.history.navigate('/admin/projects');

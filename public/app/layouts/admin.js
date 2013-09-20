@@ -178,7 +178,8 @@ define([
     initialize: function(options){
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
-        display_name: 'Admin'
+        display_name: 'Admin',
+        url: '/admin'
       });
 
       this.listenTo(Backbone, 'select:admin', function(){

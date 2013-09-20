@@ -38,7 +38,12 @@ define([
       this.allProjectsRegion.show( this.allProjectsView );
 
     },
-    initialize: function(){
+    initialize: function(options){
+      Backbone.trigger('set:breadcrumbs', {
+        state: 'team',
+        display_name: options.team.get('team_label'),
+        url: '/admin/teams/' + options.team.get('team_id')
+      });
 
       this.model = this.team = this.options.team;
       this.allUsers = new User.OrganizationUsers({ org_label: this.team.get('org_label') });
