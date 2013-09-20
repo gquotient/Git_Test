@@ -63,13 +63,13 @@ define([
     itemView: views.AdminListItem,
 
     initialize: function(options){
-      this.collection = new Backbone.VirtualCollection(options.collection, {
+      this.collection = new Form.util.Collection(options.collection, {
         close_with: this
       });
 
       this.categories = new Backbone.Collection(categories);
 
-      this.dropdown = new Navigation.views.Dropdown({
+      this.dropdown = new Form.views.Dropdown({
         collection: this.categories
       });
 
@@ -122,12 +122,11 @@ define([
       this.dropdown.$el.hide();
       this.ui.title.html(model.get('display_name'));
 
-      this.collection.filter = function(equip){
+      this.collection.updateFilter(function(equip){
         var base = equip.getBase();
 
         return equip !== base && _.contains(labels, base.get('label'));
-      };
-      this.collection._onReset();
+      });
 
       this.trigger('set:category', labels);
     }

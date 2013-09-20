@@ -6,8 +6,8 @@ define([
 
   './util',
 
-  'hbs!form/templates/inputDropdown',
-  'hbs!form/templates/inputDropdownItem'
+  'hbs!form/templates/dropdown',
+  'hbs!form/templates/dropdownItem'
 ], function(
   $,
   _,
@@ -21,7 +21,7 @@ define([
 ){
   var views = {};
 
-  views.InputDropdownItem = Marionette.ItemView.extend({
+  views.DropdownItem = Marionette.ItemView.extend({
     tagName: 'li',
     template: {
       type: 'handlebars',
@@ -39,7 +39,24 @@ define([
     }
   });
 
-  views.InputDropdown = Marionette.CompositeView.extend({
+  views.Dropdown = Marionette.CompositeView.extend({
+
+    constructor: function(){
+      Marionette.CompositeView.prototype.constructor.apply(this, arguments);
+    },
+
+    template: {
+      type: 'handlebars',
+      template: dropdownTemplate
+    },
+
+    className: 'dropdown',
+
+    itemView: views.DropdownItem,
+    itemViewContainer: 'ul'
+  });
+
+  views.InputDropdown = views.Dropdown.extend({
 
     constructor: function(options){
       this._collection = options.collection;
@@ -49,7 +66,7 @@ define([
         close_with: this
       });
 
-      Marionette.CompositeView.prototype.constructor.call(this, options);
+      views.Dropdown.prototype.constructor.call(this, options);
 
       this.$input = options.$input;
       this.current = this.getModel() || this.collection.first();
@@ -78,14 +95,6 @@ define([
       _.bindAll(this, 'handleKeyEvent');
       $(document).on('keydown keypress', this.handleKeyEvent);
     },
-
-    template: {
-      type: 'handlebars',
-      template: dropdownTemplate
-    },
-
-    itemView: views.InputDropdownItem,
-    itemViewContainer: 'ul',
 
     className: 'inputDropdown',
 

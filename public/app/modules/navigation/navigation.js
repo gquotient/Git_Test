@@ -8,9 +8,7 @@ define([
   'hbs!navigation/templates/list',
   'hbs!navigation/templates/listItem',
   'hbs!navigation/templates/adminList',
-  'hbs!navigation/templates/adminListItem',
-  'hbs!navigation/templates/dropdown',
-  'hbs!navigation/templates/dropdownItem'
+  'hbs!navigation/templates/adminListItem'
 ], function(
   $,
   _,
@@ -21,9 +19,7 @@ define([
   listTemplate,
   listItemTemplate,
   adminListTemplate,
-  adminListItemTemplate,
-  dropdownTemplate,
-  dropdownItemTemplate
+  adminListItemTemplate
 ){
   var Navigation = { views: {} };
 
@@ -198,30 +194,6 @@ define([
     toggleSaving: function(state){
       this.ui.save.toggleClass('loading-left', state === true);
     }
-  });
-
-  Navigation.views.DropdownItem = Marionette.ItemView.extend({
-    tagName: 'li',
-    template: {
-      type: 'handlebars',
-      template: dropdownItemTemplate
-    },
-
-    triggers: {
-      'mousedown a': 'select'
-    }
-  });
-
-  Navigation.views.Dropdown = Marionette.CompositeView.extend({
-    template: {
-      type: 'handlebars',
-      template: dropdownTemplate
-    },
-
-    className: 'dropdown',
-
-    itemView: Navigation.views.DropdownItem,
-    itemViewContainer: 'ul'
   });
 
   return Navigation;
