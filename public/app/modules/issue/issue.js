@@ -204,14 +204,14 @@ function(
     }
   });
 
-  Issue.views.Conditions = Marionette.CollectionView.extend({
-    tagName: 'ul',
-    className: 'conditions',
+  Issue.views.Conditions = Marionette.CompositeView.extend({
+    tagName: 'form',
     template: {
       type: 'handlebars',
       template: conditionsTemplate
     },
-    itemView: Issue.views.Condition
+    itemView: Issue.views.Condition,
+    itemViewContainer: 'ul.conditions'
   });
 
   return Issue;
