@@ -133,7 +133,6 @@ define([
         }
 
         this.model = null;
-        Backbone.history.navigate('/admin/projects');
       });
 
       this.detail.show(view);
@@ -141,13 +140,11 @@ define([
       this.listView.setActive(model, {
         showSave: model.isEditable() || !model.isLocked()
       });
+
       this.mapView.focusMap(model);
+      this.updateHistory(model);
 
       this.model = model;
-
-      if (model.id) {
-        Backbone.history.navigate('/admin/projects/' + model.id);
-      }
     },
 
     saveDetail: function(){
@@ -176,6 +173,15 @@ define([
 
     hideDetail: function(){
       this.detail.close();
+      this.updateHistory();
+    },
+
+    updateHistory: function(model){
+      if (model && model.id) {
+        Backbone.history.navigate('/admin/projects/' + model.id);
+      } else {
+        Backbone.history.navigate('/admin/projects');
+      }
     },
 
     updateLocation: function(attr, model){
