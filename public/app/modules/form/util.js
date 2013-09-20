@@ -49,7 +49,7 @@ define([
 
   // Sort that takes optional iterator and sorter functions and sorts array
   // elements properly instead of joining them into a string.
-  util.naturalSort = function(obj, options, context){
+  util.sort = function(obj, options, context){
     options = options || {};
 
     var iterator = options.iterator || _.identity,
@@ -79,6 +79,7 @@ define([
     }), 'value');
   };
 
+  // Similar to above but returns the proper insertion index for obj in array.
   util.sortedIndex = function(array, obj, options, context){
     options = options || {};
 
@@ -156,7 +157,7 @@ define([
         sorter = this.comparator;
       }
 
-      this.index = util.naturalSort(this.index, {
+      this.index = util.sort(this.index, {
         iterator: function(cid, index, list){
           return iterator.call(this, this.collection.get(cid), index, list);
         },
