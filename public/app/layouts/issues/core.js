@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
   'handlebars',
 
+  'ia',
+
   'project',
   'device',
   'chart',
@@ -17,6 +19,8 @@ define([
   Backbone,
   Marionette,
   Handlebars,
+
+  ia,
 
   Project,
   Device,
@@ -35,14 +39,39 @@ define([
       chart: '.chart',
       deviceName: '.deviceName'
     },
-
+    triggers: {
+      'click .acknowledge': 'acknowledge',
+      'click .resolve': 'resolve',
+      'click .delete': 'delete'
+    },
     events: {
       'click .device': function(event){
         event.preventDefault();
         Backbone.history.navigate('/project/' + this.project.id + '/devices/' + this.device.get('graph_key'), true);
       }
     },
+    onAcknowledge: function(){
+      this.model.acknowledge(ia.currentUser.get('email'));
+    },
+    onResolve: function(){
+      // Resolve the alarm
+      this.model.resolve().done(function(){
+        // And navigate back to main issues page
+        Backbone.history.navigate('/project/' + this.project.id + '/alarms', true);
+      });
+    },
+    onDelete: function(){
+      // Confirm user actually wants to delete the alarm
+      var confirm = window.confirm('Are you sure you want to delete this alarm?');
 
+      // If confirm returns true, destroy model
+      if (confirm) {
+        this.model.destroy();
+      }
+    },
+    modelEvents: {
+      'change': 'render'
+    },
     onShow: function(){
       Backbone.trigger(
         'set:breadcrumbs',
