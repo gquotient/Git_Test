@@ -32,12 +32,18 @@ define([
     },
 
     initialize: function(options){
+      // Refresh breadcrumbs
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
-        display_name: 'Admin'
+        display_name: 'Admin',
+        url: '/admin'
       });
 
-      Backbone.trigger('set:breadcrumbs', {state:'users', display_name:'Users'});
+      Backbone.trigger('set:breadcrumbs', {
+        state:'users',
+        display_name:'Users',
+        url: '/admin/users'
+      });
 
       this.collection = new User.Collection();
       this.view = new User.views.EditTable({ collection: this.collection });
