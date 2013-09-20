@@ -275,15 +275,28 @@ define([
     },
 
     getForDevice: function(device){
-      var label = device.get('equipment_label');
+      var label = device.get('equipment_label'),
+        equip = label && this.getEquipment(label),
+        match;
 
-      if (!label && device.has('did')) {
-        label = device.get('did').replace(/-\d*$/, '');
+      // If equipment_label doesn't exist try to find the base equip.
+      if (!equip && label) {
+        match = /^([A-Z]+)_/.exec(label);
+        equip = match && this.getEquipment(match[1]);
       }
 
-      if (label) {
-        return this.getEquipment(label);
+      // Otherwise try and use the device did to find the base equip.
+      if (!equip && device.has('did')) {
+        match = /^([A-Z]+)-/.exec(device.get('did'));
+        equip = match && this.getEquipment(match[1]);
       }
+
+      // As a last resort create the equipment.
+      if (!equip) {
+        equip = this.push({equipment_label: label});
+      }
+
+      return equip;
     }
   });
 
