@@ -393,10 +393,10 @@ define([
       }, this);
     },
 
-    addNote: function(note, user){
+    addNote: function(note, user, options){
       this.save({
         notes: this.formatNote(note, user) + this.get('notes')
-      }, {lazy: true});
+      }, _.extend({lazy: true, persistLock: true}, options));
     },
 
     formatNote: function(msg, user){

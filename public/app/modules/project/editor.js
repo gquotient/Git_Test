@@ -298,6 +298,7 @@ define([
       }, this);
 
       view.collection.reset(equipment);
+      delete view.times;
     },
 
     onConnectFocus: function(view){
