@@ -107,6 +107,13 @@ define([
         this.currentView = 'map';
         $('.devices').hide();
         $('.map').show();
+
+        // When map is set to "display:none", marker renders messed up
+        // This is a janky hack butso is all the rest of this map toggle tomfoolery
+        _.each(this.mapView.markers._layers, function(marker){
+          marker.closePopup();
+          marker.openPopup();
+        });
       }
     },
     onShow: function(){
