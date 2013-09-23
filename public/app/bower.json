@@ -22,7 +22,7 @@
     "leaflet": "0.6.2",
     "paper": "latest",
     "jquery-mousewheel": "latest",
-    "highcharts": "git@github.com:highslide-software/highcharts.com.git#master",
+    "highcharts": "#3.0.1",
     "handsontable": "git://github.com/ianmetcalf/jquery-handsontable.git#amd-support",
     "walltime-js": "latest",
     "datepicker": "git://github.com/foxrunsoftware/DatePicker.git#master"
