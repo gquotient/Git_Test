@@ -311,9 +311,6 @@ define([
       if (typeof filters === 'object' && filters.length) {
         // Build existing filters
         _.each(filters, this.addFilter, this);
-      } else {
-        //handle new
-        this.addFilter({});
       }
     },
     updateMessage: function(message, type) {
