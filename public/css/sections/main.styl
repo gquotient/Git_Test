@@ -176,12 +176,14 @@ header {
     height: 100%;
     position: relative;
     // This is for animation
-    transition: 0.25s ease-in-out;
-    &.hidden {
-      margin-left: 100%;
-    }
-    // Make the immediate child 100% height so only its contents scroll
+
     > ul {
+      width: 100%;
+      transition: 0.25s ease-in-out;
+      &.hidden {
+        margin-left: 100%;
+      }
+      // Make the immediate child 100% height so only its contents scroll
       height: 100%;
       overflow: auto;
     }
@@ -883,6 +885,10 @@ form ul li.filter {
   margin: 0 0 6px;
   overflow: hidden;
   padding: 6px;
+
+  .remove {
+    float: right;
+  }
 }
 
 /* HOT */

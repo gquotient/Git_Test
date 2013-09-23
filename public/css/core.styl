@@ -345,6 +345,7 @@ input[type="email"],
 input[type="password"],
 input[type="text"],
 input[type="tel"],
+input[type="number"],
 textarea {
   font-family:Helvetica, sans-serif;
   background:#fff;
@@ -365,6 +366,40 @@ input[type="checkbox"], input[type="radio"] {
 
 select[disabled], select:disabled {
   color: #555;
+}
+
+.inputDropdown {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  border: borderBasicDark;
+  border-top: 0;
+  background-color: white;
+  overflow: hidden;
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    overflow: auto;
+    max-height: 400px;
+
+    > li {
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  a {
+    display: block;
+    padding: 3px 6px;
+    text-decoration: none;
+    color: black;
+
+    &:hover {
+      background-color: colorDrakerOrange;
+    }
+  }
 }
 
 /* Misc Layout */

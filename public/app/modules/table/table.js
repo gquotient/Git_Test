@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
   'handsontable',
 
+  'form',
+
   './dropdown',
 
   'css!bower_components/handsontable/dist/jquery.handsontable.css'
@@ -14,6 +16,8 @@ define([
   Backbone,
   Marionette,
   Handsontable,
+
+  Form,
 
   Dropdown,
 
@@ -79,7 +83,10 @@ define([
       var index;
 
       if (this.comparator) {
-        index = _.sortedIndex(this._rows, row, this.comparator, this);
+        index = Form.util.sortedIndex(this._rows, row, {
+          iterator: this.comparator,
+          natural: true
+        }, this);
       } else {
         index = this._rows.length;
       }

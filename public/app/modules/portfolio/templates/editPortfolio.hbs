@@ -7,6 +7,17 @@
     </li>
     <li>
       <div class="container buttons">
+        <select id="filterType">
+          <option value="ac_capacity" {{#ifCond property 'ac_capacity' }}selected{{/ifCond}}>{{$ 'AC Capacity' }} (W)</option>
+          <option value="dc_capacity" {{#ifCond property 'dc_capacity' }}selected{{/ifCond}}>{{$ 'DC Capacity' }} (W)</option>
+          <option value="latitude" {{#ifCond property 'latitude' }}selected{{/ifCond}}>{{$ 'Latitude' }}</option>
+          <option value="longitude" {{#ifCond property 'longitude' }}selected{{/ifCond}}>{{$ 'Longitude' }}</option>
+          <option value="zipcode" {{#ifCond property 'zipcode' }}selected{{/ifCond}}>{{$ 'Zip Code' }}</option>
+          <option value="state" {{#ifCond property 'state' }}selected{{/ifCond}}>{{$ 'State' }}</option>
+          <option value="status" {{#ifCond property 'status' }}selected{{/ifCond}}>{{$ 'Status' }}</option>
+          <option value="owner" {{#ifCond property 'owner' }}selected{{/ifCond}}>{{$ 'Owner' }}</option>
+          <option>Advanced</option>
+        </select>
         <button class="button sml addFilter">+ {{$ 'Add Filter' }}</button>
       </div>
       <ul class="filters"></ul>

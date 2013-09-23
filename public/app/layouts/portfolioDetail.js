@@ -64,9 +64,6 @@ define([
           template: portfolioDetailSettingsTemplate
         },
         className: 'menu dropdown',
-        onViewDashboard: function(){
-          console.log('view dashboard');
-        },
         events: {
           'click .viewDashboard': function(event){
             Backbone.history.navigate('/portfolio/operatorview/' + that.model.id, true);
@@ -89,10 +86,11 @@ define([
         clearInterval(this.fetchIssuesInterval);
       }
 
-      // Fetch issues on the new portfolio
+      // Fetch data for all projects
+      // This is necessary for dynamic project property portfolios
       var fetchProjectData = function(){
-        portfolio.projects.fetchIssues();
-        portfolio.projects.fetchProjectKpis();
+        portfolio.collection.projects.fetchIssues();
+        portfolio.collection.projects.fetchProjectKpis();
       };
 
       // Run initially to get latest data
@@ -114,6 +112,11 @@ define([
 
       // Update Map View
       this.mapView.fitToBounds();
+
+      // Listen for changes to portfolio projects and update projectList
+      this.listenTo(portfolio.projects, 'add', function(){
+        this.projectList.set(portfolio.projects.models);
+      });
     },
 
     initialize: function(options){

@@ -86,10 +86,15 @@
   "Release Lock": "Release Lock",
   "has this project locked": "has this project locked",
 
+  "Alarm": "Alarm",
+  "Alert": "Alert",
+  "Warning": "Warning",
   "Alarm Description": "Alarm Description",
   "View all alarms": "View all alarms",
   "Alarm Status": "Alarm Status",
   "Created On": "Created On",
   "Trigger Condition": "Trigger Condition",
+  "Acknowledge": "Acknowledge",
+  "Acknowledged": "Acknowledged",
   "There are currently no active alarms": "There are currently no active alarms"
 }

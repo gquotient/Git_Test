@@ -65,9 +65,9 @@ define([
 
           if (current) {
             this.showDetail(current);
+          } else {
+            this.mapView.centerMap();
           }
-
-          this.mapView.centerMap();
         }, this)
       });
     },
@@ -117,7 +117,6 @@ define([
         }
 
         this.model = null;
-        Backbone.history.navigate('/admin/projects');
       });
 
       this.detail.show(view);
@@ -125,43 +124,48 @@ define([
       this.listView.setActive(model, {
         showSave: model.isEditable() || !model.isLocked()
       });
+
       this.mapView.focusMap(model);
+      this.updateHistory(model);
 
       this.model = model;
-
-      if (model.id) {
-        Backbone.history.navigate('/admin/projects/' + model.id);
-      }
     },
 
     saveDetail: function(){
       var detailView = this.detail.currentView,
-        model = this.model,
-        values;
+        model = this.model;
 
-      if (detailView && detailView.isValid()) {
-        this.listView.toggleSaving(true);
+      if (detailView) {
+        detailView.saveChanges({
+          before: function(){
+            this.listView.toggleSaving(true);
 
-        values = _.clone(detailView.changed);
-
-        if (model.isNew()) {
-          values.notes = model.formatNote('created project');
-        }
-
-        model.save(values, {
-          success: _.bind(function(){
+            if (model.isNew()) {
+              model.addNote('created project');
+            }
+          },
+          success: function(){
             this.collection.add(model);
             this.showDetail(model);
-          }, this),
-          complete: _.bind(function(){
+          },
+          after: function(){
             this.listView.toggleSaving(false);
-          }, this)
-        });
+          }
+        }, this);
       }
     },
 
     hideDetail: function(){
       this.detail.close();
+      this.updateHistory();
+    },
+
+    updateHistory: function(model){
+      if (model && model.id) {
+        Backbone.history.navigate('/admin/projects/' + model.id);
+      } else {
+        Backbone.history.navigate('/admin/projects');
+      }
     },
 
     updateLocation: function(attr, model){
@@ -170,6 +174,10 @@ define([
 
       } else if (this.model.isNew() && (!model || model === this.model)) {
         this.model.set(attr);
+
+        if (!model) {
+          this.mapView.addMarker(this.model);
+        }
 
       } else {
         this.mapView.focusMap(attr);

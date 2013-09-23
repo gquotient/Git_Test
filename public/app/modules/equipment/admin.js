@@ -6,6 +6,7 @@ define([
   'backbone.virtualCollection',
 
   'navigation',
+  'form',
 
   'hbs!equipment/templates/adminListItem',
   'hbs!equipment/templates/adminDetail'
@@ -17,11 +18,39 @@ define([
   VirtualCollection,
 
   Navigation,
+  Form,
 
   adminListItemTemplate,
   adminDetailTemplate
 ){
-  var views = {};
+  var views = {},
+
+    categories = [
+      {
+        display_name: 'Inverters',
+        extends_from: ['INV']
+      },
+      {
+        display_name: 'Energy Meters',
+        extends_from: ['RM']
+      },
+      {
+        display_name: 'Data Aquisition',
+        extends_from: ['DSS', 'DSC', 'ESI']
+      },
+      {
+        display_name: 'Env Sensors',
+        extends_from: ['IRRA', 'IRRZ', 'TMPC', 'TMPA', 'WSPD', 'WDIR', 'BARO', 'RAIN']
+      },
+      {
+        display_name: 'DC Equipment',
+        extends_from: ['DCB', 'APH', 'RCB', 'CMB', 'S', 'P']
+      },
+      {
+        display_name: 'AC Equipment',
+        extends_from: ['ACB', 'XFR', 'IC', 'LD']
+      }
+    ];
 
   views.AdminListItem = Navigation.views.AdminListItem.extend({
     template: {
@@ -34,43 +63,14 @@ define([
     itemView: views.AdminListItem,
 
     initialize: function(options){
-      this.collection = new Backbone.VirtualCollection(options.collection, {
+      this.collection = new Form.util.Collection(options.collection, {
         close_with: this
       });
 
-      this.dropdown = new Navigation.views.Dropdown({
-        collection: new Backbone.Collection([
-          {
-            display_name: 'Inverters',
-            extends_from: ['INV']
-          },
-          {
-            display_name: 'Energy Meters',
-            extends_from: ['RM']
-          },
-          {
-            display_name: 'Data Aquisition',
-            extends_from: ['DSS', 'DSC', 'ESI']
-          },
-          {
-            display_name: 'Env Sensors',
-            extends_from: [
-              'IRRA', 'IRRZ', 'TMPC', 'TMPA', 'WSPD', 'WDIR', 'BARO', 'RAIN'
-            ]
-          },
-          {
-            display_name: 'DC Equipment',
-            extends_from: ['DCB', 'APH', 'RCB', 'CMB', 'S', 'P']
-          },
-          {
-            display_name: 'AC Equipment',
-            extends_from: ['ACB', 'XFR', 'IC', 'LD']
-          },
-          {
-            display_name: 'Base Equipment',
-            base: true
-          }
-        ])
+      this.categories = new Backbone.Collection(categories);
+
+      this.dropdown = new Form.views.Dropdown({
+        collection: this.categories
       });
 
       this.listenTo(this.dropdown, 'itemview:select', function(view){
@@ -95,24 +95,17 @@ define([
     },
 
     onShow: function(){
-      var label = this.options.current,
-        category, match;
+      var match = /^([A-Z]+)_/.exec(this.options.current),
+        label = match && match[1],
+        category;
 
-      if (label && label.indexOf(':') < 0) {
-        category = this.dropdown.collection.findWhere({base: true});
-
-      } else {
-        match = /^([A-Z]+)_/.exec(label);
-        label = match && match[1];
-
-        if (label) {
-          category = this.dropdown.collection.find(function(model){
-            return _.contains(model.get('extends_from'), label);
-          });
-        }
+      if (label) {
+        category = this.categories.find(function(model){
+          return _.contains(model.get('extends_from'), label);
+        });
       }
 
-      this.setCategory(category || this.dropdown.collection.first());
+      this.setCategory(category || this.categories.first());
     },
 
     onRender: function(){
@@ -124,26 +117,22 @@ define([
     },
 
     setCategory: function(model){
-      var isBase = model.get('base') || false;
+      var labels = model.get('extends_from');
 
       this.dropdown.$el.hide();
       this.ui.title.html(model.get('display_name'));
 
-      this.collection.filter = model.get('filter') || function(equip) {
+      this.collection.updateFilter(function(equip){
         var base = equip.getBase();
 
-        if (equip === base) {
-          return isBase;
-        } else {
-          return _.contains(model.get('extends_from'), base.get('label'));
-        }
-      };
-      this.collection._onReset();
+        return equip !== base && _.contains(labels, base.get('label'));
+      });
+
+      this.trigger('set:category', labels);
     }
   });
 
-  views.AdminDetail = Marionette.ItemView.extend({
-    tagName: 'form',
+  views.AdminDetail = Form.views.Admin.extend({
     template: {
       type: 'handlebars',
       template: adminDetailTemplate
@@ -151,129 +140,52 @@ define([
 
     templateHelpers: function(){
       return {
-        extension: this.model.isNew() || this.model.getBase() !== this.model
+        extends_from: this.model.getBase().get('display_name')
       };
+    },
+
+    modelEvents: {
+      'destroy': 'close'
     },
 
     schema: {
       display_name: {
-        el: '#name',
-        validate: function(value){
-          return value && value !== '';
-        }
+        el: '#name'
       },
-
+      make: {},
+      model: {},
       label: {
-        el: '#label',
-        editable: false,
         parse: function(value){
-          return value.toUpperCase().replace(/[^A-Z]+/g, '');
+          return value.toUpperCase();
         },
-        validate: function(value){
-          return (/^[A-Z]+$/).test(value);
+        success: function(value){
+          this.updateValues({label: value});
         }
       },
-
-      make: {
-        el: '#make'
-      },
-
-      model: {
-        el: '#model'
-      },
-
       extends_from: {
         el: '#extends',
-        editable: false,
-        parse: function(value){
-          var model;
+        source: function(){
+          var labels = this.options.baseLabels;
 
-          if (value) {
-            model = this.collection.getEquipment(value);
-            value = model ? model.id : 'invalid';
-          }
+          return new Backbone.VirtualCollection(this.collection, {
+            filter: function(equip){
 
-          return value;
+              // Only show base equipment for now.
+              if (equip !== equip.getBase()) { return false; }
+
+              // Only show the equipment for this category.
+              return !labels || _.contains(labels, equip.get('label'));
+            },
+            close_with: this
+          });
         },
-        validate: function(value){
-          return value !== 'invalid';
+        parse: function(value){
+          var model = this.collection.findWhere({display_name: value});
+
+          return model && model.id;
         }
       },
-
-      description: {
-        el: '#description'
-      }
-    },
-
-    initialize: function(){
-      this.changed = {};
-    },
-
-    ui: function(){
-      return _.reduce(this.schema, function(memo, obj, key){
-        memo[key] = obj.el;
-
-        return memo;
-      }, {});
-    },
-
-    events: function(){
-      return _.reduce(this.schema, function(memo, obj, key){
-        memo['blur ' + obj.el] = function(){
-          var $el = this.ui[key],
-            value = $el.val().trim();
-
-          if (obj.parse) {
-            value = obj.parse.call(this, value);
-          }
-
-          if (obj.validate && !obj.validate.call(this, value)) {
-            $el.addClass('invalid');
-
-            if (obj.error) {
-              obj.error.call(this, value);
-            }
-          } else {
-            $el.removeClass('invalid');
-
-            this.changed[key] = value;
-
-            if (obj.success) {
-              obj.success.call(this, value);
-            }
-          }
-        };
-
-        return memo;
-      }, {});
-    },
-
-    modelEvents: {
-      'change': 'render',
-      'destroy': 'close'
-    },
-
-    onRender: function(){
-      var existing = !this.model.isNew();
-
-      _.each(this.schema, function(obj, key){
-        var $el = this.ui[key];
-
-        // Skip if no matching element.
-        if (!$el) { return; }
-
-        // Disable the element if not editable.
-        if (existing && obj.editable === false) {
-          $el.attr('disabled', true);
-        }
-      }, this);
-
-      this.changed = {};
-    },
-
-    isValid: function(){
-      this.$el.find('input textarea').blur();
-      return !this.$el.find('.invalid').length;
+      description: {}
     }
   });
 

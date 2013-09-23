@@ -393,10 +393,10 @@ define([
       }, this);
     },
 
-    addNote: function(note, user){
-      this.set({
+    addNote: function(note, user, options){
+      this.save({
         notes: this.formatNote(note, user) + this.get('notes')
-      }, {lazy: true});
+      }, _.extend({lazy: true, persistLock: true}, options));
     },
 
     formatNote: function(msg, user){
@@ -410,6 +410,45 @@ define([
       }
 
       return when + msg + '\n';
+    }
+  }, {
+    schema: {
+      site_label: {
+        type: 'text',
+        required: true,
+        editable: false,
+        validate: function(value){
+          return (/^[A-Z]{3,}$/).test(value);
+        }
+      },
+      display_name: {
+        type: 'text',
+        required: true,
+        validate: function(value){
+          return value && value !== '';
+        }
+      },
+      latitude: {
+        type: 'number',
+        required: true,
+        validate: function(value){
+          return !isNaN(value);
+        }
+      },
+      longitude: {
+        type: 'number',
+        required: true,
+        validate: function(value){
+          return !isNaN(value);
+        }
+      },
+      elevation: {
+        type: 'number',
+        required: true,
+        validate: function(value){
+          return !isNaN(value);
+        }
+      }
     }
   });
 
@@ -430,7 +469,7 @@ define([
       });
 
       return $.ajax({
-        url: '/api/alarms/active/' + projectIds.join(','),
+        url: '/api/alarms/' + projectIds.join(','),
         cache: false,
         type: 'GET',
         dataType: 'json'

@@ -152,21 +152,26 @@ define([
     },
 
     switchTeam: function(teamLabel){
+      // Once more APIs are implemented, we can make sure everything else syncs up with the team.
       var that = this;
+
       this.app.currentTeam = teamLabel;
+
       $.ajax('/api/teams/current', {
         type: 'PUT',
         data: {
           team_label: teamLabel
         },
         success: function(){
+          // Reset because it seems to be ignoring the ALL portfolio on update
+          that.app.portfolios.reset();
+
+          // Fetch portfolios for new team
           that.app.portfolios.fetch().done(function(portfolios){
             that.app.allPortfolio = that.app.portfolios.findWhere({label: 'ALL'});
 
             Backbone.trigger('select:portfolio', that.app.allPortfolio);
           });
-
-          // Once more APIs are implemented, we can make sure everything else syncs up with the team.
         }
       });
     },

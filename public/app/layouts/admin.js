@@ -188,10 +188,15 @@ define([
 
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
-        display_name: 'Admin'
+        display_name: 'Admin',
+        url: '/admin'
       });
 
-      Backbone.trigger('set:breadcrumbs', {state: route, display_name: routeCapital});
+      Backbone.trigger('set:breadcrumbs', {
+        state: route,
+        display_name: routeCapital,
+        url: '/admin/' + route
+      });
 
       // Update history
       Backbone.history.navigate('/admin/' + route);
@@ -211,7 +216,8 @@ define([
     initialize: function(options){
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
-        display_name: 'Admin'
+        display_name: 'Admin',
+        url: '/admin'
       });
 
       // NOTE - This may not be the best way to handle admin routes but,

@@ -1,0 +1,65 @@
+<fieldset>
+  <legend>{{$ 'Filter By' }}</legend>
+
+  <input name="property" type="hidden" value="state">
+  <input name="operator" type="hidden" value="=">
+
+  {{$ 'State' }} =
+
+  <select name="value">
+    <option value="">Select a State</option>
+    <option value="AL" {{#ifCond value 'AL' }}selected{{/ifCond}}>Alabama</option>
+    <option value="AK" {{#ifCond value 'AK' }}selected{{/ifCond}}>Alaska</option>
+    <option value="AZ" {{#ifCond value 'AZ' }}selected{{/ifCond}}>Arizona</option>
+    <option value="AR" {{#ifCond value 'AR' }}selected{{/ifCond}}>Arkansas</option>
+    <option value="CA" {{#ifCond value 'CA' }}selected{{/ifCond}}>California</option>
+    <option value="CO" {{#ifCond value 'CO' }}selected{{/ifCond}}>Colorado</option>
+    <option value="CT" {{#ifCond value 'CT' }}selected{{/ifCond}}>Connecticut</option>
+    <option value="DE" {{#ifCond value 'DE' }}selected{{/ifCond}}>Delaware</option>
+    <option value="DC" {{#ifCond value 'DC' }}selected{{/ifCond}}>District Of Columbia</option>
+    <option value="FL" {{#ifCond value 'FL' }}selected{{/ifCond}}>Florida</option>
+    <option value="GA" {{#ifCond value 'GA' }}selected{{/ifCond}}>Georgia</option>
+    <option value="HI" {{#ifCond value 'HI' }}selected{{/ifCond}}>Hawaii</option>
+    <option value="ID" {{#ifCond value 'ID' }}selected{{/ifCond}}>Idaho</option>
+    <option value="IL" {{#ifCond value 'IL' }}selected{{/ifCond}}>Illinois</option>
+    <option value="IN" {{#ifCond value 'IN' }}selected{{/ifCond}}>Indiana</option>
+    <option value="IA" {{#ifCond value 'IA' }}selected{{/ifCond}}>Iowa</option>
+    <option value="KS" {{#ifCond value 'KS' }}selected{{/ifCond}}>Kansas</option>
+    <option value="KY" {{#ifCond value 'KY' }}selected{{/ifCond}}>Kentucky</option>
+    <option value="LA" {{#ifCond value 'LA' }}selected{{/ifCond}}>Louisiana</option>
+    <option value="ME" {{#ifCond value 'ME' }}selected{{/ifCond}}>Maine</option>
+    <option value="MD" {{#ifCond value 'MD' }}selected{{/ifCond}}>Maryland</option>
+    <option value="MA" {{#ifCond value 'MA' }}selected{{/ifCond}}>Massachusetts</option>
+    <option value="MI" {{#ifCond value 'MI' }}selected{{/ifCond}}>Michigan</option>
+    <option value="MN" {{#ifCond value 'MN' }}selected{{/ifCond}}>Minnesota</option>
+    <option value="MS" {{#ifCond value 'MS' }}selected{{/ifCond}}>Mississippi</option>
+    <option value="MO" {{#ifCond value 'MO' }}selected{{/ifCond}}>Missouri</option>
+    <option value="MT" {{#ifCond value 'MT' }}selected{{/ifCond}}>Montana</option>
+    <option value="NE" {{#ifCond value 'NE' }}selected{{/ifCond}}>Nebraska</option>
+    <option value="NV" {{#ifCond value 'NV' }}selected{{/ifCond}}>Nevada</option>
+    <option value="NH" {{#ifCond value 'NH' }}selected{{/ifCond}}>New Hampshire</option>
+    <option value="NJ" {{#ifCond value 'NJ' }}selected{{/ifCond}}>New Jersey</option>
+    <option value="NM" {{#ifCond value 'NM' }}selected{{/ifCond}}>New Mexico</option>
+    <option value="NY" {{#ifCond value 'NY' }}selected{{/ifCond}}>New York</option>
+    <option value="NC" {{#ifCond value 'NC' }}selected{{/ifCond}}>North Carolina</option>
+    <option value="ND" {{#ifCond value 'ND' }}selected{{/ifCond}}>North Dakota</option>
+    <option value="OH" {{#ifCond value 'OH' }}selected{{/ifCond}}>Ohio</option>
+    <option value="OK" {{#ifCond value 'OK' }}selected{{/ifCond}}>Oklahoma</option>
+    <option value="OR" {{#ifCond value 'OR' }}selected{{/ifCond}}>Oregon</option>
+    <option value="PA" {{#ifCond value 'PA' }}selected{{/ifCond}}>Pennsylvania</option>
+    <option value="RI" {{#ifCond value 'RI' }}selected{{/ifCond}}>Rhode Island</option>
+    <option value="SC" {{#ifCond value 'SC' }}selected{{/ifCond}}>South Carolina</option>
+    <option value="SD" {{#ifCond value 'SD' }}selected{{/ifCond}}>South Dakota</option>
+    <option value="TN" {{#ifCond value 'TN' }}selected{{/ifCond}}>Tennessee</option>
+    <option value="TX" {{#ifCond value 'TX' }}selected{{/ifCond}}>Texas</option>
+    <option value="UT" {{#ifCond value 'UT' }}selected{{/ifCond}}>Utah</option>
+    <option value="VT" {{#ifCond value 'VT' }}selected{{/ifCond}}>Vermont</option>
+    <option value="VA" {{#ifCond value 'VA' }}selected{{/ifCond}}>Virginia</option>
+    <option value="WA" {{#ifCond value 'WA' }}selected{{/ifCond}}>Washington</option>
+    <option value="WV" {{#ifCond value 'WV' }}selected{{/ifCond}}>West Virginia</option>
+    <option value="WI" {{#ifCond value 'WI' }}selected{{/ifCond}}>Wisconsin</option>
+    <option value="WY" {{#ifCond value 'WY' }}selected{{/ifCond}}>Wyoming</option>
+  </select>
+
+  <button class="button sml remove">Remove</button>
+</fieldset>

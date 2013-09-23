@@ -72,13 +72,9 @@ define([
 
     comparator: function(model){
       var equip = model.equipment,
-        order = equip ? '' + equip.get('order') : '9999';
+        order = (equip && equip.get('order')) || 9999;
 
-      while (order.length < 4) {
-        order = '0' + order;
-      }
-
-      return [order, model.get('name')];
+      return order + model.get('name');
     },
 
     getEquipment: function(model){
