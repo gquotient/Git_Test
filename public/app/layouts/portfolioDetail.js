@@ -79,6 +79,9 @@ define([
     },
 
     selectPortfolio: function(portfolio) {
+      // Remove listenered from old model
+      this.stopListening(this.model);
+
       this.model = portfolio;
       // Clear existing interval
       // NOTE - I'm not sure how necessary this is
@@ -114,7 +117,7 @@ define([
       this.mapView.fitToBounds();
 
       // Listen for changes to portfolio projects and update projectList
-      this.listenTo(portfolio.projects, 'add', function(){
+      this.listenTo(this.model.projects, 'add', function(){
         this.projectList.set(portfolio.projects.models);
       });
     },

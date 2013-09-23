@@ -71,10 +71,6 @@ define([
 
       // Update aggregate KPIs when projects update
       this.listenTo(this.projects, 'change', _.debounce(this.aggregateKpis, 500));
-
-      if (this.collection) {
-        this.listenTo(this.collection.projects, 'change', _.debounce(this.updateProjects, 500));
-      }
     },
 
     updateProjects: function(){
@@ -192,11 +188,16 @@ define([
     initialize: function(models, options){
       this.projects = options.projects;
 
+      this.listenTo(this.projects, 'add change', _.debounce(function(){
+        this.each(function(model){
+          model.updateProjects();
+        });
+      }, 500));
+
       this.on('add', function(portfolio, collection){
         portfolio.updateProjects();
       }, this);
     }
-    // comparator: 'display_name'
   });
 
   /* The item view is the view for the individual portfolios in the navigation. */
