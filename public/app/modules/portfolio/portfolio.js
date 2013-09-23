@@ -11,8 +11,17 @@ define([
   'hbs!portfolio/templates/navigationList',
   'hbs!portfolio/templates/navigationItem',
   'hbs!portfolio/templates/editPortfolio',
-  'hbs!portfolio/templates/filter',
-  'hbs!portfolio/templates/aggregateKpis'
+  'hbs!portfolio/templates/aggregateKpis',
+
+  'hbs!portfolio/templates/filterGeneric',
+  'hbs!portfolio/templates/filterACCapacity',
+  'hbs!portfolio/templates/filterDCCapacity',
+  'hbs!portfolio/templates/filterLatitude',
+  'hbs!portfolio/templates/filterLongitude',
+  'hbs!portfolio/templates/filterZipcode',
+  'hbs!portfolio/templates/filterState',
+  'hbs!portfolio/templates/filterOwner',
+  'hbs!portfolio/templates/filterStatus'
 ], function(
   $,
   _,
@@ -26,8 +35,17 @@ define([
   navigationListTemplate,
   navigationItemTemplate,
   editPortfolioTemplate,
-  filterTemplate,
-  aggregateKpisTemplate
+  aggregateKpisTemplate,
+
+  filterGenericTemplate,
+  filterACCapacityTemplate,
+  filterDCCapacityTemplate,
+  filterLatitudeTemplate,
+  filterLongitudeTemplate,
+  filterZipcodeTemplate,
+  filterStateTemplate,
+  filterOwnerTemplate,
+  filterStatusTemplate
 ){
   var Portfolio = { views: {} };
 
@@ -53,9 +71,18 @@ define([
 
       // Update aggregate KPIs when projects update
       this.listenTo(this.projects, 'change', _.debounce(this.aggregateKpis, 500));
+
+      if (this.collection) {
+        this.listenTo(this.collection.projects, 'change', _.debounce(this.updateProjects, 500));
+      }
     },
 
     updateProjects: function(){
+      // Clear out existing projects
+      this.projects.reset();
+
+      // If a projects array is returned from an old style filter,
+      // add them to the collection
       _.each(this.get('projects'), function(project){
         project = this.collection.projects.get(project);
 
@@ -105,7 +132,6 @@ define([
           return val1 == val2;
         }
       };
-
 
       this.collection.projects.each(function(project){
         var match = true;
@@ -192,6 +218,9 @@ define([
       'click': function(){
         Backbone.trigger('click:portfolio', this.model);
       }
+    },
+    initialize: function(){
+      this.listenTo(this.model.projects, 'add', _.debounce(this.render, 500));
     }
   });
 
@@ -246,7 +275,21 @@ define([
     },
     template: {
       type: 'handlebars',
-      template: filterTemplate
+      template: function(options){
+        var filters = {
+          generic: filterGenericTemplate,
+          ac_capacity: filterACCapacityTemplate,
+          dc_capacity: filterDCCapacityTemplate,
+          latitude: filterLatitudeTemplate,
+          longitude: filterLongitudeTemplate,
+          zipcode: filterZipcodeTemplate,
+          state: filterStateTemplate,
+          owner: filterOwnerTemplate,
+          status: filterStatusTemplate
+        };
+
+        return filters[options.property] ? filters[options.property](options) : filters.generic(options);
+      }
     }
   });
 
@@ -257,7 +300,9 @@ define([
     },
     ui: {
       message: '.message',
-      display_name: '#display_name'
+      display_name: '#display_name',
+      filterType: '#filterType',
+      saveButton: '.save'
     },
     triggers: {
       'click .save': 'save',
@@ -270,7 +315,7 @@ define([
       this.collection = new Backbone.Collection();
     },
     onAddFilter: function(){
-      this.addFilter({});
+      this.addFilter({property: this.ui.filterType.val()});
     },
     addFilter: function(filter){
       this.collection.add(new Backbone.Model(filter));
@@ -281,9 +326,6 @@ define([
       if (typeof filters === 'object' && filters.length) {
         // Build existing filters
         _.each(filters, this.addFilter, this);
-      } else {
-        //handle new
-        this.addFilter({});
       }
     },
     updateMessage: function(message, type) {
@@ -306,7 +348,7 @@ define([
 
       var validateFilters = function(filters){
         if (!filters || !filters.length) {
-          that.updateMessage('A filter is required', 'error');
+          that.updateMessage('A filter is required.', 'error');
           return false;
         } else {
           var hasValue = true;
@@ -318,7 +360,7 @@ define([
           });
 
           if (!hasValue) {
-            that.updateMessage('All filters require a value', 'error');
+            that.updateMessage('All filters require a value.', 'error');
             return false;
           }
         }
@@ -327,7 +369,7 @@ define([
       };
 
       if (!portfolio.display_name.length) {
-        this.updateMessage('A name is required', 'error');
+        this.updateMessage('A name is required.', 'error');
         this.ui.display_name.focus();
         return false;
       } else if (!validateFilters(portfolio.filter)) {
@@ -337,6 +379,8 @@ define([
       return true;
     },
     onSave: function(){
+      this.ui.saveButton.addClass('loading-right');
+
       var portfolio = {
         display_name: this.ui.display_name.val(),
         filter: [],
@@ -359,8 +403,17 @@ define([
       if (this.validate(portfolio)){
         var that = this;
 
-        this.model.save(portfolio, {wait: true}).done(function(){
-          that.updateMessage('Portfolio saved');
+        this.model.save(portfolio, {
+          wait: true,
+          success: function(){
+            that.updateMessage('Portfolio saved.');
+          },
+          error: function(){
+            that.updateMessage('Something went wrong, try saving again.', 'error');
+          },
+          complete: function(){
+            that.ui.saveButton.removeClass('loading-right');
+          }
         });
       }
     }
