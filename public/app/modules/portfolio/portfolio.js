@@ -403,23 +403,18 @@ define([
       if (this.validate(portfolio)){
         var that = this;
 
-        var saveDefer = this.model.save(portfolio, {
+        this.model.save(portfolio, {
           wait: true,
           success: function(){
             that.updateMessage('Portfolio saved.');
+          },
+          error: function(){
+            that.updateMessage('Something went wrong, try saving again.', 'error');
+          },
+          complete: function(){
+            that.ui.saveButton.removeClass('loading-right');
           }
         });
-
-        // Make sure save didn't return false
-        if (saveDefer) {
-          saveDefer
-            .fail(function(){
-              that.updateMessage('Something went wrong, try saving again.', 'error');
-            })
-            .always(function(){
-              that.ui.saveButton.removeClass('loading-right');
-            });
-        }
       }
     }
   });
