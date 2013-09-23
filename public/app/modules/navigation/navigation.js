@@ -46,16 +46,28 @@ define([
       type: 'handlebars',
       template: listTemplate
     },
-    className: 'navigationList hidden',
+    ui: {
+      list: '> ul'
+    },
+    className: 'navigationList',
     itemViewContainer: '> ul',
     itemView: Navigation.views.NavigationItemView,
+    emptyView: Marionette.ItemView.extend({
+      tagName: 'li',
+      className: 'I-are-loading',
+      template: _.template('<div class="loadingIndicator"></div>')
+    }),
     activeFilter: {},
+    onRender: function(){
+      // Add slide in animation class
+      this.ui.list.addClass('hidden');
+    },
     onShow: function(){
       var that = this;
 
-      // Triggers css transition
+      // Triggers css transition by removing class
       var removeHidden = function(){
-        that.$el.removeClass('hidden');
+        that.ui.list.removeClass('hidden');
       };
 
       setTimeout(removeHidden, 0);
