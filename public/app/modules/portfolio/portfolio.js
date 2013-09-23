@@ -72,7 +72,9 @@ define([
       // Update aggregate KPIs when projects update
       this.listenTo(this.projects, 'change', _.debounce(this.aggregateKpis, 500));
 
-      this.listenTo(this.collection.projects, 'change', _.debounce(this.updateProjects, 500));
+      if (this.collection) {
+        this.listenTo(this.collection.projects, 'change', _.debounce(this.updateProjects, 500));
+      }
     },
 
     updateProjects: function(){
@@ -299,7 +301,8 @@ define([
     ui: {
       message: '.message',
       display_name: '#display_name',
-      filterType: '#filterType'
+      filterType: '#filterType',
+      saveButton: '.save'
     },
     triggers: {
       'click .save': 'save',
@@ -376,6 +379,8 @@ define([
       return true;
     },
     onSave: function(){
+      this.ui.saveButton.addClass('loading-right');
+
       var portfolio = {
         display_name: this.ui.display_name.val(),
         filter: [],
@@ -400,6 +405,7 @@ define([
 
         this.model.save(portfolio, {wait: true}).done(function(){
           that.updateMessage('Portfolio saved');
+          that.ui.saveButton.removeClass('loading-right');
         });
       }
     }
