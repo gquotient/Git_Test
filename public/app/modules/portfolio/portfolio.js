@@ -403,8 +403,11 @@ define([
       if (this.validate(portfolio)){
         var that = this;
 
-        this.model.save(portfolio, {wait: true}).done(function(){
+        this.model.save(portfolio, {wait: true})
+        .done(function(){
           that.updateMessage('Portfolio saved');
+        })
+        .always(function(){
           that.ui.saveButton.removeClass('loading-right');
         });
       }
