@@ -75,8 +75,6 @@ define([
     },
 
     showPortfolio: function(portfolio){
-      this.activePortfolio = portfolio;
-
       this.mainContent.show( new PortfolioDetailLayout({
         model: portfolio,
         portfolios: this.app.portfolios,
@@ -193,8 +191,6 @@ define([
 
     initialize: function(options){
       this.app = options.app;
-
-      this.activePortfolio = ia.portfolios.findWhere({label: 'ALL'});
 
       // Build header
       this.headerView = new Header({model: options.currentUser});
