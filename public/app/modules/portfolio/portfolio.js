@@ -348,7 +348,7 @@ define([
 
       var validateFilters = function(filters){
         if (!filters || !filters.length) {
-          that.updateMessage('A filter is required', 'error');
+          that.updateMessage('A filter is required.', 'error');
           return false;
         } else {
           var hasValue = true;
@@ -360,7 +360,7 @@ define([
           });
 
           if (!hasValue) {
-            that.updateMessage('All filters require a value', 'error');
+            that.updateMessage('All filters require a value.', 'error');
             return false;
           }
         }
@@ -369,7 +369,7 @@ define([
       };
 
       if (!portfolio.display_name.length) {
-        this.updateMessage('A name is required', 'error');
+        this.updateMessage('A name is required.', 'error');
         this.ui.display_name.focus();
         return false;
       } else if (!validateFilters(portfolio.filter)) {
@@ -405,7 +405,10 @@ define([
 
         this.model.save(portfolio, {wait: true})
         .done(function(){
-          that.updateMessage('Portfolio saved');
+          that.updateMessage('Portfolio saved.');
+        })
+        .fail(function(){
+          that.updateMessage('Something went wrong, try saving again.', 'error');
         })
         .always(function(){
           that.ui.saveButton.removeClass('loading-right');
