@@ -51,6 +51,7 @@ define([
       });
     },
     showEditAlarm: function(alarm){
+      console.log(alarm);
       // Update history
       Backbone.history.navigate('/admin/alarms/' + alarm.collection.project.id + '/' + alarm.get('alarm_type'));
 
