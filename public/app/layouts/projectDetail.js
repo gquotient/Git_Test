@@ -263,7 +263,6 @@ define([
     },
 
     initialize: function(options){
-      console.log(options, this);
       // Instantiate map
       this.mapView = new Project.views.Map({
         itemView: Project.views.MarkerView.extend({
