@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
   'handlebars',
 
+  'ia',
+
   'message',
 
   'layouts/header',
@@ -25,6 +27,8 @@ define([
   Backbone,
   Marionette,
   Handlebars,
+
+  ia,
 
   Message,
 
@@ -58,7 +62,7 @@ define([
     },
 
     onShow: function(){
-      var portfolio = this.app.allPortfolio;
+      var portfolio = ia.portfolios.findWhere({label: 'ALL'});
 
       this.header.show(this.headerView);
       this.breadcrumbs.show(this.navigationView);
@@ -71,8 +75,6 @@ define([
     },
 
     showPortfolio: function(portfolio){
-      this.activePortfolio = portfolio;
-
       this.mainContent.show( new PortfolioDetailLayout({
         model: portfolio,
         portfolios: this.app.portfolios,
@@ -155,7 +157,7 @@ define([
       // Once more APIs are implemented, we can make sure everything else syncs up with the team.
       var that = this;
 
-      this.app.currentTeam = teamLabel;
+      ia.currentTeam = teamLabel;
 
       $.ajax('/api/teams/current', {
         type: 'PUT',
@@ -164,13 +166,14 @@ define([
         },
         success: function(){
           // Reset because it seems to be ignoring the ALL portfolio on update
-          that.app.portfolios.reset();
+          ia.portfolios.reset();
+          ia.projects.reset();
 
-          // Fetch portfolios for new team
-          that.app.portfolios.fetch().done(function(portfolios){
-            that.app.allPortfolio = that.app.portfolios.findWhere({label: 'ALL'});
+          // Fetch projects portfolios for new team
+          ia.projects.fetch();
 
-            Backbone.trigger('select:portfolio', that.app.allPortfolio);
+          ia.portfolios.fetch().done(function(portfolios){
+            Backbone.trigger('select:portfolio', ia.portfolios.findWhere({label: 'ALL'}));
           });
         }
       });
@@ -188,8 +191,6 @@ define([
 
     initialize: function(options){
       this.app = options.app;
-
-      this.activePortfolio = this.app.allPortfolio;
 
       // Build header
       this.headerView = new Header({model: options.currentUser});

@@ -56,7 +56,5 @@ define([
 
   ia.equipment = new Equipment.Collection( JSON.parse($('#bootstrapEquipment').html()) );
 
-  ia.allPortfolio = ia.portfolios.findWhere({display_name: 'All Projects'});
-
   return ia;
 });
