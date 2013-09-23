@@ -403,16 +403,23 @@ define([
       if (this.validate(portfolio)){
         var that = this;
 
-        this.model.save(portfolio, {wait: true})
-        .done(function(){
-          that.updateMessage('Portfolio saved.');
-        })
-        .fail(function(){
-          that.updateMessage('Something went wrong, try saving again.', 'error');
-        })
-        .always(function(){
-          that.ui.saveButton.removeClass('loading-right');
+        var saveDefer = this.model.save(portfolio, {
+          wait: true,
+          success: function(){
+            that.updateMessage('Portfolio saved.');
+          }
         });
+
+        // Make sure save didn't return false
+        if (saveDefer) {
+          saveDefer
+            .fail(function(){
+              that.updateMessage('Something went wrong, try saving again.', 'error');
+            })
+            .always(function(){
+              that.ui.saveButton.removeClass('loading-right');
+            });
+        }
       }
     }
   });
