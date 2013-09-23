@@ -11,8 +11,16 @@ define([
   'hbs!portfolio/templates/navigationList',
   'hbs!portfolio/templates/navigationItem',
   'hbs!portfolio/templates/editPortfolio',
-  'hbs!portfolio/templates/filter',
-  'hbs!portfolio/templates/aggregateKpis'
+  'hbs!portfolio/templates/aggregateKpis',
+
+  'hbs!portfolio/templates/filterGeneric',
+  'hbs!portfolio/templates/filterACCapacity',
+  'hbs!portfolio/templates/filterDCCapacity',
+  'hbs!portfolio/templates/filterLatitude',
+  'hbs!portfolio/templates/filterLongitude',
+  'hbs!portfolio/templates/filterZipcode',
+  'hbs!portfolio/templates/filterState',
+  'hbs!portfolio/templates/filterOwner'
 ], function(
   $,
   _,
@@ -26,8 +34,16 @@ define([
   navigationListTemplate,
   navigationItemTemplate,
   editPortfolioTemplate,
-  filterTemplate,
-  aggregateKpisTemplate
+  aggregateKpisTemplate,
+
+  filterGenericTemplate,
+  filterACCapacityTemplate,
+  filterDCCapacityTemplate,
+  filterLatitudeTemplate,
+  filterLongitudeTemplate,
+  filterZipcodeTemplate,
+  filterStateTemplate,
+  filterOwnerTemplate
 ){
   var Portfolio = { views: {} };
 
@@ -246,7 +262,20 @@ define([
     },
     template: {
       type: 'handlebars',
-      template: filterTemplate
+      template: function(options){
+        var filters = {
+          generic: filterGenericTemplate,
+          ac_capacity: filterACCapacityTemplate,
+          dc_capacity: filterDCCapacityTemplate,
+          latitude: filterLatitudeTemplate,
+          longitude: filterLongitudeTemplate,
+          zipcode: filterZipcodeTemplate,
+          state: filterStateTemplate,
+          owner: filterOwnerTemplate
+        };
+
+        return filters[options.property] ? filters[options.property](options) : filters.generic(options);
+      }
     }
   });
 
@@ -257,7 +286,8 @@ define([
     },
     ui: {
       message: '.message',
-      display_name: '#display_name'
+      display_name: '#display_name',
+      filterType: '#filterType'
     },
     triggers: {
       'click .save': 'save',
@@ -270,7 +300,7 @@ define([
       this.collection = new Backbone.Collection();
     },
     onAddFilter: function(){
-      this.addFilter({});
+      this.addFilter({property: this.ui.filterType.val()});
     },
     addFilter: function(filter){
       this.collection.add(new Backbone.Model(filter));
