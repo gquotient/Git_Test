@@ -20,7 +20,8 @@ define([
   'hbs!portfolio/templates/filterLongitude',
   'hbs!portfolio/templates/filterZipcode',
   'hbs!portfolio/templates/filterState',
-  'hbs!portfolio/templates/filterOwner'
+  'hbs!portfolio/templates/filterOwner',
+  'hbs!portfolio/templates/filterStatus'
 ], function(
   $,
   _,
@@ -43,7 +44,8 @@ define([
   filterLongitudeTemplate,
   filterZipcodeTemplate,
   filterStateTemplate,
-  filterOwnerTemplate
+  filterOwnerTemplate,
+  filterStatusTemplate
 ){
   var Portfolio = { views: {} };
 
@@ -69,9 +71,16 @@ define([
 
       // Update aggregate KPIs when projects update
       this.listenTo(this.projects, 'change', _.debounce(this.aggregateKpis, 500));
+
+      this.listenTo(this.collection.projects, 'change', _.debounce(this.updateProjects, 500));
     },
 
     updateProjects: function(){
+      // Clear out existing projects
+      this.projects.reset();
+
+      // If a projects array is returned from an old style filter,
+      // add them to the collection
       _.each(this.get('projects'), function(project){
         project = this.collection.projects.get(project);
 
@@ -121,7 +130,6 @@ define([
           return val1 == val2;
         }
       };
-
 
       this.collection.projects.each(function(project){
         var match = true;
@@ -208,6 +216,9 @@ define([
       'click': function(){
         Backbone.trigger('click:portfolio', this.model);
       }
+    },
+    initialize: function(){
+      this.listenTo(this.model.projects, 'add', _.debounce(this.render, 500));
     }
   });
 
@@ -271,7 +282,8 @@ define([
           longitude: filterLongitudeTemplate,
           zipcode: filterZipcodeTemplate,
           state: filterStateTemplate,
-          owner: filterOwnerTemplate
+          owner: filterOwnerTemplate,
+          status: filterStatusTemplate
         };
 
         return filters[options.property] ? filters[options.property](options) : filters.generic(options);
