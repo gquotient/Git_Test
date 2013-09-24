@@ -13,7 +13,9 @@ define([
 
   TableView
 ){
-  return TableView.extend({
+  var views = {};
+
+  views.Table = TableView.extend({
 
     attributes: {
       id: 'device-table'
@@ -92,4 +94,6 @@ define([
       }
     }
   });
+
+  return views;
 });
