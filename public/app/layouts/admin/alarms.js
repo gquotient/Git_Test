@@ -57,7 +57,7 @@ define([
       var editAlarmView = new Issue.views.AlarmSingleEdit({
         model: alarm,
         project: this.options.projects.findWhere({project_label: alarm.collection.project.id }),
-        teams: ia.currentUser.get('teams')
+        user: ia.currentUser
       });
 
       this.alarmsAdmin.show(editAlarmView);

@@ -222,7 +222,11 @@ function(
 
   Issue.ConditionModel = Backbone.Model.extend({
     url: '/api/conditions',
-    idAttribute: 'condition_id'
+    idAttribute: 'condition_id',
+    defaults: {
+      notification_secs: 0,
+      enabled: true
+    }
   });
 
   Issue.ConditionCollection = Backbone.Collection.extend({
@@ -238,7 +242,6 @@ function(
       template: conditionTemplate
     },
     templateHelpers: function(){
-      console.log('condition', this);
       return {
         teams: this.options.teams
       };
@@ -254,7 +257,7 @@ function(
     itemViewContainer: '.conditions',
     itemViewOptions: function(){
       return {
-        teams: this.options.teams
+        teams: this.options.user.get('teams')
       };
     },
     triggers: {
@@ -263,24 +266,22 @@ function(
       'click .save': 'save'
     },
     initialize: function(options){
-      console.log(options);
-      this.collection = new Issue.ConditionCollection(options.model.get('conditions'), {
-        teams: options.teams
-      });
+      this.collection = new Issue.ConditionCollection(options.model.get('conditions'));
     },
     onAddCondition: function(){
-      this.conditionsView.collection.add({});
+      this.collection.add({});
     },
     onCancel: function(){
       Backbone.history.navigate('/admin/alarms/' + this.options.project.id, true);
     },
     onSave: function(){
       var that = this;
-      console.log('save alarm', this);
       var defer = new $.Deferred();
       // If the alarm hasn't been instantiated, instantiate it with a post
       if (!this.model.id) {
-        console.log('post new alarm');
+        // Set the project on which you want to instantiate the alarm
+        this.model.set('project_label', this.options.project.id);
+
         $.ajax({
           url:'/api/alarms',
           type: 'POST',
@@ -299,21 +300,19 @@ function(
 
       // When alarm is ready submit conditions
       defer.done(function(){
-        console.log('handle conditions');
         that.children.each(function(conditionView){
           var condition = conditionView.model;
 
-          condition.set({
-            expression: [
-              conditionView.$el.find('[name="property"]').val(),
-              conditionView.$el.find('[name="operator"]').val(),
-              conditionView.$el.find('[name="value"]').val()
-            ]
-          });
-
-          console.log(condition);
-
           condition.save({
+            alarm_id: that.model.id,
+            priority: conditionView.$el.find('[name="severity"]').val(),
+            comparator: conditionView.$el.find('[name="operator"]').val(),
+            threshold: conditionView.$el.find('[name="value"]').val(),
+            team_label: conditionView.$el.find('[name="team"]').val(),
+            org_label: that.options.user.get('org_label')
+          },
+          {
+            wait: true,
             success: function(){
               console.log('yay, condition update', arguments);
             },

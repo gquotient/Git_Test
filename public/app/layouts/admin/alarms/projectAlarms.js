@@ -43,8 +43,6 @@ define([
         collection: new Issue.TemplateCollection([], {project: project})
       });
 
-      projectAlarmsView.collection.fetch().done(function(){console.log(arguments);});
-
       // Select the correct value for the select box
       if (this.ui.selectProject.val() !== project.id) {
         this.ui.selectProject.val(project.id);

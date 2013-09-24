@@ -1,9 +1,9 @@
 {{ debug }}
 
-<input type="hidden" name="property" value="{{ expression.[0] }}">
-<input type="hidden" name="operator" value="{{ expression.[1] }}">
+<input type="hidden" name="operator" value="{{#if comparator }}{{ comparator}}{{else}}<{{/if}}">
+<input type="hidden" name="org_label" value="{{ org_label }}">
 
-AC Power &lt; <input type="number" name="value" value="{{ expression.[2] }}">%
+AC Power &lt; <input type="number" name="value" value="{{ threshold }}">%
 Severity:
 <select name="severity">
   <option>- Select -</option>
