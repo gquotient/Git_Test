@@ -62,7 +62,7 @@ define([
     },
 
     onShow: function(){
-      var portfolio = ia.portfolios.findWhere({label: 'ALL'});
+      var portfolio = this.activePortfolio;
 
       this.header.show(this.headerView);
       this.breadcrumbs.show(this.navigationView);
@@ -190,6 +190,8 @@ define([
     },
 
     initialize: function(options){
+      this.activePortfolio = ia.portfolios.findWhere({label: 'ALL'});
+
       this.app = options.app;
 
       // Build header
