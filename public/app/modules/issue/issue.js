@@ -307,7 +307,7 @@ function(
             expression: [
               conditionView.$el.find('[name="property"]').val(),
               conditionView.$el.find('[name="operator"]').val(),
-              +conditionView.$el.find('[name="value"]').val()
+              conditionView.$el.find('[name="value"]').val()
             ]
           });
 
@@ -317,7 +317,7 @@ function(
             success: function(){
               console.log('yay, condition update', arguments);
             },
-            fail: function(){
+            error: function(){
               console.log('shoot, update failed', arguments);
             }
           });
