@@ -9,7 +9,7 @@ module.exports = function(app){
     makeRequest = helpers.makeRequest;
 
   // Get active project alarms
-  app.get('/api/alarms/:projectId?', ensureCurrentOrganization,
+  app.get('/api/alarms/active/:projectId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'GET',
@@ -22,11 +22,37 @@ module.exports = function(app){
   );
 
   // Create a new alarm from a template
-  app.post('/api/alarms', ensureCurrentOrganization,
+  app.post('/api/alarms', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'POST',
-        uri: app.get('dataUrl') + '/alarms/',
+        uri: app.get('modelUrl') + '/res/alarms',
+        headers: {
+          'accept-encoding' : 'gzip,deflate'
+        }
+      }).pipe(res);
+    }
+  );
+
+  // Conditions
+  app.post('/api/conditions', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
+    function(req, res){
+      request({
+        method: 'POST',
+        uri: app.get('modelUrl') + '/res/conditions',
+        headers: {
+          'accept-encoding' : 'gzip,deflate'
+        }
+      }).pipe(res);
+    }
+  );
+
+  app.put('/api/conditions', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
+    function(req, res){
+      console.log('condition heard put', req.body);
+      request({
+        method: 'PUT',
+        uri: app.get('modelUrl') + '/res/conditions',
         headers: {
           'accept-encoding' : 'gzip,deflate'
         }

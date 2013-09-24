@@ -44,7 +44,7 @@ function(
 
   Issue.Model = Backbone.Model.extend({
     url: function(){
-      return '/api/alarms/' + this.collection.project.id + '/' + this.id;
+      return '/api/alarms/active/' + this.collection.project.id + '/' + this.id;
     },
     idAttribute: 'uid',
     getLocalDate: function(){
@@ -91,7 +91,7 @@ function(
 
   Issue.Collection = Backbone.Collection.extend({
     url: function(options){
-      return '/api/alarms/' + this.project.id;
+      return '/api/alarms/active/' + this.project.id;
     },
     model: Issue.Model,
     initialize: function(models, options){
@@ -220,6 +220,16 @@ function(
     emptyView: Marionette.ItemView.extend({template: _.template('<span class="loadingIndicator"></span>')})
   });
 
+  Issue.ConditionModel = Backbone.Model.extend({
+    url: '/api/conditions',
+    idAttribute: 'condition_id'
+  });
+
+  Issue.ConditionCollection = Backbone.Collection.extend({
+    url: '/api/conditions',
+    model: Issue.ConditionModel
+  });
+
   Issue.views.Condition = Marionette.ItemView.extend({
     tagName: 'li',
     className: 'condition',
@@ -249,11 +259,12 @@ function(
     },
     triggers: {
       'click .addCondition': 'addCondition',
-      'click .cancel': 'cancel'
+      'click .cancel': 'cancel',
+      'click .save': 'save'
     },
     initialize: function(options){
       console.log(options);
-      this.collection = new Backbone.Collection(options.model.get('conditions'), {
+      this.collection = new Issue.ConditionCollection(options.model.get('conditions'), {
         teams: options.teams
       });
     },
@@ -262,6 +273,56 @@ function(
     },
     onCancel: function(){
       Backbone.history.navigate('/admin/alarms/' + this.options.project.id, true);
+    },
+    onSave: function(){
+      var that = this;
+      console.log('save alarm', this);
+      var defer = new $.Deferred();
+      // If the alarm hasn't been instantiated, instantiate it with a post
+      if (!this.model.id) {
+        console.log('post new alarm');
+        $.ajax({
+          url:'/api/alarms',
+          type: 'POST',
+          data: this.model.toJSON()
+        })
+        .fail(function(){
+          console.log('something went wrong', arguments);
+        })
+        .done(function(){
+          defer.resolve();
+          console.log(arguments);
+        });
+      } else {
+        defer.resolve();
+      }
+
+      // When alarm is ready submit conditions
+      defer.done(function(){
+        console.log('handle conditions');
+        that.children.each(function(conditionView){
+          var condition = conditionView.model;
+
+          condition.set({
+            expression: [
+              conditionView.$el.find('[name="property"]').val(),
+              conditionView.$el.find('[name="operator"]').val(),
+              +conditionView.$el.find('[name="value"]').val()
+            ]
+          });
+
+          console.log(condition);
+
+          condition.save({
+            success: function(){
+              console.log('yay, condition update', arguments);
+            },
+            fail: function(){
+              console.log('shoot, update failed', arguments);
+            }
+          });
+        });
+      });
     }
   });
 

@@ -36,7 +36,6 @@ define([
       selectProject: 'select.project'
     },
     selectProject: function(project){
-      console.log('select project', project);
       // Update history
       Backbone.history.navigate('/admin/alarms/' + project.id);
 
@@ -44,7 +43,7 @@ define([
         collection: new Issue.TemplateCollection([], {project: project})
       });
 
-      projectAlarmsView.collection.fetch();
+      projectAlarmsView.collection.fetch().done(function(){console.log(arguments);});
 
       // Select the correct value for the select box
       if (this.ui.selectProject.val() !== project.id) {
