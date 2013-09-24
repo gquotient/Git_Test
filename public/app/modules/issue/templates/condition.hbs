@@ -1,7 +1,18 @@
-AC Power &lt; <input type="text" value="{{ condition.value }}">%
+{{ debug }}
+
+<input type="hidden" name="property" value="{{ expression.[0] }}">
+<input type="hidden" name="operator" value="{{ expression.[1] }}">
+
+AC Power &lt; <input type="text" value="{{ expression.[2] }}">%
 Severity:
-<select id="severity">
+<select name="severity">
   <option>- Select -</option>
-  <option value="Warning">Warning</option>
-  <option value="Alert">Alert</option>
+  <option value="Warning" {{#ifCond priority 'Warning'}}selected{{/ifCond}}>{{$ 'Warning' }}</option>
+  <option value="Alert" {{#ifCond priority 'Alert'}}selected{{/ifCond}}>{{$ 'Alert' }}</option>
+</select>
+
+Team:
+<select name="team">
+  <option>- Select -</option>
+  {{#each teams}}<option value="{{ [0] }}" {{#ifCond ../team_label [0]}}selected{{/ifCond}}>{{ [2] }}</option>{{/each}}
 </select>

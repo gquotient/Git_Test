@@ -8,13 +8,7 @@ module.exports = function(app){
     ensureCurrentOrganization = helpers.ensureCurrentOrganization,
     makeRequest = helpers.makeRequest;
 
-  app.get('/api/alarms', ensureCurrentOrganization,
-    makeRequest({
-      path: '/res/alarms'
-    })
-  );
-
-  // Get project alarms
+  // Get active project alarms
   app.get('/api/alarms/:projectId?', ensureCurrentOrganization,
     function(req, res){
       request({
@@ -27,6 +21,20 @@ module.exports = function(app){
     }
   );
 
+  // Create a new alarm from a template
+  app.post('/api/alarms', ensureCurrentOrganization,
+    function(req, res){
+      request({
+        method: 'POST',
+        uri: app.get('dataUrl') + '/alarms/',
+        headers: {
+          'accept-encoding' : 'gzip,deflate'
+        }
+      }).pipe(res);
+    }
+  );
+
+  // Get alarm templates available for a given project
   app.get('/api/project_alarms/:projectId?', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
     function(req, res, next){
       req.query = _.extend({}, req.query, {project_label: req.params.projectId});

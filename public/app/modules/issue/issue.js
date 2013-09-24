@@ -15,9 +15,9 @@ define([
   'hbs!issue/templates/navigationList',
   'hbs!issue/templates/alarmTemplateTable',
   'hbs!issue/templates/alarmTemplateTableRow',
-  'hbs!issue/templates/alarmTemplateEdit',
+
+  'hbs!issue/templates/alarmSingleEdit',
   'hbs!issue/templates/condition',
-  'hbs!issue/templates/conditions'
 ],
 function(
   $,
@@ -36,9 +36,9 @@ function(
   navigationListTemplate,
   alarmTemplateTableTemplate,
   alarmTemplateTableRowTemplate,
-  alarmTemplateEditTemplate,
-  conditionTemplate,
-  conditionsTemplate
+
+  alarmSingleEditTemplate,
+  conditionTemplate
 ){
   var Issue = { views: {} };
 
@@ -220,30 +220,49 @@ function(
     emptyView: Marionette.ItemView.extend({template: _.template('<span class="loadingIndicator"></span>')})
   });
 
-  Issue.views.AlarmTemplateEdit = Marionette.ItemView.extend({
-    template: {
-      type: 'handlebars',
-      template: alarmTemplateEditTemplate
-    }
-  });
-
   Issue.views.Condition = Marionette.ItemView.extend({
     tagName: 'li',
     className: 'condition',
     template: {
       type: 'handlebars',
       template: conditionTemplate
+    },
+    templateHelpers: function(){
+      console.log('condition', this);
+      return {
+        teams: this.options.teams
+      };
     }
   });
 
-  Issue.views.Conditions = Marionette.CompositeView.extend({
-    tagName: 'form',
+  Issue.views.AlarmSingleEdit = Marionette.CompositeView.extend({
     template: {
       type: 'handlebars',
-      template: conditionsTemplate
+      template: alarmSingleEditTemplate
     },
     itemView: Issue.views.Condition,
-    itemViewContainer: 'ul.conditions'
+    itemViewContainer: '.conditions',
+    itemViewOptions: function(){
+      return {
+        teams: this.options.teams
+      };
+    },
+    triggers: {
+      'click .addCondition': 'addCondition',
+      'click .cancel': 'cancel'
+    },
+    initialize: function(options){
+      console.log(options);
+      this.collection = new Backbone.Collection(options.model.get('conditions'), {
+        teams: options.teams
+      });
+    },
+    onAddCondition: function(){
+      this.conditionsView.collection.add({});
+    },
+    onCancel: function(){
+      Backbone.history.navigate('/admin/alarms/' + this.options.project.id, true);
+    }
   });
 
   return Issue;
