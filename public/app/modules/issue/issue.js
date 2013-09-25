@@ -212,8 +212,28 @@ function(
       type: 'handlebars',
       template: alarmTemplateTableRowTemplate
     },
+    ui: {
+      enableButton: '.enable'
+    },
     triggers: {
+      'click .enable': 'enable',
       'click .editConditions': 'editConditions'
+    },
+    onEnable: function(){
+      var that = this;
+
+      this.ui.enableButton.addClass('loading-right');
+
+      this.model.save({
+        project_label: this.model.collection.project.id
+      },
+      {
+        wait: true,
+        complete: function(){
+          that.ui.enableButton.removeClass('loading-right');
+          that.render();
+        }
+      });
     }
   });
 
@@ -315,54 +335,31 @@ function(
 
       this.ui.saveButton.addClass('loading-right');
 
-      // If the alarm hasn't been instantiated, instantiate it with a post
-      if (!this.model.id) {
-        this.model.save({
-          project_label: this.options.project.id
+      // When alarm is ready submit conditions
+      that.children.each(function(conditionView){
+        var condition = conditionView.model;
+
+        condition.save({
+          alarm_id: that.model.id,
+          priority: conditionView.$el.find('[name="severity"]').val(),
+          comparator: conditionView.$el.find('[name="operator"]').val(),
+          threshold: conditionView.$el.find('[name="value"]').val(),
+          team_label: conditionView.$el.find('[name="team"]').val(),
+          org_label: that.options.user.get('org_label')
         },
         {
           wait: true,
           complete: function(){
-            this.ui.saveButton.removeClass('loading-right');
+            // This will make the spinner go away on the first save which is sub-optimal
+            // if multiple models are being saved
+            that.ui.saveButton.removeClass('loading-right');
           },
           success: function(){
-            defer.resolve();
+            that.updateMessage('Alarm saved.');
           },
           error: function(){
             that.updateMessage('Something went wrong, try saving again.', 'error');
           }
-        });
-      } else {
-        defer.resolve();
-      }
-
-      // When alarm is ready submit conditions
-      defer.done(function(){
-        that.children.each(function(conditionView){
-          var condition = conditionView.model;
-
-          condition.save({
-            alarm_id: that.model.id,
-            priority: conditionView.$el.find('[name="severity"]').val(),
-            comparator: conditionView.$el.find('[name="operator"]').val(),
-            threshold: conditionView.$el.find('[name="value"]').val(),
-            team_label: conditionView.$el.find('[name="team"]').val(),
-            org_label: that.options.user.get('org_label')
-          },
-          {
-            wait: true,
-            complete: function(){
-              // This will make the spinner go away on the first save which is sub-optimal
-              // if multiple models are being saved
-              that.ui.saveButton.removeClass('loading-right');
-            },
-            success: function(){
-              that.updateMessage('Alarm saved.');
-            },
-            error: function(){
-              that.updateMessage('Something went wrong, try saving again.', 'error');
-            }
-          });
         });
       });
     }
