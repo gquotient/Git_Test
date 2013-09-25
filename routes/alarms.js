@@ -7,19 +7,6 @@ module.exports = function(app){
     ensureAuthorized = helpers.ensureAuthorized,
     ensureCurrentOrganization = helpers.ensureCurrentOrganization;
 
-  // Get active project alarms
-  app.get('/api/alarms/active/:projectId?', ensureCurrentOrganization,
-    function(req, res){
-      request({
-        method: 'GET',
-        uri: app.get('dataUrl') + '/alarms/active/' + req.params.projectId,
-        headers: {
-          'accept-encoding' : 'gzip,deflate'
-        }
-      }).pipe(res);
-    }
-  );
-
   // Create a new alarm from a template
   app.post('/api/alarms', ensureAuthorized(['vendor_admin', 'admin']),
     function(req, res, next){
@@ -64,6 +51,19 @@ module.exports = function(app){
     helpers.request({
       path: '/res/project_alarms'
     })
+  );
+
+  // Get active project alarms
+  app.get('/api/alarms/active/:projectId?', ensureCurrentOrganization,
+    function(req, res){
+      request({
+        method: 'GET',
+        uri: app.get('dataUrl') + '/alarms/active/' + req.params.projectId,
+        headers: {
+          'accept-encoding' : 'gzip,deflate'
+        }
+      }).pipe(res);
+    }
   );
 
   // Acknowledge
