@@ -18,6 +18,8 @@ define([
 
   'hbs!issue/templates/alarmSingleEdit',
   'hbs!issue/templates/condition',
+  'hbs!issue/templates/conditionLowInverterPower',
+  'hbs!issue/templates/conditionOnOff'
 ],
 function(
   $,
@@ -38,7 +40,9 @@ function(
   alarmTemplateTableRowTemplate,
 
   alarmSingleEditTemplate,
-  conditionTemplate
+  conditionTemplate,
+  conditionLowInverterPowerTemplate,
+  conditionOnOffTemplate
 ){
   var Issue = { views: {} };
 
@@ -225,7 +229,8 @@ function(
       this.ui.enableButton.addClass('loading-right');
 
       this.model.save({
-        project_label: this.model.collection.project.id
+        project_label: this.model.collection.project.id,
+        enabled: true
       },
       {
         wait: true,
@@ -254,24 +259,53 @@ function(
     idAttribute: 'condition_id',
     defaults: {
       notification_secs: 0,
-      enabled: true
+      enabled: false
     }
   });
 
   Issue.ConditionCollection = Backbone.Collection.extend({
     url: '/api/conditions',
-    model: Issue.ConditionModel
+    model: Issue.ConditionModel,
+    initialize: function(models, options){
+      this.alarm = options.alarm;
+    }
   });
 
   Issue.views.Condition = Marionette.ItemView.extend({
     tagName: 'li',
     className: 'condition',
-    template: {
-      type: 'handlebars',
-      template: conditionTemplate
+    getTemplate: function(){
+      // Store available templates
+      var templates = {
+        'Inverter Low Power': conditionLowInverterPowerTemplate,
+        'Communications Failure': conditionOnOffTemplate,
+        'Irradiance Out of Range': conditionOnOffTemplate,
+        'Temperature Out of Range': conditionOnOffTemplate
+      },
+      // This will be returned
+      template = {
+        type: 'handlebars'
+      };
+
+      // Set the template conditionally based on alarm type
+      template.template = templates[this.model.collection.alarm.get('alarm_type')];
+
+      // Return the template
+      return template;
+    },
+    ui: {
+      enabled: 'input[name="enabled"]',
+      enabledCheck: '.enabledCheck'
     },
     triggers: {
-      'click .remove': 'remove'
+      'click .remove': 'remove',
+    },
+    events: {
+      'click .enabledCheck': 'enabledCheck'
+    },
+    enabledCheck: function(){
+      // Checkboxes are annoying, so set the value of a hidden input
+      this.ui.enabled.val(this.ui.enabledCheck.is(':checked'));
     },
     onRemove: function(){
       this.model.destroy();
@@ -306,7 +340,7 @@ function(
       'click .save': 'save'
     },
     initialize: function(options){
-      this.collection = new Issue.ConditionCollection(options.model.get('conditions'));
+      this.collection = new Issue.ConditionCollection(options.model.get('conditions'), {alarm: this.model});
     },
     updateMessage: function(message, type) {
       // Remove existing status classes
@@ -324,23 +358,29 @@ function(
       }
     },
     onAddCondition: function(){
-      this.collection.add({});
+      // Add a new model based on defaults for this alarm type
+      this.collection.add(_.extend({}, this.model.defaults));
     },
     onCancel: function(){
+      // Navigate back to parent project
       Backbone.history.navigate('/admin/alarms/' + this.options.project.id, true);
     },
     onSave: function(){
       var that = this;
-      var defer = new $.Deferred();
 
+      // Add loading spinner to save button
       this.ui.saveButton.addClass('loading-right');
 
       // When alarm is ready submit conditions
       that.children.each(function(conditionView){
         var condition = conditionView.model;
 
+        // Save the model
+        // NOTE - I don't like this, the save should be on the view but the statusing stuff lives up here
+        // so, it works for now
         condition.save({
           alarm_id: that.model.id,
+          enabled: conditionView.$el.find('[name="enabled"]').val(),
           priority: conditionView.$el.find('[name="severity"]').val(),
           comparator: conditionView.$el.find('[name="operator"]').val(),
           threshold: conditionView.$el.find('[name="value"]').val(),
@@ -359,6 +399,7 @@ function(
           },
           error: function(){
             that.updateMessage('Something went wrong, try saving again.', 'error');
+            console.log(arguments);
           }
         });
       });

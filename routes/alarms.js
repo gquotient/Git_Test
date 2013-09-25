@@ -21,6 +21,20 @@ module.exports = function(app){
     })
   );
 
+  // Update instantiated alarm
+  app.put('/api/alarms', ensureAuthorized(['vendor_admin', 'admin']),
+    function(req, res, next){
+      // Add org label to qs. Why, you ask? God knows.
+      req.query = _.extend({}, req.query, {org_label: req.body.org_label});
+      next();
+    },
+    helpers.request({
+      method: 'POST',
+      path: '/res/alarms',
+      pipe: true
+    })
+  );
+
   // Conditions
   app.post('/api/conditions', ensureAuthorized(['vendor_admin', 'admin']),
     function(req, res, next){
