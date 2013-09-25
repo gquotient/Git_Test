@@ -11,7 +11,7 @@ define([
   'chart',
   'issue',
 
-  'hbs!layouts/templates/projectDetail'
+  'hbs!layouts/projects/templates/detail'
 ], function(
   $,
   _,
@@ -25,7 +25,7 @@ define([
   Chart,
   Issue,
 
-  projectDetailTemplate
+  detailTemplate
 ){
 
   var DevicesView = Marionette.CollectionView.extend({
@@ -73,32 +73,24 @@ define([
     }
   });
 
-
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',
-      template: projectDetailTemplate
-    },
-    attributes: {
-      id: 'page-projectDetail'
+      template: detailTemplate
     },
     regions: {
       map: '.map',
       devices: '.devices',
       kpis: '.kpis',
-      contentNavigation: '.nav_content',
       issues: '.issues',
       chart_powerHistory: '.chart#powerHistory',
       chart_healthAndSoiling: '.chart#healthAndSoiling'
     },
-    events: {
-      'click .edit': function(){
-        Backbone.history.navigate('/admin/projects/' + this.model.id, true);
-      },
+    currentView: 'map',
+    triggers: {
       'click .toggleView': 'toggleView'
     },
-    currentView: 'map',
-    toggleView: function(){
+    onToggleView: function(){
       if (this.currentView === 'map') {
         this.currentView = 'devices';
         $('.map').hide();
@@ -117,59 +109,22 @@ define([
       }
     },
     onShow: function(){
+      // Start with devices view hidden
       $('.devices').hide();
 
-      this.map.show(this.mapView);
-
-      this.devices.show(this.devicesView);
-
-      this.contentNavigation.show(this.projectNavigationListView);
-
-      //this.buildSettingsDropdown();
-
-      this.selectProject(this.options.model);
+      // Build and display modules
+      this.showCharts();
+      this.showIssues();
+      this.showKpis();
+      this.showMap();
+      this.showDevices();
     },
-    buildSettingsDropdown: function(){
-      var that = this;
+    showCharts: function(){
+      var that = this
+        project = this.model;
 
-      //Create settings view
-      var settingsDropdown = new Marionette.ItemView({
-        tagName: 'li',
-        className: 'menu dropdown',
-        template: _.template('<ul><li><a href="#" class="edit">Edit Project</a></li></ul>'),
-        events: {
-          'click .edit': function(event){
-            event.preventDefault();
-            Backbone.history.navigate('/project/' + that.model.id + '/edit', true);
-          }
-        }
-      });
-
-      //Show ItemView in cached region
-      this.options.settingsRegion.show(settingsDropdown);
-    },
-
-    selectProject: function(project) {
-      var that = this;
-
-      this.model = project;
-
-      Backbone.trigger('set:breadcrumbs', {model: project, state: 'project', display_name: project.get('display_name')});
-
-      // Update map
-      this.mapView.collection.set([project]);
-      this.mapView.fitToBounds();
-
-      // This is ugly but I'm not sure of a better way to do it with the leaflet API
-      _.each(this.mapView.markers._layers, function(marker){
-        marker.togglePopup();
-      });
-
-      // Add project to devices view and activate it.
-      this.devicesView.showProject(project);
-
+      // Build charts
       this.model.findDataSources().done(function(dataSources){
-        // Build charts
         var chart_powerHistory = new Chart.views.Basic({
           chartOptions: {
             title: {
@@ -236,33 +191,23 @@ define([
 
         that.chart_healthAndSoiling.show(chart_healthAndSoiling);
       });
-
+    },
+    showIssues: function(){
       // Build issues
-      var issueView = new Issue.views.Table({
+      this.issueView = new Issue.views.Table({
         project: this.model,
         collection: this.model.issues
       });
 
-      this.issues.show(issueView);
-
+      this.issues.show(this.issueView);
+    },
+    showKpis: function(){
       // Build kpi view
-      var kpisView = new Project.views.Kpis({model: this.model});
+      this.kpisView = new Project.views.Kpis({model: this.model});
 
-      this.kpis.show(kpisView);
-
-      // Update active item
-      this.projectNavigationListView.setActive(this.model.id);
+      this.kpis.show(this.kpisView);
     },
-
-    onClose: function(){
-      // Clean up contextual settings
-      this.options.settingsRegion.close();
-
-      // Clear data fetch
-      clearInterval(this.fetchInterval);
-    },
-
-    initialize: function(options){
+    showMap: function(){
       // Instantiate map
       this.mapView = new Project.views.Map({
         itemView: Project.views.MarkerView.extend({
@@ -271,32 +216,30 @@ define([
         collection: new Project.Collection()
       });
 
+      // Show map
+      this.map.show(this.mapView);
+
+      // Update map
+      this.mapView.collection.set([this.model]);
+      this.mapView.fitToBounds();
+
+      // This is ugly but I'm not sure of a better way to do it with the leaflet API
+      _.each(this.mapView.markers._layers, function(marker){
+        marker.togglePopup();
+      });
+    },
+    showDevices: function(){
       // Instantiate devices collection view.
       this.devicesView = new DevicesView({
-        equipment: options.equipment
+        equipment: this.options.equipment
       });
 
-      // Instantiate left nav
-      this.projectNavigationListView = new Project.views.NavigationListView({
-        collection: options.collection
-      });
+      this.devices.show(this.devicesView);
 
-      // Fetch data for all projects
-      var fetchData = function(){
-        options.collection.fetchIssues();
-      };
-
-      // Fetch data right away
-      fetchData();
-
-      // Fetch data every 15 minutes
-      this.fetchInterval = setInterval(fetchData, 900000);
-
-      this.listenTo(Backbone, 'click:project', function(project){
-        this.selectProject(project);
-        Backbone.history.navigate('/project/' + project.id);
-      });
-
+      // Add project to devices view and activate it.
+      this.devicesView.showProject(this.model);
+    },
+    initialize: function(){
       this.listenTo(Backbone, 'click:issue', function(issue){
         var issueId = (issue === 'all') ? '' : '/' + issue.id;
 

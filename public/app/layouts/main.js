@@ -12,7 +12,7 @@ define([
   'layouts/header',
   'layouts/navigation',
   'layouts/portfolioDetail',
-  'layouts/projectDetail',
+  'layouts/projects',
   'layouts/issues',
   'layouts/devices',
   'layouts/operatorview',
@@ -93,7 +93,7 @@ define([
       this.mainContent.show( new ProjectDetailLayout({
         model: project,
         collection: this.activePortfolio.projects,
-        equipment: this.app.equipment,
+        equipment: ia.equipment,
         settingsRegion: this.settings
       }));
     },

@@ -1,0 +1,28 @@
+{{ debug }}
+<div class="map">Map</div>
+<div class="devices">Devices</div>
+<div class="toggleView">Toggle Map View</div>
+<div class="module container half kpis">
+  <span class="loadingIndicator"></span>
+</div>
+<div class="module container half issues">
+  <span class="loadingIndicator"></span>
+</div>
+<div id="powerHistory" class="module container half chart">
+  <span class="loadingIndicator"></span>
+</div>
+<div id="healthAndSoiling" class="module container half chart">
+  <span class="loadingIndicator"></span>
+</div>
+<div class="documents container">
+  <h3>Documents</h3>
+  <ul>
+    {{#if docs.length}}
+      {{#each docs}}
+        <li><a href="{{ url }}">{{ key }}</a></li>
+      {{/each}}
+    {{else}}
+      <li>{{$ 'No documents' }}
+    {{/if}}
+  </ul>
+</div>

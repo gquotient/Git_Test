@@ -96,5 +96,7 @@
   "Trigger Condition": "Trigger Condition",
   "Acknowledge": "Acknowledge",
   "Acknowledged": "Acknowledged",
-  "There are currently no active alarms": "There are currently no active alarms"
+  "There are currently no active alarms": "There are currently no active alarms",
+
+  "No documents": "No documents"
 }
