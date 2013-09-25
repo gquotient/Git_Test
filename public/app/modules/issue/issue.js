@@ -373,20 +373,25 @@ function(
 
       // When alarm is ready submit conditions
       that.children.each(function(conditionView){
-        var condition = conditionView.model;
+        var condition = conditionView.model,
+          newProperties = {
+            alarm_id: that.model.id,
+            enabled: conditionView.$el.find('[name="enabled"]').val(),
+            priority: conditionView.$el.find('[name="severity"]').val(),
+            team_label: conditionView.$el.find('[name="team"]').val(),
+            org_label: that.options.user.get('org_label')
+          };
+
+        if (conditionView.$el.find('[name="operator"]').val()) {
+          newProperties.comparator = conditionView.$el.find('[name="operator"]').val();
+          newProperties.threshold = conditionView.$el.find('[name="value"]').val();
+        }
+
 
         // Save the model
         // NOTE - I don't like this, the save should be on the view but the statusing stuff lives up here
         // so, it works for now
-        condition.save({
-          alarm_id: that.model.id,
-          enabled: conditionView.$el.find('[name="enabled"]').val(),
-          priority: conditionView.$el.find('[name="severity"]').val(),
-          comparator: conditionView.$el.find('[name="operator"]').val(),
-          threshold: conditionView.$el.find('[name="value"]').val(),
-          team_label: conditionView.$el.find('[name="team"]').val(),
-          org_label: that.options.user.get('org_label')
-        },
+        condition.save(newProperties,
         {
           wait: true,
           complete: function(){
@@ -395,7 +400,7 @@ function(
             that.ui.saveButton.removeClass('loading-right');
           },
           success: function(){
-            that.updateMessage('Alarm saved.');
+            that.updateMessage('Conditions saved.');
           },
           error: function(){
             that.updateMessage('Something went wrong, try saving again.', 'error');
