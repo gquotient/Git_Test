@@ -30,13 +30,9 @@ define([
     },
 
     templateHelpers: function(){
-      var documents = [];
-
-      _.each(this.options.project.get('devdocs'), function(doc){
-        if (doc.graph_key === this.model.get('graph_key')) {
-          documents.push(doc);
-        }
-      }, this);
+      var documents = _.where(this.options.project.get('devdocs'), {
+        graph_key: this.model.get('graph_key')
+      });
 
       return {
         documents: documents
