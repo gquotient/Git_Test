@@ -264,6 +264,7 @@ function(
   });
 
   Issue.views.AlarmSingleEdit = Marionette.CompositeView.extend({
+    tagName: 'form',
     template: {
       type: 'handlebars',
       template: alarmSingleEditTemplate
@@ -353,7 +354,7 @@ function(
             complete: function(){
               // This will make the spinner go away on the first save which is sub-optimal
               // if multiple models are being saved
-              this.ui.saveButton.removeClass('loading-right');
+              that.ui.saveButton.removeClass('loading-right');
             },
             success: function(){
               that.updateMessage('Alarm saved.');
