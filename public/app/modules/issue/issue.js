@@ -60,32 +60,38 @@ function(
     },
     acknowledge: function(userId){
       // Ask user for an acknowledge comment
-      var comment = window.prompt('Please enter a comment to acknowledge this alarm');
-
       var that = this;
 
-      return $.ajax({
-        url: '/api/alarms/' + this.collection.project.id + '/' + this.id,
-        type: 'PUT',
-        data: {
-          user_info: userId,
-          comment: comment
-        }
-      }).done(function(model){
-        // Update model
-        that.set(model);
-      });
+      var comment = prompt('A comment is required to acknowledge this alarm.');
+
+      if (comment && comment.length) {
+        return $.ajax({
+          url: '/api/alarms/' + this.collection.project.id + '/' + this.id,
+          type: 'PUT',
+          data: {
+            user_info: userId,
+            comment: comment
+          }
+        }).done(function(model){
+          // Update model
+          that.set(model);
+        });
+      }
     },
     resolve: function(){
       var that = this;
 
-      return $.ajax({
-        url: '/api/alarms/resolve/' + this.collection.project.id + '/' + this.id,
-        type: 'PUT'
-      }).done(function(data){
-        // Update model
-        that.set(data.alarm);
-      });
+      var confirm = confirm('Are you sure you want to mark this alarm resolved?');
+
+      if (confirm) {
+        return $.ajax({
+          url: '/api/alarms/resolve/' + this.collection.project.id + '/' + this.id,
+          type: 'PUT'
+        }).done(function(data){
+          // Update model
+          that.set(data.alarm);
+        });
+      }
     }
   });
 

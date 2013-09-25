@@ -2,9 +2,9 @@
   <legend>{{$ 'Filter By' }}</legend>
 
   <input name="property" type="hidden" value="zipcode">
-  <input name="operator" type="hidden" value="=">
+  <input name="operator" type="hidden" value="{{#if operator }}{{ operator }}{{else}}={{/if}}">
 
-  {{$ 'Zip Code' }} =
+  {{$ 'Zip Code' }} {{#if operator }}{{ operator }}{{else}}={{/if}}
 
   <input name="value" type="text" value="{{ value }}">
 

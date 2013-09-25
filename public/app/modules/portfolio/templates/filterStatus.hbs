@@ -7,8 +7,8 @@
   {{$ 'Status' }} =
 
   <select name="value">
-    <option value="Alert" {{#ifCond operator 'Alert' }}selected{{/ifCond}}>{{$ 'Alert' }}</option>
-    <option value="Warning" {{#ifCond operator 'Warning' }}selected{{/ifCond}}>{{$ 'Warning' }}</option>
+    <option value="Alert" {{#ifCond value 'Alert' }}selected{{/ifCond}}>{{$ 'Alert' }}</option>
+    <option value="Warning" {{#ifCond value 'Warning' }}selected{{/ifCond}}>{{$ 'Warning' }}</option>
   </select>
 
   <button class="button sml remove">Remove</button>
