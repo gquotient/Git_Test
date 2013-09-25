@@ -120,7 +120,7 @@ define([
       this.showDevices();
     },
     showCharts: function(){
-      var that = this
+      var that = this,
         project = this.model;
 
       // Build charts
