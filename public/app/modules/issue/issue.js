@@ -360,7 +360,7 @@ function(
     },
     onAddCondition: function(){
       // Add a new model based on defaults for this alarm type
-      this.collection.add(_.extend({}, this.model.defaults));
+      this.collection.add(_.extend({}, this.model.get('defaults')));
     },
     onCancel: function(){
       // Navigate back to parent project
