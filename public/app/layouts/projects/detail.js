@@ -229,7 +229,6 @@ define([
       });
     },
     showDevices: function(){
-      console.log('show devices', this.options);
       // Instantiate devices collection view.
       this.devicesView = new DevicesView({
         equipment: this.options.equipment
