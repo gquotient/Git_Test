@@ -288,6 +288,29 @@ define([
       _.bindAll(this, 'handleMouseEvent', 'handleKeyEvent', 'handleWheelEvent');
     },
 
+    collectionEvents: {
+      'reset': function(){
+        this.checkOutgoing(this.model);
+      }
+    },
+
+    checkOutgoing: function(target){
+      if (!target.outgoing) { return; }
+
+      target.outgoing.each(function(device){
+        if (!device.equipment) { return; }
+
+        // For now ignore strings and panels.
+        if (_.contains(['S', 'P'], device.equipment.get('label'))) { return; }
+
+        // Add position to device for this rendering.
+        device.equipment.addRendering(device, this.model, this.rendering, target);
+
+        // Recursively check all outgoing devices for this rendering.
+        this.checkOutgoing(device);
+      }, this);
+    },
+
     delegateCanvasEvents: function(){
       function format(events){
         return _.map(events.split(' '), function(evnt){
