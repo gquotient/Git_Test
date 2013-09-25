@@ -36,12 +36,13 @@ define([
       alarmsAdmin: '.alarmsAdmin'
     },
     showProjectAlarms: function(id){
+      var project = this.options.projects.findWhere({project_label: id});
       var projectAlarmsLayout = new ProjectAlarmsLayout({projects: this.options.projects});
 
       this.alarmsAdmin.show(projectAlarmsLayout);
 
-      if (id) {
-        projectAlarmsLayout.selectProject(this.options.projects.findWhere({project_label: id}));
+      if (project) {
+        projectAlarmsLayout.selectProject(project);
       }
 
       this.listenTo(projectAlarmsLayout, 'editConditions', function(alarm){
@@ -49,14 +50,16 @@ define([
       });
     },
     showEditAlarm: function(alarm){
+      var project = this.options.projects.findWhere({project_label: alarm.collection.project.id});
       var alarmId = alarm.id || alarm.get('alarm_type');
 
       // Update history
-      Backbone.history.navigate('/admin/alarms/' + alarm.collection.project.id + '/' + alarmId);
+      Backbone.history.navigate('/admin/alarms/' + project.id + '/' + alarmId);
+      Backbone.trigger('set:breadcrumbs', {state: 'alarmEdit', display_name: alarm.get('alarm_type')});
 
       var editAlarmView = new Issue.views.AlarmSingleEdit({
         model: alarm,
-        project: this.options.projects.findWhere({project_label: alarm.collection.project.id }),
+        project: project,
         user: ia.currentUser
       });
 

@@ -247,6 +247,12 @@ function(
       type: 'handlebars',
       template: conditionTemplate
     },
+    triggers: {
+      'click .remove': 'remove'
+    },
+    onRemove: function(){
+      this.model.destroy();
+    },
     templateHelpers: function(){
       return {
         teams: this.options.teams
