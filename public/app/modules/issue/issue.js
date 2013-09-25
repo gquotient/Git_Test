@@ -340,6 +340,7 @@ function(
       'click .save': 'save'
     },
     initialize: function(options){
+      console.log('alarm single edit', options);
       this.collection = new Issue.ConditionCollection(options.model.get('conditions'), {alarm: this.model});
     },
     updateMessage: function(message, type) {

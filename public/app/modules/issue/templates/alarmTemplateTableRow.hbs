@@ -2,6 +2,6 @@
 <td>{{ description }}</td>
 <td>{{ conditions.length }}</td>
 <td>
-  {{#if id }}<button class="button editConditions sml">Edit Conditions</button>{{else}}
-  <button class="button primary enable sml">Enable</button>{{/if}}
+  {{#if id }}<button class="button editConditions sml">{{$ 'Edit Conditions' }}</button>{{else}}
+  <button class="button primary enable sml">{{$ 'Enable' }}</button>{{/if}}
 </td>

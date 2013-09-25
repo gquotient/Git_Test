@@ -26,8 +26,11 @@
   "Devices": "Devices",
 
   "Users": "Users",
+  "User": "User",
   "Teams": "Teams",
+  "Team": "Team",
   "Organizations": "Organizations",
+  "Organization": "Organization",
 
   "My Profile": "My Profile",
   "Admin": "Admin",
@@ -43,6 +46,8 @@
   "Reset": "Reset",
   "Save": "Save",
   "Delete": "Delete",
+  "Enable": "Enable",
+  "Select": "Select",
 
   "Type": "Type",
   "Name": "Name",
@@ -87,8 +92,13 @@
   "has this project locked": "has this project locked",
 
   "Alarm": "Alarm",
+  "Severity": "Severity",
   "Alert": "Alert",
   "Warning": "Warning",
+  "Edit Conditions": "Edit Conditions",
+  "Conditions": "Conditions",
+  "Add Condition": "Add Condition",
+  "Enabled": "Enabled",
   "Alarm Description": "Alarm Description",
   "View all alarms": "View all alarms",
   "Alarm Status": "Alarm Status",
