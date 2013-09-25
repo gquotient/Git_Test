@@ -75,8 +75,6 @@ define([
     },
 
     selectProject: function(project) {
-      var that = this;
-
       Backbone.trigger('set:breadcrumbs', {model: project, state: 'project', display_name: project.get('display_name')});
 
       var detailLayout = new DetailLayout({

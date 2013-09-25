@@ -236,8 +236,6 @@ define([
 
       this.devices.show(this.devicesView);
 
-      console.log(this.devicesView);
-
       // Add project to devices view and activate it.
       this.devicesView.showProject(this.model);
     },
