@@ -29,6 +29,20 @@ define([
       template: CoreTemplate
     },
 
+    templateHelpers: function(){
+      var documents = [];
+
+      _.each(this.options.project.get('devdocs'), function(doc){
+        if (doc.graph_key === this.model.get('graph_key')) {
+          documents.push(doc);
+        }
+      }, this);
+
+      return {
+        documents: documents
+      };
+    },
+
     regions: {
       powerAndIrradiance: '.chart.powerAndIrradiance',
       currentAndVoltage: '.chart.currentAndVoltage',
