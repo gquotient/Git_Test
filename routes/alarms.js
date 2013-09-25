@@ -24,7 +24,6 @@ module.exports = function(app){
   // Conditions
   app.post('/api/conditions', ensureAuthorized(['vendor_admin', 'admin']),
     function(req, res, next){
-      console.log(req.body);
       next();
     },
     helpers.request({
