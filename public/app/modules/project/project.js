@@ -341,13 +341,14 @@ define([
     },
 
     parse: function(resp, options){
+
       // Check if the response includes devices.
       if (resp.devices && !resp.project_label) {
-
         this.devices.reset(resp.devices, {
           equipment: options.equipment,
           project: this,
-          parse: true
+          parse: true,
+          silent: true
         });
 
         // Parse relationships.
@@ -369,6 +370,9 @@ define([
         _.each(_.keys(Equipment.renderings), function(label){
           this.checkOutgoing(this, label);
         }, this);
+
+        // Wait to trigger the reset.
+        this.devices.trigger('reset', this);
 
         resp = resp.project;
       }
