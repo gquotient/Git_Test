@@ -169,7 +169,6 @@ function(
     }
   });
 
-  /* The item view is the view for the individual portfolios in the navigation. */
   Issue.views.NavigationItem = Navigation.views.ListItem.extend({
     template: {
       type: 'handlebars',
@@ -182,22 +181,26 @@ function(
     }
   });
 
-  /* This composite view is the wrapper view for the list of portfolios.
-     It handles nesting the list while allowing for the navigation header. */
   Issue.views.NavigationListView = Navigation.views.List.extend({
     template: {
       type: 'handlebars',
       template: navigationListTemplate
     },
-
-    // Tell the composite view which view to use as for each portfolio.
     itemView: Issue.views.NavigationItem
+  });
+
+  // Alarm template editing
+  // NOTE - This may belong in it's own module
+
+  Issue.AlarmTemplateModel = Backbone.Model.extend({
+    url:'/api/alarms'
   });
 
   Issue.TemplateCollection = Backbone.Collection.extend({
     url: function(){
       return '/api/project_alarms/' + this.project.id;
     },
+    model: Issue.AlarmTemplateModel,
     initialize: function(models, options){
       this.project = options.project;
     }
@@ -272,6 +275,10 @@ function(
         teams: this.options.user.get('teams')
       };
     },
+    ui: {
+      message: '.message',
+      saveButton: '.save'
+    },
     triggers: {
       'click .addCondition': 'addCondition',
       'click .cancel': 'cancel',
@@ -279,6 +286,21 @@ function(
     },
     initialize: function(options){
       this.collection = new Issue.ConditionCollection(options.model.get('conditions'));
+    },
+    updateMessage: function(message, type) {
+      // Remove existing status classes
+      this.ui.message.removeClass('error warning ok');
+
+      if (type) {
+        this.ui.message.addClass(type);
+      }
+
+      if (message) {
+        this.ui.message.text(message);
+        this.ui.message.fadeIn();
+      } else {
+        this.ui.message.fadeOut();
+      }
     },
     onAddCondition: function(){
       this.collection.add({});
@@ -289,22 +311,25 @@ function(
     onSave: function(){
       var that = this;
       var defer = new $.Deferred();
+
+      this.ui.saveButton.addClass('loading-right');
+
       // If the alarm hasn't been instantiated, instantiate it with a post
       if (!this.model.id) {
-        // Set the project on which you want to instantiate the alarm
-        this.model.set('project_label', this.options.project.id);
-
-        $.ajax({
-          url:'/api/alarms',
-          type: 'POST',
-          data: this.model.toJSON()
-        })
-        .fail(function(){
-          console.log('something went wrong', arguments);
-        })
-        .done(function(){
-          defer.resolve();
-          console.log(arguments);
+        this.model.save({
+          project_label: this.options.project.id
+        },
+        {
+          wait: true,
+          complete: function(){
+            this.ui.saveButton.removeClass('loading-right');
+          },
+          success: function(){
+            defer.resolve();
+          },
+          error: function(){
+            that.updateMessage('Something went wrong, try saving again.', 'error');
+          }
         });
       } else {
         defer.resolve();
@@ -325,11 +350,16 @@ function(
           },
           {
             wait: true,
+            complete: function(){
+              // This will make the spinner go away on the first save which is sub-optimal
+              // if multiple models are being saved
+              this.ui.saveButton.removeClass('loading-right');
+            },
             success: function(){
-              console.log('yay, condition update', arguments);
+              that.updateMessage('Alarm saved.');
             },
             error: function(){
-              console.log('shoot, update failed', arguments);
+              that.updateMessage('Something went wrong, try saving again.', 'error');
             }
           });
         });
