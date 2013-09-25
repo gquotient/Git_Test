@@ -285,7 +285,7 @@ define([
         model.trigger('deselected');
       });
 
-      _.bindAll(this, 'handleMouseEvent', 'handleKeyEvent', 'handleWheelEvent');
+      _.bindAll(this, 'handleMouseEvent', 'handleWheelEvent', 'handleKeyEvent');
     },
 
     collectionEvents: {
@@ -334,47 +334,57 @@ define([
       this.$el.add(document).off('.canvas' + this.cid);
     },
 
-    handleMouseEvent: function(e){
-      var type = this.dragging && e.type === 'mousemove' ? 'mousedrag' : e.type,
-
-        // Create a point relative to the window and calculate the delta.
-        point = new this.paper.Point(e.pageX, e.pageY),
-        delta = point.subtract(this.lastPoint),
-
-        // Subtract the el offset to get the canvas point.
+    parsePoint: function(x, y){
+      var point = new this.paper.Point(x, y),
         offset = this.$el.offset(),
         canvasPoint = point.subtract(offset.left, offset.top),
+        projectPoint = this.paper.view.viewToProject(canvasPoint);
 
-        // Convert the canvas point to a project point and calculate the delta.
-        projectPoint = this.paper.view.viewToProject(canvasPoint),
-        projectDelta = projectPoint.subtract(this.lastProjectPoint),
+      return {
+        point: point,
+        canvasPoint: canvasPoint,
+        projectPoint: projectPoint
+      };
+    },
 
-        // For click events see if the point falls within a device view.
-        view = e.type !== 'mousemove' && this.children.find(function(view){
-          return view.testHit(projectPoint);
-        });
+    handleMouseEvent: function(e){
+      var args = this.parsePoint(e.pageX, e.pageY);
 
-      this.triggerMethod(type, {
-        type: type,
+      _.extend(args, {
+        type: (this.dragging && e.type === 'mousemove') ? 'mousedrag' : e.type,
         modifier: e.ctrlKey,
 
-        point: point,
-        delta: delta,
-        canvasPoint: canvasPoint,
-        projectPoint: projectPoint,
-        projectDelta: projectDelta,
-
-        view: view,
-        model: view && view.model
+        canvasDelta: args.canvasPoint.subtract(this.lastCanvasPoint),
+        projectDelta: args.projectPoint.subtract(this.lastProjectPoint)
       });
 
-      this.lastPoint = point;
-      this.lastProjectPoint = projectPoint;
+      this.lastCanvasPoint = args.canvasPoint;
+      this.lastProjectPoint = args.projectPoint;
 
       if (e.type === 'mousedown') { this.dragging = true; }
       if (e.type === 'mouseup') { this.dragging = false; }
 
+      // For click events see if the point falls within a device view.
+      if (e.type !== 'mousemove') {
+        args.view = this.children.find(function(view){
+          return view.testHit(args.projectPoint);
+        });
+
+        args.model = args.view && args.view.model;
+      }
+
+      this.triggerMethod(args.type, args);
+
       this.paper.view.draw();
+    },
+
+    handleWheelEvent: function(e, delta){
+      var args = this.parsePoint(e.pageX, e.pageY);
+
+      if (delta !== 0) {
+        e.preventDefault();
+        this.triggerMethod(delta > 0 ? 'zoom:in' : 'zoom:out', args);
+      }
     },
 
     keydownEvents: {
@@ -400,16 +410,6 @@ define([
       }
     },
 
-    handleWheelEvent: function(e, delta){
-      e.preventDefault();
-
-      if (delta > 0) {
-        this.triggerMethod('zoom:in');
-      } else if (delta < 0) {
-        this.triggerMethod('zoom:out');
-      }
-    },
-
     onShow: function(){
       this.delegateCanvasEvents();
     },
@@ -418,45 +418,45 @@ define([
       this.undelegateCanvasEvents();
     },
 
-    onMousedown: function(obj){
+    onMousedown: function(args){
 
       // Make sure any lingering select boxes are removed.
       if (this.select) { this.eraseSelect(); }
 
       // Create a select box if modifier and not on a device.
-      if (obj.modifier && !obj.model) {
-        this.drawSelect(obj.projectPoint);
+      if (args.modifier && !args.model) {
+        this.drawSelect(args.projectPoint);
       }
 
       // Try and add the device if not currently selected. Remove all other
       // selected devices if no modifier. If not on a device this clears the
       // whole selection.
-      if (!this.selection.contains(obj.model)) {
-        this.selection.add(obj.model, {remove: !obj.modifier});
+      if (!this.selection.contains(args.model)) {
+        this.selection.add(args.model, {remove: !args.modifier});
 
       // Or remove the device if present and modifier.
-      } else if (obj.modifier) {
-        this.selection.remove(obj.model);
+      } else if (args.modifier) {
+        this.selection.remove(args.model);
       }
     },
 
-    onMousedrag: function(obj){
+    onMousedrag: function(args){
 
       // Update the select box if present.
       if (this.select) {
-        this.moveSelect(obj.projectPoint);
+        this.moveSelect(args.projectPoint);
 
       // Otherwise pan the canvas if no devices selected.
       } else if (!this.selection.length) {
-        this.paper.view.scrollBy(obj.delta.divide(this.paper.view.zoom).negate());
+        this.panBy(args.canvasDelta.divide(this.paper.view.zoom));
 
       // Or move those devices if editable.
       } else if (this.model.isEditable()) {
-        this.moveSelection(obj.projectDelta);
+        this.moveSelection(args.projectDelta);
       }
     },
 
-    onMouseup: function(obj){
+    onMouseup: function(args){
       var models = [];
 
       // Add any devices within the select box if present.
@@ -476,26 +476,32 @@ define([
       }
     },
 
-    onDblclick: function(obj){
-      if (obj.model) {
-        Backbone.trigger('click:device', obj.model);
+    onDblclick: function(args){
+      if (args.model) {
+        Backbone.trigger('click:device', args.model);
       }
     },
 
     onZoomIn: function(){
-      if (this.paper.view.zoom < 2) {
-        this.paper.view.zoom *= 1.1;
-      }
+      this.zoomTo((this.zoom || 1) * 1.1);
     },
 
     onZoomOut: function(){
-      if (this.paper.view.zoom > 0.25) {
-        this.paper.view.zoom /= 1.1;
-      }
+      this.zoomTo((this.zoom || 1) / 1.1);
     },
 
     onZoomReset: function(){
-      this.paper.view.zoom = 1;
+      this.zoomTo(1);
+    },
+
+    panBy: function(delta){
+      this.paper.view.scrollBy(delta.negate());
+    },
+
+    zoomTo: function(zoom){
+      if (zoom < 0.25 || zoom > 2) { return; }
+
+      this.paper.view.zoom = this.zoom = zoom;
     },
 
     drawSelect: function(point){
