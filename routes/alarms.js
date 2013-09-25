@@ -5,17 +5,10 @@ module.exports = function(app){
 
   var helpers = require('./helpers')(app),
     ensureAuthorized = helpers.ensureAuthorized,
-    ensureCurrentOrganization = helpers.ensureCurrentOrganization,
-    makeRequest = helpers.makeRequest;
+    ensureCurrentOrganization = helpers.ensureCurrentOrganization;
 
-  app.get('/api/alarms', ensureCurrentOrganization,
-    makeRequest({
-      path: '/res/alarms'
-    })
-  );
-
-  // Get project alarms
-  app.get('/api/alarms/:projectId?', ensureCurrentOrganization,
+  // Get active project alarms
+  app.get('/api/alarms/active/:projectId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'GET',
@@ -27,6 +20,42 @@ module.exports = function(app){
     }
   );
 
+  // Create a new alarm from a template
+  app.post('/api/alarms', ensureAuthorized(['vendor_admin', 'admin']),
+    function(req, res, next){
+      // Add org label to qs. Why, you ask? God knows.
+      req.query = _.extend({}, req.query, {org_label: req.body.org_label});
+      next();
+    },
+    helpers.request({
+      method: 'POST',
+      path: '/res/alarms',
+      pipe: true
+    })
+  );
+
+  // Conditions
+  app.post('/api/conditions', ensureAuthorized(['vendor_admin', 'admin']),
+    function(req, res, next){
+      console.log(req.body);
+      next();
+    },
+    helpers.request({
+      method: 'POST',
+      path: '/res/conditions',
+      pipe: true
+    })
+  );
+
+  app.put('/api/conditions', ensureAuthorized(['vendor_admin', 'admin']),
+    helpers.request({
+      method: 'PUT',
+      path: '/res/conditions',
+      pipe: true
+    })
+  );
+
+  // Get alarm templates available for a given project
   app.get('/api/project_alarms/:projectId?', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
     function(req, res, next){
       req.query = _.extend({}, req.query, {project_label: req.params.projectId});

@@ -15,9 +15,9 @@ define([
   'hbs!issue/templates/navigationList',
   'hbs!issue/templates/alarmTemplateTable',
   'hbs!issue/templates/alarmTemplateTableRow',
-  'hbs!issue/templates/alarmTemplateEdit',
+
+  'hbs!issue/templates/alarmSingleEdit',
   'hbs!issue/templates/condition',
-  'hbs!issue/templates/conditions'
 ],
 function(
   $,
@@ -36,15 +36,15 @@ function(
   navigationListTemplate,
   alarmTemplateTableTemplate,
   alarmTemplateTableRowTemplate,
-  alarmTemplateEditTemplate,
-  conditionTemplate,
-  conditionsTemplate
+
+  alarmSingleEditTemplate,
+  conditionTemplate
 ){
   var Issue = { views: {} };
 
   Issue.Model = Backbone.Model.extend({
     url: function(){
-      return '/api/alarms/' + this.collection.project.id + '/' + this.id;
+      return '/api/alarms/active/' + this.collection.project.id + '/' + this.id;
     },
     idAttribute: 'uid',
     getLocalDate: function(){
@@ -97,7 +97,7 @@ function(
 
   Issue.Collection = Backbone.Collection.extend({
     url: function(options){
-      return '/api/alarms/' + this.project.id;
+      return '/api/alarms/active/' + this.project.id;
     },
     model: Issue.Model,
     initialize: function(models, options){
@@ -226,11 +226,18 @@ function(
     emptyView: Marionette.ItemView.extend({template: _.template('<span class="loadingIndicator"></span>')})
   });
 
-  Issue.views.AlarmTemplateEdit = Marionette.ItemView.extend({
-    template: {
-      type: 'handlebars',
-      template: alarmTemplateEditTemplate
+  Issue.ConditionModel = Backbone.Model.extend({
+    url: '/api/conditions',
+    idAttribute: 'condition_id',
+    defaults: {
+      notification_secs: 0,
+      enabled: true
     }
+  });
+
+  Issue.ConditionCollection = Backbone.Collection.extend({
+    url: '/api/conditions',
+    model: Issue.ConditionModel
   });
 
   Issue.views.Condition = Marionette.ItemView.extend({
@@ -239,17 +246,89 @@ function(
     template: {
       type: 'handlebars',
       template: conditionTemplate
+    },
+    templateHelpers: function(){
+      return {
+        teams: this.options.teams
+      };
     }
   });
 
-  Issue.views.Conditions = Marionette.CompositeView.extend({
-    tagName: 'form',
+  Issue.views.AlarmSingleEdit = Marionette.CompositeView.extend({
     template: {
       type: 'handlebars',
-      template: conditionsTemplate
+      template: alarmSingleEditTemplate
     },
     itemView: Issue.views.Condition,
-    itemViewContainer: 'ul.conditions'
+    itemViewContainer: '.conditions',
+    itemViewOptions: function(){
+      return {
+        teams: this.options.user.get('teams')
+      };
+    },
+    triggers: {
+      'click .addCondition': 'addCondition',
+      'click .cancel': 'cancel',
+      'click .save': 'save'
+    },
+    initialize: function(options){
+      this.collection = new Issue.ConditionCollection(options.model.get('conditions'));
+    },
+    onAddCondition: function(){
+      this.collection.add({});
+    },
+    onCancel: function(){
+      Backbone.history.navigate('/admin/alarms/' + this.options.project.id, true);
+    },
+    onSave: function(){
+      var that = this;
+      var defer = new $.Deferred();
+      // If the alarm hasn't been instantiated, instantiate it with a post
+      if (!this.model.id) {
+        // Set the project on which you want to instantiate the alarm
+        this.model.set('project_label', this.options.project.id);
+
+        $.ajax({
+          url:'/api/alarms',
+          type: 'POST',
+          data: this.model.toJSON()
+        })
+        .fail(function(){
+          console.log('something went wrong', arguments);
+        })
+        .done(function(){
+          defer.resolve();
+          console.log(arguments);
+        });
+      } else {
+        defer.resolve();
+      }
+
+      // When alarm is ready submit conditions
+      defer.done(function(){
+        that.children.each(function(conditionView){
+          var condition = conditionView.model;
+
+          condition.save({
+            alarm_id: that.model.id,
+            priority: conditionView.$el.find('[name="severity"]').val(),
+            comparator: conditionView.$el.find('[name="operator"]').val(),
+            threshold: conditionView.$el.find('[name="value"]').val(),
+            team_label: conditionView.$el.find('[name="team"]').val(),
+            org_label: that.options.user.get('org_label')
+          },
+          {
+            wait: true,
+            success: function(){
+              console.log('yay, condition update', arguments);
+            },
+            error: function(){
+              console.log('shoot, update failed', arguments);
+            }
+          });
+        });
+      });
+    }
   });
 
   return Issue;

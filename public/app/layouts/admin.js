@@ -184,24 +184,27 @@ define([
     },
 
     showRoute: function(route, id){
-      var routeCapital = route.charAt(0).toUpperCase() + route.slice(1);
+      // If route is one of the admin views, update nav elements and render view
+      if (config.views[route]) {
+        var routeCapital = route.charAt(0).toUpperCase() + route.slice(1);
 
-      Backbone.trigger('reset:breadcrumbs', {
-        state:'admin',
-        display_name: 'Admin',
-        url: '/admin'
-      });
+        Backbone.trigger('reset:breadcrumbs', {
+          state:'admin',
+          display_name: 'Admin',
+          url: '/admin'
+        });
 
-      Backbone.trigger('set:breadcrumbs', {
-        state: route,
-        display_name: routeCapital,
-        url: '/admin/' + route
-      });
+        Backbone.trigger('set:breadcrumbs', {
+          state: route,
+          display_name: routeCapital,
+          url: '/admin/' + route
+        });
 
-      // Update history
-      Backbone.history.navigate('/admin/' + route);
+        // Update history
+        Backbone.history.navigate('/admin/' + route);
 
-      this['show' + routeCapital](id);
+        this['show' + routeCapital](id);
+      }
     },
 
     events: {
