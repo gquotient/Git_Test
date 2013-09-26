@@ -73,6 +73,8 @@ define([
     },
 
     showPortfolios: function(portfolio, options){
+      this.activePortfolio = portfolio;
+
       this.mainContent.show( new PortfoliosLayout(_.extend({
         model: portfolio,
         collection: this.app.portfolios,

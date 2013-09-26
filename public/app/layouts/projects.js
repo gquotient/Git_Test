@@ -50,6 +50,18 @@ define([
       }
     },
     onShow: function(){
+      var that = this;
+      // Fetch data for all projects
+      var fetchData = function(){
+        that.collection.fetchIssues();
+      };
+
+      // Fetch data right away
+      fetchData();
+
+      // Fetch data every 15 minutes
+      this.fetchInterval = setInterval(fetchData, 900000);
+
       this.contentNavigation.show(this.projectNavigationListView);
 
       this.selectProject(this.model);
@@ -101,17 +113,6 @@ define([
       this.projectNavigationListView = new Project.views.NavigationListView({
         collection: options.collection
       });
-
-      // Fetch data for all projects
-      var fetchData = function(){
-        options.collection.fetchIssues();
-      };
-
-      // Fetch data right away
-      fetchData();
-
-      // Fetch data every 15 minutes
-      this.fetchInterval = setInterval(fetchData, 900000);
 
       this.listenTo(Backbone, 'click:project', function(project){
         this.selectProject(project);
