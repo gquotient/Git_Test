@@ -36,7 +36,7 @@ module.exports = function(app){
   );
 
   // Conditions
-  app.post('/api/conditions', ensureAuthorized(['vendor_admin', 'admin']),
+  app.post('/api/alarms/conditions', ensureAuthorized(['vendor_admin', 'admin']),
     function(req, res, next){
       next();
     },
@@ -47,7 +47,7 @@ module.exports = function(app){
     })
   );
 
-  app.put('/api/conditions', ensureAuthorized(['vendor_admin', 'admin']),
+  app.put('/api/alarms/conditions', ensureAuthorized(['vendor_admin', 'admin']),
     helpers.request({
       method: 'PUT',
       path: '/res/conditions',
@@ -56,7 +56,7 @@ module.exports = function(app){
   );
 
   // Get alarm templates available for a given project
-  app.get('/api/project_alarms/:projectId?', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
+  app.get('/api/alarms/templates/:projectId?', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
     function(req, res, next){
       req.query = _.extend({}, req.query, {project_label: req.params.projectId});
       next();
@@ -80,7 +80,7 @@ module.exports = function(app){
   );
 
   // Acknowledge
-  app.put('/api/alarms/:projectId?/:alarmId?', ensureCurrentOrganization,
+  app.put('/api/alarms/active/:projectId?/:alarmId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'POST',
@@ -94,7 +94,7 @@ module.exports = function(app){
   );
 
   // Resolve
-  app.put('/api/alarms/resolve/:projectId?/:alarmId?', ensureCurrentOrganization,
+  app.put('/api/alarms/active/resolve/:projectId?/:alarmId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'POST',
@@ -107,7 +107,7 @@ module.exports = function(app){
   );
 
   // Delete
-  app.del('/api/alarms/:projectId?/:alarmId?', ensureCurrentOrganization,
+  app.del('/api/alarms/active/:projectId?/:alarmId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'DEL',

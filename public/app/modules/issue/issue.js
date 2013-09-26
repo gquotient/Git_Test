@@ -73,16 +73,12 @@ function(
       var comment = prompt('A comment is required to acknowledge this alarm.');
 
       if (comment && comment.length) {
-        return $.ajax({
-          url: '/api/alarms/' + this.collection.project.id + '/' + this.id,
-          type: 'PUT',
-          data: {
-            user_info: userId,
-            comment: comment
+        return this.save({
+          user_info: userId,
+          comment: comment,
+          success: function(model){
+            that.set(model);
           }
-        }).done(function(model){
-          // Update model
-          that.set(model);
         });
       }
     },
@@ -93,7 +89,7 @@ function(
 
       if (confirm) {
         return $.ajax({
-          url: '/api/alarms/resolve/' + this.collection.project.id + '/' + this.id,
+          url: '/api/alarms/active/resolve/' + this.collection.project.id + '/' + this.id,
           type: 'PUT'
         }).done(function(data){
           // Update model
@@ -206,7 +202,7 @@ function(
 
   Issue.TemplateCollection = Backbone.Collection.extend({
     url: function(){
-      return '/api/project_alarms/' + this.project.id;
+      return '/api/alarms/templates/' + this.project.id;
     },
     model: Issue.AlarmTemplateModel,
     initialize: function(models, options){
@@ -259,7 +255,7 @@ function(
   });
 
   Issue.ConditionModel = Backbone.Model.extend({
-    url: '/api/conditions',
+    url: '/api/alarms/conditions',
     idAttribute: 'condition_id',
     defaults: {
       notification_secs: 0,
@@ -268,7 +264,7 @@ function(
   });
 
   Issue.ConditionCollection = Backbone.Collection.extend({
-    url: '/api/conditions',
+    url: '/api/alarms/conditions',
     model: Issue.ConditionModel,
     initialize: function(models, options){
       this.alarm = options.alarm;
