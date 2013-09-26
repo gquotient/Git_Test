@@ -990,7 +990,7 @@ define([
     }),
     itemView: Project.views.NavigationListItemView,
     events: {
-      'change .project-sort': function(event){
+      'change .sortSelect': function(event){
         this.sort(event.currentTarget.value);
       }
     }
