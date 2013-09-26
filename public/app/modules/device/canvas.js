@@ -410,8 +410,18 @@ define([
       }
     },
 
+    onRender: function(){
+      if (this.collection.length) {
+        this.centerView();
+      }
+    },
+
     onShow: function(){
       this.delegateCanvasEvents();
+
+      if (this.collection.length) {
+        this.centerView();
+      }
     },
 
     onClose: function(){
@@ -483,15 +493,29 @@ define([
     },
 
     onZoomIn: function(){
-      this.zoomTo((this.zoom || 1) * 1.1);
+      this.zoomTo(this.paper.view.zoom * 1.1);
     },
 
     onZoomOut: function(){
-      this.zoomTo((this.zoom || 1) / 1.1);
+      this.zoomTo(this.paper.view.zoom / 1.1);
     },
 
     onZoomReset: function(){
       this.zoomTo(1);
+    },
+
+    centerView: function(){
+      var layer = this.paper.project.activeLayer,
+        width = this.$el.parent().width(),
+        margin = Math.min(width * 0.05, 50);
+
+      if (width && layer.bounds.width) {
+        this.zoomTo(Math.min((width - (margin * 2)) / layer.bounds.width, 1));
+        this.panBy(this.paper.view.bounds.topLeft.add({
+          x: ((width / this.paper.view.zoom) - layer.bounds.width) / 2,
+          y: margin
+        }).subtract(layer.bounds.topLeft));
+      }
     },
 
     panBy: function(delta){
@@ -499,9 +523,7 @@ define([
     },
 
     zoomTo: function(zoom){
-      if (zoom < 0.25 || zoom > 2) { return; }
-
-      this.paper.view.zoom = this.zoom = zoom;
+      this.paper.view.zoom = Math.min(Math.max(zoom, 0.25), 2);
     },
 
     drawSelect: function(point){
