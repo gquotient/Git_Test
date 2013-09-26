@@ -18,8 +18,10 @@ define([
 
   'hbs!issue/templates/alarmSingleEdit',
   'hbs!issue/templates/condition',
-  'hbs!issue/templates/conditionLowInverterPower',
-  'hbs!issue/templates/conditionOnOff'
+  'hbs!issue/templates/conditionOnOff',
+  'hbs!issue/templates/conditionIrradianceOutOfRange',
+  'hbs!issue/templates/conditionTemperatureOutOfRange',
+  'hbs!issue/templates/conditionLowInverterPower'
 ],
 function(
   $,
@@ -41,8 +43,10 @@ function(
 
   alarmSingleEditTemplate,
   conditionTemplate,
-  conditionLowInverterPowerTemplate,
-  conditionOnOffTemplate
+  conditionOnOffTemplate,
+  conditionIrradianceOutOfRangeTemplate,
+  conditionTemperatureOutOfRangeTemplate,
+  conditionLowInverterPowerTemplate
 ){
   var Issue = { views: {} };
 
@@ -279,8 +283,8 @@ function(
       var templates = {
         'Inverter Low Power': conditionLowInverterPowerTemplate,
         'Communications Failure': conditionOnOffTemplate,
-        'Irradiance Out of Range': conditionOnOffTemplate,
-        'Temperature Out of Range': conditionOnOffTemplate
+        'Irradiance Out of Range': conditionIrradianceOutOfRangeTemplate,
+        'Temperature Out of Range': conditionTemperatureOutOfRangeTemplate
       },
       // This will be returned
       template = {
@@ -340,7 +344,6 @@ function(
       'click .save': 'save'
     },
     initialize: function(options){
-      console.log('alarm single edit', options);
       this.collection = new Issue.ConditionCollection(options.model.get('conditions'), {alarm: this.model});
     },
     updateMessage: function(message, type) {
@@ -405,7 +408,6 @@ function(
           },
           error: function(){
             that.updateMessage('Something went wrong, try saving again.', 'error');
-            console.log(arguments);
           }
         });
       });
