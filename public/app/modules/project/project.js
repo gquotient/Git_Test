@@ -993,11 +993,6 @@ define([
       'change .project-sort': function(event){
         this.sort(event.currentTarget.value);
       }
-    },
-    collectionEvents: {
-      'add set reset': function(){
-        this.sort(this.ui.sort.val());
-      }
     }
   });
 
