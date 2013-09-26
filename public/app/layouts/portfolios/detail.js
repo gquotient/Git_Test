@@ -44,24 +44,13 @@ define([
       });
     },
     onShow: function(){
+      Backbone.history.navigate('/portfolios/' + this.model.id);
+
       var portfolio = this.model;
 
       // Poulate detail layout
       this.projects.show(this.projectTable);
       this.map.show(this.mapView);
-
-      // Fetch data for all projects
-      // This is necessary for dynamic project property portfolios
-      var fetchProjectData = function(){
-        portfolio.collection.projects.fetchIssues();
-        portfolio.collection.projects.fetchProjectKpis();
-      };
-
-      // Run initially to get latest data
-      fetchProjectData();
-
-      // Fetch issues every five minutes
-      this.fetchIssuesInterval = setInterval(fetchProjectData, 300000);
 
       // Build KPIs
       var kpis = new Portfolio.views.AggregateKpis({ model: portfolio });
