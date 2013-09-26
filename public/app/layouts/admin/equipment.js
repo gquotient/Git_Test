@@ -44,27 +44,6 @@ define([
       this.listenTo(this.listView, 'select', this.showDetail);
       this.listenTo(this.listView, 'save', this.saveDetail);
       this.listenTo(this.listView, 'cancel', this.hideDetail);
-
-      this.listenTo(this.listView, 'set:category', function(labels){
-        this.baseLabels = labels;
-        this.hideDetail();
-      });
-
-      // Update breadcrumbs
-      Backbone.trigger('reset:breadcrumbs', {
-        state:'admin',
-        display_name: 'Admin',
-        url: '/admin'
-      });
-
-      Backbone.trigger('set:breadcrumbs', {
-        state:'equipment',
-        display_name:'Equipment',
-        url: '/admin/equipment'
-      });
-
-      // Update history
-      Backbone.history.navigate('/admin/equipment');
     },
 
     onShow: function(){

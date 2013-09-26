@@ -449,7 +449,7 @@ define([
       });
 
       return $.ajax({
-        url: '/api/alarms/' + projectIds.join(','),
+        url: '/api/alarms/active/' + projectIds.join(','),
         cache: false,
         type: 'GET',
         dataType: 'json'
