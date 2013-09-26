@@ -150,6 +150,7 @@ button.button, a.button {
   color: #555;
   text-shadow: 0 1px 0 #eee;
   box-shadow: inset 0 1px 0 #eee;
+  white-space: nowrap;
   &.primary {
     background-color: colorDrakerOrange;
     background-image: linear-gradient(#f57a2a, #f0501c);
@@ -233,6 +234,7 @@ table.basic {
         font-weight: bold;
         text-align: left;
         text-shadow: 0 1px 0 #222;
+        white-space: nowrap;
         &:first-child {
           //border-left: none;
         }
@@ -844,6 +846,13 @@ leftColumnWidthSml = 200px;
   vertical-align: middle;
   content: "";
 }
+
+.button.sml.loading-left:before,
+.button.sml.loading-right:after {
+  height: 4px;
+  width: 4px;
+}
+
 .button.loading-left:before {
   margin: 0 3px 0 -3px;
 }

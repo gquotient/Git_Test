@@ -16,6 +16,7 @@ define([
   'layouts/admin/portfolios',
   'layouts/admin/projects',
   'layouts/admin/equipment',
+  'layouts/admin/alarms',
 
   'hbs!layouts/templates/admin'
 ], function(
@@ -36,6 +37,7 @@ define([
   PortfoliosLayout,
   ProjectsLayout,
   EquipmentLayout,
+  AlarmsLayout,
 
   adminTemplate
 ){
@@ -67,6 +69,8 @@ define([
         trigger: 'select:equipment'
       },
       'alarms': {
+        title: 'Alarms',
+        trigger: 'select:alarms'
       }
     }
   };
@@ -136,7 +140,7 @@ define([
       return layout;
     },
 
-    showProject: function(id){
+    showProjects: function(id){
       var layout = new ProjectsLayout({
         collection: ia.alignedProjects,
         user: ia.currentUser,
@@ -162,8 +166,45 @@ define([
       return layout;
     },
 
-    showAlarms: function(){
+    showAlarms: function(id){
+      var layout = new AlarmsLayout({
+        projects: ia.projects
+      });
 
+      this.pageContent.show(layout);
+
+      // If id supplied, show project alarms
+      if (id) {
+        layout.showProjectAlarms(id);
+      }
+
+      this.highlightLink('alarms');
+
+      return layout;
+    },
+
+    showRoute: function(route, id){
+      // If route is one of the admin views, update nav elements and render view
+      if (config.views[route]) {
+        var routeCapital = route.charAt(0).toUpperCase() + route.slice(1);
+
+        Backbone.trigger('reset:breadcrumbs', {
+          state:'admin',
+          display_name: 'Admin',
+          url: '/admin'
+        });
+
+        Backbone.trigger('set:breadcrumbs', {
+          state: route,
+          display_name: routeCapital,
+          url: '/admin/' + route
+        });
+
+        // Update history
+        Backbone.history.navigate('/admin/' + route);
+
+        this['show' + routeCapital](id);
+      }
     },
 
     events: {
@@ -171,7 +212,7 @@ define([
         // Get current target so it works on bubbled up event
         var route = event.currentTarget.id;
 
-        Backbone.trigger('select:' + route);
+        Backbone.trigger('select:' + route, {route: route});
       }
     },
 
@@ -182,31 +223,11 @@ define([
         url: '/admin'
       });
 
-      this.listenTo(Backbone, 'select:admin', function(){
-        this.showUsers();
+      // NOTE - This may not be the best way to handle admin routes but,
+      // it's less ugly than before
+      this.listenTo(Backbone, 'select', function(data){
+        this.showRoute(data.route);
       });
-
-      this.listenTo(Backbone, 'select:users', function(){
-        this.showUsers();
-      });
-
-      this.listenTo(Backbone, 'select:teams', function(){
-        this.showTeams();
-      });
-
-      this.listenTo(Backbone, 'select:portfolios', function(){
-        this.showPortfolios();
-      });
-
-      this.listenTo(Backbone, 'select:projects', function(){
-        this.showProject();
-      });
-
-      this.listenTo(Backbone, 'select:equipment', function(){
-        this.showEquipment();
-      });
-
     }
   });
-
 });
