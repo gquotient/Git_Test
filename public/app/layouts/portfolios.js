@@ -2,11 +2,14 @@ define([
   'underscore',
   'jquery',
   'backbone',
+  'backbone.virtualCollection',
   'backbone.marionette',
   'handlebars',
 
   'portfolio',
   'project',
+
+  'layouts/portfolios/detail',
 
   'hbs!layouts/templates/portfolios',
   'hbs!layouts/portfolios/templates/portfoliosSettings'
@@ -14,43 +17,42 @@ define([
   _,
   $,
   Backbone,
+  VirtualCollection,
   Marionette,
   Handlebars,
 
   Portfolio,
   Project,
 
-  portfolioDetailTemplate,
+  DetailLayout,
+
+  portfoliosTemplate,
   portfoliosSettingsTemplate
 ){
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',
-      template: portfolioDetailTemplate
+      template: portfoliosTemplate
     },
     attributes: {
-      id: 'page-portfolioDetail'
+      id: 'page-portfolios'
     },
     regions: {
-      kpis: '#kpis',
-      map: '#map',
-      projects: '#projects',
-      contentNavigation: '.nav_content'
+      contentNavigation: '.nav_content',
+      pageContent: '.pageContent'
     },
-
     onShow: function(){
-      // Poulate detail layout
-      this.contentNavigation.show(this.portfolioNavigationListView);
-      this.projects.show(this.projectTable);
-      this.map.show(this.mapView);
-
+      // Create the settings drop down
       this.buildSettingsDropdown();
+
+      // Show left nav
+      this.contentNavigation.show(this.portfolioNavigationListView);
 
       // Select context
       this.selectPortfolio(this.options.model);
     },
-
     onClose: function(){
+      // Manually close the settings
       this.options.settingsRegion.close();
     },
 
@@ -79,47 +81,15 @@ define([
     },
 
     selectPortfolio: function(portfolio) {
-      // Remove listenered from old model
-      this.stopListening(this.model);
-
-      this.model = portfolio;
-      // Clear existing interval
-      // NOTE - I'm not sure how necessary this is
-      if (this.fetchIssuesInterval) {
-        clearInterval(this.fetchIssuesInterval);
-      }
-
-      // Fetch data for all projects
-      // This is necessary for dynamic project property portfolios
-      var fetchProjectData = function(){
-        portfolio.collection.projects.fetchIssues();
-        portfolio.collection.projects.fetchProjectKpis();
-      };
-
-      // Run initially to get latest data
-      fetchProjectData();
-
-      // Fetch issues every five minutes
-      this.fetchIssuesInterval = setInterval(fetchProjectData, 300000);
-
-      // Build KPIs
-      var kpis = new Portfolio.views.AggregateKpis({ model: portfolio });
-      this.kpis.show(kpis);
-
-      // Update the collection.
-      this.projectList.set(portfolio.projects.models);
+      // Update breadcrumb
       Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolio', display_name: portfolio.get('display_name')});
+
+      // Instantiate detail layout
+      var detail = new DetailLayout({model: portfolio});
+      this.pageContent.show(detail);
 
       // Update active item
       this.portfolioNavigationListView.setActive(portfolio.id);
-
-      // Update Map View
-      this.mapView.fitToBounds();
-
-      // Listen for changes to portfolio projects and update projectList
-      this.listenTo(this.model.projects, 'add', function(){
-        this.projectList.set(portfolio.projects.models);
-      });
     },
 
     initialize: function(options){
@@ -128,17 +98,7 @@ define([
         collection: options.portfolios
       });
 
-      // Init shared project collection
-      this.projectList = new Project.Collection(options.model.projects.models);
-
-      // Extend map view for marker filtering
-      this.mapView = new Project.views.Map({ collection: this.projectList });
-
-      // Init project table
-      this.projectTable = new Project.views.DataListView({
-        collection: this.projectList
-      });
-
+      // Listen for click event and update view
       this.listenTo(Backbone, 'click:portfolio', function(model){
         this.selectPortfolio(model);
 
