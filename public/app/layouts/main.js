@@ -196,8 +196,8 @@ define([
       });
 
       this.listenTo(Backbone, 'select:portfolio', function(model){
-        Backbone.history.navigate('/portfolio/' + model.id);
-        this.showPortfolio(model);
+        Backbone.history.navigate('/portfolios/' + model.id);
+        this.showPortfolios(model);
       }, this);
 
       this.listenTo(Backbone, 'select:project', function(model){
