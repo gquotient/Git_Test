@@ -88,12 +88,7 @@ define([
 
       // If filter is a smart filter, fetch projects
       if (_.isArray(this.get('filter'))) {
-        _.each(this.filteredProjects(), function(project){
-          // Don't bother adding duplicates
-          if (projects.indexOf(project) < 0) {
-            projects.push(project);
-          }
-        });
+        projects = _.union(projects, this.filteredProjects());
       }
 
       this.projects.set(projects);
