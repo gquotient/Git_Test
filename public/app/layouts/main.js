@@ -11,7 +11,7 @@ define([
 
   'layouts/header',
   'layouts/navigation',
-  'layouts/portfolioDetail',
+  'layouts/portfolios',
   'layouts/projects',
   'layouts/issues',
   'layouts/devices',
@@ -34,8 +34,8 @@ define([
 
   Header,
   Navigation,
-  PortfolioDetailLayout,
-  ProjectDetailLayout,
+  PortfoliosLayout,
+  ProjectsLayout,
   IssuesLayout,
   DevicesLayout,
   OperatorViewLayout,
@@ -75,7 +75,7 @@ define([
     },
 
     showPortfolio: function(portfolio){
-      this.mainContent.show( new PortfolioDetailLayout({
+      this.mainContent.show( new PortfoliosLayout({
         model: portfolio,
         portfolios: this.app.portfolios,
         settingsRegion: this.settings
@@ -90,7 +90,7 @@ define([
     },
 
     showProject: function(project){
-      this.mainContent.show( new ProjectDetailLayout({
+      this.mainContent.show( new ProjectsLayout({
         model: project,
         collection: this.activePortfolio.projects,
         equipment: ia.equipment,
