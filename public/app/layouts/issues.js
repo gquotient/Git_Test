@@ -12,8 +12,6 @@ define([
 
   'layouts/issues/core',
 
-  'layouts/issues/templates/helpers',
-
   'hbs!layouts/templates/issues'
 ], function(
   $,
@@ -28,8 +26,6 @@ define([
   Issue,
 
   CoreLayout,
-
-  TemplateHelpers,
 
   projectIssuesTemplate
 ){

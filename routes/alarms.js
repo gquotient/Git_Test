@@ -1,21 +1,73 @@
-var request = require('request');
+var request = require('request'),
+    _ = require('lodash');
 
 module.exports = function(app){
 
-  var helpers = require('./helpers')(app)
-    , ensureAuthorized = helpers.ensureAuthorized
-    , ensureCurrentOrganization = helpers.ensureCurrentOrganization
-    , makeRequest = helpers.makeRequest;
+  var helpers = require('./helpers')(app),
+    ensureAuthorized = helpers.ensureAuthorized,
+    ensureCurrentOrganization = helpers.ensureCurrentOrganization;
 
-
-  app.get('/api/alarms', ensureCurrentOrganization,
-    makeRequest({
-      path: '/res/alarms'
+  // Create a new alarm from a template
+  app.post('/api/alarms', ensureAuthorized(['vendor_admin', 'admin']),
+    function(req, res, next){
+      // Add org label to qs. Why, you ask? God knows.
+      req.query = _.extend({}, req.query, {org_label: req.body.org_label});
+      next();
+    },
+    helpers.request({
+      method: 'POST',
+      path: '/res/alarms',
+      pipe: true
     })
   );
 
-  // Get project alarms
-  app.get('/api/alarms/:projectId?', ensureCurrentOrganization,
+  // Update instantiated alarm
+  app.put('/api/alarms', ensureAuthorized(['vendor_admin', 'admin']),
+    function(req, res, next){
+      // Add org label to qs. Why, you ask? God knows.
+      req.query = _.extend({}, req.query, {org_label: req.body.org_label});
+      next();
+    },
+    helpers.request({
+      method: 'POST',
+      path: '/res/alarms',
+      pipe: true
+    })
+  );
+
+  // Conditions
+  app.post('/api/alarms/conditions', ensureAuthorized(['vendor_admin', 'admin']),
+    function(req, res, next){
+      next();
+    },
+    helpers.request({
+      method: 'POST',
+      path: '/res/conditions',
+      pipe: true
+    })
+  );
+
+  app.put('/api/alarms/conditions', ensureAuthorized(['vendor_admin', 'admin']),
+    helpers.request({
+      method: 'PUT',
+      path: '/res/conditions',
+      pipe: true
+    })
+  );
+
+  // Get alarm templates available for a given project
+  app.get('/api/alarms/templates/:projectId?', ensureAuthorized(['vendor_admin', 'admin']), ensureCurrentOrganization,
+    function(req, res, next){
+      req.query = _.extend({}, req.query, {project_label: req.params.projectId});
+      next();
+    },
+    helpers.request({
+      path: '/res/project_alarms'
+    })
+  );
+
+  // Get active project alarms
+  app.get('/api/alarms/active/:projectId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'GET',
@@ -28,7 +80,7 @@ module.exports = function(app){
   );
 
   // Acknowledge
-  app.put('/api/alarms/:projectId?/:alarmId?', ensureCurrentOrganization,
+  app.put('/api/alarms/active/:projectId?/:alarmId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'POST',
@@ -42,7 +94,7 @@ module.exports = function(app){
   );
 
   // Resolve
-  app.put('/api/alarms/resolve/:projectId?/:alarmId?', ensureCurrentOrganization,
+  app.put('/api/alarms/active/resolve/:projectId?/:alarmId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'POST',
@@ -55,7 +107,7 @@ module.exports = function(app){
   );
 
   // Delete
-  app.del('/api/alarms/:projectId?/:alarmId?', ensureCurrentOrganization,
+  app.del('/api/alarms/active/:projectId?/:alarmId?', ensureCurrentOrganization,
     function(req, res){
       request({
         method: 'DEL',
