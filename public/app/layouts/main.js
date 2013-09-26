@@ -15,7 +15,6 @@ define([
   'layouts/projects',
   'layouts/issues',
   'layouts/devices',
-  'layouts/operatorview',
   'layouts/projectEditor',
   'layouts/profile',
   'layouts/admin',
@@ -38,7 +37,6 @@ define([
   ProjectsLayout,
   IssuesLayout,
   DevicesLayout,
-  OperatorViewLayout,
   ProjectEditorLayout,
   ProfileLayout,
   AdminLayout,
@@ -74,19 +72,12 @@ define([
       });
     },
 
-    showPortfolio: function(portfolio){
-      this.mainContent.show( new PortfoliosLayout({
+    showPortfolios: function(portfolio, options){
+      this.mainContent.show( new PortfoliosLayout(_.extend({
         model: portfolio,
-        portfolios: this.app.portfolios,
+        collection: this.app.portfolios,
         settingsRegion: this.settings
-      }));
-    },
-
-    showOperatorView: function(portfolio){
-      this.mainContent.show( new OperatorViewLayout({
-        model: portfolio,
-        portfolios: this.app.portfolios
-      }));
+      }, options)));
     },
 
     showProject: function(project){

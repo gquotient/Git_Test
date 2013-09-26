@@ -10,6 +10,7 @@ define([
   'project',
 
   'layouts/portfolios/detail',
+  'layouts/portfolios/operator',
 
   'hbs!layouts/templates/portfolios',
   'hbs!layouts/portfolios/templates/portfoliosSettings'
@@ -25,6 +26,7 @@ define([
   Project,
 
   DetailLayout,
+  OperatorLayout,
 
   portfoliosTemplate,
   portfoliosSettingsTemplate
@@ -41,7 +43,30 @@ define([
       contentNavigation: '.nav_content',
       pageContent: '.pageContent'
     },
+    views: {
+      current: 'detail',
+      detail: {
+        Layout: DetailLayout
+      },
+      operator: {
+        Layout: OperatorLayout
+      }
+    },
     onShow: function(){
+      var that = this;
+      // Fetch data for all projects
+      // This is necessary for dynamic project property portfolios
+      var fetchProjectData = function(){
+        that.collection.projects.fetchIssues();
+        that.collection.projects.fetchProjectKpis();
+      };
+
+      // Run initially to get latest data
+      fetchProjectData();
+
+      // Fetch issues every five minutes
+      this.fetchIssuesInterval = setInterval(fetchProjectData, 300000);
+
       // Create the settings drop down
       this.buildSettingsDropdown();
 
@@ -49,7 +74,7 @@ define([
       this.contentNavigation.show(this.portfolioNavigationListView);
 
       // Select context
-      this.selectPortfolio(this.options.model);
+      this.selectPortfolio(this.model, this.options.view);
     },
     onClose: function(){
       // Manually close the settings
@@ -67,8 +92,11 @@ define([
         },
         className: 'menu dropdown',
         events: {
-          'click .viewDashboard': function(event){
-            Backbone.history.navigate('/portfolio/operatorview/' + that.model.id, true);
+          'click .operatorview': function(event){
+            that.selectPortfolio(that.model, 'operator');
+          },
+          'click .detailview': function(event){
+            that.selectPortfolio(that.model, 'detail');
           },
           'click .edit': function(event){
             Backbone.history.navigate('/admin/portfolios/' + that.model.id, true);
@@ -80,12 +108,18 @@ define([
       this.options.settingsRegion.show(settingsDropdown);
     },
 
-    selectPortfolio: function(portfolio) {
+    selectPortfolio: function(portfolio, view) {
+      // Set current view type or fall back to detail
+      this.views.current = this.views[view] ? view : 'detail';
+
+      // Update model
+      this.model = portfolio;
+
       // Update breadcrumb
       Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolio', display_name: portfolio.get('display_name')});
 
-      // Instantiate detail layout
-      var detail = new DetailLayout({model: portfolio});
+      // Instantiate sub view
+      var detail = new this.views[this.views.current].Layout({model: portfolio});
       this.pageContent.show(detail);
 
       // Update active item
@@ -93,16 +127,24 @@ define([
     },
 
     initialize: function(options){
+      // Reset breadcrumbs
+      Backbone.trigger('reset:breadcrumbs', {
+        state: 'portfolio',
+        display_name: this.model.get('display_name'),
+        model: this.model
+      });
+
+      // Select specific view if one is passed
+      this.views.current = options.view || this.views.current;
+
       // Build primary portfolio nav
       this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
-        collection: options.portfolios
+        collection: this.model.collection
       });
 
       // Listen for click event and update view
       this.listenTo(Backbone, 'click:portfolio', function(model){
         this.selectPortfolio(model);
-
-        Backbone.history.navigate('/portfolio/' + model.id);
       });
     }
   });
