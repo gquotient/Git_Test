@@ -35,6 +35,11 @@ define([
       projectAlarms: '.projectAlarms',
       selectProject: 'select.project'
     },
+    // templateHelpers: function(){
+    //   return {
+    //     projects: this.options.projects.toJSON()
+    //   };
+    // },
     selectProject: function(project){
       // Update history
       Backbone.history.navigate('/admin/alarms/' + project.id);
@@ -66,7 +71,7 @@ define([
         this.projectAlarms.close();
 
         // Get project from selected id
-        var project = this.options.projects.findWhere({
+        var project = this.collection.findWhere({
           project_label: event.target.value
         });
 
@@ -74,11 +79,6 @@ define([
           this.selectProject(project);
         }
       }
-    },
-    serializeData: function(){
-      return {
-        projects: this.options.projects.toJSON()
-      };
     }
   });
 });

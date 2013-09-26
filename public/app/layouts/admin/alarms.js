@@ -37,7 +37,7 @@ define([
     },
     showProjectAlarms: function(id){
       var project = this.options.projects.findWhere({project_label: id});
-      var projectAlarmsLayout = new ProjectAlarmsLayout({projects: this.options.projects});
+      var projectAlarmsLayout = new ProjectAlarmsLayout({collection: this.options.projects});
 
       this.alarmsAdmin.show(projectAlarmsLayout);
 
