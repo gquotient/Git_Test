@@ -44,7 +44,6 @@ define([
       pageContent: '.pageContent'
     },
     views: {
-      current: 'detail',
       detail: {
         Layout: DetailLayout
       },
@@ -110,7 +109,7 @@ define([
 
     selectPortfolio: function(portfolio, view) {
       // Set current view type or fall back to detail
-      this.views.current = this.views[view] ? view : 'detail';
+      view = this.views[view] ? view : 'detail';
 
       // Update model
       this.model = portfolio;
@@ -119,7 +118,7 @@ define([
       Backbone.trigger('set:breadcrumbs', {model: portfolio, state: 'portfolio', display_name: portfolio.get('display_name')});
 
       // Instantiate sub view
-      var detail = new this.views[this.views.current].Layout({model: portfolio});
+      var detail = new this.views[view].Layout({model: portfolio});
       this.pageContent.show(detail);
 
       // Update active item
@@ -133,9 +132,6 @@ define([
         display_name: this.model.get('display_name'),
         model: this.model
       });
-
-      // Select specific view if one is passed
-      this.views.current = options.view || this.views.current;
 
       // Build primary portfolio nav
       this.portfolioNavigationListView = new Portfolio.views.NavigationListView({
