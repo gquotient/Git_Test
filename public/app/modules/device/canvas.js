@@ -410,18 +410,13 @@ define([
       }
     },
 
-    onRender: function(){
-      if (this.collection.length) {
-        this.centerView();
-      }
-    },
-
     onShow: function(){
       this.delegateCanvasEvents();
+      this.triggerMethod('zoom:reset');
+    },
 
-      if (this.collection.length) {
-        this.centerView();
-      }
+    onRender: function(){
+      this.triggerMethod('zoom:reset');
     },
 
     onClose: function(){
@@ -501,29 +496,36 @@ define([
     },
 
     onZoomReset: function(){
-      this.zoomTo(1);
-    },
-
-    centerView: function(){
       var layer = this.paper.project.activeLayer,
         width = this.$el.parent().width(),
-        margin = Math.min(width * 0.05, 50);
+        margin = Math.min(width * 0.05, 50),
+        zoom = 1, delta;
 
-      if (width && layer.bounds.width) {
-        this.zoomTo(Math.min((width - (margin * 2)) / layer.bounds.width, 1));
-        this.panBy(this.paper.view.bounds.topLeft.add({
+      // Calculate the minimum zoom to fit the devices in screen.
+      if (layer.bounds.width && width) {
+        zoom = Math.min((width - (margin * 2)) / layer.bounds.width, zoom);
+      }
+      this.zoomTo(zoom);
+
+      // Find the distance between the devices and view.
+      delta = this.paper.view.bounds.topLeft.subtract(layer.bounds.topLeft);
+
+      // Add an offset to center the devices.
+      if (layer.bounds.width && width) {
+        delta = delta.add({
           x: ((width / this.paper.view.zoom) - layer.bounds.width) / 2,
           y: margin
-        }).subtract(layer.bounds.topLeft));
+        });
       }
-    },
-
-    panBy: function(delta){
-      this.paper.view.scrollBy(delta.negate());
+      this.panBy(delta);
     },
 
     zoomTo: function(zoom){
       this.paper.view.zoom = Math.min(Math.max(zoom, 0.25), 2);
+    },
+
+    panBy: function(delta){
+      this.paper.view.scrollBy(delta.negate());
     },
 
     drawSelect: function(point){
