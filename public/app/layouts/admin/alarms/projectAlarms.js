@@ -35,11 +35,6 @@ define([
       projectAlarms: '.projectAlarms',
       selectProject: 'select.project'
     },
-    // templateHelpers: function(){
-    //   return {
-    //     projects: this.options.projects.toJSON()
-    //   };
-    // },
     selectProject: function(project){
       // Update history
       Backbone.history.navigate('/admin/alarms/' + project.id);
