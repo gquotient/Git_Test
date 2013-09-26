@@ -8,8 +8,8 @@ define([
   'portfolio',
   'project',
 
-  'hbs!layouts/templates/portfolioDetail',
-  'hbs!layouts/templates/portfolioDetailSettings'
+  'hbs!layouts/templates/portfolios',
+  'hbs!layouts/portfolios/templates/portfoliosSettings'
 ], function(
   _,
   $,
@@ -21,7 +21,7 @@ define([
   Project,
 
   portfolioDetailTemplate,
-  portfolioDetailSettingsTemplate
+  portfoliosSettingsTemplate
 ){
   return Marionette.Layout.extend({
     template: {
@@ -61,7 +61,7 @@ define([
         tagName: 'li',
         template: {
           type: 'handlebars',
-          template: portfolioDetailSettingsTemplate
+          template: portfoliosSettingsTemplate
         },
         className: 'menu dropdown',
         events: {
