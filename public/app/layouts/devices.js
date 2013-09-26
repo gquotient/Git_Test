@@ -84,7 +84,11 @@ define([
       var SubLayout = (deviceType && this.deviceLayouts[deviceType]) ? this.deviceLayouts[deviceType] : this.deviceLayouts.core;
 
       // Show layout
-      this.deviceDetail.show(new SubLayout({model: device, project: this.model, date: this.date}));
+      this.deviceDetail.show(new SubLayout({
+        model: device,
+        project: this.model,
+        date: this.date
+      }));
 
       // Set active nav el
       //NOTE - this is a special recursive method on the device tree

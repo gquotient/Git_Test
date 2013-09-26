@@ -2,3 +2,15 @@
 <div class="chart currentAndVoltage"></div>
 <div class="chart children" style="display:none;"></div>
 <div class="module container issues"></div>
+<div class="documents container">
+  <h3>Documents</h3>
+  <ul>
+    {{#if documents.length}}
+      {{#each documents}}
+        <li><a href="{{ url }}">{{ key }}</a></li>
+      {{/each}}
+    {{else}}
+      <li>{{$ 'No documents' }}
+    {{/if}}
+  </ul>
+</div>

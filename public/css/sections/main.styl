@@ -554,50 +554,25 @@ header {
       }
     }
   }
-  #page-projectDetail {
-    overflow: auto;
-    .map, .devices {
-      height: 400px;
-      border-bottom: borderBasicDark;
-    }
-    .devices {
-      background: #bbb;
-      overflow: hidden;
-    }
-    .kpis {
-      padding: 6px;
-    }
-    .toggleView {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1000;
-      margin: 6px 0 0 10px;
-      padding: 3px;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.8);
-      box-shadow: 0 3px 3px rgba(0,0,0,0.1);
-      border: 1px solid #aaa;
-      font-size: .8em;
-      color: #555;
-      cursor: pointer;
-      opacity: 0.6;
-      transition:.2s;
-      &:hover {
-        opacity: 1;
-        transition:.2s;
-      }
-    }
-    .leaflet-container {
-      .leaflet-control-zoom {
-        margin-top: 42px;
-      }
-    }
-  }
-
   #page-admin, #page-devices {
     .column_right {
       padding: 6px;
+    }
+    .documents {
+      ul {
+        list-style-type: none;
+        border: 1px #444 solid;
+        background: #202020;
+        margin: 0 0 6px;
+        overflow: hidden;
+        padding: 6px;
+        li {
+          margin: 0 0 6px;
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
     }
   }
 }

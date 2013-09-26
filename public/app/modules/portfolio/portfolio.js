@@ -408,6 +408,7 @@ define([
           wait: true,
           success: function(){
             that.updateMessage('Portfolio saved.');
+            that.model.updateProjects();
           },
           error: function(){
             that.updateMessage('Something went wrong, try saving again.', 'error');
