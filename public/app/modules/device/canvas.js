@@ -334,7 +334,7 @@ define([
       this.$el.add(document).off('.canvas' + this.cid);
     },
 
-    parsePoint: function(x, y){
+    translateMousePoint: function(x, y){
       var point = new this.paper.Point(x, y),
         offset = this.$el.offset(),
         canvasPoint = point.subtract(offset.left, offset.top),
@@ -348,7 +348,7 @@ define([
     },
 
     handleMouseEvent: function(e){
-      var args = this.parsePoint(e.pageX, e.pageY);
+      var args = this.translateMousePoint(e.pageX, e.pageY);
 
       _.extend(args, {
         type: (this.dragging && e.type === 'mousemove') ? 'mousedrag' : e.type,
@@ -379,7 +379,7 @@ define([
     },
 
     handleWheelEvent: function(e, delta){
-      var args = this.parsePoint(e.pageX, e.pageY);
+      var args = this.translateMousePoint(e.pageX, e.pageY);
 
       if (delta !== 0) {
         e.preventDefault();
