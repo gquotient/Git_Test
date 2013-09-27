@@ -298,7 +298,7 @@ function(
       enabledCheck: '.enabledCheck'
     },
     triggers: {
-      'click .remove': 'remove',
+      'click .remove': 'remove'
     },
     events: {
       'click .enabledCheck': 'enabledCheck'

@@ -5,6 +5,7 @@ define([
   'backbone.marionette',
 
   'navigation',
+
   './canvas',
   './table',
 
@@ -16,8 +17,9 @@ define([
   Marionette,
 
   Navigation,
-  Canvas,
-  Table,
+
+  canvasViews,
+  tableViews,
 
   deviceListItemTemplate
 ){
@@ -279,10 +281,7 @@ define([
     }
   });
 
-  _.extend(Device.views, {
-    Canvas: Canvas,
-    Table: Table
-  });
+  _.extend(Device.views, canvasViews, tableViews);
 
   return Device;
 });

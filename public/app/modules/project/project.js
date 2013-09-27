@@ -10,7 +10,6 @@ define([
 
   'navigation',
   'device',
-  'equipment',
   'issue',
 
   './admin',
@@ -37,7 +36,6 @@ define([
 
   Navigation,
   Device,
-  Equipment,
   Issue,
 
   adminViews,
@@ -341,13 +339,14 @@ define([
     },
 
     parse: function(resp, options){
+
       // Check if the response includes devices.
       if (resp.devices && !resp.project_label) {
-
         this.devices.reset(resp.devices, {
           equipment: options.equipment,
           project: this,
-          parse: true
+          parse: true,
+          silent: true
         });
 
         // Parse relationships.
@@ -365,32 +364,13 @@ define([
           }
         }, this);
 
-        // Check rendering information for each device recursivly.
-        _.each(_.keys(Equipment.renderings), function(label){
-          this.checkOutgoing(this, label);
-        }, this);
+        // Wait to trigger the reset.
+        this.devices.trigger('reset', this);
 
         resp = resp.project;
       }
 
       return resp;
-    },
-
-    checkOutgoing: function(target, label){
-      if (!target.outgoing) { return; }
-
-      target.outgoing.each(function(device){
-        if (!device.equipment) { return; }
-
-        // For now ignore strings and panels.
-        if (_.contains(['S', 'P'], device.equipment.get('label'))) { return; }
-
-        // Add position to device for this rendering.
-        device.equipment.addRendering(device, this, label, target);
-
-        // Recursively check all outgoing devices for this rendering.
-        this.checkOutgoing(device, label);
-      }, this);
     },
 
     addNote: function(note, user, options){
