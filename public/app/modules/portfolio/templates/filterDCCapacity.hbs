@@ -1,0 +1,17 @@
+<fieldset>
+  <legend>{{$ 'Filter By' }}</legend>
+
+  <input name="property" type="hidden" value="dc_capacity">
+
+  {{$ 'DC Capacity' }}
+
+  <select name="operator">
+    <option value=">" {{#ifCond operator '>' }}selected{{/ifCond}}>&gt;</option>
+    <option value="<" {{#ifCond operator '<' }}selected{{/ifCond}}>&lt;</option>
+    <option value="=" {{#ifCond operator '=' }}selected{{/ifCond}}>=</option>
+  </select>
+
+  <input name="value" type="number" value="{{ value }}"> Watts
+
+  <button class="button sml remove">Remove</button>
+</fieldset>

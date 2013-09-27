@@ -49,9 +49,12 @@ define([
     comparator: 'display_name'
   });
 
-  ia.equipment = new Equipment.Collection( JSON.parse($('#bootstrapEquipment').html()) );
+  // Throw no portfolios error
+  if (!ia.portfolios.length) {
+    throw 'No portfolios found for selected team';
+  }
 
-  ia.allPortfolio = ia.portfolios.findWhere({display_name: 'All Projects'});
+  ia.equipment = new Equipment.Collection( JSON.parse($('#bootstrapEquipment').html()) );
 
   return ia;
 });

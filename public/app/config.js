@@ -139,7 +139,7 @@ require.config({
     leaflet: 'bower_components/leaflet/dist/leaflet',
     messageformat: 'bower_components/messageformat.js/messageformat',
     paper: 'bower_components/paper/dist/paper',
-    highcharts: 'bower_components/highcharts/highcharts',
+    highcharts: 'bower_components/highcharts/highcharts.src',
     handsontable: 'bower_components/handsontable/dist/jquery.handsontable',
     walltime: 'bower_components/walltime-js/client/walltime',
     'walltime-data': 'bower_components/walltime-js/client/walltime-data'

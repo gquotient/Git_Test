@@ -1,7 +1,8 @@
 [
   {
     "label": "DSS",
-    "name": "Base Station",
+    "equipment_label": "DSS_v1",
+    "display_name": "Base Station",
     "order": 1,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "PVA"},
@@ -16,7 +17,8 @@
   },
   {
     "label": "DSC",
-    "name": "Computer",
+    "equipment_label": "DSC_v1",
+    "display_name": "Computer",
     "order": 2,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "DSS"},
@@ -31,7 +33,8 @@
   },
   {
     "label": "ESI",
-    "name": "Env Suite",
+    "equipment_label": "ESI_v1",
+    "display_name": "Env Suite",
     "order": 3,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "DSS"},
@@ -53,7 +56,8 @@
   },
   {
     "label": "IRRA",
-    "name": "POA Pyranometer",
+    "equipment_label": "IRRA_v1",
+    "display_name": "POA Pyranometer",
     "order": 4,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"},
@@ -67,7 +71,8 @@
   },
   {
     "label": "IRRZ",
-    "name": "Horiz Pyranometer",
+    "equipment_label": "IRRZ_v1",
+    "display_name": "Horiz Pyranometer",
     "order": 5,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"},
@@ -81,7 +86,8 @@
   },
   {
     "label": "TMPC",
-    "name": "Cell Temp",
+    "equipment_label": "TMPC_v1",
+    "display_name": "Cell Temp",
     "order": 6,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -92,7 +98,8 @@
   },
   {
     "label": "TMPA",
-    "name": "Ambient Temp",
+    "equipment_label": "TMPA_v1",
+    "display_name": "Ambient Temp",
     "order": 7,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -103,7 +110,8 @@
   },
   {
     "label": "WSPD",
-    "name": "Anemometor",
+    "equipment_label": "WSPD_v1",
+    "display_name": "Anemometor",
     "order": 8,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -114,7 +122,8 @@
   },
   {
     "label": "WDIR",
-    "name": "Wind Vane",
+    "equipment_label": "WDIR_v1",
+    "display_name": "Wind Vane",
     "order": 9,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -125,7 +134,8 @@
   },
   {
     "label": "BARO",
-    "name": "Barometer",
+    "equipment_label": "BARO_v1",
+    "display_name": "Barometer",
     "order": 10,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -136,7 +146,8 @@
   },
   {
     "label": "RAIN",
-    "name": "Rain Sensor",
+    "equipment_label": "RAIN_v1",
+    "display_name": "Rain Sensor",
     "order": 11,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -171,7 +182,8 @@
   },
   {
     "label": "RM",
-    "name": "Meter",
+    "equipment_label": "RM_v1",
+    "display_name": "Meter",
     "order": 13,
     "relationships": [
       {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"},
@@ -186,7 +198,8 @@
   },
   {
     "label": "INV",
-    "name": "Inverter",
+    "equipment_label": "INV_v1",
+    "display_name": "Inverter",
     "order": 14,
     "relationships": [
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVA"},
@@ -212,7 +225,8 @@
   },
   {
     "label": "ACB",
-    "name": "AC Bus",
+    "equipment_label": "ACB_v1",
+    "display_name": "AC Bus",
     "order": 16,
     "relationships": [
       {"label": "MEASURED_BY", "direction": "OUTGOING", "target": "RM"},
@@ -232,7 +246,8 @@
   },
   {
     "label": "XFR",
-    "name": "Transformer",
+    "equipment_label": "XFR_v1",
+    "display_name": "Transformer",
     "order": 17,
     "relationships": [
       {"label": "FLOWS", "direction": "INCOMING", "target": "INV"},
@@ -249,7 +264,8 @@
   },
   {
     "label": "IC",
-    "name": "Interconnect",
+    "equipment_label": "IC_v1",
+    "display_name": "Interconnect",
     "order": 18,
     "relationships": [
       {"label": "FLOWS", "direction": "INCOMING", "target": "INV"},
@@ -262,7 +278,8 @@
   },
   {
     "label": "LD",
-    "name": "Load",
+    "equipment_label": "LD_v1",
+    "display_name": "Load",
     "order": 15,
     "relationships": [
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVA"},
@@ -277,7 +294,8 @@
   },
   {
     "label": "DCB",
-    "name": "DC Bus",
+    "equipment_label": "DCB_v1",
+    "display_name": "DC Bus",
     "order": 19,
     "relationships": [
       {"label": "COLLECTS", "direction": "INCOMING", "target": "INV"},
@@ -296,7 +314,8 @@
   },
   {
     "label": "APH",
-    "name": "Array",
+    "equipment_label": "APH_v1",
+    "display_name": "Array",
     "order": 20,
     "relationships": [
       {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
@@ -313,7 +332,8 @@
   },
   {
     "label": "RCB",
-    "name": "Recombiner",
+    "equipment_label": "RCB_v1",
+    "display_name": "Recombiner",
     "order": 21,
     "relationships": [
       {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
@@ -331,7 +351,8 @@
   },
   {
     "label": "CMB",
-    "name": "Combiner",
+    "equipment_label": "CMB_v1",
+    "display_name": "Combiner",
     "order": 22,
     "relationships": [
       {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
@@ -349,7 +370,8 @@
   },
   {
     "label": "S",
-    "name": "String",
+    "equipment_label": "S_v1",
+    "display_name": "String",
     "order": 23,
     "relationships": [
       {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
@@ -367,7 +389,8 @@
   },
   {
     "label": "P",
-    "name": "Panel",
+    "equipment_label": "P_v1",
+    "display_name": "Panel",
     "order": 24,
     "relationships": [
       {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},

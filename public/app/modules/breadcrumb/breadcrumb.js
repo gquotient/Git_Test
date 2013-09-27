@@ -24,14 +24,17 @@ define([
   Breadcrumb.Collection = Backbone.Collection.extend({
     model: Breadcrumb.Model,
     prune: function(model){
-      var m = this.find(function(realModel){
-        return realModel.get('model') === model.get('model');
-      });
+      // Only do magic prune if dealing with an app model
+      if (model.get('model')) {
+        var m = this.find(function(realModel){
+          return realModel.get('model') === model.get('model');
+        });
 
-      // Return only the models from the first to the passed model
-      var models = this.models.slice(0, (this.models.indexOf(m)) + 1);
-      // Set the collection as the new list of models
-      this.set(models);
+        // Return only the models from the first to the passed model
+        var models = this.models.slice(0, (this.models.indexOf(m)) + 1);
+        // Set the collection as the new list of models
+        this.set(models);
+      }
     },
     hasModel: function(model){
       var containsModel = false;
@@ -72,17 +75,25 @@ define([
   Breadcrumb.views.Breadcrumbs = Marionette.CollectionView.extend({
     tagName: 'ul',
     itemView: Breadcrumb.views.BreadcrumbItemView,
-    attributes: {
-      class: 'breadcrumbs'
-    },
+    className: 'breadcrumbs',
     initialize: function(options){
       var that = this;
 
       // Listen for prune event on ItemView
       Backbone.listenTo(this, 'itemview:prune', function(itemView){
         var model = itemView.model;
-        // Fire global select event
-        Backbone.trigger('select:' + model.get('state'), model.get('model'));
+
+        // If breadcrumb model has an app model, trigger select event
+        if (model.get('model')) {
+          // Fire global select event
+          Backbone.trigger('select:' + model.get('state'), model.get('model'));
+        }
+
+        // If breadcrumb model has a URL, navigate to it
+        if (model.get('url')) {
+          Backbone.history.navigate(model.get('url'), true);
+        }
+
         // Prune collection
         that.collection.prune(model);
       });

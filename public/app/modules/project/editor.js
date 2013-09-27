@@ -94,7 +94,11 @@ define([
 
     initialize: function(options){
       this.equipment = options.equipment;
-      this.user = options.user;
+
+      // Make sure the model has a user.
+      if (!this.model.user && options.user) {
+        this.model.user = options.user;
+      }
 
       // Fetch project from server.
       this.model.fetch({
@@ -104,15 +108,21 @@ define([
         equipment: this.equipment
       });
 
-      this.listenTo(Backbone, 'editor:change:editable', function(editable){
-        this.$el.find('input:not(.nav)').attr('disabled', !editable);
-      });
-
       this.listenTo(Backbone, 'canvas:selection', function(selection){
         this.selection = selection.length > 0 ? selection : null;
       });
 
       _.bindAll(this, 'handleKeyEvent');
+    },
+
+    modelEvents: {
+      'change:editor': 'disableInputs'
+    },
+
+    disableInputs: function(){
+      var disabled = !this.model.isEditable();
+
+      this.$el.find('input:not(.nav)').attr('disabled', disabled);
     },
 
     keydownEvents: {
@@ -168,14 +178,15 @@ define([
           },
 
           onApply: function(model){
-            this.placeholder = model.get('name');
+            this.placeholder = model.get(this.attribute);
           }
         }
       },
 
       add: {
         hotKey: 97,
-        comparator: 'name',
+        attribute: 'display_name',
+        comparator: 'display_name',
 
         extend: {
           parseInput: function(){
@@ -228,6 +239,10 @@ define([
           });
         }, this);
 
+        this.on('close', function(){
+          view.close();
+        });
+
         Marionette.triggerMethod.call(view, 'show');
       }, this);
     },
@@ -235,14 +250,21 @@ define([
     _initLockView: function(){
       this.lockView = new views.EditorLock({
         el: this.$('.lock'),
-        model: this.model,
-        user: this.user
+        model: this.model
       });
+
+      this.on('close', function(){
+        this.lockView.close();
+      });
+
+      this.lockView.render();
     },
 
     onShow: function(){
       this._initLockView();
       this._initInputFields();
+
+      this.disableInputs();
 
       $(document).on('keydown keypress', this.handleKeyEvent);
     },
@@ -257,8 +279,11 @@ define([
 
       this.equipment.each(function(equip){
 
+        // Only include base equipment.
+        if (equip !== equip.getBase()) { return; }
+
         // Don't include equipment that can't be rendered.
-        if (!equip.hasRendering(rendering)) { return; }
+        if (!equip.getRendering(rendering)) { return; }
 
         if (!this.selection) {
 
@@ -268,11 +293,9 @@ define([
         } else {
 
           // Don't include equipment that doesn't have a relationship in the
-          // current rendering or that can't be added to the selected devices.
-          if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, rendering);
-
-            return !rel || !select.equipment.outgoing.contains(equip);
+          // current rendering with all the selected devices.
+          if (!this.selection.all(function(select){
+            return equip.getRelationship(select, rendering);
           }, this)) { return; }
         }
 
@@ -280,6 +303,7 @@ define([
       }, this);
 
       view.collection.reset(equipment);
+      delete view.times;
     },
 
     onConnectFocus: function(view){
@@ -294,14 +318,14 @@ define([
           if (this.selection.contains(device)) { return; }
 
           // Don't include devices that can't be rendered.
-          if (!equip.hasRendering(rendering)) { return; }
+          if (!equip.getRendering(rendering)) { return; }
 
           // Don't include devices that don't have a relationship in the current
-          // rendering or are already children of the selected devices.
-          if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, rendering);
+          // rendering or are children of the selected devices.
+          if (!this.selection.all(function(select){
+            var rel = equip.getRelationship(select, rendering);
 
-            return !rel || select.hasChild(device, rel);
+            return rel && !select.hasChild(device, rel);
           }, this)) { return; }
 
           devices.push(device);
@@ -323,11 +347,11 @@ define([
           if (this.selection.contains(device)) { return; }
 
           // Don't include devices that don't have a relationship in the current
-          // rendering or that don't share a connection with the selected devices.
-          if (this.selection.any(function(select){
-            var rel = equip.getRelationship(select.equipment, rendering);
+          // rendering or aren't children of the selected devices.
+          if (!this.selection.all(function(select){
+            var rel = equip.getRelationship(select, rendering);
 
-            return !rel || !select.outgoing.contains(device);
+            return rel && select.hasChild(device, rel);
           }, this)) { return; }
 
           // Don't include devices that could be orphend.
@@ -348,7 +372,7 @@ define([
         Backbone.trigger('editor:change:view', _.extend(model.toJSON(), {
           model: this.model,
           collection: this.model.devices,
-          editable: this.lockView.editable
+          equipment: this.options.equipment
         }));
       }
     },
@@ -386,7 +410,7 @@ define([
     },
 
     onDelete: function(){
-      if (this.selection) {
+      if (this.model.isEditable() && this.selection) {
         _.each(this.selection.models.slice(0), function(device){
           this.deleteDevice(device);
         }, this);
@@ -399,7 +423,7 @@ define([
         parnt = equip.isRoot() ? project : target,
         rel = parnt && equip.getRelationship(parnt);
 
-      if (rel && parnt.has('id')) {
+      if (rel && parnt.has('node_id')) {
         _.each(_.keys(Equipment.renderings), function(label){
           equip.addRendering(device, project, label, target);
         });
@@ -408,19 +432,19 @@ define([
         device.connectTo(parnt, rel);
 
         device.save({
-          parent_id: parnt.get('id'),
+          parent_id: parnt.get('node_id'),
           relationship_label: rel
         }, {
           success: _.bind(function(){
             project.addNote([
               'added',
-              equip.get('name').toLowerCase(),
+              equip.getBaseName().toLowerCase(),
               device.get('did'),
               'to'
             ].concat(parnt.equipment ? [
-              parnt.equipment.get('name').toLowerCase(),
+              parnt.equipment.getBaseName().toLowerCase(),
               parnt.get('did')
-            ] : 'project').join(' '), this.user);
+            ] : 'project').join(' '));
 
             if (target && target !== parnt) {
               this.connectDevice(device, target);
@@ -439,17 +463,18 @@ define([
       // If the device has no outgoing relationships then delete it.
       if (device.outgoing.length === 0) {
         device.destroy({
+          wait: true,
           data: {
             project_label: project.id,
-            id: device.get('id')
+            node_id: device.id
           },
           processData: true,
           success: _.bind(function(){
             project.addNote([
               'deleted',
-              equip.get('name').toLowerCase(),
+              equip.getBaseName().toLowerCase(),
               device.get('did')
-            ].join(' '), this.user);
+            ].join(' '));
           }, this)
         });
 
@@ -480,14 +505,14 @@ define([
         equip = device.equipment,
         rel = equip.getRelationship(target);
 
-      if (rel && equip.hasRendering(rendering)) {
+      if (rel && equip.getRendering(rendering)) {
         $.ajax('/api/relationships', {
           type: 'POST',
           data: {
             relationship_label: rel,
             project_label: project.id,
-            from_id: target.get('id'),
-            to_id: device.get('id')
+            from_id: target.id,
+            to_id: device.id
           }
         }).done(_.bind(function(){
           if (!device.getPosition(rendering)) {
@@ -499,12 +524,12 @@ define([
 
           project.addNote([
             'connected',
-            equip.get('name').toLowerCase(),
+            equip.getBaseName().toLowerCase(),
             device.get('did'),
             'to',
-            target.equipment.get('name').toLowerCase(),
+            target.equipment.getBaseName().toLowerCase(),
             target.get('did')
-          ].join(' '), this.user);
+          ].join(' '));
         }, this));
       }
     },
@@ -522,8 +547,8 @@ define([
           data: {
             relationship_label: rel,
             project_label: project.id,
-            from_id: target.get('id'),
-            to_id: device.get('id')
+            from_id: target.id,
+            to_id: device.id
           }
         }).done(_.bind(function(){
           device.disconnectFrom(target);
@@ -536,12 +561,12 @@ define([
 
           project.addNote([
             'disconnected',
-            equip.get('name').toLowerCase(),
+            equip.getBaseName().toLowerCase(),
             device.get('did'),
             'from',
-            target.equipment.get('name').toLowerCase(),
+            target.equipment.getBaseName().toLowerCase(),
             target.get('did')
-          ].join(' '), this.user);
+          ].join(' '));
         }, this));
       }
     }
@@ -555,13 +580,17 @@ define([
 
     templateHelpers: function(){
       return {
-        editable: this.editable,
-        editor: this.editor
+        editable: this.model.isEditable(),
+        locked: this.model.isLocked()
       };
     },
 
     initialize: function(){
-      this.updateEditable();
+      // Update the lock timeout no more then once a minute as long as changes
+      // are still being made to devices.
+      this.listenTo(this.model.devices, 'change', _.throttle(function(){
+        this.model.updateLockTimeout();
+      }, 60 * 1000));
     },
 
     triggers: {
@@ -570,40 +599,7 @@ define([
     },
 
     modelEvents: {
-      'change:locked': 'updateEditable',
-      'change:editor': 'updateEditable',
-      'change': 'updateTimer'
-    },
-
-    updateEditable: function(){
-      var editable = this.model.get('locked') || false,
-        editor = this.model.get('editor'),
-        user = this.options.user.get('email');
-
-      this.editor = !_.contains(['', 'unlocked', user], editor) && editor;
-
-      if (this.editor) {
-        editable = false;
-      }
-
-      if (this.editable !== editable) {
-        this.editable = editable;
-
-        Backbone.trigger('editor:change:editable', editable);
-      }
-
-      this.render();
-      this.updateTimer();
-    },
-
-    updateTimer: function(){
-      if (this.timer) { clearTimeout(this.timer); }
-
-      if (!this.editable) { return; }
-
-      this.timer = setTimeout(_.bind(function(){
-        this.model.setLock(false);
-      }, this), 5 * 60 * 1000);
+      'change:editor': 'render'
     },
 
     onEdit: function(){
@@ -615,12 +611,8 @@ define([
     },
 
     onClose: function(){
-      if (this.editable) {
+      if (this.model.isEditable()) {
         this.model.setLock(false);
-      }
-
-      if (this.timer) {
-        clearTimeout(this.timer);
       }
     }
   });

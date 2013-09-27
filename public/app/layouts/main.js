@@ -5,15 +5,16 @@ define([
   'backbone.marionette',
   'handlebars',
 
+  'ia',
+
   'message',
 
   'layouts/header',
   'layouts/navigation',
-  'layouts/portfolioDetail',
-  'layouts/projectDetail',
+  'layouts/portfolios',
+  'layouts/projects',
   'layouts/issues',
   'layouts/devices',
-  'layouts/portfolioDashboard',
   'layouts/projectEditor',
   'layouts/profile',
   'layouts/admin',
@@ -26,15 +27,16 @@ define([
   Marionette,
   Handlebars,
 
+  ia,
+
   Message,
 
   Header,
   Navigation,
-  PortfolioDetailLayout,
-  ProjectDetailLayout,
+  PortfoliosLayout,
+  ProjectsLayout,
   IssuesLayout,
   DevicesLayout,
-  PortfolioDashboardLayout,
   ProjectEditorLayout,
   ProfileLayout,
   AdminLayout,
@@ -58,7 +60,7 @@ define([
     },
 
     onShow: function(){
-      var portfolio = this.app.allPortfolio;
+      var portfolio = this.activePortfolio;
 
       this.header.show(this.headerView);
       this.breadcrumbs.show(this.navigationView);
@@ -70,28 +72,21 @@ define([
       });
     },
 
-    showPortfolio: function(portfolio){
+    showPortfolios: function(portfolio, options){
       this.activePortfolio = portfolio;
 
-      this.mainContent.show( new PortfolioDetailLayout({
+      this.mainContent.show( new PortfoliosLayout(_.extend({
         model: portfolio,
-        portfolios: this.app.portfolios,
+        collection: this.app.portfolios,
         settingsRegion: this.settings
-      }));
-    },
-
-    showPortfolioDashboard: function(portfolio){
-      this.mainContent.show( new PortfolioDashboardLayout({
-        model: portfolio,
-        portfolios: this.app.portfolios
-      }));
+      }, options)));
     },
 
     showProject: function(project){
-      this.mainContent.show( new ProjectDetailLayout({
+      this.mainContent.show( new ProjectsLayout({
         model: project,
         collection: this.activePortfolio.projects,
-        equipment: this.app.equipment,
+        equipment: ia.equipment,
         settingsRegion: this.settings
       }));
     },
@@ -114,7 +109,8 @@ define([
       this.mainContent.show( new IssuesLayout({
         model: project,
         currentIssue: issueId,
-        app: this.app
+        // NOTE - There might be a better way to do this but this works
+        org_team: this.app.currentUser.get('org_label') + '_' + this.app.currentTeam
       }));
     },
 
@@ -151,21 +147,27 @@ define([
     },
 
     switchTeam: function(teamLabel){
+      // Once more APIs are implemented, we can make sure everything else syncs up with the team.
       var that = this;
-      this.app.currentTeam = teamLabel;
+
+      ia.currentTeam = teamLabel;
+
       $.ajax('/api/teams/current', {
         type: 'PUT',
         data: {
           team_label: teamLabel
         },
         success: function(){
-          that.app.portfolios.fetch().done(function(portfolios){
-            var myPortfolio = that.app.portfolios.findWhere({label: 'ALL'});
+          // Reset because it seems to be ignoring the ALL portfolio on update
+          ia.portfolios.reset();
+          ia.projects.reset();
 
-            Backbone.trigger('select:portfolio', myPortfolio);
+          // Fetch projects portfolios for new team
+          ia.projects.fetch();
+
+          ia.portfolios.fetch().done(function(portfolios){
+            Backbone.trigger('select:portfolio', ia.portfolios.findWhere({label: 'ALL'}));
           });
-
-          // Once more APIs are implemented, we can make sure everything else syncs up with the team.
         }
       });
     },
@@ -181,9 +183,9 @@ define([
     },
 
     initialize: function(options){
-      this.app = options.app;
+      this.activePortfolio = ia.portfolios.findWhere({label: 'ALL'});
 
-      this.activePortfolio = this.app.allPortfolio;
+      this.app = options.app;
 
       // Build header
       this.headerView = new Header({model: options.currentUser});
@@ -196,8 +198,8 @@ define([
       });
 
       this.listenTo(Backbone, 'select:portfolio', function(model){
-        Backbone.history.navigate('/portfolio/' + model.id);
-        this.showPortfolio(model);
+        Backbone.history.navigate('/portfolios/' + model.id);
+        this.showPortfolios(model);
       }, this);
 
       this.listenTo(Backbone, 'select:project', function(model){

@@ -1,32 +1,33 @@
-define(
-[
+define([
   'jquery',
   'underscore',
   'backbone',
   'backbone.marionette',
 
-  'form/helpers',
+  './helpers',
+  './admin',
+  './util',
 
   'hbs!form/templates/table',
   'hbs!form/templates/editTableRow',
   'hbs!form/templates/newTableRow'
-],
-function(
+], function(
   $,
   _,
   Backbone,
   Marionette,
 
   formHelpers,
+  adminViews,
+  util,
 
   tableTemplate,
   editTableRowTemplate,
   newTableRowTemplate
 ){
+  var Form = { views: {}, util: util };
 
-  var Forms = { views:{} };
-
-  Forms.views.basic = Marionette.ItemView.extend({
+  Form.views.basic = Marionette.ItemView.extend({
     tagName: 'form',
     attributes: {
       id: '',
@@ -55,7 +56,7 @@ function(
   });
 
   // Composite view for editing multiple items of the same type quickly
-  Forms.views.tableRow = Marionette.ItemView.extend({
+  Form.views.tableRow = Marionette.ItemView.extend({
     tagName: 'tr',
     template: {
       type: 'handlebars',
@@ -159,7 +160,7 @@ function(
     }
   });
 
-  Forms.views.newTableRow = Forms.views.tableRow.extend({
+  Form.views.newTableRow = Form.views.tableRow.extend({
     template: {
       type: 'handlebars',
       template: newTableRowTemplate
@@ -177,13 +178,13 @@ function(
       this.close();
     },
     triggers: function(){
-      return _.extend({}, Forms.views.tableRow.prototype.triggers, {
+      return _.extend({}, Form.views.tableRow.prototype.triggers, {
         'click button.create': 'create'
       });
     }
   });
 
-  Forms.views.table = Marionette.CompositeView.extend({
+  Form.views.table = Marionette.CompositeView.extend({
     tagName: 'form',
     template: {
       type: 'handlebars',
@@ -200,8 +201,8 @@ function(
     serializeData: function() {
       return { fields: this.fields, schema: this.model.schema, actions: this.actions };
     },
-    itemView: Forms.views.tableRow,
-    newRowView: Forms.views.newTableRow,
+    itemView: Form.views.tableRow,
+    newRowView: Form.views.newTableRow,
     attributes: {
       id: '',
       name: ''
@@ -229,5 +230,7 @@ function(
     }
   });
 
-  return Forms;
+  _.extend(Form.views, adminViews);
+
+  return Form;
 });

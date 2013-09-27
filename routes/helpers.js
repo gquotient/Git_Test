@@ -46,14 +46,16 @@ module.exports = function(app){
         req.body = _.reduce(req.body, function(memo, value, key){
           if (_.contains(root, key)) {
             memo[key] = value;
+          }
 
-          } else if (!_.contains(ignore, key)) {
+          if (!_.contains(ignore, key)) {
             if (_.isPlainObject(value)) {
               value = JSON.stringify(value);
             }
 
             memo.properties[key] = value;
           }
+
           return memo;
         }, {properties: {}});
 
@@ -62,8 +64,53 @@ module.exports = function(app){
         next(req, res);
       };
     },
+    parsePortfolioFilters: function(portfolios){
+      // Parse json
+      portfolios = JSON.parse(portfolios);
+
+      var parseFilters = function(filter){
+        // Only parse if the filter is an array (smart filter)
+        if (typeof filter === 'string' && filter.charAt(0) === '[') {
+          filter = JSON.parse(filter);
+        }
+
+        return filter;
+      };
+
+      // Since the body can come back as an array or a single object,
+      // handle each case
+      if (_.isArray(portfolios)) {
+        _.each(portfolios, function(portfolio){
+          portfolio.filter = parseFilters(portfolio.filter);
+        });
+      } else if (_.isObject(portfolios)) {
+        portfolios.filter = parseFilters(portfolios.filter);
+      }
+
+      // Re-stringify to send back to the browser
+      portfolios = JSON.stringify(portfolios);
+
+      return portfolios;
+    },
+    parseEquipment: function(equipment){
+
+      // Parse the json if necessary.
+      if (_.isString(equipment)) {
+        try {
+          equipment = JSON.parse(equipment);
+        } catch (e) {
+          equipment = {};
+        }
+      }
+
+      equipment = _.reduce(equipment, function(memo, equip){
+        return memo.concat(_.pluck(equip, 'doc'));
+      }, [])
+
+      return equipment;
+    },
     makeRequest: function(options){
-      var _request = function(req, res){
+      var _request = function(req, res, next){
 
         var opts = _.extend({
           method: req.method,
@@ -113,9 +160,13 @@ module.exports = function(app){
 
           } else if (options.translate) {
             options.translate(JSON.parse(body), function(translatedData){
-              res.end(JSON.stringify(translatedData));
+              res.send(JSON.stringify(translatedData));
             });
 
+          } else if (options.processData) {
+            // Manipulate the response after the request returns
+            res.body = body;
+            next();
           } else {
             res.end(body);
           }
@@ -130,6 +181,66 @@ module.exports = function(app){
       } else {
         return _request;
       }
+    },
+
+    // Adds a wrapper around request
+    request: function(options){
+      return function(req, res, next){
+        var host = options.host || app.get('modelUrl'),
+          path = options.path || '',
+          requestOptions, _req;
+
+        if (_.isFunction(path)) {
+          path = path(req);
+        }
+
+        requestOptions = {
+          method: req.method,
+          uri: host + path,
+
+          headers: {
+            currentUser: req.user.email,
+            access_token: req.user.access_token,
+            clientSecret: app.get('clientSecret')
+          },
+
+          qs: _.clone(req.query)
+        };
+
+        if (req.method === 'DELETE') {
+          _.extend(requestOptions.qs, req.body);
+        } else {
+          requestOptions.form = req.body;
+        }
+
+        _req = request(requestOptions, function(error, response, body){
+
+          if (error) {
+            req.flash('error', error.message);
+            console.log('error!:', error);
+            res.redirect('/ia');
+          }
+
+          if (options.middleware) {
+            res.statusCode = response.statusCode;
+
+            try {
+              res.body = JSON.parse(body);
+            } catch (e) {
+              res.body = body;
+            }
+
+            next();
+
+          } else if (!options.pipe) {
+            res.send(response.statusCode, body);
+          }
+        });
+
+        if (options.pipe && !options.middleware) {
+          _req.pipe(res);
+        }
+      };
     }
   };
 };

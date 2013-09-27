@@ -13,10 +13,16 @@ define([
 
   TableView
 ){
-  return TableView.extend({
+  var views = {};
+
+  views.Table = TableView.extend({
 
     attributes: {
       id: 'device-table'
+    },
+
+    initialize: function(options){
+      this.equipment = options.equipment;
     },
 
     columns: [
@@ -31,57 +37,63 @@ define([
       },
       {
         name: 'Equipment',
-        readOnly: true
+        type: 'dropdown',
+        source: function(model){
+          var base = model.equipment && model.equipment.getBase(),
+            models = base && base.getExtends();
+
+          return _.invoke(models, 'get', 'display_name');
+        }
       }
     ],
 
     tableOptions: {
       columnSorting: true,
       stretchH: 'all',
+      fillHandle: 'vertical',
       readOnly: true
     },
 
-    initialize: function(){
-      this.listenTo(Backbone, 'editor:change:editable', function(editable){
-        this.updateEditable(editable);
-      });
+    modelEvents: {
+      'change:editor': 'updateReadOnly'
     },
 
-    updateEditable: function(editable){
+    updateReadOnly: function(){
       if (this.table) {
-        this.table.updateSettings({readOnly: !editable});
+        this.table.updateSettings({readOnly: !this.model.isEditable()});
       }
-
-      this.editable = editable;
     },
 
     onShow: function(){
-      if (this.options.editable) {
-        this.updateEditable(true);
-      }
+      this.updateReadOnly();
     },
 
-    collectionEvents: {
-      'change': function(model) {
-        if (this.editable) {
-          model.lazySave();
-        }
-      }
+    onAfterChange: function(models, source){
+      _.invoke(models, 'lazySave');
     },
 
     comparator: function(model){
       var equip = model.equipment,
-        order = equip ? '' + equip.get('order') : '9999';
+        order = (equip && equip.get('order')) || 9999;
 
-      while (order.length < 4) {
-        order = '0' + order;
-      }
-
-      return [order, model.get('name')];
+      return order + model.get('name');
     },
 
     getEquipment: function(model){
-      return model.equipment.get('name');
+      return model.equipment.get('display_name');
+    },
+
+    setEquipment: function(model, value){
+      var equip = this.equipment.findWhere({display_name: value}),
+        base = model.equipment && model.equipment.getBase(),
+        models = base && [base].concat(base.getExtends());
+
+      if (equip && _.contains(models, equip)) {
+        model.set({equipment_label: equip.id});
+        model.equipment = equip;
+      }
     }
   });
+
+  return views;
 });

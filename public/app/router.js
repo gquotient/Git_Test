@@ -22,28 +22,21 @@ define([
 ){
   var RouteController = Backbone.Marionette.Controller.extend({
     index: function(){
-      Backbone.history.navigate('portfolio/all', true);
+      Backbone.history.navigate('portfolios/all', true);
     },
 
     findPortfolio: function(id){
-      return ia.portfolios.get(id) || ia.allPortfolio;
+      return ia.portfolios.get(id) || ia.portfolios.findWhere({label: 'ALL'});
     },
 
-    portfolioDashboard: function(id){
+    operatorView: function(id){
       var portfolio = this.findPortfolio(id);
-      this.mainLayout.showPortfolioDashboard(portfolio);
+      this.mainLayout.showOperatorView(portfolio);
     },
 
-    portfolioDetail: function(id){
+    portfolios: function(id, view){
       var portfolio = this.findPortfolio(id);
-
-      Backbone.trigger('reset:breadcrumbs', {
-        state: 'portfolio',
-        display_name: portfolio.get('display_name'),
-        model: portfolio
-      });
-
-      this.mainLayout.showPortfolio(portfolio);
+      this.mainLayout.showPortfolios(portfolio, {view: view});
     },
 
     findProject: function(id){
@@ -74,11 +67,11 @@ define([
     },
 
     usersAdmin: function(){
-      this.mainLayout.showAdmin().showUsers();
+      this.mainLayout.showAdmin().showRoute('users');
     },
 
     teamsAdmin: function(){
-      this.mainLayout.showAdmin().showTeams();
+      this.mainLayout.showAdmin().showRoute('teams');
     },
 
     teamAdminDetail: function(teamID){
@@ -88,18 +81,27 @@ define([
       });
     },
 
-    alarmAdmin: function(){
-      // this.mainLayout.showAdmin().showAlarms();
+    alarmsAdmin: function(id, alarmType){
+      this.mainLayout.showAdmin().showRoute('alarms', id);
     },
 
-    projectAdmin: function(id){
-      this.mainLayout.showAdmin().showProject(id);
+    portfoliosAdmin: function(id){
+      this.mainLayout.showAdmin().showRoute('portfolios', id);
     },
 
-    projectEditor: function(id, view){
+    projectsAdmin: function(id){
+      this.mainLayout.showAdmin().showRoute('projects', id);
+    },
+
+    projectsEditor: function(id, view){
       this.mainLayout.showProjectEditor(id, {
+        equipment: ia.equipment,
         view: view
       });
+    },
+
+    equipmentAdmin: function(id){
+      this.mainLayout.showAdmin().showRoute('equipment', id);
     },
 
     initialize: function(){
@@ -113,10 +115,8 @@ define([
     appRoutes: {
       '': 'index',
 
-      'portfolio/dashboard/:id': 'portfolioDashboard',
-      'portfolio/dashboard': 'portfolioDashboard',
-      'portfolio/:id': 'portfolioDetail',
-      'portfolio': 'index',
+      'portfolios/:id(/:view)': 'portfolios',
+      'portfolios': 'index',
 
       'project/:id/devices/:deviceId': 'projectDevices',
       'project/:id/devices': 'projectDevices',
@@ -127,14 +127,26 @@ define([
       'profile': 'profile',
 
       //Admin Routes
-      'admin': 'admin',
       'admin/users': 'usersAdmin',
-      'admin/teams': 'teamsAdmin',
-      'admin/teams/:id': 'teamAdminDetail',
 
-      'admin/projects/:id/:view': 'projectEditor',
-      'admin/projects/:id': 'projectAdmin',
-      'admin/projects': 'projectAdmin'
+      'admin/teams/:id': 'teamAdminDetail',
+      'admin/teams': 'teamsAdmin',
+
+      'admin/portfolios/:id': 'portfoliosAdmin',
+      'admin/portfolios': 'portfoliosAdmin',
+
+      'admin/alarms': 'alarmsAdmin',
+      'admin/alarms/:projectId': 'alarmsAdmin',
+      'admin/alarms/:projectId/:alarmType': 'alarmsAdmin',
+
+      'admin/projects/:id/:view': 'projectsEditor',
+      'admin/projects/:id': 'projectsAdmin',
+      'admin/projects': 'projectsAdmin',
+
+      'admin/equipment/:id': 'equipmentAdmin',
+      'admin/equipment': 'equipmentAdmin',
+
+      'admin': 'admin'
     }
   });
 

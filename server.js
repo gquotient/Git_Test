@@ -2,26 +2,29 @@
  * Module dependencies.
  */
 
-var express = require('express')
-  , stylus = require('stylus')
-  , nib = require('nib')
-  , _ = require('lodash')
-  , http = require('http')
-  , path = require('path')
-  , passport = require('passport')
-  , RedisStore = require('connect-redis')(express)
-  , flash = require('connect-flash')
-  , DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy
-  , fs = require('fs')
-  , hbs = require('hbs')
-  , net = require('net')
-  , routes = require('./routes');
+var clientInfo = require('./public/app/bower'),
+  express = require('express'),
+  stylus = require('stylus'),
+  nib = require('nib'),
+  _ = require('lodash'),
+  http = require('http'),
+  path = require('path'),
+  passport = require('passport'),
+  RedisStore = require('connect-redis')(express),
+  flash = require('connect-flash'),
+  DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy,
+  fs = require('fs'),
+  hbs = require('hbs'),
+  net = require('net'),
+  routes = require('./routes');
 
 /*
  * Configure Express App
  */
 
 var app = express();
+
+console.log('Client Version:', clientInfo.version);
 
 app.configure(function(){
   var compile = function(str, path) {
@@ -32,6 +35,7 @@ app.configure(function(){
       .use(nib()); // Use nib for cross-browser CSS3 help
   };
 
+  app.set('app_version', clientInfo.version);
   app.set('port', process.env.PORT || 3005);
   app.set('view engine', 'hbs');
   app.set('views', __dirname + '/templates');
@@ -62,6 +66,7 @@ app.configure('development', function(){
   app.set('authPort', 8431);
   app.set('authUrl', '127.0.0.1');
   app.set('modelUrl', 'http://127.0.0.1:8433');
+  app.set('equipUrl', 'http://127.0.0.1:8600');
 });
 
 app.configure('development-local-auth', function(){
@@ -74,6 +79,7 @@ app.configure('development-local-auth', function(){
   app.set('authUrl', '127.0.0.1');
   app.set('modelUrl', 'http://model.stage.intelligentarray.com');
   app.set('dataUrl', 'http://data.stage.intelligentarray.com');
+  app.set('equipUrl', 'http://equip.stage.intelligentarray.com');
 });
 
 app.configure('development-remote', function(){
@@ -88,6 +94,21 @@ app.configure('development-remote', function(){
   app.set('authUrl', 'auth.stage.intelligentarray.com');
   app.set('modelUrl', 'http://model.stage.intelligentarray.com');
   app.set('dataUrl', 'http://data.stage.intelligentarray.com');
+  app.set('equipUrl', 'http://equip.stage.intelligentarray.com');
+});
+
+app.configure('development-vagrant', function(){
+  console.log('Using Vagrant');
+  app.use(express.errorHandler());
+  app.set('clientID', 'IA6_0.1');
+  app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
+  app.set('callbackURL', 'http://33.33.33.10:' + app.get('port') + '/token');
+  app.set('authorizationURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/auth');
+  app.set('tokenURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/token');
+  app.set('authPort', 80);
+  app.set('authUrl', 'auth.stage.intelligentarray.com');
+  app.set('modelUrl', 'http://model.stage.intelligentarray.com');
+  app.set('equipUrl', 'http://equip.stage.intelligentarray.com');
 });
 
 app.configure('stage', function(){
@@ -102,7 +123,8 @@ app.configure('stage', function(){
   app.set('authUrl', 'auth.stage.intelligentarray.com');
   app.set('modelUrl', 'http://model.stage.intelligentarray.com');
   app.set('dataUrl', 'http://data.stage.intelligentarray.com');
-  app.set('staticDir', 'app.build');
+  app.set('equipUrl', 'http://equip.stage.intelligentarray.com');
+  app.set('staticPath', 'build/' + app.get('app_version') + '/');
 });
 
 app.configure('production', function(){
@@ -116,21 +138,9 @@ app.configure('production', function(){
   app.set('authPort', 80);
   app.set('authUrl', 'auth.intelligentarray.com');
   app.set('modelUrl', 'http://model.intelligentarray.com');
-  app.set('dataUrl', 'http://data.stage.intelligentarray.com');
-  app.set('staticDir', 'app.build');
-});
-
-app.configure('development-vagrant', function(){
-  console.log('Using Vagrant');
-  app.use(express.errorHandler());
-  app.set('clientID', 'IA6_0.1');
-  app.set('clientSecret', 'ed75d8d3a96ef67041b52e057a5c86c3');
-  app.set('callbackURL', 'http://33.33.33.10:' + app.get('port') + '/token');
-  app.set('authorizationURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/auth');
-  app.set('tokenURL', 'http://auth.stage.intelligentarray.com/ia/oauth2/token');
-  app.set('authPort', 80);
-  app.set('authUrl', 'auth.stage.intelligentarray.com');
-  app.set('modelUrl', 'http://model.stage.intelligentarray.com');
+  app.set('dataUrl', 'http://data.intelligentarray.com');
+  app.set('equipUrl', 'http://equip.intelligentarray.com');
+  app.set('staticPath', 'build/' + app.get('app_version') + '/');
 });
 
 /**

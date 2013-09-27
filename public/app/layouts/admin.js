@@ -13,8 +13,10 @@ define([
 
   'layouts/admin/users',
   'layouts/admin/teams',
+  'layouts/admin/portfolios',
   'layouts/admin/projects',
-  'layouts/admin/alarmManagement',
+  'layouts/admin/equipment',
+  'layouts/admin/alarms',
 
   'hbs!layouts/templates/admin'
 ], function(
@@ -32,8 +34,10 @@ define([
 
   UsersLayout,
   TeamsLayout,
+  PortfoliosLayout,
   ProjectsLayout,
-  AlarmManagementTemplate,
+  EquipmentLayout,
+  AlarmsLayout,
 
   adminTemplate
 ){
@@ -42,30 +46,31 @@ define([
     views: {
       'users': {
         title: 'Users',
-        trigger: 'show:users'
+        trigger: 'select:users'
       },
       'teams': {
         title: 'Teams',
-        trigger: 'show:teams'
-      },
-      'projects': {
-        title: 'Projects',
-        trigger: 'show:project'
-      },
-      'all_users': {
-        title: 'All Users',
-        trigger: 'show:allUsers'
-      },
-      'all_teams': {
-        title: 'All Teams',
-        trigger: 'show:allTeams'
+        trigger: 'select:teams'
       },
       'organizations': {
         title: 'All Organizations',
-        trigger: 'show:allOrganizations'
+        trigger: 'select:allOrganizations'
+      },
+      'portfolios': {
+        title: 'Portfolios',
+        trigger: 'select:portfolios'
+      },
+      'projects': {
+        title: 'Projects',
+        trigger: 'select:projects'
+      },
+      'equipment': {
+        title: 'Equipment',
+        trigger: 'select:equipment'
       },
       'alarms': {
-
+        title: 'Alarms',
+        trigger: 'select:alarms'
       }
     }
   };
@@ -114,7 +119,28 @@ define([
       return teamAdminLayout;
     },
 
-    showProject: function(id){
+    showPortfolios: function(id){
+      // Force id to be a number
+      id = +id;
+
+      var layout = new PortfoliosLayout({
+        collection: ia.portfolios
+      });
+
+      this.pageContent.show(layout);
+      this.highlightLink('portfolios');
+
+      if (id && id !== 'new') {
+        var portfolio = ia.portfolios.findWhere({portfolio_id: id});
+        layout.edit(portfolio);
+      } else if (id && id === 'new') {
+        layout.edit();
+      }
+
+      return layout;
+    },
+
+    showProjects: function(id){
       var layout = new ProjectsLayout({
         collection: ia.alignedProjects,
         user: ia.currentUser,
@@ -127,38 +153,81 @@ define([
       return layout;
     },
 
-    showAlarms: function(){
+    showEquipment: function(id){
+      var layout = new EquipmentLayout({
+        collection: ia.equipment,
+        user: ia.currentUser,
+        current: id
+      });
 
+      this.pageContent.show(layout);
+      this.highlightLink('equipment');
+
+      return layout;
+    },
+
+    showAlarms: function(id){
+      var layout = new AlarmsLayout({
+        projects: ia.projects
+      });
+
+      this.pageContent.show(layout);
+
+      // If id supplied, show project alarms
+      if (id) {
+        layout.showProjectAlarms(id);
+      }
+
+      this.highlightLink('alarms');
+
+      return layout;
+    },
+
+    showRoute: function(route, id){
+      // If route is one of the admin views, update nav elements and render view
+      if (config.views[route]) {
+        var routeCapital = route.charAt(0).toUpperCase() + route.slice(1);
+
+        Backbone.trigger('reset:breadcrumbs', {
+          state:'admin',
+          display_name: 'Admin',
+          url: '/admin'
+        });
+
+        Backbone.trigger('set:breadcrumbs', {
+          state: route,
+          display_name: routeCapital,
+          url: '/admin/' + route
+        });
+
+        // Update history
+        Backbone.history.navigate('/admin/' + route);
+
+        this['show' + routeCapital](id);
+      }
     },
 
     events: {
-      'click .nav_content a': function(event){
-        event.preventDefault();
+      'click .nav_content li': function(event){
+        // Get current target so it works on bubbled up event
+        var route = event.currentTarget.id;
 
-        // This seems kind of hacky, but (shrug)
-        var route = event.target.hash.replace('#', '');
-
-        Backbone.trigger(config.views[route].trigger);
+        Backbone.trigger('select:' + route, {route: route});
       }
     },
 
     initialize: function(options){
-
       Backbone.trigger('reset:breadcrumbs', {
         state:'admin',
-        display_name: 'Admin'
+        display_name: 'Admin',
+        url: '/admin'
       });
 
-      // this.listenTo(Backbone, 'detail', function(model){
-      //   this.renderDetailView({ model: model, page: this.view });
-      //   Backbone.history.navigate('/admin/'+ this.view + '/' + model.id);
-      // }, this);
-
-      this.listenTo(Backbone, 'show:users', this.showUsers);
-      this.listenTo(Backbone, 'show:teams', this.showTeams);
-      this.listenTo(Backbone, 'show:project', this.showProject);
-
+      // NOTE - This may not be the best way to handle admin routes but,
+      // it's less ugly than before
+      this.listenTo(Backbone, 'select', function(data){
+        this.showRoute(data.route);
+      });
     }
   });
-
 });

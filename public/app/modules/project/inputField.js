@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
   'backbone.virtualCollection',
 
+  'form',
+
   'hbs!project/templates/dropdown',
   'hbs!project/templates/dropdownItem'
 ], function(
@@ -13,6 +15,8 @@ define([
   Backbone,
   Marionette,
   VirtualCollection,
+
+  Form,
 
   dropdownTemplate,
   dropdownItemTemplate
@@ -24,6 +28,12 @@ define([
       template: {
         type: 'handlebars',
         template: dropdownItemTemplate
+      },
+
+      templateHelpers: function(){
+        return {
+          attribute: this.model.get(this.options.attribute)
+        };
       },
 
       triggers: {
@@ -39,12 +49,18 @@ define([
 
       templateHelpers: function(){
         return {
-          applyAll: this.options.applyAll && this.collection.length > 0
+          applyAll: this.options.applyAll && this.collection.length > 1
         };
       },
 
       itemView: DropdownItemView,
       itemViewContainer: 'ul',
+
+      itemViewOptions: function(){
+        return {
+          attribute: this.options.attribute
+        };
+      },
 
       className: 'editorDropdown',
 
@@ -54,119 +70,7 @@ define([
 
       // Use the collection view version so that reset causes everything to render.
       _initialEvents: Marionette.CollectionView.prototype._initialEvents
-    }),
-
-    Collection = Backbone.Collection.extend.call(Backbone.VirtualCollection, {
-
-      pluck: function(attr){
-        return _.invoke(this._models(), 'get', attr);
-      },
-
-      updateFilter: function(filter, options){
-        options = options || {};
-
-        this.filter = filter || function(){ return true; };
-        this._rebuildIndex();
-
-        if (!options.silent) {
-          this.trigger('reset', this, options);
-        }
-      },
-
-      sort: function(options){
-        var iterator, sorter;
-
-        if (!this.comparator) {
-          throw new Error('Cannot sort a set without a comparator');
-        }
-
-        options = options || {};
-
-        if (_.isString(this.comparator)) {
-          iterator = function(model){
-            return model.get(this.comparator);
-          };
-        } else if (this.comparator.length === 1){
-          iterator = this.comparator;
-        } else {
-          iterator = _.identity;
-          sorter = this.comparator;
-        }
-
-        this.index = sort(this.index, {
-          iterator: function(cid, index, list){
-            return iterator.call(this, this.collection.get(cid), index, list);
-          },
-          sorter: sorter,
-          natural: true
-        }, this);
-
-        if (!options.silent) {
-          this.trigger('sort', this, options);
-        }
-
-        return this;
-      }
     });
-
-  function comparator(a, b){
-    if (a !== b) {
-      if (a > b || a === void 0) { return 1; }
-      if (a < b || b === void 0) { return -1; }
-    }
-    return 0;
-  }
-
-  function naturalSplit(str){
-    return _.map(str.match(/(\.\d+)|(\d+)|(\D+)/g), function(part){
-      var num = parseInt(part, 10);
-
-      return isNaN(num) ? part : num;
-    });
-  }
-
-  // Sort that takes optional iterator and sorter functions and sorts array
-  // elements properly instead of joining them into a string.
-  function sort(obj, options, context){
-    options = options || {};
-
-    var iterator = options.iterator || _.identity,
-      sorter = options.sorter || comparator;
-
-    if (options.natural) {
-      iterator = _.wrap(iterator, function(func){
-        var args = Array.prototype.slice.apply(arguments),
-          result = func.apply(context, args.slice(1));
-
-        return _.isString(result) ? naturalSplit(result) : result;
-      });
-    }
-
-    return _.pluck(_.map(obj, function(value, index, list){
-      return {
-        value: value,
-        index: index,
-        criteria: iterator.call(context, value, index, list)
-      };
-    }).sort(function(left, right){
-      var a, b, result;
-
-      a = _.clone(left.criteria);
-      b = _.clone(right.criteria);
-
-      if (_.isArray(a) && _.isArray(b)) {
-        while (a.length || b.length) {
-          result = sorter.call(context, a.shift(), b.shift());
-          if (result !== 0) { return result; }
-        }
-      } else {
-        result = sorter.call(context, a, b);
-        if (result !== 0) { return result; }
-      }
-
-      return left.index < right.index ? -1 : 1;
-    }), 'value');
-  }
 
 
   return Marionette.View.extend({
@@ -175,17 +79,20 @@ define([
       options.collection = options.collection || new Backbone.Collection();
       Marionette.View.prototype.constructor.call(this, options);
 
-      this._collection = new Collection(this.collection, {
+      this._collection = new Form.util.Collection(this.collection, {
         comparator: options.comparator,
         close_with: this
       });
+
+      this.attribute = options.attribute || 'name';
 
       this.ui = {input: this.$('input')};
       this.placeholder = this.ui.input.val();
 
       this.dropdown = new DropdownView({
         collection: this._collection,
-        applyAll: options.applyAll
+        applyAll: options.applyAll,
+        attribute: this.attribute
       });
       this.$el.append(this.dropdown.el);
 
@@ -255,15 +162,16 @@ define([
     },
 
     onInput: function(){
-      var regex = new RegExp('^' + this.parseInput(), 'i');
+      var regex = new RegExp('^' + this.parseInput(), 'i'),
+        attribute = this.attribute;
 
       this._collection.updateFilter(function(model){
-        return regex.test(model.get('name'));
+        return regex.test(model.get(attribute));
       });
     },
 
     getAutocomplete: function(){
-      var values = this._collection.pluck('name').sort(),
+      var values = this._collection.pluck(this.attribute).sort(),
         partial = _.first(values) || '',
         last, len;
 
@@ -289,8 +197,11 @@ define([
     },
 
     onKeyEnter: function(model){
+      var criteria = {};
+
       if (!model) {
-        model = this.collection.findWhere({name: this.parseInput()});
+        criteria[this.attribute] = this.parseInput();
+        model = this.collection.findWhere(criteria);
       }
 
       if (model) {

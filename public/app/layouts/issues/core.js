@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
   'handlebars',
 
+  'ia',
+
   'project',
   'device',
   'chart',
@@ -17,6 +19,8 @@ define([
   Backbone,
   Marionette,
   Handlebars,
+
+  ia,
 
   Project,
   Device,
@@ -35,14 +39,40 @@ define([
       chart: '.chart',
       deviceName: '.deviceName'
     },
-
+    triggers: {
+      'click .acknowledge': 'acknowledge',
+      'click .resolve': 'resolve',
+      'click .delete': 'delete'
+    },
     events: {
       'click .device': function(event){
         event.preventDefault();
         Backbone.history.navigate('/project/' + this.project.id + '/devices/' + this.device.get('graph_key'), true);
       }
     },
+    onAcknowledge: function(){
+      this.model.acknowledge(ia.currentUser.get('email'));
+    },
+    onResolve: function(){
+      var that = this;
+      // Resolve the alarm
+      this.model.resolve().done(function(){
+        // And navigate back to main issues page
+        Backbone.history.navigate('/project/' + that.options.project.id + '/issues', true);
+      });
+    },
+    onDelete: function(){
+      // Confirm user actually wants to delete the alarm
+      var confirm = window.confirm('Are you sure you want to delete this alarm?');
 
+      // If confirm returns true, destroy model
+      if (confirm) {
+        this.model.destroy();
+      }
+    },
+    modelEvents: {
+      'change': 'render'
+    },
     onShow: function(){
       Backbone.trigger(
         'set:breadcrumbs',
@@ -54,32 +84,46 @@ define([
       );
 
       // This stuff needs to be in the onShow because it needs the dom elements to work
-      var that = this;
+      var that = this,
+        project = this.options.project;
 
       var initialView = function(){
-        that.device = that.project.devices.findWhere({graph_key: that.model.get('identifier')});
+        that.device = project.devices.findWhere({graph_key: that.model.get('identifier')});
         that.buildChart();
       };
       // Fetch project to get devices
-      if (this.options.project.devices.length) {
+      if (project.devices.length) {
         initialView();
       } else {
-        this.options.project.fetch({data: {project_label: this.project.id}}).done(initialView);
+        project.fetch({data: {project_label: project.id}}).done(initialView);
       }
     },
 
     buildChart: function(){
       var
-        project = this.project,
+        project = this.options.project,
         device = this.device,
         // Add an hour to either side of time range
         startTime = this.model.get('fault_start') - (60 * 60),
-        stopTime = this.model.get('fault_stop') + (60 * 60)
+        stopTime = this.model.get('fault_stop') + (60 * 60),
+        localTime = this.model.getLocalDate()
       ;
 
+      // Add link to device
       this.$el.find('.deviceName').html('<a href="#' + device.get('graph_key') + '" class="device">' + device.get('did') + '</a>');
 
+      // Instantiate chart
       var chart_powerAndIrradiance = new Chart.views.Basic({
+        autoUpdate: false,
+        chartOptions: {
+          xAxis: {
+            plotBands: {
+              color: 'rgba(201, 77, 30, 0.1)',
+              from: localTime.start,
+              to: localTime.stop
+            }
+          }
+        },
         traces: [
           {
             'project_label': project.id,
@@ -112,10 +156,14 @@ define([
 
       this.chart.show(chart_powerAndIrradiance);
     },
-    initialize: function(options){
-      var that = this;
-
-      this.project = options.project;
+    serializeData: function(){
+      // Since we need the project info, we need to return a special context
+      // to our template
+      return {
+        project: this.options.project.toJSON(),
+        alarm: this.model.toJSON(),
+        contactInfo: this.options.contactInfo.toJSON()
+      };
     }
   });
 });

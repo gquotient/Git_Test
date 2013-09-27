@@ -10,7 +10,6 @@ define([
 
   'navigation',
   'device',
-  'equipment',
   'issue',
 
   './admin',
@@ -37,7 +36,6 @@ define([
 
   Navigation,
   Device,
-  Equipment,
   Issue,
 
   adminViews,
@@ -77,29 +75,54 @@ define([
         energy: '',
         inverter: ''
       },
-      notes: '',
+
       // Status as an array for sorting purposes
       status: 'Unknown',
-      statusValue: -1
+      statusValue: -1,
+
+      // Defaults for persisted model.
+      rollup_intervals: '',
+      ac_capacity: 0,
+      dc_capacity: 0,
+      capacity_units: 'watts',
+      surface_area: 0,
+      dm_push: false,
+      elevation: 0,
+      notes: ''
     },
 
-    initialize: function(){
+    constructor: function(){
+      // Need these initialized here for parsing.
       this.devices = new Device.Collection();
       this.outgoing = new Device.Collection();
-      this.issues = new Issue.Collection([], {projectId: this.id});
 
-      this.lazySave = _.debounce(Backbone.Model.prototype.save, 1000);
+      Backbone.Model.prototype.constructor.apply(this, arguments);
+    },
+
+    initialize: function(attrs, options){
+      this.user = options.user;
+
+      this.issues = new Issue.Collection([], {project: this});
 
       // This might be a bit convoluted and potentially fire too often but it works
       this.listenTo(this.issues, 'change reset add remove', function(){
         var status = this.issues.getSeverity();
         this.set(status);
       });
+
+      this.on('change:editor', this.updateLockTimeout);
+      this.updateLockTimeout();
+    },
+
+    isLocked: function(){
+      return this.has('editor') && this.get('editor') !== 'unlocked';
+    },
+
+    isEditable: function(){
+      return this.user && this.get('editor') === this.user.get('email');
     },
 
     setLock: function(lock){
-      var that = this;
-
       return $.ajax(_.result(this, 'url') + '/edit', {
         type: 'PUT',
         data: {
@@ -107,13 +130,40 @@ define([
           lock: _.isBoolean(lock) ? lock : true
         },
         dataType: 'json'
-      }).done(function(data){
-        that.set(_.pick(data, 'locked', 'editor'));
-      });
+      }).done(_.bind(function(data){
+        var editor = data.editor;
+
+        if (!editor) {
+          editor = data.locked === true ? this.user.get('email') : 'unlocked';
+        }
+
+        this.set({editor: editor});
+      }, this));
+    },
+
+    updateLockTimeout: function(){
+      var that = this;
+
+      clearTimeout(this.lockTimeout);
+
+      if (this.isEditable()) {
+        this.lockTimeout = setTimeout(function(){
+          that.setLock(false);
+        }, 5 * 60 * 1000);
+      }
     },
 
     makeEditable: function(){
       return $.ajax(_.result(this.collection, 'url') + '/edit', {
+        type: 'POST',
+        data: {
+          project_label: this.id
+        }
+      });
+    },
+
+    commission: function(){
+      return $.ajax(_.result(this.collection, 'url') + '/commission', {
         type: 'POST',
         data: {
           project_label: this.id
@@ -241,64 +291,144 @@ define([
       return defer;
     },
 
-    parse: function(resp, options){
-      if (resp.devices) {
-        this.devices.reset(resp.devices, {
-          equipment: options.equipment
-        });
+    save: function(key, val, options){
+      var that = this,
+        attrs = {},
+        saveNow;
 
-        if (resp.rels) {
-          _.each(resp.rels, function(rel) {
-            var source = this.devices.get(rel[2]),
-              target = this.devices.get(rel[0]),
-              relationship = rel[1];
-
-            if (!target && rel[0] === resp.id) {
-              target = this;
-            }
-
-            if (source && target) {
-              source.connectTo(target, relationship);
-            }
-          }, this);
-        }
-
-        _.each(_.keys(Equipment.renderings), function(label){
-          this.checkOutgoing(this, label);
-        }, this);
+      // Duplicated in order to get proper options obj.
+      if (key == null || typeof key === 'object') {
+        attrs = key;
+        options = val || {};
+      } else {
+        attrs[key] = val;
+        options = options || {};
       }
 
-      return _.omit(resp, 'devices', 'rels');
+      // Might as well handle this here as well.
+      if (attrs && !options.wait) {
+        if (!this.set(attrs)) { return false; }
+        attrs = null;
+      }
+
+      // Clear the lock after saving for existing projects.
+      if (!this.isNew() && !options.persistLock) {
+        options.success = _.wrap(options.success, function(success, resp){
+          that.setLock(false).done(success);
+        });
+      }
+
+      saveNow = options.immediate && !this.saveTimeout;
+      clearTimeout(this.saveTimeout);
+
+      if (options.lazy) {
+        this.saveTimeout = setTimeout(function(){
+          that.saveTimeout = null;
+
+          if (!options.immediate) {
+            Backbone.Model.prototype.save.call(that, attrs, options);
+          }
+        }, 1000);
+      } else {
+        saveNow = true;
+      }
+
+      if (saveNow) {
+        return Backbone.Model.prototype.save.call(this, attrs, options);
+      }
     },
 
-    checkOutgoing: function(target, label){
-      if (!target.outgoing) { return; }
+    parse: function(resp, options){
 
-      target.outgoing.each(function(device){
-        if (!device.equipment) { return; }
+      // Check if the response includes devices.
+      if (resp.devices && !resp.project_label) {
+        this.devices.reset(resp.devices, {
+          equipment: options.equipment,
+          project: this,
+          parse: true,
+          silent: true
+        });
 
-        // For now ignore strings and panels.
-        if (_.contains(['S', 'P'], device.equipment.get('label'))) { return; }
+        // Parse relationships.
+        _.each(resp.rels, function(rel) {
+          var source = this.devices.get(rel[2]),
+            target = this.devices.get(rel[0]),
+            relationship = rel[1];
 
-        // Add position to device for this rendering.
-        device.equipment.addRendering(device, this, label, target);
+          if (!target && rel[0] === resp.project.node_id) {
+            target = this;
+          }
 
-        // Recursively check all outgoing devices for this rendering.
-        this.checkOutgoing(device, label);
-      }, this);
+          if (source && target) {
+            source.connectTo(target, relationship);
+          }
+        }, this);
+
+        // Wait to trigger the reset.
+        this.devices.trigger('reset', this);
+
+        resp = resp.project;
+      }
+
+      return resp;
     },
 
-    addNote: function(note, user){
-      this.set({notes: this.formatNote(note, user) + this.get('notes')});
-      this.lazySave();
+    addNote: function(note, user, options){
+      this.save({
+        notes: this.formatNote(note, user) + this.get('notes')
+      }, _.extend({lazy: true, persistLock: true}, options));
     },
 
     formatNote: function(msg, user){
       var now = new Date(),
-        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ',
-        who = user ? user.get('name') + ' ' : '';
+        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ';
 
-      return when + who + msg + '\n';
+      user = user || this.user;
+
+      if (user) {
+        msg = user.get('name') + ' ' + msg;
+      }
+
+      return when + msg + '\n';
+    }
+  }, {
+    schema: {
+      site_label: {
+        type: 'text',
+        required: true,
+        editable: false,
+        validate: function(value){
+          return (/^[A-Z]{3,}$/).test(value);
+        }
+      },
+      display_name: {
+        type: 'text',
+        required: true,
+        validate: function(value){
+          return value && value !== '';
+        }
+      },
+      latitude: {
+        type: 'number',
+        required: true,
+        validate: function(value){
+          return !isNaN(value);
+        }
+      },
+      longitude: {
+        type: 'number',
+        required: true,
+        validate: function(value){
+          return !isNaN(value);
+        }
+      },
+      elevation: {
+        type: 'number',
+        required: true,
+        validate: function(value){
+          return !isNaN(value);
+        }
+      }
     }
   });
 
@@ -347,29 +477,32 @@ define([
     },
 
     fetchProjectKpis: function(){
-      var that = this;
-      var traces = [];
+      // Don't fetch data if there are no projects
+      if(this.length) {
+        var that = this;
+        var traces = [];
 
-      this.each(function(project){
-        traces.push({
-          project_label: project.id,
-          project_timezone: project.get('timezone')
+        this.each(function(project){
+          traces.push({
+            project_label: project.id,
+            project_timezone: project.get('timezone')
+          });
         });
-      });
 
-      return $.ajax({
-        url: '/api/kpis',
-        cache: false,
-        type: 'POST',
-        dataType: 'json',
-        data: {
-          traces: traces
-        }
-      })
-      .done(function(data){
-        that.trigger('data:done', data);
-        that.parseProjectKpis(data.response);
-      });
+        return $.ajax({
+          url: '/api/kpis',
+          cache: false,
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            traces: traces
+          }
+        })
+        .done(function(data){
+          that.trigger('data:done', data);
+          that.parseProjectKpis(data.response);
+        });
+      }
     },
 
     parseProjectKpis: function(data){
@@ -429,12 +562,14 @@ define([
     itemView: Project.views.DataListItem,
     initialize: function(options){
       this.collection = new Backbone.VirtualCollection(options.collection, {
+        comparator: 'display_name',
         close_with: this
       });
     }
   });
 
   Project.views.DashboardItemView = Marionette.ItemView.extend({
+    className: 'projectStatus',
     template: {
       type: 'handlebars',
       template: dashboardTemplate
@@ -660,15 +795,13 @@ define([
     },
 
     initFullscreen: function(){
+      var el = this.el;
+
       // Save fullscreen method
-      if (this.el.webkitRequestFullscreen) { this.fullscreen.activate = this.el.webkitRequestFullscreen; }
-      else if (this.el.mozRequestFullScreen) { this.fullscreen.activate = this.el.mozRequestFullScreen; }
-      else if (this.el.requestFullscreen) { this.fullscreen.activate = this.el.requestFullscreen; }// Opera
+      this.fullscreen.activate = el.webkitRequestFullScreen || el.mozRequestFullScreen || el.requestFullScreen;
 
       // Save exit fullscreen method
-      if (document.webkitExitFullscreen) { this.fullscreen.close = document.webkitExitFullscreen; }
-      else if (document.mozCancelFullscreen) { this.fullscreen.close = document.mozCancelFullscreen; }
-      else if (document.exitFullscreen) { this.fullscreen.close = document.exitFullscreen; }
+      this.fullscreen.close = document.webkitExitFullScreen || document.mozCancelFullScreen || document.exitFullScreen;
 
       // Add button only if fullscreen API is available
       if (this.fullscreen.activate) {
@@ -826,16 +959,17 @@ define([
     }
   });
 
-  /* This composite view is the wrapper view for the list of portfolios.
-     It handles nesting the list while allowing for the navigation header. */
   Project.views.NavigationListView = Navigation.views.List.extend({
     template: {
       type: 'handlebars',
       template: navigationListTemplate
     },
+    ui: _.extend({}, Navigation.views.List.prototype.ui, {
+      sort: '.sortSelect'
+    }),
     itemView: Project.views.NavigationListItemView,
     events: {
-      'change #project-sort': function(event){
+      'change .sortSelect': function(event){
         this.sort(event.currentTarget.value);
       }
     }

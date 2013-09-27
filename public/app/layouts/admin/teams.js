@@ -26,7 +26,6 @@ define([
   BaseLayout,
   TeamManagementLayout
 ){
-
   return BaseLayout.extend({
     onShow: function(){
       this.pageContent.show(this.view);
@@ -45,10 +44,6 @@ define([
       this.listenTo(Backbone, 'detail', function(model){
         this.showTeam(model);
       }, this);
-
-      // Update history
-      Backbone.history.navigate('/admin/teams');
     }
   });
-
 });

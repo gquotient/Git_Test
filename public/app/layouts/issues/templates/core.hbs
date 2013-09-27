@@ -1,7 +1,32 @@
-<div class="info">
-  Description: {{ alarm_type }}<br>
-  Device: <span class="deviceName"></span><br>
-  Created on: {{ date activated_at }}
+<div class="alarmInfo">
+  <h3>{{ alarm.alarm_type }}</h3>
+  <strong>{{$ 'Device' }}</strong>: <span class="deviceName"></span><br>
+  <strong>{{$ 'Created On'}}</strong>: {{ date alarm.activated_at }}<br>
+  <strong>{{$ 'Trigger Condition' }}</strong>: {{ prettyColumnName alarm.device_column }} {{ alarm.active_conditions.0.comparator }} {{ roundNumber alarm.active_conditions.0.threshold 0 }} <br>
+  <strong>{{$ 'Acknowledged' }}</strong>: {{ alarm.acked }} {{#unless alarm.acked}}False{{/unless}} <br>
+  <br>
+  {{#unless alarm.acked}}
+  <button class="button acknowledge sml">Acknowledge</button>
+  {{/unless}}
+  <button class="button resolve sml">Resolve</button>
+</div>
+
+<div class="contactInfo">
+  <h3>{{$ 'Maintenance Contact' }}</h3>
+  {{#if contactInfo.contact_name }}
+  <strong>{{$ 'Name' }}</strong>: {{ contactInfo.contact_name }}<br>
+  <strong>{{$ 'Email' }}</strong>: {{ contactInfo.contact_email }}<br>
+  <strong>{{$ 'Phone' }}</strong>: {{ contactInfo.contact_phone }}
+  {{else}}
+  {{$ 'No contact provided' }}
+  {{/if}}
 </div>
 
 <div class="module chart"></div>
+
+<div class="projectInfo">
+  <strong>{{ project.display_name }}</strong> -
+  {{ project.address }} {{ project.city }}, {{ project.state }} {{ project.zipcode }}
+  <strong>{{$ 'AC Capacity' }}</strong>: {{ unitConversion project.ac_capacity 'k' }}kW
+  <strong>{{$ 'DC Capacity' }}</strong>: {{ unitConversion project.dc_capacity 'k' }}kW
+</div>

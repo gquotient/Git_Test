@@ -1,0 +1,12 @@
+<fieldset>
+  <legend>{{$ 'Filter By' }}</legend>
+
+  <input name="property" type="hidden" value="owner">
+  <input name="operator" type="hidden" value="=">
+
+  {{$ 'Owner' }} =
+
+  <input name="value" type="text" value="{{ value }}">
+
+  <button class="button sml remove">Remove</button>
+</fieldset>

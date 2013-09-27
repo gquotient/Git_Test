@@ -4,14 +4,18 @@ define([
   'backbone',
   'backbone.marionette',
 
-  'device'
+  'device',
+
+  './admin'
 ], function(
   $,
   _,
   Backbone,
   Marionette,
 
-  Device
+  Device,
+
+  adminViews
 ){
   var Equip = { views: {} };
 
@@ -59,7 +63,13 @@ define([
 
 
   Equip.Model = Backbone.Model.extend({
-    idAttribute: 'label',
+    idAttribute: 'equipment_label',
+
+    localAttributes: [
+      'equipment_label',
+      'extends_from',
+      'label'
+    ],
 
     initialize: function(){
       this.relationships = {};
@@ -67,16 +77,44 @@ define([
       this.outgoing = new Equip.Collection();
       this.incoming = new Equip.Collection();
 
-      _.each(this.get('relationships'), function(rel){
-        var other = this.collection.get(rel.target);
+      if (!this.has('extends_from')) {
+        _.each(this.get('relationships'), function(rel){
+          var other = this.collection.findWhere({label: rel.target});
 
-        if (other) {
-          if (rel.direction === 'INCOMING') {
-            this.connectTo(other, rel.label);
-          } else {
-            other.connectTo(this, rel.label);
+          if (other) {
+            if (rel.direction === 'INCOMING') {
+              this.connectTo(other, rel.label);
+            } else {
+              other.connectTo(this, rel.label);
+            }
           }
-        }
+        }, this);
+      }
+    },
+
+    get: function(attr){
+      var extension;
+
+      // If the attr exists locally return it.
+      if (_.has(this.attributes, attr)) {
+        return this.attributes[attr];
+
+      // Otherwise if this isn't exclusivly local then try and find it.
+      } else if (!_.contains(this.localAttributes, attr)) {
+        extension = this.collection.get(this.get('extends_from'));
+        return extension && extension.get(attr);
+      }
+    },
+
+    getBase: function(){
+      var extension = this.collection.get(this.get('extends_from'));
+
+      return extension ? extension.getBase() : this;
+    },
+
+    getExtends: function(){
+      return this.collection.filter(function(model){
+        return model !== this && model.id.indexOf(this.id) >= 0;
       }, this);
     },
 
@@ -90,10 +128,16 @@ define([
     },
 
     getRelationship: function(target, rendering){
-      var label;
+      var base = this.getBase(),
+        label;
 
-      if (_.has(this.relationships, target.cid)) {
-        label = this.relationships[target.cid];
+      if (base !== this) {
+        return base && base.getRelationship(target, rendering);
+      }
+
+      if (target instanceof Equip.Model) {
+        label = this.relationships[target.getBase().cid];
+
       } else if (target.has('did')) {
         label = (_.findWhere(this.get('relationships'), {
           target: target.get('did').replace(/-\d*$/, ''),
@@ -108,10 +152,8 @@ define([
       return label;
     },
 
-    hasRendering: function(label){
-      return _.any(this.get('renderings'), function(rendering){
-        return rendering.label === label;
-      });
+    getRendering: function(label){
+      return _.findWhere(this.get('renderings'), {label: label});
     },
 
     isRoot: function(label){
@@ -121,7 +163,15 @@ define([
     },
 
     getRootLabel: function(){
-      return this.get('label');
+      var base = this.getBase();
+
+      return base && base.get('label');
+    },
+
+    getBaseName: function(){
+      var base = this.getBase();
+
+      return base && base.get('display_name');
     },
 
     factory: function(project){
@@ -141,7 +191,7 @@ define([
     },
 
     generateName: function(index){
-      var name = this.get('name'), did;
+      var name = this.get('display_name'), did;
 
       if (index instanceof Backbone.Model) {
         did = index.get('did');
@@ -152,7 +202,7 @@ define([
     },
 
     addRendering: function(device, project, label, target){
-      var rendering = _.findWhere(this.get('renderings'), {label: label}),
+      var rendering = this.getRendering(label),
         position;
 
       if (!rendering || device.getPosition(label)) { return; }
@@ -187,24 +237,69 @@ define([
         device.setPosition(label, position);
       }
     }
+  }, {
+    schema: {
+      label: {
+        type: 'text',
+        required: true,
+        editable: false,
+        validate: function(value){
+          return (/^[A-Z0-9]+$/).test(value);
+        }
+      },
+      extends_from: {
+        type: 'text',
+        required: true,
+        editable: false,
+        validate: function(value){
+          return value && value !== '';
+        }
+      },
+      display_name: {
+        type: 'text',
+        required: true,
+        validate: function(value){
+          return value && value !== '';
+        }
+      }
+    }
   });
 
   Equip.Collection = Backbone.Collection.extend({
     model: Equip.Model,
     url: '/api/equipment',
 
-    findOrCreateForDevice: function(device){
-      var label = device.get('equipment_label');
+    getEquipment: function(label){
+      return this.get(label) || this.findWhere({label: label});
+    },
 
-      if (!label && device.has('did')) {
-        label = device.get('did').replace(/-\d*$/, '');
+    getForDevice: function(device){
+      var label = device.get('equipment_label'),
+        equip = label && this.getEquipment(label),
+        match;
+
+      // If equipment_label doesn't exist try to find the base equip.
+      if (!equip && label) {
+        match = /^([A-Z]+)_/.exec(label);
+        equip = match && this.getEquipment(match[1]);
       }
 
-      if (label) {
-        return this.get(label) || this.push({label: label});
+      // Otherwise try and use the device did to find the base equip.
+      if (!equip && device.has('did')) {
+        match = /^([A-Z]+)-/.exec(device.get('did'));
+        equip = match && this.getEquipment(match[1]);
       }
+
+      // As a last resort create the equipment.
+      if (!equip) {
+        equip = this.push({equipment_label: label});
+      }
+
+      return equip;
     }
   });
+
+  _.extend(Equip.views, adminViews);
 
   return Equip;
 });
