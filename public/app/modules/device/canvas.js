@@ -553,21 +553,13 @@ define([
     },
 
     avoidOverlap: function(position){
-      var result;
 
-      // Loop until an empty position is returned.
-      while (true) {
-
-        // Check if something is drawn here.
-        result = this.paper.project.hitTest(position);
-
-        // If this postion is empty, or is only an edge line then return it.
-        if (!result || (result.type === 'stroke' &&
-              result.item instanceof this.paper.Path)) { return position; }
-
-        // Otherwise shift down and try again.
+      // Loop until an empty position is found.
+      while (this.paper.project.hitTest(position)) {
         position.y += 100;
       }
+
+      return position;
     },
 
     positionDevice: function(device, target){
