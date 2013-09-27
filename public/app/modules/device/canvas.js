@@ -492,6 +492,10 @@ define([
       this.triggerMethod('zoom:reset');
     },
 
+    onRender: function(){
+      this.triggerMethod('zoom:reset');
+    },
+
     onClose: function(){
       this.undelegateCanvasEvents();
     },
