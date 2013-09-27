@@ -22,8 +22,9 @@ function(
 
   Notification.Collection = Backbone.Collection.extend({
     model: Notification.Model,
-    addItem: function(){
+    addItem: function(models){
       console.log('add item', arguments);
+      this.set(models);
     },
     initialize: function(options){
       this.listenTo(Backbone, 'notification', this.addItem);
@@ -49,7 +50,16 @@ function(
         count: this.collection.length
       };
     },
-    itemView: Notification.views.DropDownItem
+    ui: {
+      indicator: '.indicator'
+    },
+    itemView: Notification.views.DropDownItem,
+    itemViewContainer: 'ul',
+    collectionEvents: {
+      'change reset set add': function(){
+        this.ui.indicator.text(this.collection.length);
+      }
+    }
   });
 
   return Notification;
