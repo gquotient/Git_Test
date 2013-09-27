@@ -589,6 +589,7 @@ define([
   });
 
   Project.views.DashboardItemView = Marionette.ItemView.extend({
+    className: 'projectStatus',
     template: {
       type: 'handlebars',
       template: dashboardTemplate
