@@ -278,7 +278,7 @@ define([
         if (equip !== equip.getBase()) { return; }
 
         // Don't include equipment that can't be rendered.
-        if (!equip.hasRendering(rendering)) { return; }
+        if (!equip.getRendering(rendering)) { return; }
 
         if (!this.selection) {
 
@@ -313,7 +313,7 @@ define([
           if (this.selection.contains(device)) { return; }
 
           // Don't include devices that can't be rendered.
-          if (!equip.hasRendering(rendering)) { return; }
+          if (!equip.getRendering(rendering)) { return; }
 
           // Don't include devices that don't have a relationship in the current
           // rendering or are children of the selected devices.
@@ -500,7 +500,7 @@ define([
         equip = device.equipment,
         rel = equip.getRelationship(target);
 
-      if (rel && equip.hasRendering(rendering)) {
+      if (rel && equip.getRendering(rendering)) {
         $.ajax('/api/relationships', {
           type: 'POST',
           data: {
