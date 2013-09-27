@@ -589,6 +589,7 @@ define([
   });
 
   Project.views.DashboardItemView = Marionette.ItemView.extend({
+    className: 'projectStatus',
     template: {
       type: 'handlebars',
       template: dashboardTemplate
@@ -814,15 +815,13 @@ define([
     },
 
     initFullscreen: function(){
+      var el = this.el;
+
       // Save fullscreen method
-      if (this.el.webkitRequestFullscreen) { this.fullscreen.activate = this.el.webkitRequestFullscreen; }
-      else if (this.el.mozRequestFullScreen) { this.fullscreen.activate = this.el.mozRequestFullScreen; }
-      else if (this.el.requestFullscreen) { this.fullscreen.activate = this.el.requestFullscreen; }// Opera
+      this.fullscreen.activate = el.webkitRequestFullscreen || el.mozRequestFullscreen || el.requestFullScreen;
 
       // Save exit fullscreen method
-      if (document.webkitExitFullscreen) { this.fullscreen.close = document.webkitExitFullscreen; }
-      else if (document.mozCancelFullscreen) { this.fullscreen.close = document.mozCancelFullscreen; }
-      else if (document.exitFullscreen) { this.fullscreen.close = document.exitFullscreen; }
+      this.fullscreen.close = document.webkitExitFullscreen || document.mozCancelFullscreen || document.exitFullscreen;
 
       // Add button only if fullscreen API is available
       if (this.fullscreen.activate) {
