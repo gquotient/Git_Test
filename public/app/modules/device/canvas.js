@@ -288,64 +288,6 @@ define([
       _.bindAll(this, 'handleMouseEvent', 'handleWheelEvent', 'handleKeyEvent');
     },
 
-    collectionEvents: {
-      'reset': 'checkDevices'
-    },
-
-    checkDevices: function(){
-      var that = this,
-        queue = [],
-        lastPoint;
-
-      function walk(target){
-        if (!target.outgoing) { return; }
-
-        target.outgoing.each(function(device){
-          if (!device.equipment) { return; }
-
-          // Ignore devices that don't have rendering information.
-          if (!device.equipment.getRendering(that.rendering)) { return; }
-
-          // Ignore strings and panels for now.
-          if (_.contains(['S', 'P'], device.equipment.get('label'))) { return; }
-
-          // Add devices that need position to the queue.
-          if (!device.getPosition(that.rendering)) {
-            queue.push([device, target]);
-          }
-
-          // Recursively walk the outgoing tree.
-          walk(device);
-        });
-      }
-
-      function process(){
-        var next = queue.shift(), point;
-
-        if (next) {
-          that.positionDevice.apply(that, next);
-
-          // Get the new top center of the project.
-          point = that.paper.project.activeLayer.bounds.topCenter;
-
-          // When the top center changes, reset the zoom.
-          if (!point.equals(lastPoint)) {
-            that.triggerMethod('zoom:reset');
-            lastPoint = point;
-          }
-
-          // Defer processing the next device to keep the ui responsive.
-          _.defer(process);
-        }
-      }
-
-      // Create a queue of devices that need position by walking the tree.
-      walk(this.model);
-
-      // Start processing the queue.
-      process();
-    },
-
     delegateCanvasEvents: function(){
       function format(events){
         return _.map(events.split(' '), function(evnt){
@@ -451,7 +393,7 @@ define([
     },
 
     onRender: function(){
-      this.triggerMethod('zoom:reset');
+      this.checkDevices();
     },
 
     onClose: function(){
@@ -662,6 +604,61 @@ define([
       if (position) {
         device.setPosition(label, this.avoidOverlap(position));
       }
+    },
+
+    checkDevices: function(){
+      var that = this,
+        queue = [],
+        lastPoint;
+
+      function walk(target){
+        if (!target.outgoing) { return; }
+
+        target.outgoing.each(function(device){
+          if (!device.equipment) { return; }
+
+          // Ignore devices that don't have rendering information.
+          if (!device.equipment.getRendering(that.rendering)) { return; }
+
+          // Ignore strings and panels for now.
+          if (_.contains(['S', 'P'], device.equipment.get('label'))) { return; }
+
+          // Add devices that need position to the queue.
+          if (!device.getPosition(that.rendering)) {
+            queue.push([device, target]);
+          }
+
+          // Recursively walk the outgoing tree.
+          walk(device);
+        });
+      }
+
+      function process(){
+        var next = queue.shift(), point;
+
+        // Check that there is still work to do and that the view hasn't closed.
+        if (next && !that.isClosed) {
+          that.positionDevice.apply(that, next);
+
+          // Get the new top center of the project.
+          point = that.paper.project.activeLayer.bounds.topCenter;
+
+          // When the top center changes, reset the zoom.
+          if (!point.equals(lastPoint)) {
+            that.triggerMethod('zoom:reset');
+            lastPoint = point;
+          }
+
+          // Defer processing the next device to keep the ui responsive.
+          _.defer(process);
+        }
+      }
+
+      // Create a queue of devices that need position by walking the tree.
+      walk(this.model);
+
+      // Start processing the queue.
+      process();
     },
 
     // Prevent item views from being added to the DOM.
