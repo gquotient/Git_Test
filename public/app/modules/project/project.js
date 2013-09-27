@@ -818,10 +818,10 @@ define([
       var el = this.el;
 
       // Save fullscreen method
-      this.fullscreen.activate = el.webkitRequestFullscreen || el.mozRequestFullscreen || el.requestFullScreen;
+      this.fullscreen.activate = el.webkitRequestFullScreen || el.mozRequestFullScreen || el.requestFullScreen;
 
       // Save exit fullscreen method
-      this.fullscreen.close = document.webkitExitFullscreen || document.mozCancelFullscreen || document.exitFullscreen;
+      this.fullscreen.close = document.webkitExitFullScreen || document.mozCancelFullScreen || document.exitFullScreen;
 
       // Add button only if fullscreen API is available
       if (this.fullscreen.activate) {
