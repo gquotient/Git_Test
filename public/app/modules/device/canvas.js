@@ -346,48 +346,6 @@ define([
       process();
     },
 
-    positionDevice: function(device, target){
-      var equip = device.equipment,
-        label = this.rendering,
-        rendering = equip.getRendering(label),
-        position, delta;
-
-      if (device.getPosition(label) || !rendering) { return; }
-
-      if (rendering.root && rendering.position) {
-        position = _.clone(rendering.position);
-
-        // Move root device to the bottom.
-        if (this.paper.project.activeLayer.bounds.height > 0) {
-          delta = this.paper.project.activeLayer.bounds.bottom - position.y;
-
-          if (delta > 0) {
-            position.y += Math.ceil(delta / 200) * 200;
-          }
-        }
-
-      // Otherwise position relative to target device.
-      } else if (target && equip.getRelationship(target, label)) {
-        position = target.getPosition(label);
-
-        // Apply offset for this equipment.
-        if (position && rendering.offset) {
-          position.x += rendering.offset.x || 0;
-          position.y += rendering.offset.y || 0;
-        }
-      }
-
-      if (position) {
-
-        // Avoid other devices already rendered.
-        while (this.paper.project.hitTest(position)) {
-          position.y += 100;
-        }
-
-        device.setPosition(label, position);
-      }
-    },
-
     delegateCanvasEvents: function(){
       function format(events){
         return _.map(events.split(' '), function(evnt){
@@ -635,13 +593,75 @@ define([
 
     snapSelection: function(){
       this.selection.each(function(model) {
-        var position = model.getPosition(this.rendering);
+        var position = model.getPosition(this.rendering),
+          view = this.children.findByModel(model);
 
-        model.setPosition(this.rendering, {
+        // Temporarily remove the device view while checking overlap.
+        view.erase();
+
+        model.setPosition(this.rendering, this.avoidOverlap({
           x: Math.round(position.x / 100) * 100,
           y: Math.round(position.y / 100) * 100
-        }, true);
+        }), true);
+
+        // Redraw the view and make sure it is selected.
+        view.draw();
+        view.select();
       }, this);
+    },
+
+    avoidOverlap: function(position){
+      var result;
+
+      // Loop until an empty position is returned.
+      while (true) {
+
+        // Check if something is drawn here.
+        result = this.paper.project.hitTest(position);
+
+        // If this postion is empty, or is only an edge line then return it.
+        if (!result || (result.type === 'stroke' &&
+              result.item instanceof this.paper.Path)) { return position; }
+
+        // Otherwise shift down and try again.
+        position.y += 100;
+      }
+    },
+
+    positionDevice: function(device, target){
+      var equip = device.equipment,
+        label = this.rendering,
+        rendering = equip.getRendering(label),
+        position, delta;
+
+      if (device.getPosition(label) || !rendering) { return; }
+
+      if (rendering.root && rendering.position) {
+        position = _.clone(rendering.position);
+
+        // Move root device to the bottom.
+        if (this.paper.project.activeLayer.bounds.height > 0) {
+          delta = this.paper.project.activeLayer.bounds.bottom - position.y;
+
+          if (delta > 0) {
+            position.y += Math.ceil(delta / 200) * 200;
+          }
+        }
+
+      // Otherwise position relative to target device.
+      } else if (target && equip.getRelationship(target, label)) {
+        position = target.getPosition(label);
+
+        // Apply offset for this equipment.
+        if (position && rendering.offset) {
+          position.x += rendering.offset.x || 0;
+          position.y += rendering.offset.y || 0;
+        }
+      }
+
+      if (position) {
+        device.setPosition(label, this.avoidOverlap(position));
+      }
     },
 
     // Prevent item views from being added to the DOM.
