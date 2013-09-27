@@ -109,54 +109,52 @@ define([
         localTime = this.model.getLocalDate()
       ;
 
-      if (device) {
-        // Add link to device
-        this.$el.find('.deviceName').html('<a href="#' + device.get('graph_key') + '" class="device">' + device.get('did') + '</a>');
+      // Add link to device
+      this.$el.find('.deviceName').html('<a href="#' + device.get('graph_key') + '" class="device">' + device.get('did') + '</a>');
 
-        // Instantiate chart
-        var chart_powerAndIrradiance = new Chart.views.Basic({
-          autoUpdate: false,
-          chartOptions: {
-            xAxis: {
-              plotBands: {
-                color: 'rgba(201, 77, 30, 0.1)',
-                from: localTime.start,
-                to: localTime.stop
-              }
+      // Instantiate chart
+      var chart_powerAndIrradiance = new Chart.views.Basic({
+        autoUpdate: false,
+        chartOptions: {
+          xAxis: {
+            plotBands: {
+              color: 'rgba(201, 77, 30, 0.1)',
+              from: localTime.start,
+              to: localTime.stop
             }
+          }
+        },
+        traces: [
+          {
+            'project_label': project.id,
+            'ddl': 'pgen-env',
+            'dtstart': startTime,
+            'dtstop': stopTime,
+            'columns': ['freezetime', 'irradiance'],
+            project_timezone: project.get('timezone')
           },
-          traces: [
-            {
-              'project_label': project.id,
-              'ddl': 'pgen-env',
-              'dtstart': startTime,
-              'dtstop': stopTime,
-              'columns': ['freezetime', 'irradiance'],
-              project_timezone: project.get('timezone')
-            },
-            {
-              'project_label': project.id,
-              'ddl': this.model.get('device_type'),
-              'dtstart': startTime,
-              'dtstop': stopTime,
-              'columns': ['freezetime', this.model.get('device_column')],
-              'filters': [
-                {
-                  'column': 'identifier',
-                  'in_set': [device.get('graph_key')]
-                }
-              ],
-              project_timezone: project.get('timezone')
-            }
-          ],
-          series: [
-            Chart.seriesDefaults.irradiance,
-            Chart.seriesDefaults.power
-          ]
-        });
+          {
+            'project_label': project.id,
+            'ddl': this.model.get('device_type'),
+            'dtstart': startTime,
+            'dtstop': stopTime,
+            'columns': ['freezetime', this.model.get('device_column')],
+            'filters': [
+              {
+                'column': 'identifier',
+                'in_set': [device.get('graph_key')]
+              }
+            ],
+            project_timezone: project.get('timezone')
+          }
+        ],
+        series: [
+          Chart.seriesDefaults.irradiance,
+          Chart.seriesDefaults.power
+        ]
+      });
 
-        this.chart.show(chart_powerAndIrradiance);
-      }
+      this.chart.show(chart_powerAndIrradiance);
     },
     serializeData: function(){
       // Since we need the project info, we need to return a special context
