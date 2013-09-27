@@ -2,37 +2,54 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'backbone.marionette'
+  'backbone.marionette',
+
+  'hbs!notification/templates/dropDown',
+  'hbs!notification/templates/dropDownItem'
 ],
 function(
   $,
   _,
   Backbone,
-  Marionette
+  Marionette,
+
+  dropDownTemplate,
+  dropDownItemTemplate
 ){
   var Notification = { views: {} };
 
   Notification.Model = Backbone.Model.extend({});
 
   Notification.Collection = Backbone.Collection.extend({
-    model: Notification.Model
-  });
-
-  Notification.views.TableRow = Marionette.ItemView.extend({
-    tagName: 'tr',
-    template: {
-      type: 'handlebars',
-      template: tableRowTemplate
+    model: Notification.Model,
+    addItem: function(){
+      console.log('add item', arguments);
+    },
+    initialize: function(options){
+      this.listenTo(Backbone, 'notification', this.addItem);
     }
   });
 
-  Notification.views.Table = Marionette.CompositeView.extend({
+  Notification.views.DropDownItem = Marionette.ItemView.extend({
+    tagName: 'li',
     template: {
       type: 'handlebars',
-      template: tableTemplate
+      template: dropDownItemTemplate
+    }
+  });
+
+  Notification.views.DropDown = Marionette.CompositeView.extend({
+    className: 'notificationDropDown',
+    template: {
+      type: 'handlebars',
+      template: dropDownTemplate
     },
-    itemViewContainer: 'tbody',
-    itemView: Notification.views.TableRow
+    templateHelpers: function(){
+      return {
+        count: this.collection.length
+      };
+    },
+    itemView: Notification.views.DropDownItem
   });
 
   return Notification;

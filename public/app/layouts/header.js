@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
   'handlebars',
 
+  'notification',
+
   'hbs!layouts/templates/header'
 ], function(
   $,
@@ -13,6 +15,8 @@ define([
   Marionette,
   Handlebars,
 
+  Notification,
+
   headerTemplate
 ){
   return Backbone.Marionette.Layout.extend({
@@ -20,24 +24,29 @@ define([
       type: 'handlebars',
       template: headerTemplate
     },
+    regions: {
+      notifications: '.notifications'
+    },
     events: {
       'click a': function(event){
         event.preventDefault();
 
-        var route = event.target.hash.replace('#', '');
+        var route = event.target.pathname;
 
-        Backbone.history.navigate('/' + route, true);
+        Backbone.history.navigate(route, true);
       }
     },
     triggers: {
-      'click .logout': 'logout',
       'change select': 'select:team'
     },
-    initialize: function(){
-      this.listenTo(this, 'logout', function(){
-        window.location = '/logout';
+    onShow: function(){
+      var notificationView = new Notification.views.DropDown({
+        collection: new Notification.Collection()
       });
 
+      this.notifications.show(notificationView);
+    },
+    initialize: function(){
       this.listenTo(this.model, 'change', function(){
         this.render();
       });
