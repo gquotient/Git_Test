@@ -41,14 +41,10 @@ define([
       var el = this.ui.projects[0];
 
       // Save fullscreen method
-      if (el.webkitRequestFullscreen) { this.fullscreen.activate = el.webkitRequestFullscreen; }
-      else if (el.mozRequestFullScreen) { this.fullscreen.activate = el.mozRequestFullScreen; }
-      else if (el.requestFullscreen) { this.fullscreen.activate = el.requestFullscreen; }// Opera
+      this.fullscreen.activate = el.webkitRequestFullscreen || el.mozRequestFullscreen || el.requestFullScreen;
 
       // Save exit fullscreen method
-      if (document.webkitExitFullscreen) { this.fullscreen.close = document.webkitExitFullscreen; }
-      else if (document.mozCancelFullscreen) { this.fullscreen.close = document.mozCancelFullscreen; }
-      else if (document.exitFullscreen) { this.fullscreen.close = document.exitFullscreen; }
+      this.fullscreen.close = document.webkitExitFullscreen || document.mozCancelFullscreen || document.exitFullscreen;
 
       // Add button only if fullscreen API is available
       if (this.fullscreen.activate) {
