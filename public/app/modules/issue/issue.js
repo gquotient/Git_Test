@@ -70,7 +70,7 @@ function(
       // Ask user for an acknowledge comment
       var that = this;
 
-      var comment = prompt('A comment is required to acknowledge this alarm.');
+      var comment = window.prompt('A comment is required to acknowledge this alarm.');
 
       if (comment && comment.length) {
         return this.save({
@@ -85,7 +85,7 @@ function(
     resolve: function(){
       var that = this;
 
-      var confirm = confirm('Are you sure you want to mark this alarm resolved?');
+      var confirm = window.confirm('Are you sure you want to mark this alarm resolved?');
 
       if (confirm) {
         return $.ajax({
