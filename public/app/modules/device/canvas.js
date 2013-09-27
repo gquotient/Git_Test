@@ -289,26 +289,103 @@ define([
     },
 
     collectionEvents: {
-      'reset': function(){
-        this.checkOutgoing(this.model);
-      }
+      'reset': 'checkDevices'
     },
 
-    checkOutgoing: function(target){
-      if (!target.outgoing) { return; }
+    checkDevices: function(){
+      var that = this,
+        queue = [],
+        lastPoint;
 
-      target.outgoing.each(function(device){
-        if (!device.equipment) { return; }
+      function walk(target){
+        if (!target.outgoing) { return; }
 
-        // For now ignore strings and panels.
-        if (_.contains(['S', 'P'], device.equipment.get('label'))) { return; }
+        target.outgoing.each(function(device){
+          if (!device.equipment) { return; }
 
-        // Add position to device for this rendering.
-        device.equipment.addRendering(device, this.model, this.rendering, target);
+          // Ignore devices that don't have rendering information.
+          if (!device.equipment.getRendering(that.rendering)) { return; }
 
-        // Recursively check all outgoing devices for this rendering.
-        this.checkOutgoing(device);
-      }, this);
+          // Ignore strings and panels for now.
+          if (_.contains(['S', 'P'], device.equipment.get('label'))) { return; }
+
+          // Add devices that need position to the queue.
+          if (!device.getPosition(that.rendering)) {
+            queue.push([device, target]);
+          }
+
+          // Recursively walk the outgoing tree.
+          walk(device);
+        });
+      }
+
+      function process(){
+        var next = queue.shift(), point;
+
+        if (next) {
+          that.positionDevice.apply(that, next);
+
+          // Get the new top center of the project.
+          point = that.paper.project.activeLayer.bounds.topCenter;
+
+          // When the top center changes, reset the zoom.
+          if (!point.equals(lastPoint)) {
+            that.triggerMethod('zoom:reset');
+            lastPoint = point;
+          }
+
+          // Defer processing the next device to keep the ui responsive.
+          _.defer(process);
+        }
+      }
+
+      // Create a queue of devices that need position by walking the tree.
+      walk(this.model);
+
+      // Start processing the queue.
+      process();
+    },
+
+    positionDevice: function(device, target){
+      var equip = device.equipment,
+        label = this.rendering,
+        rendering = equip.getRendering(label),
+        position, delta;
+
+      if (device.getPosition(label) || !rendering) { return; }
+
+      if (rendering.root && rendering.position) {
+        position = _.clone(rendering.position);
+
+        // Move root device to the bottom.
+        if (this.paper.project.activeLayer.bounds.height > 0) {
+          delta = this.paper.project.activeLayer.bounds.bottom - position.y;
+
+          if (delta > 0) {
+            position.y += Math.ceil(delta / 200) * 200;
+          }
+        }
+
+      // Otherwise position relative to target device.
+      } else if (target && equip.getRelationship(target, label)) {
+        position = target.getPosition(label);
+
+        // Apply offset for this equipment.
+        if (position && rendering.offset) {
+          position.x += rendering.offset.x || 0;
+          position.y += rendering.offset.y || 0;
+        }
+      }
+
+      if (position) {
+
+        // Avoid other devices already rendered.
+        while (this.paper.project.hitTest(position)) {
+          position.y += 100;
+        }
+
+        device.setPosition(label, position);
+      }
     },
 
     delegateCanvasEvents: function(){
@@ -412,10 +489,6 @@ define([
 
     onShow: function(){
       this.delegateCanvasEvents();
-      this.triggerMethod('zoom:reset');
-    },
-
-    onRender: function(){
       this.triggerMethod('zoom:reset');
     },
 
