@@ -27,52 +27,6 @@ define([
 
   detailTemplate
 ){
-
-  var DevicesView = Marionette.CollectionView.extend({
-    itemView: Device.views.Canvas,
-
-    itemViewOptions: function(project){
-      return {
-        collection: project.devices,
-        rendering: 'POWER',
-        editable: false
-      };
-    },
-
-    initialize: function(){
-      this.collection = new Backbone.Collection();
-    },
-
-    showProject: function(project){
-      var view = this.children.findByModel(project);
-
-      if (this.currentView) {
-        if (this.currentView === view) { return; }
-
-        this.currentView.undelegateCanvasEvents();
-        this.currentView.$el.hide();
-        this.currentView = null;
-      }
-
-      if (view) {
-        view.delegateCanvasEvents();
-        view.$el.show();
-        this.currentView = view;
-
-      } else {
-        this.collection.add(project);
-
-        if (!project.devices.length) {
-          project.fetch({equipment: this.options.equipment});
-        }
-      }
-    },
-
-    onAfterItemAdded: function(view){
-      this.currentView = view;
-    }
-  });
-
   return Marionette.Layout.extend({
     template: {
       type: 'handlebars',
@@ -86,9 +40,26 @@ define([
       chart_powerHistory: '.chart#powerHistory',
       chart_healthAndSoiling: '.chart#healthAndSoiling'
     },
-    currentView: 'map',
+    initialize: function(){
+      // Check if devices need to be fetched
+      if (!this.model.devices.length) {
+        this.model.fetch({
+          equipment: this.options.equipment
+        });
+      }
+
+      this.listenTo(Backbone, 'click:issue', function(issue){
+        var issueId = (issue === 'all') ? '' : '/' + issue.id;
+
+        Backbone.history.navigate('/project/' + this.model.id + '/issues' + issueId, true);
+      });
+
+      this.listenTo(Backbone, 'click:device', function(device){
+        Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'), true);
+      });
+    },
     triggers: {
-      'click .toggleView': 'toggleView'
+      'click .toggleView': 'toggle:view'
     },
     onToggleView: function(){
       if (this.currentView === 'map') {
@@ -102,15 +73,17 @@ define([
 
         // When map is set to "display:none", marker renders messed up
         // This is a janky hack butso is all the rest of this map toggle tomfoolery
-        _.each(this.mapView.markers._layers, function(marker){
-          marker.closePopup();
-          marker.openPopup();
-        });
+        if (this.mapView) {
+          _.each(this.mapView.markers._layers, function(marker){
+            marker.closePopup();
+            marker.openPopup();
+          });
+        }
       }
     },
     onShow: function(){
       // Start with devices view hidden
-      $('.devices').hide();
+      this.triggerMethod('toggle:view');
 
       // Build and display modules
       this.showCharts();
@@ -229,26 +202,15 @@ define([
       });
     },
     showDevices: function(){
-      // Instantiate devices collection view.
-      this.devicesView = new DevicesView({
-        equipment: this.options.equipment
+      // Build devices view
+      this.devicesView = new Device.views.Canvas({
+        model: this.model,
+        collection: this.model.devices,
+        rendering: 'POWER'
       });
 
+      // Show devices
       this.devices.show(this.devicesView);
-
-      // Add project to devices view and activate it.
-      this.devicesView.showProject(this.model);
-    },
-    initialize: function(){
-      this.listenTo(Backbone, 'click:issue', function(issue){
-        var issueId = (issue === 'all') ? '' : '/' + issue.id;
-
-        Backbone.history.navigate('/project/' + this.model.id + '/issues' + issueId, true);
-      });
-
-      this.listenTo(Backbone, 'click:device', function(device){
-        Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'), true);
-      });
     }
   });
 });

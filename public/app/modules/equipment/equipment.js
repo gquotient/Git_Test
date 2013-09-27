@@ -151,10 +151,8 @@ define([
       return label;
     },
 
-    hasRendering: function(label){
-      return _.any(this.get('renderings'), function(rendering){
-        return rendering.label === label;
-      });
+    getRendering: function(label){
+      return _.findWhere(this.get('renderings'), {label: label});
     },
 
     isRoot: function(label){
@@ -203,7 +201,7 @@ define([
     },
 
     addRendering: function(device, project, label, target){
-      var rendering = _.findWhere(this.get('renderings'), {label: label}),
+      var rendering = this.getRendering(label),
         position;
 
       if (!rendering || device.getPosition(label)) { return; }
