@@ -562,6 +562,7 @@ define([
     itemView: Project.views.DataListItem,
     initialize: function(options){
       this.collection = new Backbone.VirtualCollection(options.collection, {
+        comparator: 'display_name',
         close_with: this
       });
     }
@@ -959,16 +960,17 @@ define([
     }
   });
 
-  /* This composite view is the wrapper view for the list of portfolios.
-     It handles nesting the list while allowing for the navigation header. */
   Project.views.NavigationListView = Navigation.views.List.extend({
     template: {
       type: 'handlebars',
       template: navigationListTemplate
     },
+    ui: _.extend({}, Navigation.views.List.prototype.ui, {
+      sort: '.sortSelect'
+    }),
     itemView: Project.views.NavigationListItemView,
     events: {
-      'change #project-sort': function(event){
+      'change .sortSelect': function(event){
         this.sort(event.currentTarget.value);
       }
     }

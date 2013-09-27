@@ -64,7 +64,7 @@ define([
     },
 
     initialize: function(options){
-      this.projects = new Project.Collection([], {comparator: 'display_name'});
+      this.projects = new Project.Collection();
 
       // Add projects to the collection
       this.updateProjects();
@@ -74,23 +74,24 @@ define([
     },
 
     updateProjects: function(){
-      // Clear out existing projects
-      this.projects.reset();
-
       // If a projects array is returned from an old style filter,
       // add them to the collection
+      var projects = [];
+
       _.each(this.get('projects'), function(project){
         project = this.collection.projects.get(project);
 
         if (project) {
-          this.projects.add(project);
+          projects.push(project);
         }
       }, this);
 
       // If filter is a smart filter, fetch projects
       if (_.isArray(this.get('filter'))) {
-        this.projects.add(this.filteredProjects());
+        projects = _.union(projects, this.filteredProjects());
       }
+
+      this.projects.set(projects);
 
       this.set('total_projects', this.projects.length);
 

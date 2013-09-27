@@ -22,7 +22,7 @@ define([
 ){
   var RouteController = Backbone.Marionette.Controller.extend({
     index: function(){
-      Backbone.history.navigate('portfolio/all', true);
+      Backbone.history.navigate('portfolios/all', true);
     },
 
     findPortfolio: function(id){
@@ -34,16 +34,9 @@ define([
       this.mainLayout.showOperatorView(portfolio);
     },
 
-    portfolioDetail: function(id){
+    portfolios: function(id, view){
       var portfolio = this.findPortfolio(id);
-
-      Backbone.trigger('reset:breadcrumbs', {
-        state: 'portfolio',
-        display_name: portfolio.get('display_name'),
-        model: portfolio
-      });
-
-      this.mainLayout.showPortfolio(portfolio);
+      this.mainLayout.showPortfolios(portfolio, {view: view});
     },
 
     findProject: function(id){
@@ -122,10 +115,8 @@ define([
     appRoutes: {
       '': 'index',
 
-      'portfolio/operatorview/:id': 'operatorView',
-      'portfolio/operatorview': 'operatorView',
-      'portfolio/:id': 'portfolioDetail',
-      'portfolio': 'index',
+      'portfolios/:id(/:view)': 'portfolios',
+      'portfolios': 'index',
 
       'project/:id/devices/:deviceId': 'projectDevices',
       'project/:id/devices': 'projectDevices',

@@ -15,7 +15,6 @@ define([
   'layouts/projects',
   'layouts/issues',
   'layouts/devices',
-  'layouts/operatorview',
   'layouts/projectEditor',
   'layouts/profile',
   'layouts/admin',
@@ -38,7 +37,6 @@ define([
   ProjectsLayout,
   IssuesLayout,
   DevicesLayout,
-  OperatorViewLayout,
   ProjectEditorLayout,
   ProfileLayout,
   AdminLayout,
@@ -74,19 +72,14 @@ define([
       });
     },
 
-    showPortfolio: function(portfolio){
-      this.mainContent.show( new PortfoliosLayout({
-        model: portfolio,
-        portfolios: this.app.portfolios,
-        settingsRegion: this.settings
-      }));
-    },
+    showPortfolios: function(portfolio, options){
+      this.activePortfolio = portfolio;
 
-    showOperatorView: function(portfolio){
-      this.mainContent.show( new OperatorViewLayout({
+      this.mainContent.show( new PortfoliosLayout(_.extend({
         model: portfolio,
-        portfolios: this.app.portfolios
-      }));
+        collection: this.app.portfolios,
+        settingsRegion: this.settings
+      }, options)));
     },
 
     showProject: function(project){
@@ -205,8 +198,8 @@ define([
       });
 
       this.listenTo(Backbone, 'select:portfolio', function(model){
-        Backbone.history.navigate('/portfolio/' + model.id);
-        this.showPortfolio(model);
+        Backbone.history.navigate('/portfolios/' + model.id);
+        this.showPortfolios(model);
       }, this);
 
       this.listenTo(Backbone, 'select:project', function(model){
