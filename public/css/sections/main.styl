@@ -92,7 +92,6 @@ header {
             font-size: 12px;
           }
           &:hover {
-            background: url(../img/arrow_notifications.png) center bottom no-repeat;
             .notifications {
               visibility: visible;
               opacity: 1;
@@ -106,6 +105,8 @@ header {
             top: 100%;
             left: -79px;
             width: 200px;
+            background: #111;
+            border: borderBasicMedium;
             > .actions {
               background: colorBGDarkGrey;
               background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
@@ -130,13 +131,13 @@ header {
               }
             }
             > ul {
+              background: url(../img/arrow_notifications.png) center top no-repeat;
               height: inherit;
               line-height: inherit;
               max-height: 200px;
               overflow: auto;
-              background: #111;
-              padding: 0;
-              border: borderBasicMedium;
+              padding: 6px 0 0;
+              margin-top: -6px;
               box-shadow: basicBoxShadow;
               > li {
                 width: 100%;
