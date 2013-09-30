@@ -643,18 +643,25 @@ define([
     snapSelection: function(){
       this.selection.each(function(model) {
         var position = model.getPosition(this.rendering),
-          view = this.children.findByModel(model);
 
-        // Temporarily remove the device view while checking overlap.
-        view.erase();
+          // Find all views that connect to this model.
+          views = model.incoming.reduce(function(memo, other){
+            var node = this.children.findByModel(other),
+              edge = node && node.children.findByModel(model);
+
+            return edge ? memo.concat(edge) : memo;
+          }, [this.children.findByModel(model)], this);
+
+        // Temporarily erase these views.
+        _.invoke(views, 'erase', {refresh: false});
 
         model.setPosition(this.rendering, this.avoidOverlap({
           x: Math.round(position.x / 100) * 100,
           y: Math.round(position.y / 100) * 100
         }), true);
 
-        // Redraw the view and make sure it is selected.
-        view.draw({select: true});
+        // Redraw the views and re-select the node.
+        _.invoke(views, 'draw', {erase: false, select: true, refresh: false});
       }, this);
     },
 
