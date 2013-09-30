@@ -43,27 +43,29 @@ define([
 
       this.listenTo(this.device, 'change:renderings', this.move);
       this.listenTo(this.model, 'change:renderings', this.move);
-
-      this.on('close', this.erase);
     },
 
     render: function(){
       this.isClosed = false;
-
-      this.triggerMethod('before:render', this);
-      this.triggerMethod('item:before:render', this);
-
-      this.draw();
-
-      this.triggerMethod('render', this);
-      this.triggerMethod('item:rendered', this);
-
       return this;
     },
 
-    draw: function(){
-      this.erase(true);
+    draw: function(options){
+      options = options || {};
 
+      if (options.erase !== false) {
+        this.erase({refresh: false});
+      }
+
+      this.drawEdge();
+      this.move();
+
+      if (options.refresh !== false) {
+        this.paper.view.draw();
+      }
+    },
+
+    drawEdge: function(){
       this.edge = new this.paper.Path({
         segments: [[], [], [], []],
         strokeWidth: 2,
@@ -71,19 +73,18 @@ define([
       });
 
       this.edge.sendToBack();
-      this.move();
-
-      this.paper.view.draw();
     },
 
-    erase: function(skipDraw){
+    erase: function(options){
+      options = options || {};
+
       if (this.edge) {
         this.edge.remove();
-        this.edge = null;
+        delete this.edge;
+      }
 
-        if (!skipDraw) {
-          this.paper.view.draw();
-        }
+      if (options.refresh !== false) {
+        this.paper.view.draw();
       }
     },
 
@@ -131,6 +132,15 @@ define([
   views.CanvasNode = Marionette.CollectionView.extend({
     itemView: views.CanvasEdge,
 
+    itemViewOptions: function(item){
+      return {
+        device: this.model,
+        paper: this.paper,
+        rendering: this.rendering,
+        relationship: item.getRelationship(this.model)
+      };
+    },
+
     initialize: function(options){
       this.collection = new Backbone.VirtualCollection(this.model.outgoing, {
         filter: function(model){
@@ -148,9 +158,6 @@ define([
 
       this.factory = symbolLibrary(this.paper);
       this.setCenter();
-
-      this.on('render', this.draw);
-      this.on('close', this.erase);
     },
 
     modelEvents: {
@@ -159,28 +166,66 @@ define([
       'change:renderings': 'setCenter'
     },
 
-    itemViewOptions: function(item){
-      return {
-        device: this.model,
-        paper: this.paper,
-        rendering: this.rendering,
-        relationship: item.getRelationship(this.model)
-      };
+    onBeforeRender: function(){
+      this.isRendering = true;
     },
 
-    // Prevent item views from being added to the DOM.
-    appendHtml: function(){},
+    onAfterItemAdded: function(view){
+      // Don't bother drawing each edge when the node is being rendered
+      // since draw() will handle this.
+      if (!this.isRendering) {
+        view.draw();
+      }
+    },
 
-    draw: function(){
-      this.erase(true);
+    onRender: function(){
+      delete this.isRendering;
+    },
 
+    onCollectionBeforeClose: function(){
+      this.isClosing = true;
+    },
+
+    onItemRemoved: function(view){
+      // Don't bother erasing each edge when the view is being closed.
+      if (!this.isClosing) {
+        view.erase();
+      }
+    },
+
+    onClose: function(){
+      delete this.isClosing;
+    },
+
+    draw: function(options){
+      options = options || {};
+
+      if (options.erase !== false) {
+        this.erase({edges: options.edges, refresh: false});
+      }
+
+      this.drawNode();
+
+      if (options.edges !== false) {
+        this.children.invoke('draw', {erase: false, refresh: false});
+      }
+
+      if (options.select) {
+        this.select();
+      }
+
+      if (options.refresh !== false) {
+        this.paper.view.draw();
+      }
+    },
+
+    drawNode: function(){
       var symbol = this.factory(this.model.equipment.getRootLabel(), this.center),
         label = this.drawLabel(this.model);
 
       label.position = this.center.subtract(0, (symbol.bounds.height + label.bounds.height) * 0.55);
 
       this.node = new this.paper.Group([symbol, label]);
-      this.paper.view.draw();
     },
 
     drawLabel: function(device){
@@ -198,15 +243,21 @@ define([
       });
     },
 
-    erase: function(skipDraw){
+    erase: function(options){
+      options = options || {};
+
       this.deselect();
+
+      if (options.edges !== false) {
+        this.children.invoke('erase', {refresh: false});
+      }
 
       if (this.node) {
         this.node.remove();
-        this.node = null;
+        delete this.node;
       }
 
-      if (!skipDraw) {
+      if (options.refresh !== false) {
         this.paper.view.draw();
       }
     },
@@ -241,7 +292,10 @@ define([
 
     testInside: function(rect){
       return this.center.isInside(rect);
-    }
+    },
+
+    // Prevent item views from being added to the DOM.
+    appendHtml: function(){}
   });
 
   views.Canvas = Marionette.CollectionView.extend({
@@ -392,12 +446,41 @@ define([
       this.triggerMethod('zoom:reset');
     },
 
+    onBeforeRender: function(){
+      // Make sure there are no left over nodes and edges when rendering.
+      this.eraseNodes({refresh: false});
+
+      this.isRendering = true;
+    },
+
+    onAfterItemAdded: function(view){
+      // Don't bother drawing each node when the canvas is being rendered
+      // since drawNodes() will handle this.
+      if (!this.isRendering) {
+        view.draw();
+      }
+    },
+
     onRender: function(){
+      this.drawNodes({erase: false});
+      delete this.isRendering;
+
       this.checkDevices();
     },
 
+    onCollectionBeforeClose: function(){
+      this.isClosing = true;
+    },
+
+    onItemRemoved: function(view){
+      // Don't bother erasing each node when the view is being closed.
+      if (!this.isClosing) {
+        view.erase();
+      }
+    },
+
     onClose: function(){
-      this.undelegateCanvasEvents();
+      delete this.isClosing;
     },
 
     onMousedown: function(args){
@@ -505,6 +588,30 @@ define([
       this.paper.view.scrollBy(delta.negate());
     },
 
+    drawNodes: function(options){
+      options = options || {};
+
+      if (options.erase !== false) {
+        this.eraseNodes({refresh: false});
+      }
+
+      this.children.invoke('draw', {erase: false, refresh: false});
+
+      if (options.refresh !== false) {
+        this.paper.view.draw();
+      }
+    },
+
+    eraseNodes: function(options){
+      options = options || {};
+
+      this.children.invoke('erase', {refresh: false});
+
+      if (options.refresh !== false) {
+        this.paper.view.draw();
+      }
+    },
+
     drawSelect: function(point){
       this.select = this.paper.Path.Rectangle(point, 1);
       this.select.strokeColor = 'black';
@@ -547,8 +654,7 @@ define([
         }), true);
 
         // Redraw the view and make sure it is selected.
-        view.draw();
-        view.select();
+        view.draw({select: true});
       }, this);
     },
 
