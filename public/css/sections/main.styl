@@ -92,17 +92,19 @@ header {
             font-size: 12px;
           }
           &:hover {
+            background: url(../img/arrow_notifications.png) center bottom no-repeat;
             ul {
               display: block;
             }
           }
           ul {
+            height: inherit;
+            line-height: inherit;
             display: none;
             position: absolute;
             top: 100%;
             left: -79px;
             width: 200px;
-            min-height: 120px;
             max-height: 200px;
             overflow: auto;
             background: #111;
@@ -110,9 +112,21 @@ header {
             border: borderBasicMedium;
             box-shadow: basicBoxShadow;
             li {
+              width: 100%;
               padding: 6px;
               line-height: 1.25em;
               border: none;
+              border-bottom: borderBasicMedium;
+              margin: 0;
+              &.acknowledged {
+                color: colorDisabledText;
+              }
+              &:last-child {
+                border-bottom: none;
+              }
+              .statusIndicator {
+                margin-right: 6px;
+              }
             }
           }
         }

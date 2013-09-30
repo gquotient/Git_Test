@@ -36,6 +36,11 @@ function(
     template: {
       type: 'handlebars',
       template: dropDownItemTemplate
+    },
+    onRender: function(){
+      if (this.model.get('acked')) {
+        this.$el.addClass('acknowledged');
+      }
     }
   });
 
