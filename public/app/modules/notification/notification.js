@@ -99,7 +99,7 @@ function(
       'change': 'render'
     },
     collectionEvents: {
-      'add reset set': 'updateCount'
+      'add remove reset': 'updateCount'
     },
     onAcknowledgeAll: function(){
       this.children.each(function(child){
