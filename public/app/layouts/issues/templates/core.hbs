@@ -6,9 +6,9 @@
   <strong>{{$ 'Acknowledged' }}</strong>: {{ alarm.acked }} {{#unless alarm.acked}}False{{/unless}} <br>
   <br>
   {{#unless alarm.acked}}
-  <button class="button acknowledge sml">Acknowledge</button>
+  <button class="button acknowledge sml">{{$ 'Acknowledge' }}</button>
   {{/unless}}
-  <button class="button resolve sml">Resolve</button>
+  <button class="button resolve sml">{{$ 'Resolve' }}</button>
 </div>
 
 <div class="contactInfo">

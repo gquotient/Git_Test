@@ -52,15 +52,19 @@ define([
     onShow: function(){
       var that = this;
       // Fetch data for all projects
-      var fetchData = function(){
-        that.collection.fetchIssues();
+      var fetchProjectData = function(){
+        return {
+          issues: that.collection.fetchIssues()
+        };
       };
 
-      // Fetch data right away
-      fetchData();
+      // Run initially to get latest data
+      fetchProjectData().issues.done(function(data){
+        Backbone.trigger('notification', data.alarms);
+      });
 
-      // Fetch data every 15 minutes
-      this.fetchInterval = setInterval(fetchData, 900000);
+      // Fetch issues every five minutes
+      this.fetchDataInterval = setInterval(fetchProjectData, 300000);
 
       this.contentNavigation.show(this.projectNavigationListView);
 
