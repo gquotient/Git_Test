@@ -68,7 +68,7 @@ define([
       });
 
       // Fetch issues every five minutes
-      this.fetchIssuesInterval = setInterval(fetchProjectData, 300000);
+      this.fetchDataInterval = setInterval(fetchProjectData, 300000);
 
       // Create the settings drop down
       this.buildSettingsDropdown();
