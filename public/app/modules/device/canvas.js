@@ -438,6 +438,7 @@ define([
       if (value && !_.contains(['INPUT', 'TEXTAREA'], e.target.nodeName)) {
         e.preventDefault();
         this.triggerMethod(value);
+        this.paper.view.draw();
       }
     },
 
@@ -547,6 +548,38 @@ define([
       }
     },
 
+    onKeyLeft: function(){
+      this.nextSelection(function(center, other){
+        return center.x > other.x ?
+          center.x - other.x + Math.pow(center.y - other.y - 1, 2) :
+          Infinity;
+      });
+    },
+
+    onKeyUp: function(){
+      this.nextSelection(function(center, other){
+        return center.y > other.y ?
+          center.y - other.y + Math.pow(center.x - other.x - 1, 2) :
+          Infinity;
+      });
+    },
+
+    onKeyRight: function(){
+      this.nextSelection(function(center, other){
+        return other.x > center.x ?
+          other.x - center.x + Math.pow(center.y - other.y - 1, 2) :
+          Infinity;
+      });
+    },
+
+    onKeyDown: function(){
+      this.nextSelection(function(center, other){
+        return other.y > center.y ?
+          other.y - center.y + Math.pow(center.x - other.x - 1, 2) :
+          Infinity;
+      });
+    },
+
     onZoomIn: function(){
       this.zoomTo(this.paper.view.zoom * 1.1);
     },
@@ -627,6 +660,18 @@ define([
     eraseSelect: function(){
       this.select.remove();
       this.select = null;
+    },
+
+    nextSelection: function(criteria){
+      var model = this.selection.length === 1 && this.selection.first(),
+        center = model && model.getPosition(this.rendering),
+        next = center && this.collection.min(function(other){
+          return criteria(center, other.getPosition(this.rendering));
+        }, this);
+
+      if (next && next !== Infinity) {
+        this.selection.add(next, {remove: true});
+      }
     },
 
     moveSelection: function(delta){
