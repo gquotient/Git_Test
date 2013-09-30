@@ -5,6 +5,8 @@ define([
   'backbone.marionette',
   'handlebars',
 
+  'ia',
+
   'notification',
 
   'hbs!layouts/templates/header'
@@ -14,6 +16,8 @@ define([
   Backbone,
   Marionette,
   Handlebars,
+
+  ia,
 
   Notification,
 
@@ -41,7 +45,8 @@ define([
     },
     onShow: function(){
       var notificationView = new Notification.views.DropDown({
-        collection: new Notification.Collection()
+        collection: new Notification.Collection(),
+        projects: ia.projects
       });
 
       this.notifications.show(notificationView);

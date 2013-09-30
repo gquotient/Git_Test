@@ -93,39 +93,94 @@ header {
           }
           &:hover {
             background: url(../img/arrow_notifications.png) center bottom no-repeat;
-            ul {
+            .notifications {
               display: block;
             }
           }
-          ul {
-            height: inherit;
-            line-height: inherit;
+          .notifications {
             display: none;
             position: absolute;
             top: 100%;
             left: -79px;
             width: 200px;
-            max-height: 200px;
-            overflow: auto;
-            background: #111;
-            padding: 0;
-            border: borderBasicMedium;
-            box-shadow: basicBoxShadow;
-            li {
+            > .actions {
+              background: colorBGDarkGrey;
+              background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+              height: 24px;
+              line-height: 24px;
+              position: absolute;
+              bottom: 0;
               width: 100%;
-              padding: 6px;
-              line-height: 1.25em;
-              border: none;
-              border-bottom: borderBasicMedium;
-              margin: 0;
-              &.acknowledged {
-                color: colorDisabledText;
+              border-top: borderBasicMedium;
+              ul {
+                height: inherit;
+                line-height: inherit;
+                padding: 0 6px;
+                margin: 0;
+                list-style-type: 0;
+                li {
+                  margin: 0;
+                  padding: 0;
+                  float: left;
+                  color: colorDrakerOrange;
+                }
               }
-              &:last-child {
-                border-bottom: none;
-              }
-              .statusIndicator {
-                margin-right: 6px;
+            }
+            > ul {
+              height: inherit;
+              line-height: inherit;
+              max-height: 200px;
+              overflow: auto;
+              background: #111;
+              padding: 0;
+              border: borderBasicMedium;
+              box-shadow: basicBoxShadow;
+              > li {
+                width: 100%;
+                padding: 6px;
+                line-height: 1.25em;
+                border: none;
+                border-bottom: borderBasicMedium;
+                margin: 0;
+                &.acknowledged {
+                  color: colorDisabledText;
+                }
+                &:last-child {
+                  border-bottom: none;
+                }
+                .statusIndicator {
+                  margin-right: 6px;
+                }
+                .alarm {
+                  margin: 0 0 6px;
+                }
+                .info {
+                  color: #999;
+                }
+                .actions {
+                  display: block;
+                  list-style-type: none;
+                  padding: 0;
+                  margin: 6px 0 0;
+                  height: inherit;
+                  line-height: inherit;
+                  li {
+                    float: left;
+                    padding: 0 6px;
+                    margin: 0;
+                    border: none;
+                    border-right: 1px solid #777;
+                    cursor: pointer;
+                    color: colorDrakerOrange;
+                    &:first-child {
+                      padding-left: 0;
+                    }
+                    &:last-child {
+                      padding-right: 0;
+                      border-right: none;
+                    }
+                  }
+                }
               }
             }
           }

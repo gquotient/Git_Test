@@ -4,6 +4,8 @@ define([
   'backbone',
   'backbone.marionette',
 
+  'issue',
+
   'hbs!notification/templates/dropDown',
   'hbs!notification/templates/dropDownItem'
 ],
@@ -13,18 +15,21 @@ function(
   Backbone,
   Marionette,
 
+  Issue,
+
   dropDownTemplate,
   dropDownItemTemplate
 ){
   var Notification = { views: {} };
 
-  Notification.Model = Backbone.Model.extend({});
-
   Notification.Collection = Backbone.Collection.extend({
-    model: Notification.Model,
+    model: Issue.Model,
     addItem: function(models){
-      console.log('add item', arguments);
-      this.set(models);
+      var unacknowledgedAlarms = _.filter(models, function(model){
+        return !model.acked;
+      });
+
+      this.set(unacknowledgedAlarms);
     },
     initialize: function(options){
       this.listenTo(Backbone, 'notification', this.addItem);
@@ -36,6 +41,25 @@ function(
     template: {
       type: 'handlebars',
       template: dropDownItemTemplate
+    },
+    templateHelpers: function(){
+      return {
+        project: this.options.project.toJSON()
+      };
+    },
+    triggers: {
+      'click .view': 'view',
+      'click .acknowledge': 'acknowledge',
+      'click .resolve': 'resolve'
+    },
+    onView: function(){
+      Backbone.history.navigate('/project/' + this.model.get('project_label') + '/issues/' + this.model.id, true);
+    },
+    onResolve: function(){
+      this.model.resolve();
+    },
+    onAcknowledge: function(){
+      this.model.acknowledge();
     },
     onRender: function(){
       if (this.model.get('acked')) {
@@ -58,12 +82,29 @@ function(
     ui: {
       indicator: '.indicator'
     },
+    triggers: {
+      'click .acknowledgeAll': 'acknowledgeAll'
+    },
     itemView: Notification.views.DropDownItem,
-    itemViewContainer: 'ul',
+    itemViewContainer: '.notifications > ul',
+    itemViewOptions: function(model){
+      return {
+        project: this.options.projects.findWhere({project_label: model.get('project_label')})
+      };
+    },
+    updateCount: function(){
+      this.ui.indicator.text(this.collection.length);
+    },
+    modelEvents: {
+      'change': 'render'
+    },
     collectionEvents: {
-      'change reset set add': function(){
-        this.ui.indicator.text(this.collection.length);
-      }
+      'add reset set': 'updateCount'
+    },
+    onAcknowledgeAll: function(){
+      this.children.each(function(child){
+        child.model.acknowledge();
+      });
     }
   });
 
