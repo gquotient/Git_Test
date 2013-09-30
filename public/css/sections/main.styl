@@ -94,11 +94,14 @@ header {
           &:hover {
             background: url(../img/arrow_notifications.png) center bottom no-repeat;
             .notifications {
-              display: block;
+              visibility: visible;
+              opacity: 1;
             }
           }
           .notifications {
-            display: none;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity .25s ease-in-out;
             position: absolute;
             top: 100%;
             left: -79px;
