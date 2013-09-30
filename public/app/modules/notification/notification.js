@@ -89,7 +89,7 @@ function(
     itemViewContainer: '.notifications > ul',
     itemViewOptions: function(model){
       return {
-        project: this.options.projects.findWhere({project_label: model.get('project_label')})
+        project: this.options.projects.get(model.get('project_label'))
       };
     },
     updateCount: function(){
