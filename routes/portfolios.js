@@ -11,6 +11,10 @@ module.exports = function(app){
 
 
   app.get('/api/portfolios', ensureCurrentOrganization, ensureCurrentTeam,
+    function(req, res, next){
+      req.query.speed = 'fast';
+      next();
+    },
     makeRequest({
       path: '/res/teamportfolios',
       processData: true

@@ -163,7 +163,8 @@ define([
           ia.projects.reset();
 
           // Fetch projects portfolios for new team
-          ia.projects.fetch();
+          ia.projects.team = teamLabel;
+          ia.projects.fetch().done();
 
           ia.portfolios.fetch().done(function(portfolios){
             Backbone.trigger('select:portfolio', ia.portfolios.findWhere({label: 'ALL'}));

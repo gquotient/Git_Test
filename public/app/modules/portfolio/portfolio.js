@@ -74,21 +74,14 @@ define([
     },
 
     updateProjects: function(){
-      // If a projects array is returned from an old style filter,
-      // add them to the collection
       var projects = [];
-
-      _.each(this.get('projects'), function(project){
-        project = this.collection.projects.get(project);
-
-        if (project) {
-          projects.push(project);
-        }
-      }, this);
 
       // If filter is a smart filter, fetch projects
       if (_.isArray(this.get('filter'))) {
         projects = _.union(projects, this.filteredProjects());
+      } else {
+        // Else, assume all projects portfolio
+        projects = _.union(projects, this.collection.projects.models);
       }
 
       this.projects.set(projects);

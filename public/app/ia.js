@@ -41,7 +41,16 @@ define([
   ia.currentUser = ia.users.push( JSON.parse($('#currentUserData').html()) );
   ia.currentTeam = ia.currentUser.get('currentTeam');
 
-  ia.projects = new Project.Collection( JSON.parse($('#bootstrapProjects').html()) );
+  ia.projects = new Project.Collection( JSON.parse($('#bootstrapProjects').html()) , {
+    url: function(options){
+      return '/api/teamprojects/' + this.org + '_' + this.team;
+    }
+  });
+
+  // This is pretty hacky...
+  ia.projects.team = ia.currentTeam;
+  ia.projects.org = ia.currentUser.get('org_label');
+
   ia.alignedProjects = new Project.Collection();
 
   ia.portfolios = new Portfolio.Collection( JSON.parse($('#bootstrapPortfolios').html()), {
