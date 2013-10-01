@@ -466,6 +466,8 @@ define([
       this.drawNodes({erase: false});
       delete this.isRendering;
 
+      this.triggerMethod('zoom:reset');
+
       this.checkDevices();
     },
 
@@ -759,7 +761,7 @@ define([
     checkDevices: function(){
       var that = this,
         queue = [],
-        lastPoint;
+        point, lastPoint;
 
       function walk(target){
         if (!target.outgoing) { return; }
@@ -784,11 +786,9 @@ define([
       }
 
       function process(){
-        var next = queue.shift(), point;
-
         // Check that there is still work to do and that the view hasn't closed.
-        if (next && !that.isClosed) {
-          that.positionDevice.apply(that, next);
+        if (queue.length && !that.isClosed) {
+          that.positionDevice.apply(that, queue.shift());
 
           // Get the new top center of the project.
           point = that.paper.project.activeLayer.bounds.topCenter;
