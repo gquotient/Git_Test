@@ -67,7 +67,7 @@ define([
 
     localAttributes: [
       'equipment_label',
-      'extends_from',
+      'inherits',
       'label'
     ],
 
@@ -77,7 +77,7 @@ define([
       this.outgoing = new Equip.Collection();
       this.incoming = new Equip.Collection();
 
-      if (!this.has('extends_from')) {
+      if (!this.has('inherits')) {
         _.each(this.get('relationships'), function(rel){
           var other = this.collection.findWhere({label: rel.target});
 
@@ -93,7 +93,7 @@ define([
     },
 
     get: function(attr){
-      var extension;
+      var inherits;
 
       // If the attr exists locally return it.
       if (_.has(this.attributes, attr)) {
@@ -101,18 +101,18 @@ define([
 
       // Otherwise if this isn't exclusivly local then try and find it.
       } else if (!_.contains(this.localAttributes, attr)) {
-        extension = this.collection.get(this.get('extends_from'));
-        return extension && extension.get(attr);
+        inherits = this.collection.get(this.get('inherits'));
+        return inherits && inherits.get(attr);
       }
     },
 
     getBase: function(){
-      var extension = this.collection.get(this.get('extends_from'));
+      var inherits = this.collection.get(this.get('inherits'));
 
-      return extension ? extension.getBase() : this;
+      return inherits ? inherits.getBase() : this;
     },
 
-    getExtends: function(){
+    getDerivatives: function(){
       return this.collection.filter(function(model){
         return model !== this && model.id.indexOf(this.id) >= 0;
       }, this);
@@ -171,7 +171,7 @@ define([
     getBaseName: function(){
       var base = this.getBase();
 
-      return base && base.get('display_name');
+      return base && base.get('name');
     },
 
     factory: function(project){
@@ -191,7 +191,7 @@ define([
     },
 
     generateName: function(index){
-      var name = this.get('display_name'), did;
+      var name = this.get('name'), did;
 
       if (index instanceof Backbone.Model) {
         did = index.get('did');
@@ -247,7 +247,7 @@ define([
           return (/^[A-Z0-9]+$/).test(value);
         }
       },
-      extends_from: {
+      inherits: {
         type: 'text',
         required: true,
         editable: false,
@@ -255,7 +255,7 @@ define([
           return value && value !== '';
         }
       },
-      display_name: {
+      name: {
         type: 'text',
         required: true,
         validate: function(value){

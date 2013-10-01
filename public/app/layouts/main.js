@@ -163,7 +163,13 @@ define([
           ia.projects.reset();
 
           // Fetch projects portfolios for new team
-          ia.projects.fetch();
+          $.ajax({
+            url: '/api/teamprojects/' + ia.currentUser.get('org_label') + '_' + teamLabel,
+            dataType: 'json'
+          })
+          .done(function(projects){
+            ia.projects.set(projects);
+          });
 
           ia.portfolios.fetch().done(function(portfolios){
             Backbone.trigger('select:portfolio', ia.portfolios.findWhere({label: 'ALL'}));

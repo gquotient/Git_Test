@@ -74,7 +74,7 @@
   "Elevation": "Elevation",
   "Owner": "Owner",
   "Make": "Make",
-  "Extends From": "Extends From",
+  "Inherits From": "Inherits From",
 
   "View": "View",
   "Add Device": "Add Device",

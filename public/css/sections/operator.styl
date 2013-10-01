@@ -23,34 +23,10 @@
   }
 }
 
-.block-notice.flash {
-  padding: 5px;
-  background: colorYellow;
-  color: #222;
-  text-align: center;
-  width: 30%;
-  margin: 10px auto;
-}
-
-#select_portfolio div{
-  float: left;
-  width: 80%;
-}
-
-#select_portfolio div span {
-  color: colorDrakerOrange;
-  padding: 0 6px 0 12px;
-  font-size: 0.8em;
-}
-
-#select_portfolio select {
-  font-size: 0.8em;
-}
-
 .projectStatus {
   cursor: pointer;
   width:300px;
-  height: 90px;
+
   // border: 1px solid #444;
   overflow:hidden;
   float:left;
@@ -68,15 +44,20 @@
     overflow: hidden;
     padding:0 6px;
     font-size:2em;
-    line-height:1.5em;
+    line-height:36px;
     border-top: borderBasicMedium;
     text-overflow: ellipsis;
+    .statusIndicator {
+      width: 18px;
+      height: 18px;
+      margin: 9px 6px 0 0;
+    }
   }
   .resource {
     position: absolute;
     bottom: 0;
     left: 0;
-    width:178px;
+    width: 200px;
     float:left;
     height:48px;
     border-top-right-radius: 2px;
@@ -86,7 +67,7 @@
     .irradiance {
       border-top-right-radius: 2px;
       background:#555;
-      background: linear-gradient(top, #555, #666 50%, #555);
+      background: linear-gradient(top, #555, #5a5a5a 50%, #555);
       .indicator {
         height:6px;
         background: colorYellow;
@@ -96,8 +77,8 @@
       background:#555;
       border-top:1px solid #555;
       // @include background-image(linear-gradient(top, #555, #666 50%, #555 ));
-      background: linear-gradient(top, #555, #666 50%, #555);
-
+      background: linear-gradient(top, #555, #5a5a5a 50%, #555);
+      border-top: 1px solid #333;
       .indicator {
         height:41px;
         background: colorGreen;
@@ -105,7 +86,8 @@
     }
   }
   .performanceRatio {
-    width:120px;
+    width:100px;
+    line-height: 48px;
     float:right;
     text-align:right;
     padding:0 6px;
@@ -119,12 +101,13 @@
       color:#555;
     }
   }
-
   .alarm {
-    display:none;
+    background: #f00;
     position:absolute;
     bottom:0;
+    right: 0;
     height:48px;
+    width: 96px;
     text-align:center;
     .icon {
       display:inline-block;

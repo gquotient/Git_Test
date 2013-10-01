@@ -185,8 +185,7 @@ define([
 
       add: {
         hotKey: 97,
-        attribute: 'display_name',
-        comparator: 'display_name',
+        comparator: 'name',
 
         extend: {
           parseInput: function(){
