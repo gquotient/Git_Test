@@ -52,7 +52,9 @@ function(
 
   Issue.Model = Backbone.Model.extend({
     url: function(){
-      return '/api/alarms/active/' + this.collection.project.id + '/' + this.id;
+      var project_label = this.get('project_label') || this.collection.project.id;
+
+      return '/api/alarms/active/' + project_label + '/' + this.id;
     },
     idAttribute: 'uid',
     getLocalDate: function(){
@@ -89,7 +91,7 @@ function(
 
       if (confirm) {
         return $.ajax({
-          url: '/api/alarms/active/resolve/' + this.collection.project.id + '/' + this.id,
+          url: '/api/alarms/active/resolve/' + this.get('project_label') + '/' + this.id,
           type: 'PUT'
         }).done(function(data){
           // Update model
@@ -190,7 +192,8 @@ function(
       type: 'handlebars',
       template: navigationListTemplate
     },
-    itemView: Issue.views.NavigationItem
+    itemView: Issue.views.NavigationItem,
+    emptyView: false
   });
 
   // Alarm template editing

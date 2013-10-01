@@ -18,11 +18,10 @@ header {
   background: colorBGDarkGrey;
   height: headerHeight;
   width: 100%;
-  overflow: hidden;
   padding: 0 6px;
   border-bottom: borderBasicDark;
   position: relative;
-  z-index: 201;
+  z-index: 202;
   h1 {
     padding: 0;
     margin: 0;
@@ -74,6 +73,123 @@ header {
           margin: 0;
           &:hover {
             background: #252525;
+          }
+        }
+        .notificationDropDown {
+          position: relative;
+          width: 42px;
+          line-height: 42px;
+          .indicator {
+            background: #111;
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            margin: 0 9px;
+            border-radius: 50%;
+            border-bottom: borderBasicMedium;
+            font-size: 12px;
+          }
+          &:hover {
+            .notifications {
+              visibility: visible;
+              opacity: 1;
+            }
+          }
+          .notifications {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity .25s ease-in-out;
+            position: absolute;
+            top: 100%;
+            left: -79px;
+            width: 200px;
+            background: #111;
+            border: borderBasicMedium;
+            > .actions {
+              background: colorBGDarkGrey;
+              background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
+              height: 24px;
+              line-height: 24px;
+              position: absolute;
+              bottom: 0;
+              width: 100%;
+              border-top: borderBasicMedium;
+              ul {
+                height: inherit;
+                line-height: inherit;
+                padding: 0 6px;
+                margin: 0;
+                list-style-type: 0;
+                li {
+                  margin: 0;
+                  padding: 0;
+                  float: left;
+                  color: colorDrakerOrange;
+                }
+              }
+            }
+            > ul {
+              background: url(../img/arrow_notifications.png) center top no-repeat;
+              height: inherit;
+              line-height: inherit;
+              max-height: 200px;
+              overflow: auto;
+              padding: 6px 0 0;
+              margin-top: -6px;
+              box-shadow: basicBoxShadow;
+              > li {
+                width: 100%;
+                padding: 6px;
+                line-height: 1.25em;
+                border: none;
+                border-bottom: borderBasicMedium;
+                margin: 0;
+                &.empty {
+                  color: #999;
+                }
+                &.acknowledged {
+                  color: colorDisabledText;
+                }
+                &:last-child {
+                  border-bottom: none;
+                }
+                .statusIndicator {
+                  margin-right: 6px;
+                }
+                .alarm {
+                  margin: 0 0 6px;
+                }
+                .info {
+                  color: #999;
+                }
+                .actions {
+                  display: block;
+                  list-style-type: none;
+                  padding: 0;
+                  margin: 6px 0 0;
+                  height: inherit;
+                  line-height: inherit;
+                  li {
+                    float: left;
+                    padding: 0 6px;
+                    margin: 0;
+                    border: none;
+                    border-right: 1px solid #777;
+                    cursor: pointer;
+                    color: colorDrakerOrange;
+                    &:first-child {
+                      padding-left: 0;
+                    }
+                    &:last-child {
+                      padding-right: 0;
+                      border-right: none;
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

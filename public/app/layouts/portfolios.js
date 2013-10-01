@@ -56,15 +56,19 @@ define([
       // Fetch data for all projects
       // This is necessary for dynamic project property portfolios
       var fetchProjectData = function(){
-        that.collection.projects.fetchIssues();
-        that.collection.projects.fetchProjectKpis();
+        return {
+          issues: that.collection.projects.fetchIssues(),
+          kpis: that.collection.projects.fetchProjectKpis()
+        };
       };
 
       // Run initially to get latest data
-      fetchProjectData();
+      fetchProjectData().issues.done(function(data){
+        Backbone.trigger('notification', data.alarms);
+      });
 
       // Fetch issues every five minutes
-      this.fetchIssuesInterval = setInterval(fetchProjectData, 300000);
+      this.fetchDataInterval = setInterval(fetchProjectData, 300000);
 
       // Create the settings drop down
       this.buildSettingsDropdown();

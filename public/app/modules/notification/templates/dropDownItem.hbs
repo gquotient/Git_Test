@@ -1,0 +1,9 @@
+<div class="alarm">
+  <span class="statusIndicator {{ active_conditions.0.priority }}">{{ active_conditions.0.priority }}</span>
+  {{ id }} {{ display_name }}
+</div>
+<div class="info">{{ project.display_name }}</div>
+<ul class="actions">
+  <li class="view">{{$ 'View' }}</li>
+  <li class="acknowledge">{{$ 'Acknowledge' }}</li>
+</ul>

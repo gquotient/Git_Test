@@ -104,6 +104,11 @@ require.config({
       name: 'dateselection',
       main: 'dateselection',
       location: 'modules/dateselection'
+    },
+    {
+      name: 'notification',
+      main: 'notification',
+      location: 'modules/notification'
     }
   ],
   paths: {
