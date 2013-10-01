@@ -161,20 +161,20 @@
     "name": "Pyranometer Zone",
     "order": 12,
     "relationships": [
-      {"label": "HAS", "direction": "INCOMING", "target": "PVA"},
-      {"label": "HAS", "direction": "INCOMING", "target": "PVS"},
-      {"label": "HAS", "direction": "INCOMING", "target": "PVC"},
+      {"label": "OCCUPIES", "direction": "INCOMING", "target": "PVA"},
+      {"label": "OCCUPIES", "direction": "INCOMING", "target": "PVS"},
+      {"label": "OCCUPIES", "direction": "INCOMING", "target": "PVC"},
 
       {"label": "USES", "direction": "OUTGOING", "target": "IRRA"},
       {"label": "USES", "direction": "OUTGOING", "target": "IRRZ"},
 
-      {"label": "MEMBER", "direction": "OUTGOING", "target": "INV"},
-      {"label": "MEMBER", "direction": "OUTGOING", "target": "DCB"},
-      {"label": "MEMBER", "direction": "OUTGOING", "target": "APH"},
-      {"label": "MEMBER", "direction": "OUTGOING", "target": "RCB"},
-      {"label": "MEMBER", "direction": "OUTGOING", "target": "CMB"},
-      {"label": "MEMBER", "direction": "OUTGOING", "target": "S"},
-      {"label": "MEMBER", "direction": "OUTGOING", "target": "P"}
+      {"label": "ENCOMPASS", "direction": "OUTGOING", "target": "INV"},
+      {"label": "ENCOMPASS", "direction": "OUTGOING", "target": "DCB"},
+      {"label": "ENCOMPASS", "direction": "OUTGOING", "target": "APH"},
+      {"label": "ENCOMPASS", "direction": "OUTGOING", "target": "RCB"},
+      {"label": "ENCOMPASS", "direction": "OUTGOING", "target": "CMB"},
+      {"label": "ENCOMPASS", "direction": "OUTGOING", "target": "S"},
+      {"label": "ENCOMPASS", "direction": "OUTGOING", "target": "P"}
     ],
     "renderings": [
       {"label": "ZONE", "position": {"x": 100, "y": 100}, "root": true}
@@ -207,7 +207,7 @@
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVC"},
 
       {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"},
-      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
+      {"label": "ENCOMPASS", "direction": "INCOMING", "target": "ZNP"},
 
       {"label": "MEASURED_BY", "direction": "OUTGOING", "target": "RM"},
 
@@ -300,7 +300,7 @@
     "relationships": [
       {"label": "COLLECTS", "direction": "INCOMING", "target": "INV"},
 
-      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
+      {"label": "ENCOMPASS", "direction": "INCOMING", "target": "ZNP"},
 
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "APH"},
       {"label": "COLLECTS", "direction": "OUTGOING", "target": "RCB"},
@@ -318,7 +318,7 @@
     "name": "Array",
     "order": 20,
     "relationships": [
-      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
+      {"label": "ENCOMPASS", "direction": "INCOMING", "target": "ZNP"},
 
       {"label": "COLLECTS", "direction": "INCOMING", "target": "DCB"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "RCB"},
@@ -336,7 +336,7 @@
     "name": "Recombiner",
     "order": 21,
     "relationships": [
-      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
+      {"label": "ENCOMPASS", "direction": "INCOMING", "target": "ZNP"},
 
       {"label": "COLLECTS", "direction": "INCOMING", "target": "DCB"},
 
@@ -355,7 +355,7 @@
     "name": "Combiner",
     "order": 22,
     "relationships": [
-      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
+      {"label": "ENCOMPASS", "direction": "INCOMING", "target": "ZNP"},
 
       {"label": "COLLECTS", "direction": "INCOMING", "target": "DCB"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "RCB"},
@@ -374,7 +374,7 @@
     "name": "String",
     "order": 23,
     "relationships": [
-      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
+      {"label": "ENCOMPASS", "direction": "INCOMING", "target": "ZNP"},
 
       {"label": "COLLECTS", "direction": "INCOMING", "target": "DCB"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "CMB"},
@@ -393,7 +393,7 @@
     "name": "Panel",
     "order": 24,
     "relationships": [
-      {"label": "MEMBER", "direction": "INCOMING", "target": "ZNP"},
+      {"label": "ENCOMPASS", "direction": "INCOMING", "target": "ZNP"},
 
       {"label": "COLLECTS", "direction": "INCOMING", "target": "S"},
       {"label": "COLLECTS", "direction": "INCOMING", "target": "P"},

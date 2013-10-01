@@ -29,7 +29,7 @@ define([
       MANAGES: {color: 'blue'},
       HAS: {color: 'blue'},
       USES: {color: 'green'},
-      MEMBER: {color: 'green'},
+      ENCOMPASS: {color: 'green'},
       DEFAULT: {color: 'grey'}
     };
 
