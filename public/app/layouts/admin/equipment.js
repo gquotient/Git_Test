@@ -44,6 +44,11 @@ define([
       this.listenTo(this.listView, 'select', this.showDetail);
       this.listenTo(this.listView, 'save', this.saveDetail);
       this.listenTo(this.listView, 'cancel', this.hideDetail);
+
+      this.listenTo(this.listView, 'set:category', function(labels){
+        this.baseLabels = labels;
+        this.hideDetail();
+      });
     },
 
     onShow: function(){
