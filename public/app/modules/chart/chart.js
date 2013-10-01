@@ -334,7 +334,9 @@ function(
             // Change point to local js epoch time
             point[0] = (point[0] * 1000) + (offset * 60 * 60 * 1000);
             // Round watts to integers
-            point[1] = (point[1] < 0) ? null : roundNumber(point[1], 2);
+            // NOTE - Extremely large numbers don't work in chrome
+            // since they are bad data, just filter them out
+            point[1] = (point[1] < -1e9) ? null : roundNumber(point[1], 2);
           });
 
           seriesData = trace.data;
