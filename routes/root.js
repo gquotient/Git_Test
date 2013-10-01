@@ -106,6 +106,7 @@ module.exports = function(app){
       request(_.extend({}, requestOptions, {
         uri: app.get('modelUrl') + '/res/teamportfolios',
         qs: {
+          speed: 'fast',
           team_label: req.session.team_label,
           org_label: req.session.org_label
         }

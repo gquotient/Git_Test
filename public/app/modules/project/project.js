@@ -509,8 +509,9 @@ define([
       // Loop through returned KPIs and send the data to their respective projects
       _.each(data, function(kpi){
         var project = this.findWhere({project_label: kpi.project_label});
-
-        project.parseKpis(kpi);
+        if (project) {
+          project.parseKpis(kpi);
+        }
       }, this);
     }
   });
