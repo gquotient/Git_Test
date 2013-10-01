@@ -25,6 +25,10 @@ define([
       Backbone.history.navigate('portfolios/all', true);
     },
 
+    logout: function(){
+      window.location = '/logout';
+    },
+
     findPortfolio: function(id){
       return ia.portfolios.get(id) || ia.portfolios.findWhere({label: 'ALL'});
     },
@@ -146,7 +150,9 @@ define([
       'admin/equipment/:id': 'equipmentAdmin',
       'admin/equipment': 'equipmentAdmin',
 
-      'admin': 'admin'
+      'admin': 'admin',
+
+      'logout': 'logout'
     }
   });
 
