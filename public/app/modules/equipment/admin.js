@@ -27,28 +27,28 @@ define([
 
     categories = [
       {
-        display_name: 'Inverters',
-        extends_from: ['INV']
+        name: 'Inverters',
+        base_labels: ['INV']
       },
       {
-        display_name: 'Energy Meters',
-        extends_from: ['RM']
+        name: 'Energy Meters',
+        base_labels: ['RM']
       },
       {
-        display_name: 'Data Aquisition',
-        extends_from: ['DSS', 'DSC', 'ESI']
+        name: 'Data Aquisition',
+        base_labels: ['DSS', 'DSC', 'ESI']
       },
       {
-        display_name: 'Env Sensors',
-        extends_from: ['IRRA', 'IRRZ', 'TMPC', 'TMPA', 'WSPD', 'WDIR', 'BARO', 'RAIN']
+        name: 'Env Sensors',
+        base_labels: ['IRRA', 'IRRZ', 'TMPC', 'TMPA', 'WSPD', 'WDIR', 'BARO', 'RAIN']
       },
       {
-        display_name: 'DC Equipment',
-        extends_from: ['DCB', 'APH', 'RCB', 'CMB', 'S', 'P']
+        name: 'DC Equipment',
+        base_labels: ['DCB', 'APH', 'RCB', 'CMB', 'S', 'P']
       },
       {
-        display_name: 'AC Equipment',
-        extends_from: ['ACB', 'XFR', 'IC', 'LD']
+        name: 'AC Equipment',
+        base_labels: ['ACB', 'XFR', 'IC', 'LD']
       }
     ];
 
@@ -101,7 +101,7 @@ define([
 
       if (label) {
         category = this.categories.find(function(model){
-          return _.contains(model.get('extends_from'), label);
+          return _.contains(model.get('base_labels'), label);
         });
       }
 
@@ -117,10 +117,10 @@ define([
     },
 
     setCategory: function(model){
-      var labels = model.get('extends_from');
+      var labels = model.get('base_labels');
 
       this.dropdown.$el.hide();
-      this.ui.title.html(model.get('display_name'));
+      this.ui.title.html(model.get('name'));
 
       this.collection.updateFilter(function(equip){
         var base = equip.getBase();
@@ -140,7 +140,7 @@ define([
 
     templateHelpers: function(){
       return {
-        extends_from: this.model.getBase().get('display_name')
+        inherits: this.model.getBase().get('name')
       };
     },
 
@@ -149,7 +149,7 @@ define([
     },
 
     schema: {
-      display_name: {
+      name: {
         el: '#name'
       },
       make: {},
@@ -162,8 +162,8 @@ define([
           this.updateValues({label: value});
         }
       },
-      extends_from: {
-        el: '#extends',
+      inherits: {
+        el: '#inherits',
         source: function(){
           var labels = this.options.baseLabels;
 
@@ -180,7 +180,7 @@ define([
           });
         },
         parse: function(value){
-          var model = this.collection.findWhere({display_name: value});
+          var model = this.collection.findWhere({name: value});
 
           return model && model.id;
         }

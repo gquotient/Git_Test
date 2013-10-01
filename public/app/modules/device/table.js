@@ -40,9 +40,9 @@ define([
         type: 'dropdown',
         source: function(model){
           var base = model.equipment && model.equipment.getBase(),
-            models = base && base.getExtends();
+            models = base && base.getDerivatives();
 
-          return _.invoke(models, 'get', 'display_name');
+          return _.invoke(models, 'get', 'name');
         }
       }
     ],
@@ -80,13 +80,13 @@ define([
     },
 
     getEquipment: function(model){
-      return model.equipment.get('display_name');
+      return model.equipment.get('name');
     },
 
     setEquipment: function(model, value){
-      var equip = this.equipment.findWhere({display_name: value}),
+      var equip = this.equipment.findWhere({name: value}),
         base = model.equipment && model.equipment.getBase(),
-        models = base && [base].concat(base.getExtends());
+        models = base && [base].concat(base.getDerivatives());
 
       if (equip && _.contains(models, equip)) {
         model.set({equipment_label: equip.id});

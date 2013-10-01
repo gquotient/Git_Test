@@ -30,7 +30,7 @@ define([
 
     templateHelpers: function(){
       return {
-        attribute: this.model.get('display_name')
+        attribute: this.model.get('name')
       };
     },
 
@@ -62,7 +62,7 @@ define([
       this._collection = options.collection;
 
       options.collection = new util.Collection(options.collection, {
-        comparator: options.comparator || 'display_name',
+        comparator: options.comparator || 'name',
         close_with: this
       });
 
@@ -133,19 +133,19 @@ define([
     },
 
     getModel: function(){
-      return this.collection.findWhere({display_name: this.parseInput()});
+      return this.collection.findWhere({name: this.parseInput()});
     },
 
     updateFilter: function(){
       var regex = new RegExp('^' + this.parseInput(), 'i');
 
       this.collection.updateFilter(function(model){
-        return regex.test(model.get('display_name'));
+        return regex.test(model.get('name'));
       });
     },
 
     getAutocomplete: function(){
-      var values = this.collection.pluck('display_name'),
+      var values = this.collection.pluck('name'),
         partial = _.first(values) || '',
         last, len;
 
@@ -189,7 +189,7 @@ define([
       $(document).off('keydown keypress', this.handleKeyEvent);
 
       // Replace the input text with the last known good model text.
-      this.$input.val(this.current.get('display_name')).blur();
+      this.$input.val(this.current.get('name')).blur();
     }
   });
 
