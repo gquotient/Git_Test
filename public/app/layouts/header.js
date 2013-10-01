@@ -46,7 +46,8 @@ define([
     onShow: function(){
       var notificationView = new Notification.views.DropDown({
         collection: new Notification.Collection(),
-        projects: ia.projects
+        projects: ia.projects,
+        user: ia.currentUser
       });
 
       this.notifications.show(notificationView);

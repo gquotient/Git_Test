@@ -52,7 +52,9 @@ function(
 
   Issue.Model = Backbone.Model.extend({
     url: function(){
-      return '/api/alarms/active/' + this.collection.project.id + '/' + this.id;
+      var project_label = this.get('project_label') || this.collection.project.id;
+
+      return '/api/alarms/active/' + project_label + '/' + this.id;
     },
     idAttribute: 'uid',
     getLocalDate: function(){

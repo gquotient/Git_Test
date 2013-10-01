@@ -59,7 +59,11 @@ function(
       this.model.resolve();
     },
     onAcknowledge: function(){
-      this.model.acknowledge();
+      var that = this;
+
+      this.model.acknowledge(this.options.user.get('email')).done(function(){
+        that.model.collection.remove(that.model);
+      });
     },
     onRender: function(){
       if (this.model.get('acked')) {
@@ -87,9 +91,15 @@ function(
     },
     itemView: Notification.views.DropDownItem,
     itemViewContainer: '.notifications > ul',
+    emptyView: Marionette.ItemView.extend({
+      tagName: 'li',
+      className: 'empty',
+      template: _.template('No notifications')
+    }),
     itemViewOptions: function(model){
       return {
-        project: this.options.projects.get(model.get('project_label'))
+        project: this.options.projects.get(model.get('project_label')),
+        user: this.options.user
       };
     },
     updateCount: function(){
