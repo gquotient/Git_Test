@@ -74,21 +74,41 @@ define([
     },
 
     updateProjects: function(){
-      var projects = [];
-
-      // If filter is a smart filter, fetch projects
-      if (_.isArray(this.get('filter'))) {
-        projects = _.union(projects, this.filteredProjects());
-      } else {
-        // Else, assume all projects portfolio
-        projects = _.union(projects, this.collection.projects.models);
-      }
-
-      this.projects.set(projects);
+      this.projects.set(this.filteredProjects());
 
       this.set('total_projects', this.projects.length);
 
       this.aggregateKpis();
+    },
+
+    filteredProjects: function(){
+      var filters = this.get('filter'),
+        operation = {
+          '>': function(val1, val2) {
+            return val1 > val2;
+          },
+          '<': function(val1, val2) {
+            return val1 < val2;
+          },
+          '=': function(val1, val2) {
+            // Fuzzy eval because who knows if a given property is coming back
+            // as a number or a string...
+            return val1 == val2;
+          }
+        };
+
+      // If not a smart filter, return all projecs
+      if (!_.isArray(filters)) {
+        return this.collection.projects.models;
+      }
+
+      // Return filtered projects
+      return this.collection.projects.filter(function(project){
+        // For each filter, validate that the project satisfies the filter
+        return _.all(filters, function(filter){
+          return operation[filter.operator](project.get(filter.property), filter.value);
+        });
+      });
     },
 
     destroy: function(options) {
@@ -105,41 +125,6 @@ define([
         data: this.toJSON()
       })
       .done(destroy);
-    },
-
-    filteredProjects: function(){
-      var projects = [];
-      var operation = {
-        '>': function(val1, val2) {
-          return val1 > val2;
-        },
-        '<': function(val1, val2) {
-          return val1 < val2;
-        },
-        '=': function(val1, val2) {
-          // Fuzzy eval because who knows if a given property is coming back
-          // as a number or a string...
-          return val1 == val2;
-        }
-      };
-
-      this.collection.projects.each(function(project){
-        var match = true;
-
-        _.each(this.get('filter'), function(filter){
-          // Once match is set to false, don't run any more
-          // NOTE - This will have to be smarter to handle both and/or cases
-          if (match) {
-            match = operation[filter.operator](project.get(filter.property), filter.value);
-          }
-        });
-
-        if (match) {
-          projects.push(project);
-        }
-      }, this);
-
-      return projects;
     },
 
     aggregateKpis: function(){
