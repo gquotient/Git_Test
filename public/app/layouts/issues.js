@@ -128,7 +128,10 @@ define([
       };
 
       // Fetch issues and update view
-      this.model.issues.fetch().done(initialView);
+      this.model.issues.fetch().done(function(data){
+        initialView();
+        Backbone.trigger('notification', data.alarms);
+      });
 
       // Listen for a device to be clicked and change view
       this.listenTo(Backbone, 'click:issue', function(issue){
