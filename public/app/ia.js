@@ -41,13 +41,14 @@ define([
   ia.currentUser = ia.users.push( JSON.parse($('#currentUserData').html()) );
   ia.currentTeam = ia.currentUser.get('currentTeam');
 
+  // Store the current team's projects
   ia.projects = new Project.Collection( JSON.parse($('#bootstrapProjects').html()) , {
     url: function(options){
       return '/api/teamprojects/' + this.org + '_' + this.team;
     }
   });
 
-  // This is pretty hacky...
+  // Add team and org properties to build the URL
   ia.projects.team = ia.currentTeam;
   ia.projects.org = ia.currentUser.get('org_label');
 
