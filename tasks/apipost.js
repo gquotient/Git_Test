@@ -17,33 +17,57 @@ module.exports = function(grunt){
       }
     });
 
-    grunt.util.async.forEach(records, function(record, callback){
+    grunt.util.async.forEachSeries(records, function(record, callback){
       var path = _.isFunction(data.path) ? data.path(record) : data.path;
 
       path = path.replace(/:(\w+)(?=\/|$)/g, function(match, label){
         return record[label];
       });
 
-      request({
-        method: 'POST',
-        uri: host + path,
-        form: _.isFunction(data.form) ? data.form(record) : record
-      },
-      function(err, resp, body){
-        grunt.log.subhead(host + path);
+      grunt.util.async.series([
+        function(callback){
+          if (data.del) {
+            request({
+              method: 'DELETE',
+              uri: host + path
+            }, function(err, resp, body){
+              grunt.log.subhead('DEL: ' + host + path);
 
-        if (err) {
-          grunt.fail.fatal(err);
-          return callback(err);
+              if (err) {
+                grunt.fail.fatal(err);
+              } else if (resp.statusCode < 200 || resp.statusCode > 299) {
+                grunt.log.error(resp.statusCode + '\n' + body);
+              } else {
+                grunt.log.ok(resp.statusCode);
+              }
 
-        } else if (resp.statusCode < 200 || resp.statusCode > 299) {
-          grunt.fail.fatal(resp.statusCode + '\n' + body);
-          return callback(resp.statusCode);
+              callback();
+            });
+          } else {
+            callback();
+          }
+        },
+        function(callback){
+          request({
+            method: 'POST',
+            uri: host + path,
+            form: _.isFunction(data.form) ? data.form(record) : record
+          },
+          function(err, resp, body){
+            grunt.log.subhead('POST: ' + host + path);
+
+            if (err) {
+              grunt.fail.fatal(err);
+            } else if (resp.statusCode < 200 || resp.statusCode > 299) {
+              grunt.log.error(resp.statusCode + '\n' + body);
+            } else {
+              grunt.log.ok(resp.statusCode);
+            }
+
+            callback();
+          });
         }
-
-        grunt.log.ok(resp.statusCode);
-        callback();
-      });
+      ], callback);
 
     }, done);
 

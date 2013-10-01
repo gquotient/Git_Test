@@ -98,6 +98,7 @@ module.exports = function(grunt){
         form: function(record){
           return {data: JSON.stringify(record)};
         },
+        del: true,
         src: 'data/json/equipment.json'
       }
     }
