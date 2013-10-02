@@ -158,6 +158,7 @@
   },
   {
     "label": "ZNP",
+    "equipment_label": "ZNP_v1",
     "name": "Pyranometer Zone",
     "order": 12,
     "relationships": [
