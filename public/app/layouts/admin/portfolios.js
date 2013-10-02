@@ -69,6 +69,12 @@ define([
       this.listenTo(editView, 'cancel', function(){
         this.editPortfolios.show(this.portfolioTable);
         Backbone.history.navigate('/admin/portfolios');
+        // Reset breadcrumbs
+        Backbone.trigger('reset:breadcrumbs', {
+          state:'admin',
+          display_name: 'Admin',
+          url: '/admin'
+        });
         Backbone.trigger('set:breadcrumbs', {state:'portfolios', display_name:'Portfolios'});
       });
 
