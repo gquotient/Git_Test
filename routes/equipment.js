@@ -43,8 +43,8 @@ module.exports = function(app){
   app.post('/api/equipment', ensureAuthorized(['vendor_admin']),
     function(req, res, next){
       var label = req.body.label,
-        extends_from = req.body.extends_from,
-        match = /([^:]+)_v(\d+)$/.exec(extends_from);
+        inherits = req.body.inherits,
+        match = /([^:]+)_v(\d+)$/.exec(inherits);
 
       if (!label) {
         res.send(301, {message: 'An equipment label is required'});
@@ -53,15 +53,15 @@ module.exports = function(app){
 
       // If the label exists then just increment the version.
       if (match && match[1] === label) {
-        label = extends_from.replace(/\d+$/, parseInt(match[2], 10) + 1);
+        label = inherits.replace(/\d+$/, parseInt(match[2], 10) + 1);
 
       // Otherwise append the default version and prepend the extended
       // equipment label if not empty.
       } else {
         label += '_v1';
 
-        if (extends_from) {
-          label = extends_from + ':' + label;
+        if (inherits) {
+          label = inherits + ':' + label;
         }
       }
 

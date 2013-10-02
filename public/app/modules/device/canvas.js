@@ -28,6 +28,8 @@ define([
       MEASURED_BY: {color: 'grey', offset: 2},
       MANAGES: {color: 'blue'},
       HAS: {color: 'blue'},
+      USES: {color: 'green'},
+      ENCOMPASS: {color: 'green'},
       DEFAULT: {color: 'grey'}
     };
 
@@ -386,7 +388,9 @@ define([
         modifier: e.ctrlKey,
 
         canvasDelta: args.canvasPoint.subtract(this.lastCanvasPoint),
-        projectDelta: args.projectPoint.subtract(this.lastProjectPoint)
+        projectDelta: args.projectPoint.subtract(this.lastProjectPoint),
+
+        dragging: this.dragging || e.type === 'mousedown'
       });
 
       this.lastCanvasPoint = args.canvasPoint;
@@ -538,8 +542,8 @@ define([
         this.selection.add(models);
         this.eraseSelect();
 
-      // Otherwise snap any devices that may have moved if editable.
-      } else if (this.model.isEditable()) {
+      // Otherwise snap any devices that may have been dragged if editable.
+      } else if (args.dragging && this.model.isEditable()) {
         this.snapSelection();
       }
     },

@@ -155,6 +155,11 @@ define([
             View: Device.views.Canvas,
             rendering: 'DAQ'
           }, {
+            name: 'Zones',
+            uri: 'zones',
+            View: Device.views.Canvas,
+            rendering: 'ZONE'
+          }, {
             name: 'Device Table',
             uri: 'table',
             View: Device.views.Table
@@ -180,8 +185,7 @@ define([
 
       add: {
         hotKey: 97,
-        attribute: 'display_name',
-        comparator: 'display_name',
+        comparator: 'name',
 
         extend: {
           parseInput: function(){
