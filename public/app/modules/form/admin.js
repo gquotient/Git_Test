@@ -369,7 +369,7 @@ define([
         var $el = this.ui[attr];
 
         if ($el && !$el.prop('disabled')) {
-          $el.val(value).removeClass('.invalid');
+          $el.val(value).removeClass('invalid');
         }
       }, this);
     },
