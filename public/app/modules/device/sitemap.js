@@ -93,6 +93,8 @@ function(
         },
         closeWith: this
       });
+
+      this.listenTo(Backbone, 'animate', this.animate);
     },
     onRender: function(){
       console.log(this.ui.canvas);
@@ -102,6 +104,31 @@ function(
     onShow: function(){
       this.paper.view.setViewSize(500, 500);
       this.paper.view.draw();
+    },
+    animate: function(){
+      console.log('animate');
+      var that = this;
+      var length = 30;
+      var colors = ['red', 'green', 'blue', 'black', 'yellow'];
+      var next = function(){
+        console.log('next');
+        length--;
+
+        that.children.each(function(child){
+          //console.log('child', child);
+          child.shape.style = {
+            fillColor: colors[parseInt(Math.random() * 10 / 2)]
+          }
+        });
+
+        that.paper.view.draw();
+
+        if (length) {
+          setTimeout(next, 10);
+        }
+      };
+
+      setTimeout(next, 0);
     },
     // Prevent item views from being added to the DOM.
     appendHtml: function(){}
