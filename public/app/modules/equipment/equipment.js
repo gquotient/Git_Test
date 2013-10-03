@@ -68,7 +68,8 @@ define([
     localAttributes: [
       'equipment_label',
       'inherits',
-      'label'
+      'label',
+      'schema'
     ],
 
     initialize: function(){
@@ -239,7 +240,28 @@ define([
     },
 
     getSchema: function(){
-      return this.constructor.schema;
+      var inherits = this.collection.get(this.get('inherits')),
+        schema = {};
+
+      // Try and get the inherited schema.
+      if (inherits) {
+        schema = inherits.getSchema();
+
+      // Otherwise add the required attributes.
+      } else {
+        _.each(this.constructor.schema, function(params, attr){
+          if (params.required) {
+            schema[attr] = params;
+          }
+        });
+      }
+
+      // Add the attributes for this equipment instance.
+      _.each(this.get('schema'), function(params, attr){
+        schema[attr] = _.defaults(params, this.constructor.schema[attr]);
+      }, this);
+
+      return schema;
     }
   }, {
     schema: {
