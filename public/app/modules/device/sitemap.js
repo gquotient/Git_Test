@@ -26,8 +26,8 @@ function(
     render: function(options){
       this.isClosed = false;
 
-      this.triggerMethod("before:render", this);
-      this.triggerMethod("item:before:render", this);
+      this.triggerMethod('before:render', this);
+      this.triggerMethod('item:before:render', this);
 
       var x = this.model.get('x') * 10;
       var y = this.model.get('y') * 10;
@@ -39,12 +39,12 @@ function(
       this.shape.style = {
         fillColor: 'black',
         strokeWidth: 5
-      }
+      };
 
       //console.log(this.shape);
 
-      this.triggerMethod("render", this);
-      this.triggerMethod("item:rendered", this);
+      this.triggerMethod('render', this);
+      this.triggerMethod('item:rendered', this);
 
       return this;
     },
@@ -56,7 +56,7 @@ function(
 
       this.shape.onClick = function(){
         that.doSomething();
-      }
+      };
     },
     doSomething: function(){
       console.log('doing something', this.model);
@@ -78,7 +78,7 @@ function(
       return {
         paper: this.paper,
         devices: this.collection
-      }
+      };
     },
     ui: {
       canvas: 'canvas'
@@ -95,14 +95,19 @@ function(
       });
 
       this.listenTo(Backbone, 'animate', this.animate);
+
+      this.listenTo(Backbone, 'window:resize', this.resize);
+    },
+    resize: function(){
+      this.paper.view.setViewSize(this.$el.width(), this.$el.height());
     },
     onRender: function(){
-      console.log(this.ui.canvas);
+      console.log(this.model);
       this.paper.setup(this.ui.canvas[0]);
       console.log(this.paper);
     },
     onShow: function(){
-      this.paper.view.setViewSize(500, 500);
+      this.resize();
       this.paper.view.draw();
     },
     animate: function(){
@@ -117,8 +122,8 @@ function(
         that.children.each(function(child){
           //console.log('child', child);
           child.shape.style = {
-            fillColor: colors[parseInt(Math.random() * 10 / 2)]
-          }
+            fillColor: colors[parseInt((Math.random() * 10 / 2))]
+          };
         });
 
         that.paper.view.draw();
