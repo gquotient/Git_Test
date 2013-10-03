@@ -91,6 +91,7 @@ define([
       this.showKpis();
       this.showMap();
       this.showDevices();
+      this.onToggleView();
     },
     showCharts: function(){
       var that = this,
@@ -202,12 +203,19 @@ define([
       });
     },
     showDevices: function(){
-      // Build devices view
-      this.devicesView = new Device.views.Canvas({
-        model: this.model,
-        collection: this.model.devices,
-        rendering: 'POWER'
-      });
+      if (this.model.get('hasDC')){
+        this.devicesView = new Device.views.Sitemap({
+          model: this.model,
+          collection: this.model.devices
+        });
+      } else {
+        // Build devices view
+        this.devicesView = new Device.views.Canvas({
+          model: this.model,
+          collection: this.model.devices,
+          rendering: 'POWER'
+        });
+      }
 
       // Show devices
       this.devices.show(this.devicesView);
