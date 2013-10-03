@@ -173,5 +173,13 @@ define([
     }
   });
 
+  util.capitalize = function(phrase){
+    if (!_.isString(phrase)) { return phrase; }
+
+    return _.map(phrase.split('_'), function(word){
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+  };
+
   return util;
 });

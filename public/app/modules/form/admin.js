@@ -240,6 +240,7 @@ define([
       // Compile a single schema object for this view.
       return _.reduce(attrs, function(memo, attr){
         memo[attr] = _.extend({
+          name: util.capitalize(attr),
           el: '#' + attr,
           type: 'text',
           editable: true

@@ -24,4 +24,11 @@
     <label for="inherits">{{$ 'Inherits From' }}</label>
     <input id="inherits" name="inherits" type="text" value="{{ inherits }}" />
   </div>
+
+  <div>
+  {{#each items }}
+    <label for="{{ this.attr }}">{{ this.name }}</label>
+    <input id="{{ this.attr }}" name="{{ this.attr }}" type="text" value="{{ this.value }}" />
+  {{/each}}
+  </div>
 </fieldset>

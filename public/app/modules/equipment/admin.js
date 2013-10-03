@@ -139,8 +139,17 @@ define([
     },
 
     templateHelpers: function(){
+      var attrs = _.difference(_.keys(this._schema), _.keys(this.schema));
+
       return {
-        inherits: this.model.getBase().get('name')
+        inherits: this.model.getBase().get('name'),
+        items: _.map(attrs, function(attr){
+          return {
+            name: this._schema[attr].name,
+            value: this.model.get(attr),
+            attr: attr
+          };
+        }, this)
       };
     },
 
