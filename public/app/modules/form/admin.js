@@ -225,21 +225,25 @@ define([
     },
 
     compileSchema: function(){
-      var schema = Marionette.getOption(this, 'schema'),
-        modelSchema = this.model.constructor.schema || {};
+      var viewSchema = Marionette.getOption(this, 'schema') || {},
+        modelSchema = this.model.getSchema() || {},
+        attrs;
 
-      // Allow creating the schema dynamicaly.
-      if (_.isFunction(schema)) {
-        schema = schema.call(this);
+      // Allow creating the view schema dynamically.
+      if (_.isFunction(viewSchema)) {
+        viewSchema = viewSchema.call(this);
       }
 
-      // Return the combination of the model schema, view schema and defaults.
-      return _.reduce(schema, function(memo, params, attr){
+      // Create a combined list of schema attributes.
+      attrs = _.union(_.keys(viewSchema), _.keys(modelSchema));
+
+      // Compile a single schema object for this view.
+      return _.reduce(attrs, function(memo, attr){
         memo[attr] = _.extend({
           el: '#' + attr,
           type: 'text',
           editable: true
-        }, modelSchema[attr], params);
+        }, modelSchema[attr], viewSchema[attr]);
 
         return memo;
       }, {});
@@ -304,7 +308,7 @@ define([
     createDropdown: function($input, collection){
       var DropdownView = Marionette.getOption(this, 'dropdownView'), view;
 
-      // Allow creating the list of dropdown items dynamicaly.
+      // Allow creating the list of dropdown items dynamically.
       if (_.isFunction(collection)) {
         collection = collection.call(this);
       }

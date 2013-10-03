@@ -390,6 +390,10 @@ define([
       }
 
       return when + msg + '\n';
+    },
+
+    getSchema: function(){
+      return this.constructor.schema;
     }
   }, {
     schema: {

@@ -236,6 +236,10 @@ define([
         adjustPosition(label, position, project);
         device.setPosition(label, position);
       }
+    },
+
+    getSchema: function(){
+      return this.constructor.schema;
     }
   }, {
     schema: {
