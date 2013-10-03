@@ -1,42 +1,40 @@
-<fieldset class="name">
+<fieldset>
   <div>
     <label for="name">{{$ 'Name' }}</label>
-    <input id="name" name="name" type="text" value="{{ display_name }}">
+    <input id="name" name="name" type="text" value="{{ display_name }}" />
   </div>
 
   <div>
     <label for="site_label">{{$ 'Site Label' }}</label>
-    <input id="site_label" name="site_label" type="text" value="{{ site_label }}">
+    <input id="site_label" name="site_label" type="text" value="{{ site_label }}" />
   </div>
+
+  <label for="description">{{$ 'Description' }}</label>
+  <textarea id="description" name="description">{{ description }}</textarea>
 </fieldset>
 
 <fieldset class="location">
   <div>
     <label for="address">{{$ 'Address' }}</label>
-    <input id="address" name="address" type="text" value="{{ address }}">
+    <input id="address" name="address" type="text" value="{{ address }}" />
 
     <label for="city">{{$ 'City' }}</label>
-    <input id="city" name="city" type="text" value="{{ city }}">
+    <input id="city" name="city" type="text" value="{{ city }}" />
 
     <label for="state">{{$ 'State' }}</label>
-    <input id="state" name="state" type="text" value="{{ state }}">
+    <input id="state" name="state" type="text" value="{{ state }}" />
 
     <label for="zipcode">{{$ 'Zip Code' }}</label>
-    <input id="zipcode" name="zipcode" type="text" value="{{ zipcode }}">
+    <input id="zipcode" name="zipcode" type="text" value="{{ zipcode }}" />
   </div>
   <div>
     <label for="latitude">{{$ 'Latitude' }}</label>
-    <input id="latitude" name="latitude" type="text" value="{{ latitude }}">
+    <input id="latitude" name="latitude" type="text" value="{{ latitude }}" />
 
     <label for="longitude">{{$ 'Longitude' }}</label>
-    <input id="longitude" name="longitude" type="text" value="{{ longitude }}">
+    <input id="longitude" name="longitude" type="text" value="{{ longitude }}" />
 
     <label for="elevation">{{$ 'Elevation' }}</label>
-    <input id="elevation" name="elevation" type="text" value="{{ elevation }}">
+    <input id="elevation" name="elevation" type="text" value="{{ elevation }}" />
   </div>
-</fieldset>
-
-<fieldset>
-  <label for="description">{{$ 'Description' }}</label>
-  <textarea id="description" name="description">{{ description }}</textarea>
 </fieldset>

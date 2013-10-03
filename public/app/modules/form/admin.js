@@ -339,7 +339,7 @@ define([
         if ($el) {
           $el.prop('disabled', disabled);
 
-          if (!disabled) {
+          if (!disabled && !params.tabSkip) {
             $el.attr('tabindex', params.tabIndex || tabIndex);
           }
         }

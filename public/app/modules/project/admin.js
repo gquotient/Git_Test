@@ -116,6 +116,7 @@ define([
         }
       },
       site_label: {
+        tabSkip: true,
         parse: function(value){
           return value.toUpperCase();
         },
@@ -123,11 +124,11 @@ define([
           this.updateValues({site_label: value});
         }
       },
+      description: {},
       address: {},
       city: {},
       state: {},
       zipcode: {},
-      description: {},
       latitude: {
         parse: function(value){
           return parseFloat(value);

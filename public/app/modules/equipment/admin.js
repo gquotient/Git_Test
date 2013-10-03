@@ -149,11 +149,7 @@ define([
     },
 
     schema: {
-      name: {
-        el: '#name'
-      },
-      make: {},
-      model: {},
+      name: {},
       label: {
         parse: function(value){
           return value.toUpperCase();
@@ -162,8 +158,10 @@ define([
           this.updateValues({label: value});
         }
       },
+      description: {},
+      make: {},
+      model: {},
       inherits: {
-        el: '#inherits',
         source: function(){
           var labels = this.options.baseLabels;
 
@@ -184,8 +182,7 @@ define([
 
           return model && model.id;
         }
-      },
-      description: {}
+      }
     }
   });
 

@@ -1,25 +1,27 @@
-<fieldset class="name">
+<fieldset>
   <div>
     <label for="name">{{$ 'Name' }}</label>
-    <input id="name" name="name" type="text" value="{{ name }}">
-
-    <label for="make">{{$ 'Make' }}</label>
-    <input id="make" name="make" type="text" value="{{ make }}">
-
-    <label for="model">{{$ 'Model' }}</label>
-    <input id="model" name="model" type="text" value="{{ model }}">
+    <input id="name" name="name" type="text" value="{{ name }}" />
   </div>
 
   <div>
     <label for="label">{{$ 'Label' }}</label>
-    <input id="label" name="label" type="text" value="{{ label }}">
-
-    <label for="inherits">{{$ 'Inherits From' }}</label>
-    <input id="inherits" name="inherits" type="text" value="{{ inherits }}">
+    <input id="label" name="label" type="text" value="{{ label }}" />
   </div>
+
+  <label for="description">{{$ 'Description' }}</label>
+  <textarea id="description" name="description">{{ description }}</textarea>
 </fieldset>
 
 <fieldset>
-  <label for="description">{{$ 'Description' }}</label>
-  <textarea id="description" name="description">{{ description }}</textarea>
+  <div>
+    <label for="make">{{$ 'Make' }}</label>
+    <input id="make" name="make" type="text" value="{{ make }}" />
+
+    <label for="model">{{$ 'Model' }}</label>
+    <input id="model" name="model" type="text" value="{{ model }}" />
+
+    <label for="inherits">{{$ 'Inherits From' }}</label>
+    <input id="inherits" name="inherits" type="text" value="{{ inherits }}" />
+  </div>
 </fieldset>
