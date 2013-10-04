@@ -404,6 +404,14 @@
     "renderings": [
       {"label": "ZONE", "offset": {"x": 900, "y": 100}},
       {"label": "POWER", "offset": {"x": -100, "y": 0}}
-    ]
+    ],
+    "schema": {
+      "panel_width": {
+        "required": true
+      },
+      "panel_height": {
+        "required": true
+      }
+    }
   }
 ]

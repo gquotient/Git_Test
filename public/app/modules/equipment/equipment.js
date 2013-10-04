@@ -278,6 +278,14 @@ define([
       },
       name: {
         required: true
+      },
+      panel_width: {
+        type: 'number',
+        units: 'ft'
+      },
+      panel_height: {
+        type: 'number',
+        units: 'ft'
       }
     }
   });
