@@ -266,7 +266,6 @@ define([
   }, {
     schema: {
       label: {
-        type: 'text',
         required: true,
         editable: false,
         validate: function(value){
@@ -274,19 +273,11 @@ define([
         }
       },
       inherits: {
-        type: 'text',
         required: true,
-        editable: false,
-        validate: function(value){
-          return value && value !== '';
-        }
+        editable: false
       },
       name: {
-        type: 'text',
-        required: true,
-        validate: function(value){
-          return value && value !== '';
-        }
+        required: true
       }
     }
   });

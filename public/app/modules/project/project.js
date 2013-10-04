@@ -398,7 +398,6 @@ define([
   }, {
     schema: {
       site_label: {
-        type: 'text',
         required: true,
         editable: false,
         validate: function(value){
@@ -406,32 +405,19 @@ define([
         }
       },
       display_name: {
-        type: 'text',
-        required: true,
-        validate: function(value){
-          return value && value !== '';
-        }
+        required: true
       },
       latitude: {
         type: 'number',
-        required: true,
-        validate: function(value){
-          return !isNaN(value);
-        }
+        required: true
       },
       longitude: {
         type: 'number',
-        required: true,
-        validate: function(value){
-          return !isNaN(value);
-        }
+        required: true
       },
       elevation: {
         type: 'number',
-        required: true,
-        validate: function(value){
-          return !isNaN(value);
-        }
+        required: true
       }
     }
   });

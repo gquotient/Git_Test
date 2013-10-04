@@ -130,26 +130,16 @@ define([
       state: {},
       zipcode: {},
       latitude: {
-        parse: function(value){
-          return parseFloat(value);
-        },
         success: function(value){
           this.model.set({latitude: value});
         }
       },
       longitude: {
-        parse: function(value){
-          return parseFloat(value);
-        },
         success: function(value){
           this.model.set({longitude: value});
         }
       },
-      elevation: {
-        parse: function(value){
-          return parseFloat(value);
-        }
-      }
+      elevation: {}
     }
   });
 

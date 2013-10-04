@@ -241,9 +241,7 @@ define([
       return _.reduce(attrs, function(memo, attr){
         memo[attr] = _.extend({
           name: util.capitalize(attr),
-          el: '#' + attr,
-          type: 'text',
-          editable: true
+          el: '#' + attr
         }, modelSchema[attr], viewSchema[attr]);
 
         return memo;
@@ -252,8 +250,8 @@ define([
 
     schemaEvents: function(){
       return _.reduce(this._schema, function(memo, params, attr){
-        var parser = params.parse,
-          validator = params.validate;
+        var parser = params.parse || this.parser(params),
+          validator = params.validate || this.validator(params);
 
         // Create listeners for each schema item that will wait for the user
         // to finish entering data then parse and validate the value.
@@ -303,7 +301,30 @@ define([
         }
 
         return memo;
-      }, {});
+      }, {}, this);
+    },
+
+    parser: function(params){
+      var parsers = {
+        number: function(value){
+          return parseFloat(value);
+        }
+      };
+
+      return parsers[params.type];
+    },
+
+    validator: function(params){
+      var validators = {
+        text: function(value){
+          return value && value !== '';
+        },
+        number: function(value){
+          return !isNaN(value);
+        }
+      };
+
+      return params.required && (validators[params.type] || validators.text);
     },
 
     createDropdown: function($input, collection){
