@@ -190,6 +190,11 @@ define([
           var model = this.collection.findWhere({name: value});
 
           return model && model.id;
+        },
+        success: function(value){
+          this.model.set({inherits: value});
+          this.delegateEvents();
+          this.render();
         }
       }
     }

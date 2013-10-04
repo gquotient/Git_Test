@@ -199,6 +199,11 @@ define([
 
       Marionette.ItemView.prototype.constructor.apply(this, arguments);
 
+      // Update the input fields when re-rendered.
+      this.on('render', function(){
+        this.updateValues(this.mixinTemplateHelpers(this.changed));
+      });
+
       // Update the input fields with any changed model values.
       this.listenTo(this.model, 'change', function(){
         this.updateValues(this.model.changed);
