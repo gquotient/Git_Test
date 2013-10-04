@@ -322,10 +322,10 @@ define([
     validator: function(params){
       var validators = {
         text: function(value){
-          return value && value !== '';
+          return _.isString(value) && value !== '';
         },
         number: function(value){
-          return !isNaN(value);
+          return _.isNumber(value) && !isNaN(value);
         }
       };
 
