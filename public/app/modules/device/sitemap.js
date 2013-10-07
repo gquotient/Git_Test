@@ -37,7 +37,9 @@ function(
       this.shape = new this.paper.Path.Rectangle(x, y, width, height);
 
       this.shape.style = {
-        fillColor: 'black'
+        fillColor: 'black',
+        strokeColor: 'none',
+        strokeWidth: 0
       };
 
       this.triggerMethod('render', this);
@@ -51,8 +53,11 @@ function(
     }
   });
 
-  views.Sitemap = Marionette.CollectionView.extend({
-    tagName:'canvas',
+  views.Sitemap = Marionette.CompositeView.extend({
+    template: {
+      type: 'handlebars',
+      template: sitemapTemplate
+    },
     itemView: views.PhysicalDevice,
     itemViewOptions: function(){
       return {
@@ -60,28 +65,15 @@ function(
         devices: this.collection
       };
     },
-    initialize: function(options) {
-      var paperTimer = new Date().getTime();
-
-      this.paper = new paper.PaperScope();
-      this.paper.setup(this.el);
-      this.deviceGroup = new this.paper.Group();
-
-      this.collection = new Backbone.VirtualCollection(options.collection, {
-        filter: {
-          devtype: 'Panel'
-        },
-        closeWith: this
-      });
-
-      this.listenTo(Backbone, 'window:resize', this.resize);
+    ui: {
+      canvas: 'canvas'
     },
     events: {
       'click': function(event){
-        var hitResult = this.paper.project.hitTest(event.offsetX, event.offsetY);
+        var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
-        if (hitResult) {
-          console.log(this.findChild(hitResult.item));
+        if (hitTest) {
+          console.log(this.findChild(hitTest.item));
         }
       },
       'mousedown': function(event){
@@ -103,8 +95,47 @@ function(
           // Update drag origin
           this.dragging.x = event.offsetX;
           this.dragging.y = event.offsetY;
+        } else {
+          var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
+
+          if (hitTest) {
+            this.hilight(hitTest.item);
+          } else {
+            this.hilight();
+          }
         }
       }, 15)
+    },
+    initialize: function(options) {
+      var paperTimer = new Date().getTime();
+
+      this.paper = new paper.PaperScope();
+
+      this.collection = new Backbone.VirtualCollection(options.collection, {
+        filter: {
+          devtype: 'Panel'
+        },
+        closeWith: this
+      });
+
+      this.listenTo(Backbone, 'window:resize', this.resize);
+    },
+    // This fires after the primary view is rendered
+    onCompositeModelRendered: function(){
+      console.log('onCompositeModelRendered');
+      this.paper.setup(this.ui.canvas[0]);
+      this.deviceGroup = new this.paper.Group();
+    },
+    // This fires after children render
+    onCompositeCollectionRendered: function(){
+      console.log('onCollectionRendered', this.collection.length);
+      this.position();
+      this.rotate();
+      //this.draw();
+    },
+    onAfterItemAdded: function(itemView){
+      // Add items to group for manipulation
+      this.deviceGroup.addChild(itemView.shape);
     },
     findChild: function(shape){
       if (shape) {
@@ -115,15 +146,24 @@ function(
 
       return false;
     },
-    onCollectionRendered: function(){
-      console.log('onCollectionRendered', this.collection.length);
-      this.position();
-      this.rotate();
-      //this.draw();
-    },
-    onAfterItemAdded: function(itemView){
-      // Add items to group for manipulation
-      this.deviceGroup.addChild(itemView.shape);
+    hilight: function(shape){
+      this.deviceGroup.style = {
+        strokeColor: 'none',
+        strokeWidth: 0
+      };
+
+      if (shape) {
+        this.children.each(function(child){
+          if (child.shape === shape) {
+            child.shape.style = {
+              strokeColor: 'red',
+              strokeWidth: 2
+            };
+          }
+        });
+      }
+
+      this.draw();
     },
     resize: function(){
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
