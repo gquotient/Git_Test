@@ -58,6 +58,7 @@ function(
       type: 'handlebars',
       template: sitemapTemplate
     },
+    className: 'sitemap',
     itemView: views.PhysicalDevice,
     itemViewOptions: function(){
       return {
@@ -66,7 +67,11 @@ function(
       };
     },
     ui: {
-      canvas: 'canvas'
+      canvas: 'canvas',
+      center: '.center'
+    },
+    triggers: {
+      'click .center': 'center'
     },
     events: {
       'click': function(event){
@@ -145,6 +150,9 @@ function(
       }
 
       return false;
+    },
+    onCenter: function(){
+      this.position();
     },
     hilight: function(shape){
       this.deviceGroup.style = {
