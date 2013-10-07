@@ -23,7 +23,7 @@ function(
   var views = {};
 
   views.PhysicalDevice = Marionette.ItemView.extend({
-    render: function(options){
+    render: function(){
       this.isClosed = false;
 
       this.triggerMethod('before:render', this);
@@ -31,48 +31,28 @@ function(
 
       var x = this.model.get('x') * 10;
       var y = this.model.get('y') * 10;
-      var width = 10;
-      var height = 13;
+      var width = 13;
+      var height = 10;
 
       this.shape = new this.paper.Path.Rectangle(x, y, width, height);
 
       this.shape.style = {
-        fillColor: 'black',
-        strokeWidth: 5
+        fillColor: 'black'
       };
-
-      //console.log(this.shape);
 
       this.triggerMethod('render', this);
       this.triggerMethod('item:rendered', this);
 
       return this;
     },
-    onRender: function(){
-      this.addEvents();
-    },
-    addEvents: function(){
-      var that = this;
-
-      this.shape.onClick = function(){
-        that.doSomething();
-      };
-    },
-    doSomething: function(){
-      console.log('doing something', this.model);
-    },
     initialize: function(options){
-      //console.log(options);
       this.paper = options.paper;
+      this.project = options.project;
     }
   });
 
-  views.Sitemap = Marionette.CompositeView.extend({
-    className: 'sitemap',
-    template: {
-      type: 'handlebars',
-      template: sitemapTemplate
-    },
+  views.Sitemap = Marionette.CollectionView.extend({
+    tagName:'canvas',
     itemView: views.PhysicalDevice,
     itemViewOptions: function(){
       return {
@@ -80,12 +60,12 @@ function(
         devices: this.collection
       };
     },
-    ui: {
-      canvas: 'canvas'
-    },
     initialize: function(options) {
       var paperTimer = new Date().getTime();
+
       this.paper = new paper.PaperScope();
+      this.paper.setup(this.el);
+      this.deviceGroup = new this.paper.Group();
 
       this.collection = new Backbone.VirtualCollection(options.collection, {
         filter: {
@@ -94,21 +74,68 @@ function(
         closeWith: this
       });
 
-      this.listenTo(Backbone, 'animate', this.animate);
-
       this.listenTo(Backbone, 'window:resize', this.resize);
     },
+    events: {
+      'click': function(event){
+        var hitResult = this.paper.project.hitTest(event.offsetX, event.offsetY);
+        console.log('click', event);
+        console.log(hitResult);
+        if (hitResult) {
+          console.log(this.findChild(hitResult.item));
+        } else {
+          console.log('Nothing clicked');
+        }
+      }
+    },
+    findChild: function(shape){
+      if (shape) {
+        return this.children.find(function(child){
+          return child.shape === shape;
+        });
+      }
+
+      return false;
+    },
+    onCollectionRendered: function(){
+      console.log('onCollectionRendered');
+      this.position();
+      this.rotate();
+      //this.draw();
+    },
+    onAfterItemAdded: function(itemView){
+      // Add items to group for manipulation
+      this.deviceGroup.addChild(itemView.shape);
+    },
     resize: function(){
-      this.paper.view.setViewSize(this.$el.width(), this.$el.height());
+      this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
+    },
+    position: function(){
+      this.deviceGroup.position = this.paper.view.center;
+      this.draw();
+    },
+    rotate: function(){
+      this.deviceGroup.rotate(this.model.get('pref_rotation'), this.paper.view.center);
+      this.draw();
     },
     onRender: function(){
+      console.log('onRender');
       console.log(this.model);
-      this.paper.setup(this.ui.canvas[0]);
       console.log(this.paper);
     },
     onShow: function(){
       this.resize();
-      this.paper.view.draw();
+      this.draw();
+    },
+    draw: function(){
+      var renderTime = new Date().getTime();
+      console.log('draw', this.collection.length, this.children.length);
+      if (this.paper.view) {
+        console.log('has view');
+        this.paper.view.draw();
+        //this.paper.view.rotate(this.model.get('pref_rotation'));
+        console.log('time to draw:', new Date().getTime() - renderTime);
+      }
     },
     animate: function(){
       console.log('animate');
