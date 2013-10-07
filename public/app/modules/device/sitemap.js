@@ -79,14 +79,32 @@ function(
     events: {
       'click': function(event){
         var hitResult = this.paper.project.hitTest(event.offsetX, event.offsetY);
-        console.log('click', event);
-        console.log(hitResult);
+
         if (hitResult) {
           console.log(this.findChild(hitResult.item));
-        } else {
-          console.log('Nothing clicked');
         }
-      }
+      },
+      'mousedown': function(event){
+        this.dragging = {
+          x: event.offsetX,
+          y: event.offsetY
+        };
+      },
+      'mouseup': function(){
+        this.dragging = false;
+      },
+      'mousemove': _.debounce(function(event){
+        if (this.dragging) {
+          this.position({
+            x: event.offsetX - this.dragging.x,
+            y: event.offsetY - this.dragging.y
+          });
+
+          // Update drag origin
+          this.dragging.x = event.offsetX;
+          this.dragging.y = event.offsetY;
+        }
+      }, 15)
     },
     findChild: function(shape){
       if (shape) {
@@ -98,7 +116,7 @@ function(
       return false;
     },
     onCollectionRendered: function(){
-      console.log('onCollectionRendered');
+      console.log('onCollectionRendered', this.collection.length);
       this.position();
       this.rotate();
       //this.draw();
@@ -110,57 +128,35 @@ function(
     resize: function(){
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
     },
-    position: function(){
-      this.deviceGroup.position = this.paper.view.center;
+    position: function(options){
+      // If options are passed, position based on those
+      if (options) {
+        this.deviceGroup.position.x += options.x || 0;
+        this.deviceGroup.position.y += options.y || 0;
+      } else {
+        // else, center the group
+        this.deviceGroup.position = this.paper.view.center;
+      }
+
       this.draw();
     },
-    rotate: function(){
-      this.deviceGroup.rotate(this.model.get('pref_rotation'), this.paper.view.center);
+    rotate: function(degrees){
+      if (degrees) {
+        this.deviceGroup.rotate(this.model.get('pref_rotation'), this.deviceGroup.center);
+      } else {
+        this.deviceGroup.rotate(this.model.get('pref_rotation'), this.deviceGroup.center);
+      }
+
       this.draw();
-    },
-    onRender: function(){
-      console.log('onRender');
-      console.log(this.model);
-      console.log(this.paper);
     },
     onShow: function(){
       this.resize();
       this.draw();
     },
     draw: function(){
-      var renderTime = new Date().getTime();
-      console.log('draw', this.collection.length, this.children.length);
       if (this.paper.view) {
-        console.log('has view');
         this.paper.view.draw();
-        //this.paper.view.rotate(this.model.get('pref_rotation'));
-        console.log('time to draw:', new Date().getTime() - renderTime);
       }
-    },
-    animate: function(){
-      console.log('animate');
-      var that = this;
-      var length = 30;
-      var colors = ['red', 'green', 'blue', 'black', 'yellow'];
-      var next = function(){
-        console.log('next');
-        length--;
-
-        that.children.each(function(child){
-          //console.log('child', child);
-          child.shape.style = {
-            fillColor: colors[parseInt((Math.random() * 10 / 2))]
-          };
-        });
-
-        that.paper.view.draw();
-
-        if (length) {
-          setTimeout(next, 10);
-        }
-      };
-
-      setTimeout(next, 0);
     },
     // Prevent item views from being added to the DOM.
     appendHtml: function(){}
