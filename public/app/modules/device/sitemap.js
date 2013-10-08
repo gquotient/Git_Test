@@ -78,12 +78,14 @@ function(
         }
       },
       'mousedown': function(event){
+        // Set dragging object
         this.dragging = {
           x: event.offsetX,
           y: event.offsetY
         };
       },
       'mouseup': function(){
+        // Clear dragging object
         this.dragging = false;
       },
       'mousemove': _.debounce(function(event){
@@ -92,8 +94,8 @@ function(
         var offsetX = event.offsetX || (event.clientX - $(event.target).offset().left);
         var offsetY = event.offsetY || (event.clientY - $(event.target).offset().top);
 
+        // If currently dragging with the mouse, move the canvas around
         if (this.dragging) {
-
           // Move group to new position
           this.position(
             offsetX - this.dragging.x,
@@ -104,6 +106,7 @@ function(
           this.dragging.x = offsetX;
           this.dragging.y = offsetY;
         } else {
+          // Otherwise, handle hovering
           var hitTest = this.paper.project.hitTest(offsetX, offsetY);
 
           if (hitTest) {
@@ -115,6 +118,7 @@ function(
           }
         }
       }, 15),
+      // Handle controls
       'click .center': function(){
         this.position();
       },
@@ -150,14 +154,11 @@ function(
     },
     // This fires after the primary view is rendered
     onCompositeModelRendered: function(){
-      console.log('onCompositeModelRendered');
       this.paper.setup(this.ui.canvas[0]);
       this.deviceGroup = new this.paper.Group();
     },
     // This fires after children render
     onCompositeCollectionRendered: function(){
-      console.log('onCollectionRendered', this.children.length);
-
       // Reset rotation
       this.currentRotation = 0;
 
@@ -171,6 +172,7 @@ function(
       // Add items to group for manipulation
       this.deviceGroup.addChild(itemView.shape);
     },
+    // Find child view based on a given paper shape
     findChild: function(shape){
       if (shape) {
         return this.children.find(function(child){
@@ -181,6 +183,7 @@ function(
       return false;
     },
     hilight: function(view){
+      // Set all shapes to default styling
       this.deviceGroup.style = {
         strokeColor: 'none',
         strokeWidth: 0
@@ -207,7 +210,6 @@ function(
       this.draw();
     },
     resetPosition: function(){
-      console.log('reset position', this.deviceGroup._children.length);
       this.position();
       this.rotate();
       this.draw();
@@ -229,11 +231,12 @@ function(
       this.draw();
     },
     rotate: function(degrees){
-      console.log('rotate', this.deviceGroup._children.length);
+      // If degrees supplied, handle manual rotation
       if (degrees) {
         this.deviceGroup.rotate(degrees, this.deviceGroup.center);
         this.currentRotation += degrees;
       } else {
+        // Otherwise, handle default rotation
         var defaultRotation = +this.model.get('pref_rotation');
 
         this.deviceGroup.rotate(-this.currentRotation + defaultRotation, this.deviceGroup.center);
@@ -243,7 +246,6 @@ function(
       this.draw();
     },
     zoom: function(direction) {
-      console.log('zoom', direction);
       if (direction === '+') {
         this.deviceGroup.scale(2);
       } else if (direction === '-') {
