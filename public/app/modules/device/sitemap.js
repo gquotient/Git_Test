@@ -189,14 +189,16 @@ function(
 
       if (view) {
         // Hilight siblings
-        this.children.each(function(child){
-          if (child.model.incoming.models[0] === view.model.incoming.models[0]) {
+        view.model.incoming.first().outgoing.each(function(model){
+          var child = this.children.findByModel(model);
+
+          if (child && child !== view) {
             child.shape.style = {
               strokeColor: '#F26322',
               strokeWidth: 1
             };
           }
-        });
+        }, this);
 
         // Hilight hovered
         view.shape.style = {
@@ -229,17 +231,10 @@ function(
       this.draw();
     },
     rotate: function(degrees){
-      // If degrees supplied, handle manual rotation
-      if (degrees) {
-        this.deviceGroup.rotate(degrees, this.deviceGroup.center);
-        this.currentRotation += degrees;
-      } else {
-        // Otherwise, handle default rotation
-        var defaultRotation = +this.model.get('pref_rotation');
+      degrees = degrees || (+this.model.get('pref_rotation') - this.currentRotation);
 
-        this.deviceGroup.rotate(-this.currentRotation + defaultRotation, this.deviceGroup.center);
-        this.currentRotation += defaultRotation - this.currentRotation;
-      }
+      this.deviceGroup.rotate(degrees, this.deviceGroup.center);
+      this.currentRotation += degrees;
 
       this.draw();
     },
