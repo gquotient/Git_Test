@@ -240,9 +240,7 @@ function(
       this.resize();
     },
     draw: function(){
-      if (this.paper.view) {
-        this.paper.view.draw();
-      }
+      this.paper.view.draw();
     },
     // Prevent item views from being added to the DOM.
     appendHtml: function(){}
