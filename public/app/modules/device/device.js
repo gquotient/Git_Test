@@ -8,6 +8,7 @@ define([
 
   './canvas',
   './table',
+  './sitemap',
 
   'hbs!device/templates/li'
 ], function(
@@ -20,6 +21,7 @@ define([
 
   canvasViews,
   tableViews,
+  sitemapViews,
 
   deviceListItemTemplate
 ){
@@ -281,7 +283,7 @@ define([
     }
   });
 
-  _.extend(Device.views, canvasViews, tableViews);
+  _.extend(Device.views, canvasViews, tableViews, sitemapViews);
 
   return Device;
 });
