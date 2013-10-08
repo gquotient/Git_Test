@@ -55,6 +55,7 @@ function(
   });
 
   views.DeviceInfo = Marionette.ItemView.extend({
+    className: 'deviceInfo',
     template: {
       type: 'handlebars',
       template: deviceInfoTemplate
@@ -73,9 +74,11 @@ function(
         paper: this.paper
       };
     },
-    ui: {
-      canvas: 'canvas',
+    regions: {
       deviceInfoContainer: '.deviceInfoContainer'
+    },
+    ui: {
+      canvas: 'canvas'
     },
     events: {
       'click': function(event){
@@ -163,6 +166,8 @@ function(
     deviceInfoView: views.DeviceInfo,
     buildDeviceInfo: function(device){
       console.log('buildDeviceInfo', device);
+      var deviceInfoView = new this.deviceInfoView({model: device});
+      this.deviceInfoContainer.show(deviceInfoView);
     },
     // This fires after the primary view is rendered
     onCompositeModelRendered: function(){
