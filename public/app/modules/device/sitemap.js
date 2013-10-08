@@ -151,15 +151,17 @@ function(
     // This fires after children render
     onCompositeCollectionRendered: function(){
       console.log('onCollectionRendered', this.children.length);
-      console.log(this.deviceGroup);
+
+      // Reset rotation
       this.currentRotation = 0;
 
-      this.resetPosition();
+      // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
+      // but it does. Have fun later when you come back to this.
+      if (this.children.length) {
+        this.resetPosition();
+      }
     },
     onAfterItemAdded: function(itemView){
-      if (itemView.model.id === '45300') {
-        console.log('found goofy panel', this.deviceGroup._children.length);
-      }
       // Add items to group for manipulation
       this.deviceGroup.addChild(itemView.shape);
     },
@@ -200,14 +202,15 @@ function(
     },
     resetPosition: function(){
       console.log('reset position', this.deviceGroup._children.length);
-      this.position(null, false);
-      this.rotate(null, false);
+      this.position();
+      this.rotate();
       this.draw();
     },
     resize: function(){
+      // Fill canvas to size of parent container
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
     },
-    position: function(x, y, draw){
+    position: function(x, y){
       // If options are passed, position based on those
       if (x || y) {
         this.deviceGroup.position.x += x || 0;
@@ -217,11 +220,9 @@ function(
         this.deviceGroup.position = this.paper.view.center;
       }
 
-      if (draw !== false) {
-        this.draw();
-      }
+      this.draw();
     },
-    rotate: function(degrees, draw){
+    rotate: function(degrees){
       console.log('rotate', this.deviceGroup._children.length);
       if (degrees) {
         this.deviceGroup.rotate(degrees, this.deviceGroup.center);
@@ -233,13 +234,10 @@ function(
         this.currentRotation += defaultRotation - this.currentRotation;
       }
 
-      if (draw !== false) {
-        this.draw();
-      }
+      this.draw();
     },
     onShow: function(){
       this.resize();
-      this.draw();
     },
     draw: function(){
       if (this.paper.view) {
