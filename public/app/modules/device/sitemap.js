@@ -70,9 +70,6 @@ function(
       canvas: 'canvas',
       center: '.center'
     },
-    triggers: {
-      'click .center': 'center'
-    },
     events: {
       'click': function(event){
         var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
@@ -104,12 +101,26 @@ function(
           var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
           if (hitTest) {
-            this.hilight(hitTest.item);
+            this.hilight(this.findChild(hitTest.item));
+            this.$el.css('cursor', 'pointer');
           } else {
             this.hilight();
+            this.$el.css('cursor', 'move');
           }
         }
-      }, 15)
+      }, 15),
+      'click .center': function(){
+        this.position();
+      },
+      'click .rotateL': function(){
+        this.rotate(-15);
+      },
+      'click .rotateR': function(){
+        this.rotate(15);
+      },
+      'click .reset': function(){
+        this.resetPosition();
+      }
     },
     initialize: function(options) {
       var paperTimer = new Date().getTime();
@@ -134,9 +145,9 @@ function(
     // This fires after children render
     onCompositeCollectionRendered: function(){
       console.log('onCollectionRendered', this.collection.length);
-      this.position();
-      this.rotate();
-      //this.draw();
+      console.log(this.deviceGroup);
+      this.currentRotation = 0;
+      this.resetPosition();
     },
     onAfterItemAdded: function(itemView){
       // Add items to group for manipulation
@@ -151,27 +162,35 @@ function(
 
       return false;
     },
-    onCenter: function(){
-      this.position();
-    },
-    hilight: function(shape){
+    hilight: function(view){
       this.deviceGroup.style = {
         strokeColor: 'none',
         strokeWidth: 0
       };
 
-      if (shape) {
+      if (view) {
+        // Hilight siblings
         this.children.each(function(child){
-          if (child.shape === shape) {
+          if (child.model.incoming.models[0] === view.model.incoming.models[0]) {
             child.shape.style = {
-              strokeColor: 'red',
-              strokeWidth: 2
+              strokeColor: '#F26322',
+              strokeWidth: 1
             };
           }
         });
+
+        // Hilight hovered
+        view.shape.style = {
+          strokeColor: '#F26322',
+          strokeWidth: 2
+        };
       }
 
       this.draw();
+    },
+    resetPosition: function(){
+      this.position();
+      this.rotate();
     },
     resize: function(){
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
@@ -190,9 +209,13 @@ function(
     },
     rotate: function(degrees){
       if (degrees) {
-        this.deviceGroup.rotate(this.model.get('pref_rotation'), this.deviceGroup.center);
+        this.deviceGroup.rotate(degrees, this.deviceGroup.center);
+        this.currentRotation += degrees;
       } else {
-        this.deviceGroup.rotate(this.model.get('pref_rotation'), this.deviceGroup.center);
+        var defaultRotation = +this.model.get('pref_rotation');
+
+        this.deviceGroup.rotate(-this.currentRotation + defaultRotation, this.deviceGroup.center);
+        this.currentRotation += defaultRotation - this.currentRotation;
       }
 
       this.draw();
