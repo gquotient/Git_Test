@@ -49,7 +49,6 @@ function(
     },
     initialize: function(options){
       this.paper = options.paper;
-      this.project = options.project;
     }
   });
 
@@ -62,8 +61,7 @@ function(
     itemView: views.PhysicalDevice,
     itemViewOptions: function(){
       return {
-        paper: this.paper,
-        devices: this.collection
+        paper: this.paper
       };
     },
     ui: {
