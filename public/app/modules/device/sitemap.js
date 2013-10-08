@@ -73,9 +73,9 @@ function(
       'click': function(event){
         var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
-        if (hitTest) {
-          console.log(this.findChild(hitTest.item));
-        }
+        // if (hitTest) {
+        //   console.log(this.findChild(hitTest.item));
+        // }
       },
       'mousedown': function(event){
         // Set dragging object
