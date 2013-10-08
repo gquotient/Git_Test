@@ -124,6 +124,12 @@ function(
       'click .rotateR': function(){
         this.rotate(15);
       },
+      'click .zoomIn': function(){
+        this.zoom('+');
+      },
+      'click .zoomOut': function(){
+        this.zoom('-');
+      },
       'click .reset': function(){
         this.resetPosition();
       }
@@ -232,6 +238,16 @@ function(
 
         this.deviceGroup.rotate(-this.currentRotation + defaultRotation, this.deviceGroup.center);
         this.currentRotation += defaultRotation - this.currentRotation;
+      }
+
+      this.draw();
+    },
+    zoom: function(direction) {
+      console.log('zoom', direction);
+      if (direction === '+') {
+        this.deviceGroup.scale(2);
+      } else if (direction === '-') {
+        this.deviceGroup.scale(0.5);
       }
 
       this.draw();
