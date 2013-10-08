@@ -67,8 +67,7 @@ function(
       };
     },
     ui: {
-      canvas: 'canvas',
-      center: '.center'
+      canvas: 'canvas'
     },
     events: {
       'click': function(event){
@@ -88,17 +87,24 @@ function(
         this.dragging = false;
       },
       'mousemove': _.debounce(function(event){
+        // Polyfill because firefox doesn't get offsetX/offsetY
+        // http://bugs.jquery.com/ticket/8523
+        var offsetX = event.offsetX || (event.clientX - $(event.target).offset().left);
+        var offsetY = event.offsetY || (event.clientY - $(event.target).offset().top);
+
         if (this.dragging) {
-          this.position({
-            x: event.offsetX - this.dragging.x,
-            y: event.offsetY - this.dragging.y
-          });
+
+          // Move group to new position
+          this.position(
+            offsetX - this.dragging.x,
+            offsetY - this.dragging.y
+          );
 
           // Update drag origin
-          this.dragging.x = event.offsetX;
-          this.dragging.y = event.offsetY;
+          this.dragging.x = offsetX;
+          this.dragging.y = offsetY;
         } else {
-          var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
+          var hitTest = this.paper.project.hitTest(offsetX, offsetY);
 
           if (hitTest) {
             this.hilight(this.findChild(hitTest.item));
@@ -123,10 +129,10 @@ function(
       }
     },
     initialize: function(options) {
-      var paperTimer = new Date().getTime();
-
+      // Instantiate paper
       this.paper = new paper.PaperScope();
 
+      // Move collection to virtual collection
       this.collection = new Backbone.VirtualCollection(options.collection, {
         filter: {
           devtype: 'Panel'
@@ -144,12 +150,16 @@ function(
     },
     // This fires after children render
     onCompositeCollectionRendered: function(){
-      console.log('onCollectionRendered', this.collection.length);
+      console.log('onCollectionRendered', this.children.length);
       console.log(this.deviceGroup);
       this.currentRotation = 0;
+
       this.resetPosition();
     },
     onAfterItemAdded: function(itemView){
+      if (itemView.model.id === '45300') {
+        console.log('found goofy panel', this.deviceGroup._children.length);
+      }
       // Add items to group for manipulation
       this.deviceGroup.addChild(itemView.shape);
     },
@@ -189,25 +199,30 @@ function(
       this.draw();
     },
     resetPosition: function(){
-      this.position();
-      this.rotate();
+      console.log('reset position', this.deviceGroup._children.length);
+      this.position(null, false);
+      this.rotate(null, false);
+      this.draw();
     },
     resize: function(){
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
     },
-    position: function(options){
+    position: function(x, y, draw){
       // If options are passed, position based on those
-      if (options) {
-        this.deviceGroup.position.x += options.x || 0;
-        this.deviceGroup.position.y += options.y || 0;
+      if (x || y) {
+        this.deviceGroup.position.x += x || 0;
+        this.deviceGroup.position.y += y || 0;
       } else {
         // else, center the group
         this.deviceGroup.position = this.paper.view.center;
       }
 
-      this.draw();
+      if (draw !== false) {
+        this.draw();
+      }
     },
-    rotate: function(degrees){
+    rotate: function(degrees, draw){
+      console.log('rotate', this.deviceGroup._children.length);
       if (degrees) {
         this.deviceGroup.rotate(degrees, this.deviceGroup.center);
         this.currentRotation += degrees;
@@ -218,7 +233,9 @@ function(
         this.currentRotation += defaultRotation - this.currentRotation;
       }
 
-      this.draw();
+      if (draw !== false) {
+        this.draw();
+      }
     },
     onShow: function(){
       this.resize();
