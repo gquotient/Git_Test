@@ -31,6 +31,11 @@ define([
     }
   });
 
+  // Add debounced window reize trigger for views to listen to
+  $(window).resize(_.debounce(function(event){
+    Backbone.trigger('window:resize', event);
+  }, 10));
+
   // Add body#ia has the main app region
   ia.addRegions({
     main: '#ia'

@@ -7,9 +7,6 @@ define([
 
   'portfolio',
   'project',
-  'device',
-  'chart',
-  'issue',
 
   'layouts/projects/detail',
 
@@ -23,9 +20,6 @@ define([
 
   Portfolio,
   Project,
-  Device,
-  Chart,
-  Issue,
 
   DetailLayout,
 
