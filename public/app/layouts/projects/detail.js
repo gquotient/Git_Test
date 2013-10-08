@@ -203,13 +203,14 @@ define([
       });
     },
     showDevices: function(){
+      // Build physical layout if available
       if (this.model.get('hasDC')){
         this.devicesView = new Device.views.Sitemap({
           model: this.model,
           collection: this.model.devices
         });
       } else {
-        // Build devices view
+        // Otherwise build electrical flow view
         this.devicesView = new Device.views.Canvas({
           model: this.model,
           collection: this.model.devices,
