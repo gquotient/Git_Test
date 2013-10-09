@@ -127,13 +127,13 @@ function(
       deviceInfoContainer: '.deviceInfoContainer'
     },
     events: {
-      'click': function(event){
-        var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
+      // 'click': function(event){
+      //   var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
-        if (hitTest) {
-          this.buildDeviceInfo(this.findChild(hitTest.item).model);
-        }
-      },
+      //   if (hitTest) {
+      //     this.buildDeviceInfo(this.findChild(hitTest.item).model);
+      //   }
+      // },
       'mousedown': function(event){
         // Set dragging object
         this.dragging = {
