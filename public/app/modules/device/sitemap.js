@@ -282,6 +282,7 @@ function(
       this.draw();
     },
     resetPosition: function(){
+      this.zoom();
       this.position();
       this.rotate();
       this.draw();
@@ -310,11 +311,17 @@ function(
 
       this.draw();
     },
+    currentZoom: 1,
     zoom: function(direction) {
       if (direction === '+') {
         this.deviceGroup.scale(2);
+        this.currentZoom *= 2;
       } else if (direction === '-') {
         this.deviceGroup.scale(0.5);
+        this.currentZoom *= 0.5;
+      } else {
+        this.deviceGroup.scale(1 / this.currentZoom);
+        this.currentZoom = 1;
       }
 
       this.draw();
