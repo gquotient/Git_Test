@@ -7,8 +7,7 @@ define([
   'backbone.virtualCollection',
   'paper',
 
-  'hbs!device/templates/sitemap',
-  'hbs!device/templates/deviceInfo'
+  'hbs!device/templates/sitemap'
 ],
 function(
   $,
@@ -19,8 +18,7 @@ function(
   VirtualCollection,
   paper,
 
-  sitemapTemplate,
-  deviceInfoTemplate
+  sitemapTemplate
 ){
   var views = {};
 
@@ -54,14 +52,6 @@ function(
     }
   });
 
-  views.DeviceInfo = Marionette.ItemView.extend({
-    className: 'deviceInfo',
-    template: {
-      type: 'handlebars',
-      template: deviceInfoTemplate
-    }
-  });
-
   views.Sitemap = Marionette.CompositeView.extend({
     template: {
       type: 'handlebars',
@@ -74,9 +64,6 @@ function(
         paper: this.paper
       };
     },
-    regions: {
-      deviceInfoContainer: '.deviceInfoContainer'
-    },
     ui: {
       canvas: 'canvas'
     },
@@ -84,9 +71,9 @@ function(
       'click': function(event){
         var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
-        if (hitTest) {
-          this.buildDeviceInfo(this.findChild(hitTest.item).model);
-        }
+        // if (hitTest) {
+        //   console.log(this.findChild(hitTest.item));
+        // }
       },
       'mousedown': function(event){
         // Set dragging object
@@ -162,12 +149,6 @@ function(
       });
 
       this.listenTo(Backbone, 'window:resize', this.resize);
-    },
-    deviceInfoView: views.DeviceInfo,
-    buildDeviceInfo: function(device){
-      console.log('buildDeviceInfo', device);
-      var deviceInfoView = new this.deviceInfoView({model: device});
-      this.deviceInfoContainer.show(deviceInfoView);
     },
     // This fires after the primary view is rendered
     onCompositeModelRendered: function(){
