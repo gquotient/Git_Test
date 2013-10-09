@@ -40,8 +40,8 @@ function(
           if (shapeString[i] === 'M' || shapeString[i] === 'L' || shapeString[i] === 'Z') {
             var stringPieces = shapeString.slice((currentPosition + 1), i).split(',');
             return {
-              x: +stringPieces[0],
-              y: +stringPieces[1]
+              x: +stringPieces[0] * 10,
+              y: +stringPieces[1] * 10
             };
           }
         }
@@ -91,7 +91,6 @@ function(
       return this;
     },
     initialize: function(options){
-      console.log(this.model);
       this.paper = options.paper;
     }
   });
