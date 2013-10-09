@@ -241,27 +241,17 @@ define([
 
     getSchema: function(){
       var inherits = this.collection.get(this.get('inherits')),
-        schema = {};
+        inherited = (inherits && inherits.getSchema()) || {},
+        schema = this.get('schema') || {};
 
-      // Try and get the inherited schema.
-      if (inherits) {
-        schema = inherits.getSchema();
+      // Combine the required, inherited and instance schema parameters.
+      return _.reduce(this.constructor.schema, function(memo, params, attr){
+        if (params.required || _.has(inherited, attr) || _.has(schema, attr)) {
+          memo[attr] = _.extend({}, params, inherited[attr], schema[attr]);
+        }
 
-      // Otherwise add the required attributes.
-      } else {
-        _.each(this.constructor.schema, function(params, attr){
-          if (params.required) {
-            schema[attr] = params;
-          }
-        });
-      }
-
-      // Add the attributes for this equipment instance.
-      _.each(this.get('schema'), function(params, attr){
-        schema[attr] = _.defaults(params, this.constructor.schema[attr]);
-      }, this);
-
-      return schema;
+        return memo;
+      }, {});
     }
   }, {
     schema: {
