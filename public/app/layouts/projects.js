@@ -31,18 +31,34 @@ define([
       type: 'handlebars',
       template: projectsTemplate
     },
+
     attributes: {
       id: 'page-projectDetail'
     },
+
     regions: {
       pageContent: '.pageContent',
       contentNavigation: '.nav_content'
     },
+
     events: {
       'click .edit': function(){
         Backbone.history.navigate('/admin/projects/' + this.model.id, true);
       }
     },
+
+    initialize: function(options){
+      // Instantiate left nav
+      this.projectNavigationListView = new Project.views.NavigationListView({
+        collection: options.collection
+      });
+
+      this.listenTo(Backbone, 'click:project', function(project){
+        this.selectProject(project);
+        Backbone.history.navigate('/project/' + project.id);
+      });
+    },
+
     onShow: function(){
       var that = this;
       // Fetch data for all projects
@@ -57,6 +73,9 @@ define([
         Backbone.trigger('notification', data.alarms);
       });
 
+      // Create the settings drop down
+      this.buildSettingsDropdown();
+
       // Fetch issues every five minutes
       this.fetchDataInterval = setInterval(fetchProjectData, 300000);
 
@@ -64,6 +83,7 @@ define([
 
       this.selectProject(this.model);
     },
+
     buildSettingsDropdown: function(){
       var that = this;
 
@@ -71,11 +91,10 @@ define([
       var settingsDropdown = new Marionette.ItemView({
         tagName: 'li',
         className: 'menu dropdown',
-        template: _.template('<ul><li><a href="#" class="edit">Edit Project</a></li></ul>'),
+        template: _.template('<ul><li class="toggleMapView">Toggle Map View</li></ul>'),
         events: {
-          'click .edit': function(event){
-            event.preventDefault();
-            Backbone.history.navigate('/project/' + that.model.id + '/edit', true);
+          'click .toggleMapView': function(event){
+            Backbone.trigger('toggleMapView');
           }
         }
       });
@@ -106,18 +125,6 @@ define([
 
       // Clear data fetch
       clearInterval(this.fetchInterval);
-    },
-
-    initialize: function(options){
-      // Instantiate left nav
-      this.projectNavigationListView = new Project.views.NavigationListView({
-        collection: options.collection
-      });
-
-      this.listenTo(Backbone, 'click:project', function(project){
-        this.selectProject(project);
-        Backbone.history.navigate('/project/' + project.id);
-      });
     }
   });
 });

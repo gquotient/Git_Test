@@ -1005,7 +1005,42 @@ ul.handsontableDropdown {
 
 .sitemap {
   position: relative;
-  cursor: move;
+  .deviceInfoContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    .deviceInfo {
+      height: 100%;
+      width: 100%;
+      background: rgba(1, 1, 1, .5);
+      transition: .25s ease-in-out;
+      margin-left: -100%;
+      padding: 6px;
+      &:hover {
+        background: rgba(1, 1, 1, .85);
+        transition: .25s ease-in-out;
+      }
+      h4 {
+        float: left;
+        margin: 0 0 6px;
+        padding: 0;
+      }
+      .close {
+        float: right;
+      }
+      hr {
+        height: 1px;
+        background: #777;
+        clear: both;
+        border: none;
+      }
+      .content {
+
+      }
+    }
+  }
   .controls {
     position: absolute;
     bottom: 0;

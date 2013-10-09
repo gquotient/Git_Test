@@ -57,9 +57,10 @@ define([
       this.listenTo(Backbone, 'click:device', function(device){
         Backbone.history.navigate('/project/' + this.model.id + '/devices/' + device.get('graph_key'), true);
       });
-    },
-    triggers: {
-      'click .toggleView': 'toggle:view'
+
+      this.listenTo(Backbone, 'toggleMapView', function(){
+        this.triggerMethod('toggle:view');
+      });
     },
     onToggleView: function(){
       if (this.currentView === 'map') {
