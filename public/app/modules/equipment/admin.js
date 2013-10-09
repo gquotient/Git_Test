@@ -167,7 +167,7 @@ define([
         }
       },
       description: {},
-      make: {},
+      manufacturer: {},
       model: {},
       inherits: {
         source: function(){

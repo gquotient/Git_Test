@@ -406,10 +406,22 @@
       {"label": "POWER", "offset": {"x": -100, "y": 0}}
     ],
     "schema": {
-      "panel_width": {
+      "nominal_power": {
         "required": true
       },
-      "panel_height": {
+      "frame_length": {
+        "required": true
+      },
+      "frame_width": {
+        "required": true
+      },
+      "frame_thickness": {
+        "required": true
+      },
+      "cell_count": {
+        "required": true
+      },
+      "diode_count": {
         "required": true
       }
     }

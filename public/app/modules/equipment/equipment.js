@@ -276,16 +276,36 @@ define([
         required: true,
         editable: false
       },
+      manufacturer: {
+        required: true
+      },
+      model: {
+        required: true
+      },
       name: {
         required: true
       },
-      panel_width: {
+      nominal_power: {
+        type: 'power',
+        units: 'watts'
+      },
+      frame_length: {
         type: 'length',
         units: 'meters'
       },
-      panel_height: {
+      frame_width: {
         type: 'length',
         units: 'meters'
+      },
+      frame_thickness: {
+        type: 'length',
+        units: 'meters'
+      },
+      cell_count: {
+        type: 'integer'
+      },
+      diode_count: {
+        type: 'integer'
       }
     }
   });
