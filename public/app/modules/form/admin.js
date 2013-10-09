@@ -257,14 +257,10 @@ define([
 
       Marionette.ItemView.prototype.constructor.apply(this, arguments);
 
-      // Update the input fields when re-rendered.
-      this.on('render', function(){
-        this.updateValues(this.mixinTemplateHelpers(this.changed));
-      });
-
-      // Update the input fields with any changed model values.
-      this.listenTo(this.model, 'change', function(){
-        this.updateValues(this.model.changed);
+      // Update the input fields and discard changed when the model changes.
+      this.listenTo(this.model, 'change', function(model){
+        this.changed = _.omit(this.changed, _.keys(model.changed));
+        this.updateValues(model.changed);
       });
     },
 
@@ -452,7 +448,7 @@ define([
 
     // Overwritten to apply schema rendering to the values.
     serializeData: function(){
-      var data = _.clone(this.model.attributes);
+      var data = _.extend({}, this.model.attributes, this.changed);
 
       _.each(data, function(value, attr){
         data[attr] = this.renderValue(attr, value);
