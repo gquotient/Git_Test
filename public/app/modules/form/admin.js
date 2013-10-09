@@ -21,6 +21,64 @@ define([
 ){
   var views = {};
 
+  function parseFactory(params){
+    var parsers = {
+      number: function(value){
+        return parseFloat(value);
+      },
+      integer: function(value){
+        return parseInt(value, 10);
+      },
+      length: function(value){
+        var result = parsers.number(value);
+
+        // If the value is already in meters just return it.
+        if (/(m|meter|meters)$/.test(value)) { return result; }
+
+        // Otherwise try to convert the length to meters based on given units.
+        if (/(ft|foot|feet)$/.test(value)) { return result * 3048 / 10000; }
+        if (/(in|inch|inches)$/.test(value)) { return result * 254 / 10000; }
+
+        // Any other units should be invalid.
+        if (/\D+$/.test(value)) { return NaN; }
+
+        // But no units should be treated as meters.
+        return result;
+      }
+    };
+
+    return parsers[params.type];
+  }
+
+  function renderFactory(params){
+    var renderers = {
+      length: function(value){
+        return _.compact([value, params.units]).join(' ');
+      }
+    };
+
+    return renderers[params.type];
+  }
+
+  function validateFactory(params){
+    var validators = {
+      text: function(value){
+        return _.isString(value) && value !== '';
+      },
+      number: function(value){
+        return _.isNumber(value) && !isNaN(value);
+      },
+      integer: function(value){
+        return validators.number(value) && Math.floor(value) === value;
+      },
+      length: function(value){
+        return validators.number(value);
+      }
+    };
+
+    return params.required && (validators[params.type] || validators.text);
+  }
+
   views.DropdownItem = Marionette.ItemView.extend({
     tagName: 'li',
     template: {
@@ -244,10 +302,19 @@ define([
 
       // Compile a single schema object for this view.
       return _.reduce(attrs, function(memo, attr){
-        memo[attr] = _.extend({
+        var params = memo[attr] = {};
+
+        // Combine the model and view schema.
+        _.extend(params, modelSchema[attr], viewSchema[attr]);
+
+        // Add default values as needed for the view.
+        _.defaults(params, {
           name: util.capitalize(attr),
-          el: '#' + attr
-        }, modelSchema[attr], viewSchema[attr]);
+          el: '#' + attr,
+          parse: parseFactory(params),
+          render: renderFactory(params),
+          validate: validateFactory(params)
+        });
 
         return memo;
       }, {});
@@ -255,8 +322,6 @@ define([
 
     schemaEvents: function(){
       return _.reduce(this._schema, function(memo, params, attr){
-        var parser = params.parse || this.parser(params),
-          validator = params.validate || this.validator(params);
 
         // Create listeners for each schema item that will wait for the user
         // to finish entering data then parse and validate the value.
@@ -266,13 +331,13 @@ define([
           if ($el && $el.val) {
             value = $el.val().trim();
 
-            if (parser) {
-              value = parser.call(this, value);
+            if (params.parse) {
+              value = params.parse.call(this, value);
             }
 
             // If the value is invalid, mark the input and call an error
             // handler if present.
-            if (validator && !validator.call(this, value)) {
+            if (params.validate && !params.validate.call(this, value)) {
               $el.addClass('invalid');
 
               if (params.error) {
@@ -307,29 +372,6 @@ define([
 
         return memo;
       }, {}, this);
-    },
-
-    parser: function(params){
-      var parsers = {
-        number: function(value){
-          return parseFloat(value);
-        }
-      };
-
-      return parsers[params.type];
-    },
-
-    validator: function(params){
-      var validators = {
-        text: function(value){
-          return _.isString(value) && value !== '';
-        },
-        number: function(value){
-          return _.isNumber(value) && !isNaN(value);
-        }
-      };
-
-      return params.required && (validators[params.type] || validators.text);
     },
 
     createDropdown: function($input, collection){
@@ -395,14 +437,48 @@ define([
       return editable !== false;
     },
 
+    // Overwritten to pass values to the template helper.
+    mixinTemplateHelpers: function(target){
+      var templateHelpers = Marionette.getOption(this, 'templateHelpers');
+
+      target = target || {};
+
+      if (_.isFunction(templateHelpers)) {
+        templateHelpers = templateHelpers.call(this, target);
+      }
+
+      return _.extend(target, templateHelpers);
+    },
+
+    // Overwritten to apply schema rendering to the values.
+    serializeData: function(){
+      var data = _.clone(this.model.attributes);
+
+      _.each(data, function(value, attr){
+        data[attr] = this.renderValue(attr, value);
+      }, this);
+
+      return data;
+    },
+
     updateValues: function(values){
       _.each(values, function(value, attr){
         var $el = this.ui[attr];
 
         if ($el && !$el.prop('disabled')) {
-          $el.val(value).removeClass('invalid');
+          $el.val(this.renderValue(attr, value)).removeClass('invalid');
         }
       }, this);
+    },
+
+    renderValue: function(attr, value){
+      var params = this._schema[attr] || {};
+
+      if (params.render) {
+        value = params.render.call(this, value);
+      }
+
+      return value;
     },
 
     // This causes the parser and validator to be run on every input and

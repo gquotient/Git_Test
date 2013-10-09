@@ -138,15 +138,14 @@ define([
       template: adminDetailTemplate
     },
 
-    templateHelpers: function(){
+    templateHelpers: function(data){
       var attrs = _.difference(_.keys(this._schema), _.keys(this.schema));
 
       return {
-        inherits: this.model.getBase().get('name'),
         items: _.map(attrs, function(attr){
           return {
             name: this._schema[attr].name,
-            value: this.model.get(attr),
+            value: data[attr],
             attr: attr
           };
         }, this)
@@ -186,9 +185,12 @@ define([
             close_with: this
           });
         },
+        render: function(value){
+          var inherits = this.collection.get(value);
+          return inherits ? inherits.get('name') : '';
+        },
         parse: function(value){
           var model = this.collection.findWhere({name: value});
-
           return model && model.id;
         },
         success: function(value){

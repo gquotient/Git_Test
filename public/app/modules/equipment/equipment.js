@@ -280,12 +280,12 @@ define([
         required: true
       },
       panel_width: {
-        type: 'number',
-        units: 'ft'
+        type: 'length',
+        units: 'meters'
       },
       panel_height: {
-        type: 'number',
-        units: 'ft'
+        type: 'length',
+        units: 'meters'
       }
     }
   });
