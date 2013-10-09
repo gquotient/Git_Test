@@ -25,18 +25,59 @@ function(
   var views = {};
 
   views.PhysicalDevice = Marionette.ItemView.extend({
+    drawPanel: function(){
+      var x = this.model.get('x') * 10,
+        y = this.model.get('y') * 10,
+        width = 13,
+        height = 10;
+
+      this.shape = new this.paper.Path.Rectangle(x, y, width, height);
+    },
+    drawShape: function(){
+      var shapeString = this.model.get('shapes');
+      var parseCoordinates = function(currentPosition){
+        for (var i = currentPosition + 1, shapeStringLength = shapeString.length; i < shapeStringLength; i++) {
+          if (shapeString[i] === 'M' || shapeString[i] === 'L' || shapeString[i] === 'Z') {
+            var stringPieces = shapeString.slice((currentPosition + 1), i).split(',');
+            return {
+              x: +stringPieces[0],
+              y: +stringPieces[1]
+            };
+          }
+        }
+      };
+
+      this.shape = new this.paper.CompoundPath();
+
+      for (var i = 0, shapeStringLength = shapeString.length; i < shapeStringLength; i++) {
+        var coordinates;
+
+        if (shapeString[i] === 'M') {
+          coordinates = parseCoordinates(i);
+          this.shape.moveTo(coordinates.x, coordinates.y);
+        }
+
+        if (shapeString[i] === 'L') {
+          coordinates = parseCoordinates(i);
+          this.shape.lineTo(coordinates.x, coordinates.y);
+        }
+
+        if (shapeString[i] === 'Z') {
+          this.shape.closePath();
+        }
+      }
+    },
     render: function(){
       this.isClosed = false;
 
       this.triggerMethod('before:render', this);
       this.triggerMethod('item:before:render', this);
 
-      var x = this.model.get('x') * 10;
-      var y = this.model.get('y') * 10;
-      var width = 13;
-      var height = 10;
-
-      this.shape = new this.paper.Path.Rectangle(x, y, width, height);
+      if (this.model.get('devtype') === 'Panel') {
+        this.drawPanel();
+      } else {
+        this.drawShape();
+      }
 
       this.shape.style = {
         fillColor: 'black',
@@ -50,6 +91,7 @@ function(
       return this;
     },
     initialize: function(options){
+      console.log(this.model);
       this.paper = options.paper;
     }
   });
@@ -202,7 +244,7 @@ function(
       // Move collection to virtual collection
       this.collection = new Backbone.VirtualCollection(options.collection, {
         filter: {
-          devtype: 'Panel'
+          devtype: 'String'
         },
         closeWith: this
       });
@@ -246,7 +288,10 @@ function(
     findChild: function(shape){
       if (shape) {
         return this.children.find(function(child){
-          return child.shape === shape;
+          if (child.shape === shape || child.shape._children && _.indexOf(child.shape._children, shape) >= 0) {
+            return true;
+          }
+          return false;
         });
       }
 
@@ -277,6 +322,8 @@ function(
           strokeColor: '#F26322',
           strokeWidth: 2
         };
+
+        view.shape.bringToFront();
       }
 
       this.draw();
