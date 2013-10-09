@@ -7,7 +7,8 @@ define([
   'backbone.virtualCollection',
   'paper',
 
-  'hbs!device/templates/sitemap'
+  'hbs!device/templates/sitemap',
+  'hbs!device/templates/deviceInfo'
 ],
 function(
   $,
@@ -18,7 +19,8 @@ function(
   VirtualCollection,
   paper,
 
-  sitemapTemplate
+  sitemapTemplate,
+  deviceInfoTemplate
 ){
   var views = {};
 
@@ -52,6 +54,62 @@ function(
     }
   });
 
+  views.DeviceInfo = Marionette.ItemView.extend({
+    className: 'deviceInfo',
+    template: {
+      type: 'handlebars',
+      template: deviceInfoTemplate
+    },
+    templateHelpers: function(){
+      var that = this;
+
+      return {
+        parents: (function(){
+          var parents = [];
+
+          var getParents = function(model){
+            var parent = model.incoming ? model.incoming.models[0] : null;
+
+            if (parent) {
+              parents.push(parent.toJSON());
+              getParents(parent);
+            }
+          };
+
+          getParents(that.model);
+
+          return parents;
+        })()
+      };
+    },
+    triggers: {
+      'click .close': 'close'
+    },
+    onShow: function(){
+      if (this.options.animate) {
+        this.$el
+          .animate({
+            'margin-left': 0
+          }, 250);
+      } else {
+        this.$el
+          .css({
+            'margin-left': 0
+          });
+      }
+    },
+    onClose: function(){
+      var that = this;
+
+      this.$el
+        .animate({
+          'margin-left': '-100%'
+        }, 250, function(){
+          that.close();
+        });
+    }
+  });
+
   views.Sitemap = Marionette.CompositeView.extend({
     template: {
       type: 'handlebars',
@@ -65,15 +123,16 @@ function(
       };
     },
     ui: {
-      canvas: 'canvas'
+      canvas: 'canvas',
+      deviceInfoContainer: '.deviceInfoContainer'
     },
     events: {
       'click': function(event){
         var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
-        // if (hitTest) {
-        //   console.log(this.findChild(hitTest.item));
-        // }
+        if (hitTest) {
+          this.buildDeviceInfo(this.findChild(hitTest.item).model);
+        }
       },
       'mousedown': function(event){
         // Set dragging object
@@ -112,7 +171,7 @@ function(
             this.$el.css('cursor', 'pointer');
           } else {
             this.hilight();
-            this.$el.css('cursor', 'move');
+            this.$el.css('cursor', 'auto');
           }
         }
       }, 15),
@@ -149,6 +208,19 @@ function(
       });
 
       this.listenTo(Backbone, 'window:resize', this.resize);
+    },
+    deviceInfoView: views.DeviceInfo,
+    buildDeviceInfo: function(device){
+      console.log('buildDeviceInfo', device);
+
+      var deviceInfo = new this.deviceInfoView({
+        model: device,
+        animate: !this.deviceInfo.currentView
+      });
+
+      console.log(this.deviceInfo);
+
+      this.deviceInfo.show(deviceInfo);
     },
     // This fires after the primary view is rendered
     onCompositeModelRendered: function(){
@@ -249,6 +321,10 @@ function(
     },
     onShow: function(){
       this.resize();
+
+      this.deviceInfo = new Backbone.Marionette.Region({
+        el: this.ui.deviceInfoContainer
+      });
     },
     draw: function(){
       this.paper.view.draw();
