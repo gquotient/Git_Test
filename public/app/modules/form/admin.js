@@ -27,22 +27,40 @@ define([
         return parseFloat(value);
       },
       integer: function(value){
-        return parseInt(value, 10);
+        return parsers.number(value);
       },
       length: function(value){
         var result = parsers.number(value);
 
-        // If the value is already in meters just return it.
-        if (/(m|meter|meters)$/.test(value)) { return result; }
+        // If the value is already in the proper units just return it.
+        if (/(m|meters?)$/.test(value)) { return result; }
 
-        // Otherwise try to convert the length to meters based on given units.
+        // Otherwise try to convert the value based on given units.
+        if (/(cm|centimeters?)$/.test(value)) { return result / 100; }
+        if (/(mm|millimeters?)$/.test(value)) { return result / 1000; }
+        if (/(yd|yards?)$/.test(value)) { return result * 9144 / 10000; }
         if (/(ft|foot|feet)$/.test(value)) { return result * 3048 / 10000; }
         if (/(in|inch|inches)$/.test(value)) { return result * 254 / 10000; }
 
         // Any other units should be invalid.
         if (/\D+$/.test(value)) { return NaN; }
 
-        // But no units should be treated as meters.
+        // But missing units should be treated as valid.
+        return result;
+      },
+      power: function(value){
+        var result = parsers.number(value);
+
+        // If the value is already in the proper units just return it.
+        if (/(w|watts?)$/.test(value)) { return result; }
+
+        // Otherwise try to convert the value based on given units.
+        if (/(kw|kilowatts?)$/.test(value)) { return result * 1000; }
+
+        // Any other units should be invalid.
+        if (/\D+$/.test(value)) { return NaN; }
+
+        // But missing units should be treated as valid.
         return result;
       }
     };
@@ -53,6 +71,9 @@ define([
   function renderFactory(params){
     var renderers = {
       length: function(value){
+        return _.compact([value, params.units]).join(' ');
+      },
+      power: function(value){
         return _.compact([value, params.units]).join(' ');
       }
     };
@@ -72,6 +93,9 @@ define([
         return validators.number(value) && Math.floor(value) === value;
       },
       length: function(value){
+        return validators.number(value);
+      },
+      power: function(value){
         return validators.number(value);
       }
     };
