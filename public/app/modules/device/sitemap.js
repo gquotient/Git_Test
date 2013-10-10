@@ -184,7 +184,8 @@ function(
     ui: {
       canvas: 'canvas',
       deviceInfoContainer: '.deviceInfoContainer',
-      deviceTypeSelect: '.deviceType select'
+      deviceTypeSelect: '.deviceType select',
+      legendContainer: '.legendContainer'
     },
     events: {
       // 'click': function(event){
@@ -195,11 +196,13 @@ function(
       //   }
       // },
       'mousedown': function(event){
-        // Set dragging object
-        this.dragging = {
-          x: event.offsetX,
-          y: event.offsetY
-        };
+        // Set dragging object if primary mouse button clicked
+        if (event.which === 1) {
+          this.dragging = {
+            x: event.offsetX,
+            y: event.offsetY
+          };
+        }
       },
       'mouseup': function(){
         // Clear dragging object
@@ -273,6 +276,23 @@ function(
         closeWith: this
       });
       this.listenTo(Backbone, 'window:resize', this.resize);
+
+      var data = $.ajax({
+        url: '/api/heatmap/N/S',
+        type: 'post',
+        dataType: 'json',
+        data:  {
+          traces: [{
+            project_label: this.model.get('project_label'),
+            dtstart: 'today',
+            dtstop: 'now',
+            parent_identifier: this.model.get('graph_key')
+          }]
+        }
+      }).always(function(){
+        console.log('heatmap data');
+        console.log(arguments);
+      });
     },
     deviceInfoView: views.DeviceInfo,
     buildDeviceInfo: function(device){
@@ -442,8 +462,13 @@ function(
         this.resetPosition();
       }
 
+      // Cache dynamic regions
       this.deviceInfo = new Backbone.Marionette.Region({
         el: this.ui.deviceInfoContainer
+      });
+
+      this.legend = new Backbone.Marionette.Region({
+        el: this.ui.legendContainer
       });
 
       this.ui.deviceTypeSelect.val(this.currentDeviceType);

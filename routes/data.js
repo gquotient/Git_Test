@@ -33,6 +33,25 @@ module.exports = function(app){
     }
   );
 
+  app.post('/api/heatmap/:type?/:deviceType?',
+    function(req, res, next){
+      console.log('heard heatmap');
+      next();
+    },
+    function(req, res){
+      request({
+        method: 'POST',
+        uri: app.get('dataUrl') + '/cubes/heatmap',
+        body: JSON.stringify(req.body),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept-encoding' : 'gzip,deflate'
+        }
+      })
+      .pipe(res);
+    }
+  );
+
   app.post('/api/snapshot',
     function(req, res){
       request({

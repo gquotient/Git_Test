@@ -1056,23 +1056,31 @@ ul.handsontableDropdown {
   }
   .controls {
     position: absolute;
+    height: 24px;
+    line-height: 24px;
     margin: 6px;
     color: #111;
     &.position {
       bottom: 0;
       left: 0;
     }
+    &.time {
+      bottom: 0;
+      left: 200px;
+    }
     &.deviceType {
       top: 0;
       left: 0;
     }
     ul {
+      height: 100%;
       padding: 0;
       margin: 0 6px 0 0;
       list-style-type: none;
       li {
+        height: 100%;
         float: left;
-        padding: 3px 9px;
+        padding: 0 9px;
         margin: 0 6px 0 0;
         border: borderBasicMedium;
         border-radius: 3px;
@@ -1082,13 +1090,26 @@ ul.handsontableDropdown {
         font-size: 12px;
         font-weight: bold;
         text-shadow: 0 1px 0 #fff;
-        &.rotateL, &.zoomIn {
+        &.rotateL, &.zoomIn, &.play, &.pause {
           margin-right: 0;
           border-radius: 3px 0 0 3px;
           border-right: none
         }
-        &.rotateR, &.zoomOut {
+        &.rotateR, &.zoomOut, &.timeDisplay {
           border-radius: 0 3px 3px 0;
+        }
+        &.pause {
+          display: none;
+        }
+        &.rewind {
+          margin-right: 0;
+          border-radius: 0;
+          border-right: none
+        }
+        &.timeSlider {
+          margin-right: 0;
+          border-radius: 0;
+          border-right: none
         }
       }
     }
