@@ -1005,6 +1005,19 @@ ul.handsontableDropdown {
 
 .sitemap {
   position: relative;
+  .loadingIndicator {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 12px;
+    border-color: #555;
+  }
+  &.loading {
+    .loadingIndicator {
+      display: inherit;
+    }
+  }
   .deviceInfoContainer {
     position: absolute;
     top: 0;

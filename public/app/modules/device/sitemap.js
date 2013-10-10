@@ -164,6 +164,7 @@ function(
   });
 
   views.Sitemap = Marionette.CompositeView.extend({
+    className: 'sitemap loading',
     template: {
       type: 'handlebars',
       template: sitemapTemplate
@@ -174,7 +175,6 @@ function(
         deviceTypes: _.without(deviceTypes, 'PV Array')
       };
     },
-    className: 'sitemap',
     itemView: views.PhysicalDevice,
     itemViewOptions: function(){
       return {
@@ -319,6 +319,9 @@ function(
           y: currentPosition.y,
           zoom: currentZoom
         });
+
+        // Hide loading indicator
+        this.$el.removeClass('loading');
       }
     },
     onAfterItemAdded: function(itemView){
