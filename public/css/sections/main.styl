@@ -1043,7 +1043,7 @@ ul.handsontableDropdown {
   }
   .controls {
     position: absolute;
-    margin: 12px;
+    margin: 6px;
     color: #111;
     &.position {
       bottom: 0;
@@ -1055,13 +1055,28 @@ ul.handsontableDropdown {
     }
     ul {
       padding: 0;
-      margin: 0 12px 0 0;
+      margin: 0 6px 0 0;
       list-style-type: none;
       li {
         float: left;
-        padding: 0;
+        padding: 3px 9px;
         margin: 0 12px 0 0;
+        border: borderBasicMedium;
+        border-radius: 3px;
+        background: colorBGDarkGrey;
+        background-image: linear-gradient(#eee, #ccc);
         cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+        text-shadow: 0 1px 0 #fff;
+        &.rotateL, &.zoomIn {
+          margin-right: 0;
+          border-radius: 3px 0 0 3px;
+          border-right: none
+        }
+        &.rotateR, &.zoomOut {
+          border-radius: 0 3px 3px 0;
+        }
       }
     }
   }
