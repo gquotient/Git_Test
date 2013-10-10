@@ -227,12 +227,7 @@ function(
           var hitTest = this.paper.project.hitTest(offsetX, offsetY);
 
           this.hilight(hitTest ? this.findChild(hitTest.item) : null);
-
-          if (hitTest) {
-            this.$el.css('cursor', 'pointer');
-          } else {
-            this.$el.css('cursor', 'auto');
-          }
+          this.$el.css('cursor', hitTest ? 'pointer' : 'auto');
         }
       }, 15),
       // Handle controls
@@ -394,9 +389,6 @@ function(
       y: 0
     },
     position: function(x, y, draw){
-      // Default to true of draw is not a boolean
-      draw = typeof draw === 'boolean' ? draw : true;
-
       // If options are passed, position based on those
       if (x || y) {
         this.deviceGroup.position.x += x || 0;
@@ -412,25 +404,19 @@ function(
         this.currentPosition.y = center._y;
       }
 
-      if (draw) { this.draw(); }
+      if (draw !== false) { this.draw(); }
     },
     currentRotation: 0,
     rotate: function(degrees, draw){
-      // Default to true of draw is not a boolean
-      draw = typeof draw === 'boolean' ? draw : true;
-
       degrees = degrees || (+this.model.get('pref_rotation') - this.currentRotation);
 
       this.deviceGroup.rotate(degrees, this.deviceGroup.center);
       this.currentRotation += degrees;
 
-      if (draw) { this.draw(); }
+      if (draw !== false) { this.draw(); }
     },
     currentZoom: 1,
     zoom: function(direction, draw) {
-      // Default to true of draw is not a boolean
-      draw = typeof draw === 'boolean' ? draw : true;
-
       if (direction === '+') {
         this.deviceGroup.scale(2);
         this.currentZoom *= 2;
@@ -445,7 +431,7 @@ function(
         this.currentZoom = 1;
       }
 
-      if (draw) { this.draw(); }
+      if (draw !== false) { this.draw(); }
     },
     onShow: function(){
       this.resize();

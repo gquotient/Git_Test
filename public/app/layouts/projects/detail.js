@@ -92,7 +92,6 @@ define([
       this.showKpis();
       this.showMap();
       this.showDevices();
-      this.onToggleView();
     },
     showCharts: function(){
       var that = this,
