@@ -25,22 +25,72 @@ function(
   var views = {};
 
   views.PhysicalDevice = Marionette.ItemView.extend({
+    // Handle panel drawing
+    drawPanel: function(){
+      var x = this.model.get('x') * 10,
+        y = this.model.get('y') * 10,
+        width = 13,
+        height = 10;
+
+      this.shape = new this.paper.Path.Rectangle(x, y, width, height);
+    },
+    // Handle arbitrary shapes
+    drawShape: function(){
+      // Get the SVG path string
+      var shapeString = this.model.get('shapes'),
+        // Parse coordinates at a given point on the string
+        parseCoordinates = function(currentPosition){
+          // Loop through from the current position to next rule (M, L, or Z)
+          for (var i = currentPosition + 1, shapeStringLength = shapeString.length; i < shapeStringLength; i++) {
+            if (shapeString[i] === 'M' || shapeString[i] === 'L' || shapeString[i] === 'Z') {
+              // Return the coordinates for the rule at the current position
+              var stringPieces = shapeString.slice((currentPosition + 1), i).split(',');
+              return {
+                x: +stringPieces[0] * 10,
+                y: +stringPieces[1] * 10
+              };
+            }
+          }
+        };
+
+      this.shape = new this.paper.CompoundPath();
+
+      // Parse the shape string
+      for (var i = 0, shapeStringLength = shapeString.length; i < shapeStringLength; i++) {
+        var coordinates;
+
+        if (shapeString[i] === 'M') {
+          coordinates = parseCoordinates(i);
+          this.shape.moveTo(coordinates.x, coordinates.y);
+        }
+
+        if (shapeString[i] === 'L') {
+          coordinates = parseCoordinates(i);
+          this.shape.lineTo(coordinates.x, coordinates.y);
+        }
+
+        if (shapeString[i] === 'Z') {
+          this.shape.closePath();
+        }
+      }
+    },
     render: function(){
       this.isClosed = false;
 
       this.triggerMethod('before:render', this);
       this.triggerMethod('item:before:render', this);
 
-      var x = this.model.get('x') * 10;
-      var y = this.model.get('y') * 10;
-      var width = 13;
-      var height = 10;
+      // Draw the shape instead of rendering html
+      if (this.model.get('devtype') === 'Panel') {
+        this.drawPanel();
+      } else {
+        this.drawShape();
+      }
 
-      this.shape = new this.paper.Path.Rectangle(x, y, width, height);
-
+      // Apply shape style
       this.shape.style = {
         fillColor: 'black',
-        strokeColor: 'none',
+        strokeColor: '#ccc',
         strokeWidth: 0
       };
 
@@ -48,6 +98,9 @@ function(
       this.triggerMethod('item:rendered', this);
 
       return this;
+    },
+    onClose: function(){
+      this.shape.remove();
     },
     initialize: function(options){
       this.paper = options.paper;
@@ -111,11 +164,17 @@ function(
   });
 
   views.Sitemap = Marionette.CompositeView.extend({
+    className: 'sitemap loading',
     template: {
       type: 'handlebars',
       template: sitemapTemplate
     },
-    className: 'sitemap',
+    templateHelpers: function(){
+      var deviceTypes = this.model.get('devtypes').split(',');
+      return {
+        deviceTypes: _.without(deviceTypes, 'PV Array')
+      };
+    },
     itemView: views.PhysicalDevice,
     itemViewOptions: function(){
       return {
@@ -124,7 +183,8 @@ function(
     },
     ui: {
       canvas: 'canvas',
-      deviceInfoContainer: '.deviceInfoContainer'
+      deviceInfoContainer: '.deviceInfoContainer',
+      deviceTypeSelect: '.deviceType select'
     },
     events: {
       // 'click': function(event){
@@ -145,7 +205,7 @@ function(
         // Clear dragging object
         this.dragging = false;
       },
-      'mousemove': _.debounce(function(event){
+      'mousemove': _.throttle(function(event){
         // Polyfill because firefox doesn't get offsetX/offsetY
         // http://bugs.jquery.com/ticket/8523
         var offsetX = event.offsetX || (event.clientX - $(event.target).offset().left);
@@ -166,13 +226,8 @@ function(
           // Otherwise, handle hovering
           var hitTest = this.paper.project.hitTest(offsetX, offsetY);
 
-          if (hitTest) {
-            this.hilight(this.findChild(hitTest.item));
-            this.$el.css('cursor', 'pointer');
-          } else {
-            this.hilight();
-            this.$el.css('cursor', 'auto');
-          }
+          this.hilight(hitTest ? this.findChild(hitTest.item) : null);
+          this.$el.css('cursor', hitTest ? 'pointer' : 'auto');
         }
       }, 15),
       // Handle controls
@@ -193,6 +248,17 @@ function(
       },
       'click .reset': function(){
         this.resetPosition();
+      },
+      'change .deviceType select': function(event){
+        // Stupid map starts dragging when you click select boxes...
+        this.dragging = false;
+
+        this.setDeviceType(event.currentTarget.value);
+      }
+    },
+    collectionEvents: {
+      'filter': function(){
+        this._renderChildren();
       }
     },
     initialize: function(options) {
@@ -202,23 +268,18 @@ function(
       // Move collection to virtual collection
       this.collection = new Backbone.VirtualCollection(options.collection, {
         filter: {
-          devtype: 'Panel'
+          devtype: this.currentDeviceType
         },
         closeWith: this
       });
-
       this.listenTo(Backbone, 'window:resize', this.resize);
     },
     deviceInfoView: views.DeviceInfo,
     buildDeviceInfo: function(device){
-      console.log('buildDeviceInfo', device);
-
       var deviceInfo = new this.deviceInfoView({
         model: device,
         animate: !this.deviceInfo.currentView
       });
-
-      console.log(this.deviceInfo);
 
       this.deviceInfo.show(deviceInfo);
     },
@@ -229,13 +290,33 @@ function(
     },
     // This fires after children render
     onCompositeCollectionRendered: function(){
-      // Reset rotation
+      // Store current position info
+      var currentRotation = this.currentRotation,
+        currentPosition = this.currentPosition,
+        currentZoom = this.currentZoom;
+
+      // Reset rotation and position
       this.currentRotation = 0;
+      this.currentPosition = {
+        x: 0,
+        y: 0
+      };
+      this.deviceGroup.position.x = 0;
+      this.deviceGroup.position.y = 0;
+      this.currentZoom = 1;
 
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
       if (this.children.length) {
-        this.resetPosition();
+        this.resetPosition({
+          rotate: currentRotation,
+          x: currentPosition.x,
+          y: currentPosition.y,
+          zoom: currentZoom
+        });
+
+        // Hide loading indicator
+        this.$el.removeClass('loading');
       }
     },
     onAfterItemAdded: function(itemView){
@@ -246,16 +327,24 @@ function(
     findChild: function(shape){
       if (shape) {
         return this.children.find(function(child){
-          return child.shape === shape;
+          if (child.shape === shape || child.shape._children && _.indexOf(child.shape._children, shape) >= 0) {
+            return true;
+          }
+          return false;
         });
       }
 
       return false;
     },
+    currentDeviceType: 'Panel',
+    setDeviceType: function(deviceType){
+      this.currentDeviceType = deviceType;
+      this.collection.updateFilter({devtype: deviceType});
+    },
     hilight: function(view){
       // Set all shapes to default styling
       this.deviceGroup.style = {
-        strokeColor: 'none',
+        strokeColor: '#ccc',
         strokeWidth: 0
       };
 
@@ -277,47 +366,72 @@ function(
           strokeColor: '#F26322',
           strokeWidth: 2
         };
+
+        view.shape.bringToFront();
       }
 
       this.draw();
     },
-    resetPosition: function(){
-      this.position();
-      this.rotate();
+    resetPosition: function(options){
+      options = options || {};
+
+      this.zoom(options.zoom, false);
+      this.position(options.x, options.y, false);
+      this.rotate(options.rotate, false);
       this.draw();
     },
     resize: function(){
       // Fill canvas to size of parent container
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
     },
-    position: function(x, y){
+    currentPosition: {
+      x: 0,
+      y: 0
+    },
+    position: function(x, y, draw){
       // If options are passed, position based on those
       if (x || y) {
         this.deviceGroup.position.x += x || 0;
         this.deviceGroup.position.y += y || 0;
+
+        this.currentPosition.x += x || 0;
+        this.currentPosition.y += y || 0;
       } else {
+        var center = this.paper.view.center;
         // else, center the group
-        this.deviceGroup.position = this.paper.view.center;
+        this.deviceGroup.position = center;
+        this.currentPosition.x = center._x;
+        this.currentPosition.y = center._y;
       }
 
-      this.draw();
+      if (draw !== false) { this.draw(); }
     },
-    rotate: function(degrees){
+    currentRotation: 0,
+    rotate: function(degrees, draw){
       degrees = degrees || (+this.model.get('pref_rotation') - this.currentRotation);
 
       this.deviceGroup.rotate(degrees, this.deviceGroup.center);
       this.currentRotation += degrees;
 
-      this.draw();
+      if (draw !== false) { this.draw(); }
     },
-    zoom: function(direction) {
+    currentZoom: 1,
+    zoom: function(direction, draw) {
       if (direction === '+') {
         this.deviceGroup.scale(2);
+        this.currentZoom *= 2;
       } else if (direction === '-') {
         this.deviceGroup.scale(0.5);
+        this.currentZoom *= 0.5;
+      } else if (typeof direction === 'number') {
+        this.deviceGroup.scale(direction);
+        this.currentZoom = direction;
+      } else {
+        this.deviceGroup.scale(1 / this.currentZoom);
+        this.currentZoom = 1;
       }
 
-      this.draw();
+      if (draw !== false) { this.draw(); }
     },
     onShow: function(){
       this.resize();
@@ -325,6 +439,8 @@ function(
       this.deviceInfo = new Backbone.Marionette.Region({
         el: this.ui.deviceInfoContainer
       });
+
+      this.ui.deviceTypeSelect.val(this.currentDeviceType);
     },
     draw: function(){
       this.paper.view.draw();
