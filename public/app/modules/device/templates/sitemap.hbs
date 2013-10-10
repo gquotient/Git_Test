@@ -2,6 +2,14 @@
 
 <div class="deviceInfoContainer"></div>
 
+{{#if deviceTypes}}
+<div class="controls deviceType">
+  Device Type: <select>
+  {{#each deviceTypes}}<option value="{{ this }}">{{ this }}</option>{{/each}}
+</select>
+</div>
+{{/if}}
+
 <div class="controls position">
   <ul>
     <li class="center">Center</li>

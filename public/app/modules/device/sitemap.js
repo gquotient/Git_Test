@@ -81,7 +81,7 @@ function(
 
       this.shape.style = {
         fillColor: 'black',
-        strokeColor: 'none',
+        strokeColor: '#ccc',
         strokeWidth: 0
       };
 
@@ -159,6 +159,12 @@ function(
       type: 'handlebars',
       template: sitemapTemplate
     },
+    templateHelpers: function(){
+      var deviceTypes = this.model.get('devtypes').split(',');
+      return {
+        deviceTypes: _.without(deviceTypes, 'PV Array')
+      };
+    },
     className: 'sitemap',
     itemView: views.PhysicalDevice,
     itemViewOptions: function(){
@@ -168,7 +174,8 @@ function(
     },
     ui: {
       canvas: 'canvas',
-      deviceInfoContainer: '.deviceInfoContainer'
+      deviceInfoContainer: '.deviceInfoContainer',
+      deviceTypeSelect: '.deviceType select'
     },
     events: {
       // 'click': function(event){
@@ -237,11 +244,16 @@ function(
       },
       'click .reset': function(){
         this.resetPosition();
+      },
+      'change .deviceType select': function(event){
+        // Stupid map starts dragging when you click select boxes...
+        this.dragging = false;
+
+        this.setDeviceType(event.currentTarget.value);
       }
     },
     collectionEvents: {
       'filter': function(){
-        console.log(this, 'heard collection filter');
         this._renderChildren();
       }
     },
@@ -252,28 +264,18 @@ function(
       // Move collection to virtual collection
       this.collection = new Backbone.VirtualCollection(options.collection, {
         filter: {
-          devtype: 'String'
+          devtype: this.currentDeviceType
         },
         closeWith: this
       });
       this.listenTo(Backbone, 'window:resize', this.resize);
-
-      this.listenTo(Backbone, 'changeView', function(devtype){
-        console.log('heard change view');
-        this.collection.updateFilter({devtype: devtype});
-        console.log(this.collection);
-      });
     },
     deviceInfoView: views.DeviceInfo,
     buildDeviceInfo: function(device){
-      console.log('buildDeviceInfo', device);
-
       var deviceInfo = new this.deviceInfoView({
         model: device,
         animate: !this.deviceInfo.currentView
       });
-
-      console.log(this.deviceInfo);
 
       this.deviceInfo.show(deviceInfo);
     },
@@ -287,6 +289,7 @@ function(
       // Store current position info
       var currentRotation = this.currentRotation;
       var currentPosition = this.currentPosition;
+      var currentZoom = this.currentZoom;
 
       // Reset rotation and position
       this.currentRotation = 0;
@@ -296,6 +299,7 @@ function(
       };
       this.deviceGroup.position.x = 0;
       this.deviceGroup.position.y = 0;
+      this.currentZoom = 1;
 
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
@@ -303,7 +307,8 @@ function(
         this.resetPosition({
           rotate: currentRotation,
           x: currentPosition.x,
-          y: currentPosition.y
+          y: currentPosition.y,
+          zoom: currentZoom
         });
       }
     },
@@ -324,10 +329,15 @@ function(
 
       return false;
     },
+    currentDeviceType: 'Panel',
+    setDeviceType: function(deviceType){
+      this.currentDeviceType = deviceType;
+      this.collection.updateFilter({devtype: deviceType});
+    },
     hilight: function(view){
       // Set all shapes to default styling
       this.deviceGroup.style = {
-        strokeColor: 'none',
+        strokeColor: '#ccc',
         strokeWidth: 0
       };
 
@@ -358,7 +368,7 @@ function(
     resetPosition: function(options){
       options = options || {};
 
-      this.zoom();
+      this.zoom(options.zoom);
       this.position(options.x, options.y);
       this.rotate(options.rotate);
       this.draw();
@@ -406,6 +416,9 @@ function(
       } else if (direction === '-') {
         this.deviceGroup.scale(0.5);
         this.currentZoom *= 0.5;
+      } else if (typeof direction === 'number') {
+        this.deviceGroup.scale(direction);
+        this.currentZoom = direction;
       } else {
         this.deviceGroup.scale(1 / this.currentZoom);
         this.currentZoom = 1;
@@ -419,6 +432,8 @@ function(
       this.deviceInfo = new Backbone.Marionette.Region({
         el: this.ui.deviceInfoContainer
       });
+
+      this.ui.deviceTypeSelect.val(this.currentDeviceType);
     },
     draw: function(){
       this.paper.view.draw();
