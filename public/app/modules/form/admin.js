@@ -32,8 +32,8 @@ define([
       length: function(value){
         var result = parsers.number(value);
 
-        // If the value is already in the proper units just return it.
-        if (/(m|meters?)$/.test(value)) { return result; }
+        // If the value has no units or is in the proper units just return it.
+        if (/(\d|m|meters?)$/.test(value)) { return result; }
 
         // Otherwise try to convert the value based on given units.
         if (/(cm|centimeters?)$/.test(value)) { return result / 100; }
@@ -42,26 +42,20 @@ define([
         if (/(ft|foot|feet)$/.test(value)) { return result * 3048 / 10000; }
         if (/(in|inch|inches)$/.test(value)) { return result * 254 / 10000; }
 
-        // Any other units should be invalid.
-        if (/\D+$/.test(value)) { return NaN; }
-
-        // But missing units should be treated as valid.
-        return result;
+        // Anything else is invalid.
+        return NaN;
       },
       power: function(value){
         var result = parsers.number(value);
 
-        // If the value is already in the proper units just return it.
-        if (/(w|watts?)$/.test(value)) { return result; }
+        // If the value has no units or is in the proper units just return it.
+        if (/(\d|w|watts?)$/.test(value)) { return result; }
 
         // Otherwise try to convert the value based on given units.
         if (/(kw|kilowatts?)$/.test(value)) { return result * 1000; }
 
-        // Any other units should be invalid.
-        if (/\D+$/.test(value)) { return NaN; }
-
-        // But missing units should be treated as valid.
-        return result;
+        // Anything else is invalid.
+        return NaN;
       }
     };
 
