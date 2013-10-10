@@ -451,6 +451,17 @@ define([
       return editable !== false;
     },
 
+    // Overwritten to apply schema rendering to the values.
+    serializeData: function(){
+      var data = _.extend({}, this.model.attributes, this.changed);
+
+      _.each(data, function(value, attr){
+        data[attr] = this.renderValue(attr, value);
+      }, this);
+
+      return data;
+    },
+
     // Overwritten to pass values to the template helper.
     mixinTemplateHelpers: function(target){
       var templateHelpers = Marionette.getOption(this, 'templateHelpers');
@@ -462,17 +473,6 @@ define([
       }
 
       return _.extend(target, templateHelpers);
-    },
-
-    // Overwritten to apply schema rendering to the values.
-    serializeData: function(){
-      var data = _.extend({}, this.model.attributes, this.changed);
-
-      _.each(data, function(value, attr){
-        data[attr] = this.renderValue(attr, value);
-      }, this);
-
-      return data;
     },
 
     updateValues: function(values){
