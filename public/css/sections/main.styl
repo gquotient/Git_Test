@@ -1085,7 +1085,7 @@ ul.handsontableDropdown {
         padding: 0 9px;
         margin: 0 6px 0 0;
         border: 1px solid #777;
-        border-radius: 3px;
+        border-radius: borderRadiusDefault;
         background: #eee;
         background-image: linear-gradient(#eee, #ccc);
         cursor: pointer;
@@ -1097,11 +1097,11 @@ ul.handsontableDropdown {
         }
         &.rotateL, &.zoomIn, &.play, &.pause {
           margin-right: 0;
-          border-radius: 3px 0 0 3px;
+          border-radius: borderRadiusDefault 0 0 borderRadiusDefault;
           border-right: none
         }
         &.rotateR, &.zoomOut, &.timeDisplay {
-          border-radius: 0 3px 3px 0;
+          border-radius: 0 borderRadiusDefault borderRadiusDefault 0;
         }
         &.pause {
           display: none;
