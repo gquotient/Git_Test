@@ -25,6 +25,7 @@ function(
   var views = {};
 
   views.PhysicalDevice = Marionette.ItemView.extend({
+    // Handle panel drawing
     drawPanel: function(){
       var x = this.model.get('x') * 10,
         y = this.model.get('y') * 10,
@@ -33,22 +34,28 @@ function(
 
       this.shape = new this.paper.Path.Rectangle(x, y, width, height);
     },
+    // Handle arbitrary shapes
     drawShape: function(){
-      var shapeString = this.model.get('shapes');
-      var parseCoordinates = function(currentPosition){
-        for (var i = currentPosition + 1, shapeStringLength = shapeString.length; i < shapeStringLength; i++) {
-          if (shapeString[i] === 'M' || shapeString[i] === 'L' || shapeString[i] === 'Z') {
-            var stringPieces = shapeString.slice((currentPosition + 1), i).split(',');
-            return {
-              x: +stringPieces[0] * 10,
-              y: +stringPieces[1] * 10
-            };
+      // Get the SVG path string
+      var shapeString = this.model.get('shapes'),
+        // Parse coordinates at a given point on the string
+        parseCoordinates = function(currentPosition){
+          // Loop through from the current position to next rule (M, L, or Z)
+          for (var i = currentPosition + 1, shapeStringLength = shapeString.length; i < shapeStringLength; i++) {
+            if (shapeString[i] === 'M' || shapeString[i] === 'L' || shapeString[i] === 'Z') {
+              // Return the coordinates for the rule at the current position
+              var stringPieces = shapeString.slice((currentPosition + 1), i).split(',');
+              return {
+                x: +stringPieces[0] * 10,
+                y: +stringPieces[1] * 10
+              };
+            }
           }
-        }
-      };
+        };
 
       this.shape = new this.paper.CompoundPath();
 
+      // Parse the shape string
       for (var i = 0, shapeStringLength = shapeString.length; i < shapeStringLength; i++) {
         var coordinates;
 
@@ -73,12 +80,14 @@ function(
       this.triggerMethod('before:render', this);
       this.triggerMethod('item:before:render', this);
 
+      // Draw the shape instead of rendering html
       if (this.model.get('devtype') === 'Panel') {
         this.drawPanel();
       } else {
         this.drawShape();
       }
 
+      // Apply shape style
       this.shape.style = {
         fillColor: 'black',
         strokeColor: '#ccc',
@@ -287,9 +296,9 @@ function(
     // This fires after children render
     onCompositeCollectionRendered: function(){
       // Store current position info
-      var currentRotation = this.currentRotation;
-      var currentPosition = this.currentPosition;
-      var currentZoom = this.currentZoom;
+      var currentRotation = this.currentRotation,
+        currentPosition = this.currentPosition,
+        currentZoom = this.currentZoom;
 
       // Reset rotation and position
       this.currentRotation = 0;
@@ -368,9 +377,9 @@ function(
     resetPosition: function(options){
       options = options || {};
 
-      this.zoom(options.zoom);
-      this.position(options.x, options.y);
-      this.rotate(options.rotate);
+      this.zoom(options.zoom, false);
+      this.position(options.x, options.y, false);
+      this.rotate(options.rotate, false);
       this.draw();
     },
     resize: function(){
@@ -381,7 +390,10 @@ function(
       x: 0,
       y: 0
     },
-    position: function(x, y){
+    position: function(x, y, draw){
+      // Default to true of draw is not a boolean
+      draw = typeof draw === 'boolean' ? draw : true;
+
       // If options are passed, position based on those
       if (x || y) {
         this.deviceGroup.position.x += x || 0;
@@ -397,19 +409,25 @@ function(
         this.currentPosition.y = center._y;
       }
 
-      this.draw();
+      if (draw) { this.draw(); }
     },
     currentRotation: 0,
-    rotate: function(degrees){
+    rotate: function(degrees, draw){
+      // Default to true of draw is not a boolean
+      draw = typeof draw === 'boolean' ? draw : true;
+
       degrees = degrees || (+this.model.get('pref_rotation') - this.currentRotation);
 
       this.deviceGroup.rotate(degrees, this.deviceGroup.center);
       this.currentRotation += degrees;
 
-      this.draw();
+      if (draw) { this.draw(); }
     },
     currentZoom: 1,
-    zoom: function(direction) {
+    zoom: function(direction, draw) {
+      // Default to true of draw is not a boolean
+      draw = typeof draw === 'boolean' ? draw : true;
+
       if (direction === '+') {
         this.deviceGroup.scale(2);
         this.currentZoom *= 2;
@@ -424,7 +442,7 @@ function(
         this.currentZoom = 1;
       }
 
-      this.draw();
+      if (draw) { this.draw(); }
     },
     onShow: function(){
       this.resize();
