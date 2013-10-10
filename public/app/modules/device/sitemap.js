@@ -205,7 +205,7 @@ function(
         // Clear dragging object
         this.dragging = false;
       },
-      'mousemove': _.debounce(function(event){
+      'mousemove': _.throttle(function(event){
         // Polyfill because firefox doesn't get offsetX/offsetY
         // http://bugs.jquery.com/ticket/8523
         var offsetX = event.offsetX || (event.clientX - $(event.target).offset().left);
@@ -226,11 +226,11 @@ function(
           // Otherwise, handle hovering
           var hitTest = this.paper.project.hitTest(offsetX, offsetY);
 
+          this.hilight(hitTest ? this.findChild(hitTest.item) : null);
+
           if (hitTest) {
-            this.hilight(this.findChild(hitTest.item));
             this.$el.css('cursor', 'pointer');
           } else {
-            this.hilight();
             this.$el.css('cursor', 'auto');
           }
         }
