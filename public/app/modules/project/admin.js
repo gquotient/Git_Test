@@ -124,7 +124,6 @@ define([
           this.updateValues({site_label: value});
         }
       },
-      description: {},
       address: {},
       city: {},
       state: {},
@@ -139,7 +138,8 @@ define([
           this.model.set({longitude: value});
         }
       },
-      elevation: {}
+      elevation: {},
+      description: {}
     }
   });
 

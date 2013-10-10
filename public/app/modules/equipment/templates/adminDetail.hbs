@@ -1,25 +1,16 @@
 <fieldset>
   <div>
-    <label for="name">{{$ 'Name' }}</label>
-    <input id="name" name="name" type="text" value="{{ name }}" />
-  </div>
-
-  <div>
-    <label for="label">{{$ 'Label' }}</label>
-    <input id="label" name="label" type="text" value="{{ label }}" />
-  </div>
-
-  <label for="description">{{$ 'Description' }}</label>
-  <textarea id="description" name="description">{{ description }}</textarea>
-</fieldset>
-
-<fieldset>
-  <div>
     <label for="manufacturer">{{$ 'Manufacturer' }}</label>
     <input id="manufacturer" name="manufacturer" type="text" value="{{ manufacturer }}" />
 
     <label for="model">{{$ 'Model' }}</label>
     <input id="model" name="model" type="text" value="{{ model }}" />
+
+    <label for="name">{{$ 'Name' }}</label>
+    <input id="name" name="name" type="text" value="{{ name }}" />
+
+    <label for="label">{{$ 'Label' }}</label>
+    <input id="label" name="label" type="text" value="{{ label }}" />
 
     <label for="inherits">{{$ 'Inherits From' }}</label>
     <input id="inherits" name="inherits" type="text" value="{{ inherits }}" />
@@ -31,4 +22,9 @@
     <input id="{{ this.attr }}" name="{{ this.attr }}" type="text" value="{{ this.value }}" />
   {{/each}}
   </div>
+</fieldset>
+
+<fieldset>
+  <label for="description">{{$ 'Description' }}</label>
+  <textarea id="description" name="description">{{ description }}</textarea>
 </fieldset>

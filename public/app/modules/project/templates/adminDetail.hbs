@@ -8,12 +8,9 @@
     <label for="site_label">{{$ 'Site Label' }}</label>
     <input id="site_label" name="site_label" type="text" value="{{ site_label }}" />
   </div>
-
-  <label for="description">{{$ 'Description' }}</label>
-  <textarea id="description" name="description">{{ description }}</textarea>
 </fieldset>
 
-<fieldset class="location">
+<fieldset>
   <div>
     <label for="address">{{$ 'Address' }}</label>
     <input id="address" name="address" type="text" value="{{ address }}" />
@@ -37,4 +34,9 @@
     <label for="elevation">{{$ 'Elevation' }}</label>
     <input id="elevation" name="elevation" type="text" value="{{ elevation }}" />
   </div>
+</fieldset>
+
+<fieldset>
+  <label for="description">{{$ 'Description' }}</label>
+  <textarea id="description" name="description">{{ description }}</textarea>
 </fieldset>

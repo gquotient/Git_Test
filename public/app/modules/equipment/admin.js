@@ -157,6 +157,8 @@ define([
     },
 
     schema: {
+      manufacturer: {},
+      model: {},
       name: {},
       label: {
         parse: function(value){
@@ -166,9 +168,6 @@ define([
           this.updateValues({label: value});
         }
       },
-      description: {},
-      manufacturer: {},
-      model: {},
       inherits: {
         source: function(){
           var labels = this.options.baseLabels;
@@ -198,7 +197,8 @@ define([
           this.delegateEvents();
           this.render();
         }
-      }
+      },
+      description: {}
     }
   });
 
