@@ -434,7 +434,13 @@ function(
       if (draw !== false) { this.draw(); }
     },
     onShow: function(){
+      // Update size of container when it's in the dom
       this.resize();
+
+      // If children already populated, do initial positioning
+      if (this.children.length) {
+        this.resetPosition();
+      }
 
       this.deviceInfo = new Backbone.Marionette.Region({
         el: this.ui.deviceInfoContainer
