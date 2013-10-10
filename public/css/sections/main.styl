@@ -1063,10 +1063,12 @@ ul.handsontableDropdown {
     &.position {
       bottom: 0;
       left: 0;
+      font-family: FontAwesome;
     }
     &.time {
       bottom: 0;
-      left: 200px;
+      right: 0;
+      font-family: FontAwesome;
     }
     &.deviceType {
       top: 0;
@@ -1075,14 +1077,14 @@ ul.handsontableDropdown {
     ul {
       height: 100%;
       padding: 0;
-      margin: 0 6px 0 0;
+      margin: 0;
       list-style-type: none;
       li {
         height: 100%;
         float: left;
         padding: 0 9px;
         margin: 0 6px 0 0;
-        border: borderBasicMedium;
+        border: 1px solid #777;
         border-radius: 3px;
         background: #eee;
         background-image: linear-gradient(#eee, #ccc);
@@ -1090,6 +1092,9 @@ ul.handsontableDropdown {
         font-size: 12px;
         font-weight: bold;
         text-shadow: 0 1px 0 #fff;
+        &:last-child {
+          margin-right: 0;
+        }
         &.rotateL, &.zoomIn, &.play, &.pause {
           margin-right: 0;
           border-radius: 3px 0 0 3px;
@@ -1101,7 +1106,7 @@ ul.handsontableDropdown {
         &.pause {
           display: none;
         }
-        &.rewind {
+        &.rewind, &.stepBackward, &.stepForward {
           margin-right: 0;
           border-radius: 0;
           border-right: none
