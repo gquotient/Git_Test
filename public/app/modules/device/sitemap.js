@@ -90,6 +90,9 @@ function(
 
       return this;
     },
+    onClose: function(){
+      this.shape.remove();
+    },
     initialize: function(options){
       this.paper = options.paper;
     }
@@ -236,6 +239,12 @@ function(
         this.resetPosition();
       }
     },
+    collectionEvents: {
+      'filter': function(){
+        console.log(this, 'heard collection filter');
+        this._renderChildren();
+      }
+    },
     initialize: function(options) {
       // Instantiate paper
       this.paper = new paper.PaperScope();
@@ -247,8 +256,13 @@ function(
         },
         closeWith: this
       });
-
       this.listenTo(Backbone, 'window:resize', this.resize);
+
+      this.listenTo(Backbone, 'changeView', function(devtype){
+        console.log('heard change view');
+        this.collection.updateFilter({devtype: devtype});
+        console.log(this.collection);
+      });
     },
     deviceInfoView: views.DeviceInfo,
     buildDeviceInfo: function(device){
@@ -270,13 +284,27 @@ function(
     },
     // This fires after children render
     onCompositeCollectionRendered: function(){
-      // Reset rotation
+      // Store current position info
+      var currentRotation = this.currentRotation;
+      var currentPosition = this.currentPosition;
+
+      // Reset rotation and position
       this.currentRotation = 0;
+      this.currentPosition = {
+        x: 0,
+        y: 0
+      };
+      this.deviceGroup.position.x = 0;
+      this.deviceGroup.position.y = 0;
 
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
       if (this.children.length) {
-        this.resetPosition();
+        this.resetPosition({
+          rotate: currentRotation,
+          x: currentPosition.x,
+          y: currentPosition.y
+        });
       }
     },
     onAfterItemAdded: function(itemView){
@@ -327,28 +355,41 @@ function(
 
       this.draw();
     },
-    resetPosition: function(){
+    resetPosition: function(options){
+      options = options || {};
+
       this.zoom();
-      this.position();
-      this.rotate();
+      this.position(options.x, options.y);
+      this.rotate(options.rotate);
       this.draw();
     },
     resize: function(){
       // Fill canvas to size of parent container
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
     },
+    currentPosition: {
+      x: 0,
+      y: 0
+    },
     position: function(x, y){
       // If options are passed, position based on those
       if (x || y) {
         this.deviceGroup.position.x += x || 0;
         this.deviceGroup.position.y += y || 0;
+
+        this.currentPosition.x += x || 0;
+        this.currentPosition.y += y || 0;
       } else {
+        var center = this.paper.view.center;
         // else, center the group
-        this.deviceGroup.position = this.paper.view.center;
+        this.deviceGroup.position = center;
+        this.currentPosition.x = center._x;
+        this.currentPosition.y = center._y;
       }
 
       this.draw();
     },
+    currentRotation: 0,
     rotate: function(degrees){
       degrees = degrees || (+this.model.get('pref_rotation') - this.currentRotation);
 
