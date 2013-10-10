@@ -1,12 +1,23 @@
 <canvas></canvas>
 
+<div class="deviceInfoContainer"></div>
+
+{{#if deviceTypes}}
+<div class="controls deviceType">
+  Device Type: <select>
+  {{#each deviceTypes}}<option value="{{ this }}">{{ this }}</option>{{/each}}
+</select>
+</div>
+{{/if}}
+
 <div class="controls position">
   <ul>
-    <li class="center">Center</li>
-    <li class="rotateL">Rotate Left</li>
-    <li class="rotateR">Rotate Right</li>
-    <li class="zoomIn">Zoom In</li>
-    <li class="zoomOut">Zoom Out</li>
+    <li class="zoomIn">+</li>
+    <li class="zoomOut">-</li>
+    <li class="rotateL">&#8634;</li>
+    <li class="rotateR">&#8635;</li>
     <li class="reset">Reset</li>
   </ul>
 </div>
+
+<span class="loadingIndicator"></span>
