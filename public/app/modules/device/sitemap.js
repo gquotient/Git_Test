@@ -195,7 +195,7 @@ function(
       //     this.buildDeviceInfo(this.findChild(hitTest.item).model);
       //   }
       // },
-      'mousedown': function(event){
+      'mousedown canvas': function(event){
         // Set dragging object if primary mouse button clicked
         if (event.which === 1) {
           this.dragging = {
@@ -204,7 +204,7 @@ function(
           };
         }
       },
-      'mouseup': function(){
+      'mouseup canvas': function(){
         // Clear dragging object
         this.dragging = false;
       },
@@ -234,6 +234,9 @@ function(
         }
       }, 15),
       // Handle controls
+      'mousedown .control': function(event){
+        event.stopPropagation();
+      },
       'click .center': function(){
         this.position();
       },
@@ -253,9 +256,6 @@ function(
         this.resetPosition();
       },
       'change .deviceType select': function(event){
-        // Stupid map starts dragging when you click select boxes...
-        this.dragging = false;
-
         this.setDeviceType(event.currentTarget.value);
       }
     },

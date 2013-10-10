@@ -1084,7 +1084,7 @@ ul.handsontableDropdown {
         margin: 0 6px 0 0;
         border: borderBasicMedium;
         border-radius: 3px;
-        background: colorBGDarkGrey;
+        background: #eee;
         background-image: linear-gradient(#eee, #ccc);
         cursor: pointer;
         font-size: 12px;
@@ -1107,9 +1107,29 @@ ul.handsontableDropdown {
           border-right: none
         }
         &.timeSlider {
+          width: 100px;
           margin-right: 0;
           border-radius: 0;
-          border-right: none
+          border-right: none;
+          .indicatorContainer {
+            background: #111;
+            height: 12px;
+            line-height: 12px;
+            margin: 6px 0 0;
+            border-radius: 5px;
+            border-bottom: 1px solid #fff;
+            .indicator {
+              background: #eee;
+              background-image: linear-gradient(#eee, #ccc);
+              display: inline-block;
+              height: 10px;
+              width: 10px;
+              margin: 1px;
+              border-top: 1px solid #fff;
+              border-bottom: 1px solid #444;
+              border-radius: 50%;
+            }
+          }
         }
       }
     }
