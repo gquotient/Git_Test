@@ -78,20 +78,12 @@ define([
       });
     },
 
-    ui: function(){
-      var ui = _.result(Navigation.views.AdminList.prototype, 'ui');
-
-      return _.extend({}, ui, {
-        title: '.title'
-      });
+    ui: {
+      title: '.title'
     },
 
-    triggers: function(){
-      var triggers = _.result(Navigation.views.AdminList.prototype, 'triggers');
-
-      return _.extend({}, triggers, {
-        'click .title': 'click:title'
-      });
+    triggers: {
+      'click .title': 'click:title'
     },
 
     onShow: function(){

@@ -166,18 +166,38 @@ define([
     itemView: Navigation.views.AdminListItem,
     itemViewContainer: 'tbody',
 
-    ui: {
-      refresh: '.refresh-icon',
-      create: 'button.create',
-      save: 'button.save',
-      cancel: 'button.cancel'
+    bindUIElements: function(){
+      this.ui = this.ui || {};
+
+      // Store a copy of the original ui object or function.
+      if (!this._ui) { this._ui = this.ui; }
+
+      // Combine the result of the original ui with admin list elements.
+      this._uiBindings = _.extend({}, _.result(this, '_ui'), {
+        refresh: '.refresh-icon',
+        create: 'button.create',
+        save: 'button.save',
+        cancel: 'button.cancel'
+      });
+
+      Marionette.CompositeView.prototype.bindUIElements.apply(this, arguments);
     },
 
-    triggers: {
-      'click .refresh-icon': 'refresh',
-      'click button.create': 'create',
-      'click button.save': 'save',
-      'click button.cancel': 'cancel'
+    configureTriggers: function(){
+      this.triggers = this.triggers || {};
+
+      // Store a copy of the original triggers object or function.
+      if (!this._triggers) { this._triggers = this.triggers; }
+
+      // Combine the result of the original triggers with admin list triggers.
+      this.triggers = _.extend({}, _.result(this, '_triggers'), {
+        'click .refresh-icon': 'refresh',
+        'click button.create': 'create',
+        'click button.save': 'save',
+        'click button.cancel': 'cancel'
+      });
+
+      return Marionette.CompositeView.prototype.configureTriggers.apply(this, arguments);
     },
 
     onCreate: function(){
