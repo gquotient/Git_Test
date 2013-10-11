@@ -36,6 +36,7 @@ module.exports = function(app){
   app.post('/api/heatmap/:type?/:deviceType?',
     function(req, res, next){
       console.log('heard heatmap');
+      console.log(req.body);
       next();
     },
     function(req, res){

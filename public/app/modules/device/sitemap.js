@@ -259,6 +259,13 @@ function(
         this.setDeviceType(event.currentTarget.value);
       }
     },
+    triggers: {
+      'click .play': 'play',
+      'click .pause': 'pause',
+      'click .rewind': 'rewind',
+      'click .stepBackward': 'stepBackward',
+      'click .stepForward': 'stepForward'
+    },
     collectionEvents: {
       'filter': function(){
         this._renderChildren();
@@ -278,10 +285,10 @@ function(
       this.listenTo(Backbone, 'window:resize', this.resize);
 
       var data = $.ajax({
-        url: '/api/heatmap/N/S',
+        url: '/api/heatmap/N/' + this.currentDeviceType,
         type: 'post',
         dataType: 'json',
-        data:  {
+        data: {
           traces: [{
             project_label: this.model.get('project_label'),
             dtstart: 'today',

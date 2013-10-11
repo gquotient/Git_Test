@@ -1049,9 +1049,6 @@ ul.handsontableDropdown {
         clear: both;
         border: none;
       }
-      .content {
-
-      }
     }
   }
   .controls {
@@ -1060,6 +1057,11 @@ ul.handsontableDropdown {
     line-height: 24px;
     margin: 6px;
     color: #111;
+    opacity: 0.75;
+    transition: 0.2s ease-in-out;
+    &:hover {
+      opacity: 1;
+    }
     &.position {
       bottom: 0;
       left: 0;
@@ -1134,6 +1136,21 @@ ul.handsontableDropdown {
               border-bottom: 1px solid #444;
               border-radius: 50%;
             }
+          }
+        }
+        &.timeDisplay {
+          .time {
+            display: inline-block;
+            background: #111;
+            height: 14px;
+            line-height: 14px;
+            margin: 0;
+            padding: 0 6px;
+            color: #7fbfff;
+            text-shadow: none;
+            font-size: 10px;
+            font-family: Helvetica, sans-serif;
+            border-radius: 2px;
           }
         }
       }
