@@ -24,6 +24,34 @@ function(
 ){
   var views = {};
 
+  var defaultFillColor = '#111',
+    colorSelector = function(type, value) {
+      if (type === 'N') {
+        if (value >= 95) {
+          return '#034E7B';
+        }
+        if (value >= 90) {
+          return '#0570B0';
+        }
+        if (value >= 85) {
+          return '#3690C0';
+        }
+        if (value >= 80) {
+          return '#74A9CF';
+        }
+        if (value >= 75) {
+          return '#A6BDDB';
+        }
+        if (value >= 50) {
+          return '#eeec2d';
+        }
+        if (value >= 0) {
+          return '#f12727';
+        }
+        return '#111';
+      }
+    };
+
   views.PhysicalDevice = Marionette.ItemView.extend({
     // Handle panel drawing
     drawPanel: function(){
@@ -89,7 +117,7 @@ function(
 
       // Apply shape style
       this.shape.style = {
-        fillColor: 'black',
+        fillColor: defaultFillColor,
         strokeColor: '#ccc',
         strokeWidth: 0
       };
@@ -186,7 +214,11 @@ function(
       deviceInfoContainer: '.deviceInfoContainer',
       deviceTypeSelect: '.deviceType select',
       legendContainer: '.legendContainer',
-      timeControls: '.controls.time'
+      timeControls: '.controls.time',
+      playButton: '.play',
+      pauseButton: '.pause',
+      timeDisplay: '.timeDisplay .time',
+      timeSlider: '.timeSlider .indicator'
     },
     events: {
       // 'click': function(event){
@@ -235,9 +267,6 @@ function(
         }
       }, 15),
       // Handle controls
-      'mousedown .control': function(event){
-        event.stopPropagation();
-      },
       'click .center': function(){
         this.position();
       },
@@ -261,6 +290,22 @@ function(
       },
       'change .overlayType select': function(event){
         this.setOverlayType(event.currentTarget.value);
+      },
+      // I don't know why but, it wouldn't hear the events when I used just the class...
+      'click li.play': function(){
+        this.play();
+      },
+      'click li.pause': function(){
+        this.pause();
+      },
+      'click li.rewind': function(){
+        this.setIndex(0, true);
+      },
+      'click li.stepForward': function(){
+        this.setIndex('+', true);
+      },
+      'click li.stepBackward': function(){
+        this.setIndex('-', true);
       }
     },
     triggers: {
@@ -272,6 +317,7 @@ function(
     },
     collectionEvents: {
       'filter': function(){
+        // When the filtered list updates, re-render the collection
         this._renderChildren();
       }
     },
@@ -286,6 +332,7 @@ function(
         },
         closeWith: this
       });
+
       this.listenTo(Backbone, 'window:resize', this.resize);
     },
     deviceInfoView: views.DeviceInfo,
@@ -354,6 +401,11 @@ function(
     setDeviceType: function(deviceType){
       this.currentDeviceType = deviceType;
       this.collection.updateFilter({devtype: deviceType});
+
+      // If there is a currently active overlay, update with new device type
+      if (this.currentOverlay.type) {
+        this.setOverlayType(this.currentOverlay.type);
+      }
     },
     hilight: function(view){
       // Set all shapes to default styling
@@ -449,19 +501,28 @@ function(
     },
     currentOverlay: {
       type: null,
-      data: null
+      data: null,
+      dataLength: 0
     },
     setOverlayType: function(type){
       var that = this;
 
       if (type) {
         this.currentOverlay.type = type;
+
+        // Refresh data
         this.fetchOverlayData().done(function(data){
-          console.log(data);
+          // Set new data set
           that.currentOverlay.data = data.response[0];
+          // Cache the length
+          that.currentOverlay.dataLength = data.response[0].length;
+          // Show controls
           that.ui.timeControls.show();
+          // Reset time to first available
+          that.setIndex(0);
         });
       } else {
+        // Hide controls
         this.ui.timeControls.hide();
       }
     },
@@ -486,6 +547,92 @@ function(
         that.$el.removeClass('loading');
       });
     },
+    playing: false,
+    currentIndex: 0,
+    play: function(){
+      this.playing = true;
+      this.ui.playButton.hide();
+      this.ui.pauseButton.show();
+      this.run();
+    },
+    pause: function(){
+      this.playing = false;
+      this.ui.playButton.show();
+      this.ui.pauseButton.hide();
+    },
+    run: function(){
+      var that = this,
+        loop = function(){
+          that.run();
+        };
+
+      if (this.playing && this.currentOverlay.data && this.currentIndex < this.currentOverlay.dataLength - 1) {
+        this.setIndex('+');
+        setTimeout(loop, 100);
+      } else {
+        this.pause();
+      }
+    },
+    setIndex: function(value, pause) {
+      // Increment index
+      if (value === '+' && this.currentIndex < this.currentOverlay.dataLength - 1) {
+        this.currentIndex++;
+      }
+
+      // Decrement index
+      if (value === '-' && this.currentIndex > 0) {
+        this.currentIndex--;
+      }
+
+      // Set index manually
+      if (typeof value === 'number' && value >= 0 && value < this.currentOverlay.dataLength) {
+        this.currentIndex = value;
+      }
+
+      this.paintDevices();
+
+      if (pause) {
+        this.pause();
+      }
+    },
+    paintDevices: function(){
+      //var paintStart = new Date().getTime();
+      var dataSlice = this.currentOverlay.data[this.currentIndex];
+
+      this.children.each(function(child){
+        var deviceDataValue = dataSlice[1][child.model.get('graph_key')];
+        var color;
+
+        // if graph key exists in data slice, paint it
+        if (deviceDataValue) {
+          color = colorSelector(this.currentOverlay.type, deviceDataValue);
+        } else {
+          // else, set it to the default color
+          color = defaultFillColor;
+        }
+
+        child.shape.style = {
+          fillColor: color
+        };
+      }, this);
+
+      //console.log('Time to set colors', new Date().getTime() - paintStart);
+
+      this.draw();
+
+      //console.log('Time to draw', new Date().getTime() - paintStart);
+
+      // Set time display
+      this.ui.timeDisplay.text(new Date(this.currentOverlay.data[this.currentIndex][0] * 1000));
+
+      // Set time slider position
+      var availableWidth = this.ui.timeSlider.parent().width() - this.ui.timeSlider.width();
+      var percentComplete = this.currentIndex > 0 ? this.currentIndex/this.currentOverlay.dataLength : 0;
+
+      this.ui.timeSlider.css('margin-left', availableWidth * percentComplete);
+
+      //console.log('Frame duration', new Date().getTime() - paintStart);
+    },
     onShow: function(){
       // Update size of container when it's in the dom
       this.resize();
@@ -504,6 +651,7 @@ function(
         el: this.ui.legendContainer
       });
 
+      // Set value to default device type
       this.ui.deviceTypeSelect.val(this.currentDeviceType);
     },
     draw: function(){

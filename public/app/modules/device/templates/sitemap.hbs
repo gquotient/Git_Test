@@ -4,8 +4,9 @@
 
 {{#if deviceTypes}}
 <div class="controls deviceType">
-  Device Type:
+  {{$ 'Device Type' }}:
   <select>
+    {{! Need to figure out how to translate the result of the 'this' keyword}}
     {{#each deviceTypes}}<option value="{{ this }}">{{ this }}</option>{{/each}}
   </select>
 </div>
@@ -13,10 +14,8 @@
 
 <div class="controls overlayType">
   <select>
-    <option>- Select Overlay -</option>
-    <option value="N">Power Relative to Array Average</option>
-    <option value="A">Power Relative to Panel Rating</option>
-    <option value="R">Mesh Network Health</option>
+    <option>- {{$ 'Select Overlay' }} -</option>
+    <option value="N">{{$ 'Power Relative to Array Average' }}</option>
   </select>
 </div>
 
@@ -26,7 +25,7 @@
     <li class="zoomOut">&#xF068;</li>
     <li class="rotateL">&#xF0E2;</li>
     <li class="rotateR">&#xF01E;</li>
-    <li class="reset">Reset</li>
+    <li class="reset">{{$ 'Reset' }}</li>
   </ul>
 </div>
 
@@ -40,7 +39,7 @@
     <li class="timeSlider">
       <div class="indicatorContainer"><span class="indicator"></span>
     </li>
-    <li class="timeDisplay"><span class="time">2013-01-01 12:00</span></li>
+    <li class="timeDisplay"><span class="time"></span></li>
   </ul>
 </div>
 
