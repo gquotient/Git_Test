@@ -11,6 +11,7 @@
   [ ] Overlay date display formatting
   [ ] Overlay interval fetching
   [ ] Real panel sizes / orientation
+  [ ] Error handling
   [ ] Perf - Filter device shapes that are out of view from painting
   [ ] Perf - Skip unattached panels
   [ ] Compass
