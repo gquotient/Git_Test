@@ -15,7 +15,8 @@ module.exports = function(app){
     'id',
     'node_id',
     'parent_id',
-    'relationship_label'
+    'relationship_label',
+    'display_name'
   ];
 
   app.post('/api/devices', ensureAuthorized(['vendor_admin']),

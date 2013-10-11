@@ -342,7 +342,7 @@ define([
 
       // Check if the response includes devices.
       if (resp.devices && !resp.project_label) {
-        this.devices.reset(resp.devices, {
+        this.devices.reset(this.parseDevices(resp, options), {
           equipment: options.equipment,
           project: this,
           parse: true,
@@ -371,6 +371,20 @@ define([
       }
 
       return resp;
+    },
+
+    parseDevices: function(resp, options){
+      var labels = resp.labels || {};
+
+      return _.map(resp.devices, function(device){
+        var graph_key = device.graph_key;
+
+        if (graph_key && _.has(labels, graph_key)) {
+          device.display_name = labels[graph_key];
+        }
+
+        return device;
+      });
     },
 
     addNote: function(note, user, options){
