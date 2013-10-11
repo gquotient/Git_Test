@@ -94,6 +94,7 @@ define([
 
     onRender: function(){
       this.$el.append(this.dropdown.render().el);
+      this.ui.title.addClass('drop');
     },
 
     onClickTitle: function(){

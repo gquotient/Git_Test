@@ -671,6 +671,16 @@ leftColumnWidthSml = 200px;
     .title {
       font-weight: bold;
       text-shadow: 0 1px 0 #222;
+
+      &.drop {
+        cursor: pointer;
+
+        &:after {
+          content: "\f0d7"
+          font-family: FontAwesome;
+          padding: 0 3px;
+        }
+      }
     }
 
     .refresh-icon {
@@ -697,6 +707,37 @@ leftColumnWidthSml = 200px;
 
     .save, .cancel {
       display: none;
+    }
+  }
+
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: projectTableHeaderHeight;
+
+    ul {
+      display: inherit;
+      position: static;
+      padding: 6px;
+      box-shadow: 0 5px 5px rgba(0,0,0,0.1);
+
+      > li {
+        padding: 0;
+        margin: 0;
+        border: none;
+        font-size: inherit;
+      }
+    }
+
+    a {
+      display: block;
+      padding: 0 6px;
+      text-decoration: none;
+      color: colorPrimaryText;
+
+      &:hover {
+        color: #fff;
+      }
     }
   }
 }

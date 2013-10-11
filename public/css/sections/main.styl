@@ -591,52 +591,6 @@ header {
   }
 }
 
-#page-equipmentAdmin {
-
-  .navigation-admin-list {
-    .title {
-      cursor: pointer;
-
-      &:after {
-        content: "\f0d7"
-        font-family: FontAwesome;
-        padding: 0 3px;
-      }
-    }
-
-    .dropdown {
-      display: none;
-      position: absolute;
-      top: projectTableHeaderHeight;
-
-      ul {
-        display: inherit;
-        position: static;
-        padding: 6px;
-        box-shadow: 0 5px 5px rgba(0,0,0,0.1);
-
-        > li {
-          padding: 0;
-          margin: 0;
-          border: none;
-          font-size: inherit;
-        }
-      }
-
-      a {
-        display: block;
-        padding: 0 6px;
-        text-decoration: none;
-        color: colorPrimaryText;
-
-        &:hover {
-          color: #fff;
-        }
-      }
-    }
-  }
-}
-
 #page-projectsAdmin,
 #page-equipmentAdmin {
   min-width: 800px;
