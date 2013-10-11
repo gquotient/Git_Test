@@ -405,10 +405,9 @@ define([
     },
 
     bindUIElements: function(){
-      this.ui = {};
+      this.ui = this.ui || {};
 
-      Marionette.View.prototype.bindUIElements.apply(this, arguments);
-
+      Marionette.ItemView.prototype.bindUIElements.apply(this, arguments);
       this.bindSchemaElements();
     },
 
