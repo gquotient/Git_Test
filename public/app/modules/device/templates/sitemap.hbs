@@ -4,11 +4,21 @@
 
 {{#if deviceTypes}}
 <div class="controls deviceType">
-  Device Type: <select>
-  {{#each deviceTypes}}<option value="{{ this }}">{{ this }}</option>{{/each}}
-</select>
+  Device Type:
+  <select>
+    {{#each deviceTypes}}<option value="{{ this }}">{{ this }}</option>{{/each}}
+  </select>
 </div>
 {{/if}}
+
+<div class="controls overlayType">
+  <select>
+    <option>- Select Overlay -</option>
+    <option value="N">Power Relative to Array Average</option>
+    <option value="A">Power Relative to Panel Rating</option>
+    <option value="R">Mesh Network Health</option>
+  </select>
+</div>
 
 <div class="controls position">
   <ul>

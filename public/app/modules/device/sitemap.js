@@ -185,7 +185,8 @@ function(
       canvas: 'canvas',
       deviceInfoContainer: '.deviceInfoContainer',
       deviceTypeSelect: '.deviceType select',
-      legendContainer: '.legendContainer'
+      legendContainer: '.legendContainer',
+      timeControls: '.controls.time'
     },
     events: {
       // 'click': function(event){
@@ -257,6 +258,9 @@ function(
       },
       'change .deviceType select': function(event){
         this.setDeviceType(event.currentTarget.value);
+      },
+      'change .overlayType select': function(event){
+        this.setOverlayType(event.currentTarget.value);
       }
     },
     triggers: {
@@ -283,23 +287,6 @@ function(
         closeWith: this
       });
       this.listenTo(Backbone, 'window:resize', this.resize);
-
-      var data = $.ajax({
-        url: '/api/heatmap/N/' + this.currentDeviceType,
-        type: 'post',
-        dataType: 'json',
-        data: {
-          traces: [{
-            project_label: this.model.get('project_label'),
-            dtstart: 'today',
-            dtstop: 'now',
-            parent_identifier: this.model.get('graph_key')
-          }]
-        }
-      }).always(function(){
-        console.log('heatmap data');
-        console.log(arguments);
-      });
     },
     deviceInfoView: views.DeviceInfo,
     buildDeviceInfo: function(device){
@@ -459,6 +446,45 @@ function(
       }
 
       if (draw !== false) { this.draw(); }
+    },
+    currentOverlay: {
+      type: null,
+      data: null
+    },
+    setOverlayType: function(type){
+      var that = this;
+
+      if (type) {
+        this.currentOverlay.type = type;
+        this.fetchOverlayData().done(function(data){
+          console.log(data);
+          that.currentOverlay.data = data.response[0];
+          that.ui.timeControls.show();
+        });
+      } else {
+        this.ui.timeControls.hide();
+      }
+    },
+    fetchOverlayData: function(){
+      var that = this;
+
+      this.$el.addClass('loading');
+
+      return $.ajax({
+        url: '/api/overlay/' + this.currentOverlay.type + '/' + this.currentDeviceType,
+        type: 'post',
+        dataType: 'json',
+        data: {
+          traces: [{
+            project_label: this.model.get('project_label'),
+            dtstart: 'today',
+            dtstop: 'now',
+            parent_identifier: this.model.get('graph_key')
+          }]
+        }
+      }).always(function(){
+        that.$el.removeClass('loading');
+      });
     },
     onShow: function(){
       // Update size of container when it's in the dom

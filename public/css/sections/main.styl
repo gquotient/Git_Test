@@ -1008,7 +1008,7 @@ ul.handsontableDropdown {
   .loadingIndicator {
     display: none;
     position: absolute;
-    top: 0;
+    top: 24px;
     right: 0;
     margin: 12px;
     border-color: #555;
@@ -1071,10 +1071,15 @@ ul.handsontableDropdown {
       bottom: 0;
       right: 0;
       font-family: FontAwesome;
+      display: none;
     }
     &.deviceType {
       top: 0;
       left: 0;
+    }
+    &.overlayType {
+      top: 0;
+      right: 0;
     }
     ul {
       height: 100%;

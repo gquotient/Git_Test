@@ -33,7 +33,7 @@ module.exports = function(app){
     }
   );
 
-  app.post('/api/heatmap/:type?/:deviceType?',
+  app.post('/api/overlay/:type?/:deviceType?',
     function(req, res, next){
       console.log('heard heatmap');
       console.log(req.body);
@@ -42,7 +42,7 @@ module.exports = function(app){
     function(req, res){
       request({
         method: 'POST',
-        uri: app.get('dataUrl') + '/cubes/heatmap',
+        uri: app.get('dataUrl') + '/cubes/heatmap/' + req.params.type + '/' + req.params.deviceType,
         body: JSON.stringify(req.body),
         headers: {
           'Content-Type': 'application/json',
