@@ -4,20 +4,18 @@ define([
   'backbone',
   'backbone.marionette',
 
-  './util',
+  'navigation',
 
-  'hbs!form/templates/dropdown',
-  'hbs!form/templates/dropdownItem'
+  './util'
 ], function(
   $,
   _,
   Backbone,
   Marionette,
 
-  util,
+  Navigation,
 
-  dropdownTemplate,
-  dropdownItemTemplate
+  util
 ){
   var views = {};
 
@@ -97,42 +95,7 @@ define([
     return params.required && (validators[params.type] || validators.text);
   }
 
-  views.DropdownItem = Marionette.ItemView.extend({
-    tagName: 'li',
-    template: {
-      type: 'handlebars',
-      template: dropdownItemTemplate
-    },
-
-    templateHelpers: function(){
-      return {
-        attribute: this.model.get('name')
-      };
-    },
-
-    triggers: {
-      'mousedown a': 'select'
-    }
-  });
-
-  views.Dropdown = Marionette.CompositeView.extend({
-
-    constructor: function(){
-      Marionette.CompositeView.prototype.constructor.apply(this, arguments);
-    },
-
-    template: {
-      type: 'handlebars',
-      template: dropdownTemplate
-    },
-
-    className: 'dropdown',
-
-    itemView: views.DropdownItem,
-    itemViewContainer: 'ul'
-  });
-
-  views.InputDropdown = views.Dropdown.extend({
+  views.InputDropdown = Navigation.views.Dropdown.extend({
 
     constructor: function(options){
       this._collection = options.collection;
@@ -142,7 +105,7 @@ define([
         close_with: this
       });
 
-      views.Dropdown.prototype.constructor.call(this, options);
+      Navigation.views.Dropdown.prototype.constructor.call(this, options);
 
       this.$input = options.$input;
       this.current = this.getModel() || this.collection.first();

@@ -5,10 +5,10 @@ define([
   'backbone.marionette',
   'backbone.virtualCollection',
 
+  './admin',
+
   'hbs!navigation/templates/list',
-  'hbs!navigation/templates/listItem',
-  'hbs!navigation/templates/adminList',
-  'hbs!navigation/templates/adminListItem'
+  'hbs!navigation/templates/listItem'
 ], function(
   $,
   _,
@@ -16,10 +16,10 @@ define([
   Marionette,
   VirtualCollection,
 
+  adminViews,
+
   listTemplate,
-  listItemTemplate,
-  adminListTemplate,
-  adminListItemTemplate
+  listItemTemplate
 ){
   var Navigation = { views: {} };
 
@@ -124,111 +124,7 @@ define([
     }
   });
 
-  Navigation.views.AdminListItem = Marionette.ItemView.extend({
-    tagName: 'tr',
-    template: {
-      type: 'handlebars',
-      template: adminListItemTemplate
-    },
-
-    triggers: {
-      'click': 'detail',
-      'click button.delete': 'delete'
-    },
-
-    modelEvents: {
-      'change': 'render'
-    },
-
-    onDelete: function(){
-      if (window.confirm('Are you sure you want to delete this item?')) {
-        this.model.destroy({wait: true});
-      }
-    }
-  });
-
-  Navigation.views.AdminList = Marionette.CompositeView.extend({
-    constructor: function(){
-      Marionette.CompositeView.prototype.constructor.apply(this, arguments);
-
-      this.listenTo(this, 'itemview:detail', function(view){
-        this.trigger('select', view.model);
-      });
-    },
-
-    template: {
-      type: 'handlebars',
-      template: adminListTemplate
-    },
-
-    className: 'navigation-admin-list',
-
-    itemView: Navigation.views.AdminListItem,
-    itemViewContainer: 'tbody',
-
-    bindUIElements: function(){
-      this.ui = this.ui || {};
-
-      // Store a copy of the original ui object or function.
-      if (!this._ui) { this._ui = this.ui; }
-
-      // Combine the result of the original ui with admin list elements.
-      this._uiBindings = _.extend({}, _.result(this, '_ui'), {
-        title: '.title',
-        refresh: '.refresh-icon',
-        create: 'button.create',
-        save: 'button.save',
-        cancel: 'button.cancel'
-      });
-
-      Marionette.CompositeView.prototype.bindUIElements.apply(this, arguments);
-    },
-
-    configureTriggers: function(){
-      this.triggers = this.triggers || {};
-
-      // Store a copy of the original triggers object or function.
-      if (!this._triggers) { this._triggers = this.triggers; }
-
-      // Combine the result of the original triggers with admin list triggers.
-      this.triggers = _.extend({}, _.result(this, '_triggers'), {
-        'click .title': 'click:title',
-        'click .refresh-icon': 'refresh',
-        'click button.create': 'create',
-        'click button.save': 'save',
-        'click button.cancel': 'cancel'
-      });
-
-      return Marionette.CompositeView.prototype.configureTriggers.apply(this, arguments);
-    },
-
-    onCreate: function(){
-      this.trigger('select');
-    },
-
-    setActive: function(model, options){
-      var view = model && this.children.findByModel(model);
-
-      options = options || {};
-
-      this.$('tr.active').removeClass('active');
-
-      if (view) {
-        view.$el.addClass('active');
-      }
-
-      this.ui.save.toggle(!!model && options.showSave !== false);
-      this.ui.cancel.toggle(!!model);
-    },
-
-    toggleRefresh: function(state){
-      this.ui.refresh.toggleClass('active', state === true);
-    },
-
-    toggleSaving: function(state){
-      this.ui.save.toggleClass('loading-left', state === true);
-    }
-  });
+  _.extend(Navigation.views, adminViews);
 
   return Navigation;
 });

@@ -69,7 +69,7 @@ define([
 
       this.categories = new Backbone.Collection(categories);
 
-      this.dropdown = new Form.views.Dropdown({
+      this.dropdown = new Navigation.views.Dropdown({
         collection: this.categories
       });
 
