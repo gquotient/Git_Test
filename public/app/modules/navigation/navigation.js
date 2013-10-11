@@ -174,6 +174,7 @@ define([
 
       // Combine the result of the original ui with admin list elements.
       this._uiBindings = _.extend({}, _.result(this, '_ui'), {
+        title: '.title',
         refresh: '.refresh-icon',
         create: 'button.create',
         save: 'button.save',
@@ -191,6 +192,7 @@ define([
 
       // Combine the result of the original triggers with admin list triggers.
       this.triggers = _.extend({}, _.result(this, '_triggers'), {
+        'click .title': 'click:title',
         'click .refresh-icon': 'refresh',
         'click button.create': 'create',
         'click button.save': 'save',

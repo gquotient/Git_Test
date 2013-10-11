@@ -78,14 +78,6 @@ define([
       });
     },
 
-    ui: {
-      title: '.title'
-    },
-
-    triggers: {
-      'click .title': 'click:title'
-    },
-
     onShow: function(){
       var match = /^([A-Z]+)_/.exec(this.options.current),
         label = match && match[1],
