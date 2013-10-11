@@ -1,3 +1,22 @@
+/*
+
+  TODO
+
+  [ ] Zoom based device type selection
+      - At certain zoom values see if a given device type is available and change to it
+      - When doing initial build, you can see what zoom level will fill the screen and set it to that
+      - Since the zoom value will be hard set to a default device type it will automagically work
+  [ ] Other overlay types
+  [ ] Overlay play indicator dragging/clicking
+  [ ] Overlay date display formatting
+  [ ] Overlay interval fetching
+  [ ] Real panel sizes / orientation
+  [ ] Perf - Filter device shapes that are out of view from painting
+  [ ] Perf - Skip unattached panels
+  [ ] Compass
+
+*/
+
 define([
   'jquery',
   'underscore',
@@ -507,7 +526,7 @@ function(
     setOverlayType: function(type){
       var that = this;
 
-      if (type) {
+      if (type && type !== 'none') {
         this.currentOverlay.type = type;
 
         // Refresh data
@@ -522,6 +541,23 @@ function(
           that.setIndex(0);
         });
       } else {
+        // Reset overlay
+        this.currentOverlay = {
+          type: null,
+          data: null,
+          dataLength: 0
+        };
+
+        // Reset index
+        this.currentIndex = 0;
+
+        // Update device color
+        this.deviceGroup.style = {
+          fillColor: defaultFillColor
+        };
+
+        this.draw();
+
         // Hide controls
         this.ui.timeControls.hide();
       }
