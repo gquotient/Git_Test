@@ -288,7 +288,9 @@ function(
           // Move group to new position
           this.position(
             offsetX - this.dragging.x,
-            offsetY - this.dragging.y
+            offsetY - this.dragging.y,
+            true,
+            false
           );
 
           // Update drag origin
@@ -498,20 +500,23 @@ function(
     resetPosition: function(options){
       options = options || {};
 
-      this.zoom(options.zoom, false);
-      this.position(options.x, options.y, false);
-      this.rotate(options.rotate, false);
+      this.position(options.x, options.y, false, false);
+      this.rotate(options.rotate, false, false);
+      this.zoom(options.zoom, false, false);
+
+      this.filterOnBounds();
       this.draw();
     },
     resize: function(){
       // Fill canvas to size of parent container
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
+      this.filterOnBounds();
     },
     currentPosition: {
       x: 0,
       y: 0
     },
-    position: function(x, y, draw){
+    position: function(x, y, draw, filter){
       // If options are passed, position based on those
       if (x || y) {
         this.deviceGroup.position.x += x || 0;
@@ -527,21 +532,23 @@ function(
         this.currentPosition.y = center._y;
       }
 
+      if (filter !== false) { this.filterOnBounds(); }
+
       if (draw !== false) { this.draw(); }
     },
     currentRotation: 0,
-    rotate: function(degrees, draw){
+    rotate: function(degrees, draw, filter){
       degrees = degrees || (+this.model.get('pref_rotation') - this.currentRotation);
 
       this.deviceGroup.rotate(degrees, this.deviceGroup.center);
       this.currentRotation += degrees;
 
-      this.filterOnBounds();
+      if (filter !== false) { this.filterOnBounds(); }
 
       if (draw !== false) { this.draw(); }
     },
     currentZoom: 1,
-    zoom: function(direction, draw) {
+    zoom: function(direction, draw, filter) {
       if (direction === '+') {
         this.deviceGroup.scale(2);
         this.currentZoom *= 2;
@@ -556,7 +563,7 @@ function(
         this.currentZoom = 1;
       }
 
-      this.filterOnBounds();
+      if (filter !== false) { this.filterOnBounds(); }
 
       if (draw !== false) { this.draw(); }
     },
