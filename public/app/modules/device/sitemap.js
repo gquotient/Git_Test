@@ -562,18 +562,21 @@ function(
       var that = this;
 
       if (type && type !== 'none') {
-        this.currentOverlay.type = type;
-
         // Refresh data
         this.fetchOverlayData().done(function(data){
-          // Set new data set
-          that.currentOverlay.data = data.response[0];
-          // Cache the length
-          that.currentOverlay.dataLength = data.response[0].length;
-          // Show controls
-          that.ui.timeControls.show();
-          // Reset time to first available
-          that.setIndex(0);
+          if (!data.response[0].errmsg) {
+            that.currentOverlay.type = type;
+            // Set new data set
+            that.currentOverlay.data = data.response[0];
+            // Cache the length
+            that.currentOverlay.dataLength = data.response[0].length;
+            // Show controls
+            that.ui.timeControls.show();
+            // Reset time to first available
+            that.setIndex(0);
+          } else {
+            // handle error
+          }
         });
       } else {
         // Reset overlay
@@ -667,7 +670,7 @@ function(
       }
     },
     paintDevices: function(){
-      //var paintStart = new Date().getTime();
+      var paintStart = new Date().getTime();
       var dataSlice = this.currentOverlay.data[this.currentIndex];
 
       this.children.each(function(child){
@@ -690,11 +693,11 @@ function(
         }
       }, this);
 
-      //console.log('Time to set colors', new Date().getTime() - paintStart);
+      console.log('Time to set colors', new Date().getTime() - paintStart);
 
       this.draw();
 
-      //console.log('Time to draw', new Date().getTime() - paintStart);
+      console.log('Time to draw', new Date().getTime() - paintStart);
 
       // Set time display
       this.ui.timeDisplay.text(new Date(this.currentOverlay.data[this.currentIndex][0] * 1000));
@@ -705,7 +708,7 @@ function(
 
       this.ui.timeSlider.css('margin-left', availableWidth * percentComplete);
 
-      //console.log('Frame duration', new Date().getTime() - paintStart);
+      console.log('Frame duration', new Date().getTime() - paintStart);
     },
     onShow: function(){
       // Update size of container when it's in the dom
