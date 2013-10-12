@@ -142,6 +142,13 @@ function(
         strokeWidth: 0
       };
 
+      if (this.model.get('devtype') === 'Panel' && this.model.get('attached') === 'null') {
+        this.shape.style = {
+          fillColor: '#555',
+          strokeColor: '#ccc',
+        };
+      }
+
       this.triggerMethod('render', this);
       this.triggerMethod('item:rendered', this);
 
@@ -241,13 +248,13 @@ function(
       timeSlider: '.timeSlider .indicator'
     },
     events: {
-      // 'click': function(event){
-      //   var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
+      'click': function(event){
+        var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
-      //   if (hitTest) {
-      //     this.buildDeviceInfo(this.findChild(hitTest.item).model);
-      //   }
-      // },
+        if (hitTest) {
+          console.log(this.findChild(hitTest.item).model);
+        }
+      },
       'mousedown canvas': function(event){
         // Set dragging object if primary mouse button clicked
         if (event.which === 1) {
@@ -674,8 +681,8 @@ function(
       var dataSlice = this.currentOverlay.data[this.currentIndex];
 
       this.children.each(function(child){
-        // Don't bother painting shapes out of bounds
-        if (child.shape.visible) {
+        // Don't bother painting shapes out of bounds and isn't an unattached panel
+        if (child.shape.visible && child.model.get('attached') !== 'null') {
           var deviceDataValue = dataSlice[1][child.model.get('graph_key')];
           var color;
 
@@ -710,6 +717,9 @@ function(
 
       console.log('Frame duration', new Date().getTime() - paintStart);
     },
+    draw: function(){
+      this.paper.view.draw();
+    },
     onShow: function(){
       // Update size of container when it's in the dom
       this.resize();
@@ -734,8 +744,8 @@ function(
       // Set value to default device type
       this.ui.deviceTypeSelect.val(this.currentDeviceType);
     },
-    draw: function(){
-      this.paper.view.draw();
+    onClose: function(){
+      this.paper.view.remove();
     },
     // Prevent item views from being added to the DOM.
     appendHtml: function(){}
