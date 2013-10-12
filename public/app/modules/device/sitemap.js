@@ -361,6 +361,8 @@ function(
       // Instantiate paper
       this.paper = new paper.PaperScope();
 
+      console.log(this.paper);
+
       // Move collection to virtual collection
       this.collection = new Backbone.VirtualCollection(options.collection, {
         filter: {
@@ -745,7 +747,9 @@ function(
       this.ui.deviceTypeSelect.val(this.currentDeviceType);
     },
     onClose: function(){
+      // Clean up paper stuffs
       this.paper.view.remove();
+      delete this.paper;
     },
     // Prevent item views from being added to the DOM.
     appendHtml: function(){}
