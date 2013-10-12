@@ -29,6 +29,10 @@ module.exports = function(app){
 
   app.get('/api/projects/:label',
     helpers.request({
+      headers: {
+        'Content-Type': 'application/json',
+        'accept-encoding' : 'gzip,deflate'
+      },
       path: function(req){
         var project_label = req.params.label,
           index_name = req.query.index_name || 'StagedProjects';
