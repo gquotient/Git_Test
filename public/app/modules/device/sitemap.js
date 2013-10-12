@@ -361,8 +361,6 @@ function(
       // Instantiate paper
       this.paper = new paper.PaperScope();
 
-      console.log(this.paper);
-
       // Move collection to virtual collection
       this.collection = new Backbone.VirtualCollection(options.collection, {
         filter: {
