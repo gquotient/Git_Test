@@ -260,6 +260,15 @@ function(
       'mouseup canvas': function(){
         // Clear dragging object
         this.dragging = false;
+
+        // Update visible devices
+        var that = this;
+        var filterOnBounds = function(){
+          that.filterOnBounds();
+        };
+
+        // Force it to the end of the call stack
+        setTimeout(filterOnBounds, 0);
       },
       'mousemove': _.throttle(function(event){
         // Polyfill because firefox doesn't get offsetX/offsetY
@@ -285,7 +294,7 @@ function(
           this.hilight(hitTest ? this.findChild(hitTest.item) : null);
           this.$el.css('cursor', hitTest ? 'pointer' : 'auto');
         }
-      }, 15),
+      }, 30),
       // Handle controls
       'click .center': function(){
         this.position();
@@ -396,6 +405,9 @@ function(
           zoom: currentZoom
         });
 
+        // Fire initial bound filtering
+        this.filterOnBounds();
+
         // Hide loading indicator
         this.$el.removeClass('loading');
       }
@@ -416,6 +428,22 @@ function(
       }
 
       return false;
+    },
+    filterOnBounds: function(){
+      var maxBounds = this.paper.view.bounds;
+
+      this.children.each(function(child){
+        var bounds = child.shape.bounds;
+
+        if (bounds.x < -15 || bounds.x > (maxBounds.width + 15) || bounds.y < -15 || bounds.y > (maxBounds.height + 15)) {
+          //console.log(child, 'is out of bounds', bounds.x, bounds.y);
+          child.shape.visible = false;
+        } else {
+          child.shape.visible = true;
+        }
+      });
+
+      this.draw();
     },
     currentDeviceType: 'Panel',
     setDeviceType: function(deviceType){
@@ -438,12 +466,14 @@ function(
         // Hilight siblings
         view.model.incoming.first().outgoing.each(function(model){
           var child = this.children.findByModel(model);
-
-          if (child && child !== view) {
-            child.shape.style = {
-              strokeColor: '#F26322',
-              strokeWidth: 1
-            };
+          // Don't bother with shapes that aren't visible
+          if (child.shape.visible) {
+            if (child && child !== view) {
+              child.shape.style = {
+                strokeColor: '#F26322',
+                strokeWidth: 1
+              };
+            }
           }
         }, this);
 
@@ -499,6 +529,8 @@ function(
       this.deviceGroup.rotate(degrees, this.deviceGroup.center);
       this.currentRotation += degrees;
 
+      this.filterOnBounds();
+
       if (draw !== false) { this.draw(); }
     },
     currentZoom: 1,
@@ -516,6 +548,8 @@ function(
         this.deviceGroup.scale(1 / this.currentZoom);
         this.currentZoom = 1;
       }
+
+      this.filterOnBounds();
 
       if (draw !== false) { this.draw(); }
     },
@@ -637,20 +671,23 @@ function(
       var dataSlice = this.currentOverlay.data[this.currentIndex];
 
       this.children.each(function(child){
-        var deviceDataValue = dataSlice[1][child.model.get('graph_key')];
-        var color;
+        // Don't bother painting shapes out of bounds
+        if (child.shape.visible) {
+          var deviceDataValue = dataSlice[1][child.model.get('graph_key')];
+          var color;
 
-        // if graph key exists in data slice, paint it
-        if (deviceDataValue) {
-          color = colorSelector(this.currentOverlay.type, deviceDataValue);
-        } else {
-          // else, set it to the default color
-          color = defaultFillColor;
+          // if graph key exists in data slice, paint it
+          if (deviceDataValue) {
+            color = colorSelector(this.currentOverlay.type, deviceDataValue);
+          } else {
+            // else, set it to the default color
+            color = defaultFillColor;
+          }
+
+          child.shape.style = {
+            fillColor: color
+          };
         }
-
-        child.shape.style = {
-          fillColor: color
-        };
       }, this);
 
       //console.log('Time to set colors', new Date().getTime() - paintStart);
@@ -673,6 +710,9 @@ function(
     onShow: function(){
       // Update size of container when it's in the dom
       this.resize();
+
+      // Fire initial bound filtering
+      this.filterOnBounds();
 
       // If children already populated, do initial positioning
       if (this.children.length) {
