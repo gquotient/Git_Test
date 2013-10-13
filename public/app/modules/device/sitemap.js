@@ -286,11 +286,14 @@ function(
         // If currently dragging with the mouse, move the canvas around
         if (this.dragging) {
           // Move group to new position
-          this.position(
-            offsetX - this.dragging.x,
-            offsetY - this.dragging.y,
-            true,
-            false
+          _.throttle(
+            this.position(
+              offsetX - this.dragging.x,
+              offsetY - this.dragging.y,
+              true,
+              false
+            ),
+            60
           );
 
           // Update drag origin
@@ -365,7 +368,6 @@ function(
       }
     },
     initialize: function(options) {
-      window.debug = this;
       // Instantiate paper
       this.paper = new paper.PaperScope();
 
@@ -528,23 +530,12 @@ function(
       x: 0,
       y: 0
     },
-    testLoop: function(){
-      var testStart = new Date().getTime();
-      var a;
-
-      this.children.each(function(child){
-        child.shape.position = new this.paper.Point(0, 0);
-      });
-
-      console.log('loop test:', new Date().getTime() - testStart, a);
-    },
     position: function(x, y, draw, filter){
-      var positionStart = new Date().getTime();
       // If options are passed, position based on those
       if (x || y) {
-        var currentPosition = this.deviceGroup.position;
-        var newX = currentPosition._x + (x || 0);
-        var newY = currentPosition._y + (y || 0);
+        var currentPosition = this.deviceGroup.position,
+          newX = currentPosition._x + (x || 0),
+          newY = currentPosition._y + (y || 0);
 
         this.deviceGroup.position = new this.paper.Point(newX, newY);
         this.currentPosition.x = newX;
@@ -557,8 +548,6 @@ function(
         this.currentPosition.x = center._x;
         this.currentPosition.y = center._y;
       }
-
-      console.log('Coordinates updated:', new Date().getTime() - positionStart);
 
       if (filter !== false) { this.filterOnBounds(); }
 
@@ -712,7 +701,6 @@ function(
       }
     },
     paintDevices: function(){
-      var paintStart = new Date().getTime();
       var dataSlice = this.currentOverlay.data[this.currentIndex];
 
       this.children.each(function(child){
@@ -735,11 +723,7 @@ function(
         }
       }, this);
 
-      console.log('Time to set colors', new Date().getTime() - paintStart);
-
       this.draw();
-
-      console.log('Time to draw', new Date().getTime() - paintStart);
 
       // Set time display
       this.ui.timeDisplay.text(new Date(this.currentOverlay.data[this.currentIndex][0] * 1000));
@@ -749,13 +733,9 @@ function(
       var percentComplete = this.currentIndex > 0 ? this.currentIndex/this.currentOverlay.dataLength : 0;
 
       this.ui.timeSlider.css('margin-left', availableWidth * percentComplete);
-
-      console.log('Frame duration', new Date().getTime() - paintStart);
     },
     draw: function(){
-      var drawStart = new Date().getTime();
       this.paper.view.draw();
-      console.log('Draw:', new Date().getTime() - drawStart);
     },
     onShow: function(){
       // Update size of container when it's in the dom
