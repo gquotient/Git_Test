@@ -617,24 +617,22 @@ function(
         this.currentZoom = this.currentZoom * scale || scale;
       }
 
-      // if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
-      //   this.setDeviceType('Inverter');
-      //   return;
-      // }
+      if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
+        this.setDeviceType('Inverter');
+        return;
+      }
 
-      // if (this.currentZoom === 0.5 && this.currentDeviceType !== 'String') {
-      //   this.setDeviceType('String');
-      //   return;
-      // }
+      if (this.currentZoom === 0.5 && this.currentDeviceType !== 'String') {
+        this.setDeviceType('String');
+        return;
+      }
 
-      // if (this.currentZoom === 1 && this.currentDeviceType !== 'Panel') {
-      //   this.setDeviceType('Panel');
-      //   return;
-      // }
+      if (this.currentZoom === 1 && this.currentDeviceType !== 'Panel') {
+        this.setDeviceType('Panel');
+        return;
+      }
 
       this.deviceGroup.scale(scale);
-
-
 
       if (filter !== false) { this.filterOnBounds(); }
 
@@ -803,7 +801,7 @@ function(
 
       // If children already populated, do initial positioning
       if (this.children.length) {
-        this.resetPosition();
+        this.position();
       }
 
       // Cache dynamic regions
