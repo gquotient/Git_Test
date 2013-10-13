@@ -461,8 +461,6 @@ function(
         }
       }, this);
 
-      console.log('Filter on bounds:', new Date().getTime() - filterStart);
-
       this.draw();
     },
     currentDeviceType: 'Panel',
