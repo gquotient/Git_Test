@@ -502,11 +502,11 @@ function(
 
       this.draw();
     },
-    initialPosition: function(){
+    initialPosition: function(reset){
       // Store current position info
-      var currentRotation = this.currentRotation,
-        currentPosition = this.currentPosition,
-        currentZoom = this.currentZoom;
+      var currentRotation = reset ? 0 : this.currentRotation,
+        currentPosition = reset ? 0 : this.currentPosition,
+        currentZoom = reset ? null : this.currentZoom;
 
       // Reset rotation and position
       this.currentRotation = 0;
@@ -799,9 +799,9 @@ function(
       // Fire initial bound filtering
       this.filterOnBounds();
 
-      // If children already populated, do initial positioning
+      // If children already populated, do initial positioning with hard reset
       if (this.children.length) {
-        this.position();
+        this.initialPosition(true);
       }
 
       // Cache dynamic regions
