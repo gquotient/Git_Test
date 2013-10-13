@@ -12,8 +12,8 @@
   [ ] Overlay interval fetching
   [ ] Real panel sizes / orientation
   [ ] Error handling
-  [ ] Perf - Filter device shapes that are out of view from painting
-  [ ] Perf - Skip unattached panels
+  [x] Perf - Filter device shapes that are out of view from painting
+  [x] Perf - Skip unattached panels
   [ ] Compass
 
 */
@@ -300,8 +300,13 @@ function(
           // Otherwise, handle hovering
           var hitTest = this.paper.project.hitTest(offsetX, offsetY);
 
-          this.hilight(hitTest ? this.findChild(hitTest.item) : null);
-          this.$el.css('cursor', hitTest ? 'pointer' : 'auto');
+          if (hitTest) {
+            this.hilight(this.findChild(hitTest.item));
+            this.$el.css('cursor', 'pointer');
+          } else if (this.currentHilight) {
+            this.hilight(null);
+            this.$el.css('cursor', 'auto');
+          }
         }
       }, 30),
       // Handle controls
@@ -360,6 +365,7 @@ function(
       }
     },
     initialize: function(options) {
+      window.debug = this;
       // Instantiate paper
       this.paper = new paper.PaperScope();
 
@@ -439,6 +445,7 @@ function(
       return false;
     },
     filterOnBounds: function(){
+      var filterStart = new Date().getTime();
       var maxBounds = this.paper.view.bounds;
 
       this.children.each(function(child){
@@ -450,7 +457,9 @@ function(
         } else {
           child.shape.visible = true;
         }
-      });
+      }, this);
+
+      console.log('Filter on bounds:', new Date().getTime() - filterStart);
 
       this.draw();
     },
@@ -464,7 +473,10 @@ function(
         this.setOverlayType(this.currentOverlay.type);
       }
     },
+    currentHilight: null,
     hilight: function(view){
+      this.currentHilight = view;
+
       // Set all shapes to default styling
       this.deviceGroup.style = {
         strokeColor: '#ccc',
@@ -516,21 +528,37 @@ function(
       x: 0,
       y: 0
     },
+    testLoop: function(){
+      var testStart = new Date().getTime();
+      var a;
+
+      this.children.each(function(child){
+        child.shape.position = new this.paper.Point(0, 0);
+      });
+
+      console.log('loop test:', new Date().getTime() - testStart, a);
+    },
     position: function(x, y, draw, filter){
+      var positionStart = new Date().getTime();
       // If options are passed, position based on those
       if (x || y) {
-        this.deviceGroup.position.x += x || 0;
-        this.deviceGroup.position.y += y || 0;
+        var currentPosition = this.deviceGroup.position;
+        var newX = currentPosition._x + (x || 0);
+        var newY = currentPosition._y + (y || 0);
 
-        this.currentPosition.x += x || 0;
-        this.currentPosition.y += y || 0;
+        this.deviceGroup.position = new this.paper.Point(newX, newY);
+        this.currentPosition.x = newX;
+        this.currentPosition.y = newY;
       } else {
-        var center = this.paper.view.center;
         // else, center the group
-        this.deviceGroup.position = center;
+        var center = this.paper.view.center;
+
+        this.deviceGroup.position = new this.paper.Point(center._x, center._y);
         this.currentPosition.x = center._x;
         this.currentPosition.y = center._y;
       }
+
+      console.log('Coordinates updated:', new Date().getTime() - positionStart);
 
       if (filter !== false) { this.filterOnBounds(); }
 
@@ -725,7 +753,9 @@ function(
       console.log('Frame duration', new Date().getTime() - paintStart);
     },
     draw: function(){
+      var drawStart = new Date().getTime();
       this.paper.view.draw();
+      console.log('Draw:', new Date().getTime() - drawStart);
     },
     onShow: function(){
       // Update size of container when it's in the dom
