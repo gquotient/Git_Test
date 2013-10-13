@@ -475,7 +475,11 @@ function(
     },
     currentDeviceType: 'Panel',
     setDeviceType: function(deviceType){
+      // Update select ui
+      this.ui.deviceTypeSelect.val(deviceType);
+      // Update current
       this.currentDeviceType = deviceType;
+      // Update collection
       this.collection.updateFilter({devtype: deviceType});
 
       // If there is a currently active overlay, update with new device type
