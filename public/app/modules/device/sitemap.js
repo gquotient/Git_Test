@@ -2,10 +2,7 @@
 
   TODO
 
-  [ ] Zoom based device type selection
-      - At certain zoom values see if a given device type is available and change to it
-      - When doing initial build, you can see what zoom level will fill the screen and set it to that
-      - Since the zoom value will be hard set to a default device type it will automagically work
+  [x] See what zoom level will fill the screen and set it to that
   [ ] Other overlay types
   [ ] Overlay play indicator dragging/clicking
   [ ] Overlay date display formatting
