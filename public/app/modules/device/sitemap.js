@@ -136,17 +136,17 @@ function(
       }
 
       // Apply shape style
-      this.shape.style = {
+      this.shape.set({
         fillColor: defaultFillColor,
         strokeColor: '#ccc',
         strokeWidth: 0
-      };
+      });
 
       if (this.model.get('devtype') === 'Panel' && this.model.get('attached') === 'null') {
-        this.shape.style = {
+        this.shape.set({
           fillColor: '#555',
           strokeColor: '#ccc',
-        };
+        });
       }
 
       this.triggerMethod('render', this);
@@ -252,7 +252,7 @@ function(
         var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
         if (hitTest) {
-          console.log(this.findChild(hitTest.item).model);
+          //console.log(this.findChild(hitTest.item).model);
         }
       },
       'mousedown canvas': function(event){
@@ -447,18 +447,28 @@ function(
       return false;
     },
     filterOnBounds: function(){
-      var filterStart = new Date().getTime();
       var maxBounds = this.paper.view.bounds;
 
       this.children.each(function(child){
-        var bounds = child.shape.bounds;
+        var bounds = child.shape.bounds,
+          isVisible = true;
 
-        if (bounds.x < -15 || bounds.x > (maxBounds.width + 15) || bounds.y < -15 || bounds.y > (maxBounds.height + 15)) {
-          //console.log(child, 'is out of bounds', bounds.x, bounds.y);
-          child.shape.visible = false;
+        // This is ugly but it's actually quite a bit faster because it
+        // allows exiting without running through all the logic every time
+
+        if ((bounds.y - bounds.height) > maxBounds.height) { // Shape Top > View Bottom
+          isVisible = false;
+        } else if ((bounds.y + bounds.height) < 0) { // Shape Bottom < View Top
+          isVisible = false;
+        } else if ((bounds.x - bounds.width) > maxBounds.width) { // Shape Left > View Right
+          isVisible = false;
+        } else if ((bounds.x + bounds.width) < 0) { // Shape Right < View Left
+          isVisible = false;
         } else {
-          child.shape.visible = true;
+          isVisible = true;
         }
+
+        child.shape.visible = isVisible;
       }, this);
 
       this.draw();
@@ -478,10 +488,10 @@ function(
       this.currentHilight = view;
 
       // Set all shapes to default styling
-      this.deviceGroup.style = {
+      this.deviceGroup.set({
         strokeColor: '#ccc',
         strokeWidth: 0
-      };
+      });
 
       if (view) {
         // Hilight siblings
@@ -490,19 +500,19 @@ function(
           // Don't bother with shapes that aren't visible
           if (child && child.shape.visible) {
             if (child && child !== view) {
-              child.shape.style = {
+              child.shape.set({
                 strokeColor: '#F26322',
                 strokeWidth: 1
-              };
+              });
             }
           }
         }, this);
 
         // Hilight hovered
-        view.shape.style = {
+        view.shape.set({
           strokeColor: '#F26322',
           strokeWidth: 2
-        };
+        });
 
         view.shape.bringToFront();
       }
@@ -715,9 +725,9 @@ function(
             color = defaultFillColor;
           }
 
-          child.shape.style = {
+          child.shape.set({
             fillColor: color
-          };
+          });
         }
       }, this);
 
