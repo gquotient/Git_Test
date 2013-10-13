@@ -649,7 +649,7 @@ function(
       if (type && type !== 'none') {
         // Refresh data
         this.fetchOverlayData().done(function(data){
-          if (!data.response[0].errmsg) {
+          if (data.response && data.response[0].length && !data.response[0].errmsg) {
             that.currentOverlay.type = type;
             // Set new data set
             that.currentOverlay.data = data.response[0];
@@ -756,6 +756,7 @@ function(
       }
     },
     paintDevices: function(){
+      console.log(this.currentOverlay);
       var dataSlice = this.currentOverlay.data[this.currentIndex];
 
       this.children.each(function(child){
