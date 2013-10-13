@@ -790,9 +790,9 @@ function(
 
       this.ui.timeSlider.css('margin-left', availableWidth * percentComplete);
     },
-    draw: function(){
+    draw: _.throttle(function(){
       this.paper.view.draw();
-    },
+    }, 60, true),
     onShow: function(){
       // Update size of container when it's in the dom
       this.resize();
