@@ -396,29 +396,10 @@ function(
     },
     // This fires after children render
     onCompositeCollectionRendered: function(){
-      // Store current position info
-      var currentRotation = this.currentRotation,
-        currentPosition = this.currentPosition,
-        currentZoom = this.currentZoom;
-
-      // Reset rotation and position
-      this.currentRotation = 0;
-      this.currentPosition = {
-        x: 0,
-        y: 0
-      };
-      this.deviceGroup.position.x = 0;
-      this.deviceGroup.position.y = 0;
-
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
-      if (this.children.length) {
-        this.resetPosition({
-          rotate: currentRotation,
-          x: currentPosition.x,
-          y: currentPosition.y,
-          zoom: currentZoom
-        });
+      if (this.children.length && !this.isClosed) {
+        this.initialPosition();
 
         // Fire initial bound filtering
         this.filterOnBounds();
@@ -521,6 +502,28 @@ function(
 
       this.draw();
     },
+    initialPosition: function(){
+      // Store current position info
+      var currentRotation = this.currentRotation,
+        currentPosition = this.currentPosition,
+        currentZoom = this.currentZoom;
+
+      // Reset rotation and position
+      this.currentRotation = 0;
+      this.currentPosition = {
+        x: 0,
+        y: 0
+      };
+      this.deviceGroup.position.x = 0;
+      this.deviceGroup.position.y = 0;
+
+      this.resetPosition({
+        rotate: currentRotation,
+        x: currentPosition.x,
+        y: currentPosition.y,
+        zoom: currentZoom
+      });
+    },
     resetPosition: function(options){
       options = options || {};
 
@@ -592,28 +595,46 @@ function(
           zoom = 1 / Math.max(Math.ceil(widthRatio * 2) / 2, Math.ceil(heightRatio * 2) / 2);
         }
 
-        return zoom;
+        return zoom || 1;
       };
+      var scale;
 
       if (direction === '+') {
         // Zoom in
-        this.deviceGroup.scale(2);
+        scale = 2;
         this.currentZoom *= 2;
       } else if (direction === '-') {
         // Zoom out
-        this.deviceGroup.scale(0.5);
+        scale = 0.5;
         this.currentZoom *= 0.5;
       } else if (typeof direction === 'number') {
         // Zoom to supplied level
-        this.deviceGroup.scale(direction);
+        scale = direction;
         this.currentZoom = direction;
       } else {
         // Initial zoom
-        var scale = smartZoom.call(this);
-
-        this.deviceGroup.scale(scale);
+        scale = smartZoom.call(this);
         this.currentZoom = this.currentZoom * scale || scale;
       }
+
+      // if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
+      //   this.setDeviceType('Inverter');
+      //   return;
+      // }
+
+      // if (this.currentZoom === 0.5 && this.currentDeviceType !== 'String') {
+      //   this.setDeviceType('String');
+      //   return;
+      // }
+
+      // if (this.currentZoom === 1 && this.currentDeviceType !== 'Panel') {
+      //   this.setDeviceType('Panel');
+      //   return;
+      // }
+
+      this.deviceGroup.scale(scale);
+
+
 
       if (filter !== false) { this.filterOnBounds(); }
 
