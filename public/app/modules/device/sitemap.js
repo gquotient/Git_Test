@@ -283,14 +283,11 @@ function(
         // If currently dragging with the mouse, move the canvas around
         if (this.dragging) {
           // Move group to new position
-          _.throttle(
-            this.position(
-              offsetX - this.dragging.x,
-              offsetY - this.dragging.y,
-              true,
-              false
-            ),
-            60
+          this.position(
+            offsetX - this.dragging.x,
+            offsetY - this.dragging.y,
+            true,
+            false
           );
 
           // Update drag origin
@@ -301,14 +298,19 @@ function(
           var hitTest = this.paper.project.hitTest(offsetX, offsetY);
 
           if (hitTest) {
-            this.hilight(this.findChild(hitTest.item));
+            var child = this.findChild(hitTest.item);
+
+            if (this.currentHilight !== child) {
+              this.hilight(child);
+            }
+
             this.$el.css('cursor', 'pointer');
           } else if (this.currentHilight) {
             this.hilight(null);
             this.$el.css('cursor', 'auto');
           }
         }
-      }, 30),
+      }, 60),
       // Handle controls
       'click .center': function(){
         this.position();
