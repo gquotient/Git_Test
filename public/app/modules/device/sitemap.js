@@ -597,21 +597,19 @@ function(
       };
 
       if (direction === '+') {
+        // Zoom in
         this.deviceGroup.scale(2);
         this.currentZoom *= 2;
       } else if (direction === '-') {
+        // Zoom out
         this.deviceGroup.scale(0.5);
         this.currentZoom *= 0.5;
       } else if (typeof direction === 'number') {
-        // Scale to specific value
-
-        // Reset zooming
-        this.deviceGroup.scale(1 / this.currentZoom);
-
         // Zoom to supplied level
         this.deviceGroup.scale(direction);
         this.currentZoom = direction;
       } else {
+        // Initial zoom
         var scale = smartZoom.call(this);
 
         this.deviceGroup.scale(scale);
