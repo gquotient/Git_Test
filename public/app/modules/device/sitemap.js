@@ -410,7 +410,6 @@ function(
       };
       this.deviceGroup.position.x = 0;
       this.deviceGroup.position.y = 0;
-      this.currentZoom = 1;
 
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
@@ -473,7 +472,7 @@ function(
 
       this.draw();
     },
-    currentDeviceType: 'Panel',
+    currentDeviceType: 'Inverter',
     setDeviceType: function(deviceType){
       // Update select ui
       this.ui.deviceTypeSelect.val(deviceType);
@@ -576,8 +575,27 @@ function(
 
       if (draw !== false) { this.draw(); }
     },
-    currentZoom: 1,
+    currentZoom: null,
     zoom: function(direction, draw, filter) {
+      var smartZoom = function(){
+        var deviceGroupBounds = this.deviceGroup.bounds,
+          viewBounds = this.paper.view.bounds,
+          widthRatio = deviceGroupBounds.width / viewBounds.width,
+          heightRatio = deviceGroupBounds.height / viewBounds.height,
+          zoom = 1;
+
+        // If devices extend beyond the view port scale them down
+        if (widthRatio > 1 || heightRatio > 1) {
+          zoom = 1 / Math.max(Math.ceil(widthRatio/2) * 2, Math.ceil(heightRatio/2) * 2);
+        } else if (widthRatio < 1 && heightRatio < 1) {
+          // else, if device bounds are within the view, see if they can be scaled without
+          // extending beyond the view
+          zoom = 1 / Math.max(Math.ceil(widthRatio * 2) / 2, Math.ceil(heightRatio * 2) / 2);
+        }
+
+        return zoom;
+      };
+
       if (direction === '+') {
         this.deviceGroup.scale(2);
         this.currentZoom *= 2;
@@ -585,11 +603,19 @@ function(
         this.deviceGroup.scale(0.5);
         this.currentZoom *= 0.5;
       } else if (typeof direction === 'number') {
+        // Scale to specific value
+
+        // Reset zooming
+        this.deviceGroup.scale(1 / this.currentZoom);
+
+        // Zoom to supplied level
         this.deviceGroup.scale(direction);
         this.currentZoom = direction;
       } else {
-        this.deviceGroup.scale(1 / this.currentZoom);
-        this.currentZoom = 1;
+        var scale = smartZoom.call(this);
+
+        this.deviceGroup.scale(scale);
+        this.currentZoom = this.currentZoom * scale || scale;
       }
 
       if (filter !== false) { this.filterOnBounds(); }
