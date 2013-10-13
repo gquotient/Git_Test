@@ -615,6 +615,7 @@ function(
             that.setIndex(0);
           } else {
             // handle error
+            console.warn('Heatmap data failed:', data.response[0].errmsg, data);
           }
         });
       } else {
