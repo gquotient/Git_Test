@@ -198,7 +198,7 @@ module.exports = function(app){
           method: req.method,
           uri: host + path,
 
-          headers: _.extend({}, req.headers, {
+          headers: _.extend({}, options.headers, {
             currentUser: req.user.email,
             access_token: req.user.access_token,
             clientSecret: app.get('clientSecret')
