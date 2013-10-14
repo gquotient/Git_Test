@@ -34,9 +34,6 @@ module.exports = function(app){
   );
 
   app.post('/api/overlay/:type?/:deviceType?',
-    function(req, res, next){
-      next();
-    },
     function(req, res){
       request({
         method: 'POST',
