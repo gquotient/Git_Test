@@ -474,13 +474,11 @@ function(
         view.model.incoming.first().outgoing.each(function(model){
           var child = this.children.findByModel(model);
           // Don't bother with shapes that aren't visible
-          if (child && child.shape.visible) {
-            if (child && child !== view) {
-              child.shape.set({
-                strokeColor: '#F26322',
-                strokeWidth: 1
-              });
-            }
+          if (child && child.shape.visible && child !== view) {
+            child.shape.set({
+              strokeColor: '#F26322',
+              strokeWidth: 1
+            });
           }
         }, this);
 
