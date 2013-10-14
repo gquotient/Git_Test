@@ -736,7 +736,7 @@ function(
           var color;
 
           // if graph key exists in data slice, paint it
-          if (deviceDataValue) {
+          if (typeof deviceDataValue === 'number') {
             color = colorSelector(this.currentOverlay.type, deviceDataValue);
           } else {
             // else, set it to the default color
