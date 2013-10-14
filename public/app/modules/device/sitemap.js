@@ -647,10 +647,11 @@ function(
       var that = this;
 
       if (type && type !== 'none') {
+        that.currentOverlay.type = type;
+
         // Refresh data
         this.fetchOverlayData().done(function(data){
           if (data.response && data.response[0].length && !data.response[0].errmsg) {
-            that.currentOverlay.type = type;
             // Set new data set
             that.currentOverlay.data = data.response[0];
             // Cache the length
@@ -756,7 +757,6 @@ function(
       }
     },
     paintDevices: function(){
-      console.log(this.currentOverlay);
       var dataSlice = this.currentOverlay.data[this.currentIndex];
 
       this.children.each(function(child){
