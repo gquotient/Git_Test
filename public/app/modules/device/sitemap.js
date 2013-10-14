@@ -337,28 +337,21 @@ function(
         this.setOverlayType(event.currentTarget.value);
       },
       // I don't know why but, it wouldn't hear the events when I used just the class...
-      'click li.play': function(){
+      'click .play': function(){
         this.play();
       },
-      'click li.pause': function(){
+      'click .pause': function(){
         this.pause();
       },
-      'click li.rewind': function(){
+      'click .rewind': function(){
         this.setIndex(0, true);
       },
-      'click li.stepForward': function(){
+      'click .stepForward': function(){
         this.setIndex('+', true);
       },
-      'click li.stepBackward': function(){
+      'click .stepBackward': function(){
         this.setIndex('-', true);
       }
-    },
-    triggers: {
-      'click .play': 'play',
-      'click .pause': 'pause',
-      'click .rewind': 'rewind',
-      'click .stepBackward': 'stepBackward',
-      'click .stepForward': 'stepForward'
     },
     collectionEvents: {
       'filter': function(){
