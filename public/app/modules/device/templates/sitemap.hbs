@@ -4,20 +4,44 @@
 
 {{#if deviceTypes}}
 <div class="controls deviceType">
-  Device Type: <select>
-  {{#each deviceTypes}}<option value="{{ this }}">{{ this }}</option>{{/each}}
-</select>
+  <select disabled>
+    {{! Need to figure out how to translate the result of the 'this' keyword}}
+    {{#each deviceTypes}}<option value="{{ this }}">{{ this }}</option>{{/each}}
+  </select>
 </div>
 {{/if}}
 
+<div class="controls overlayType">
+  <select>
+    <option value="none">- {{$ 'Select Overlay' }} -</option>
+    <option value="N">{{$ 'Power Relative to Array Average' }}</option>
+  </select>
+</div>
+
 <div class="controls position">
   <ul>
-    <li class="zoomIn">+</li>
-    <li class="zoomOut">-</li>
-    <li class="rotateL">&#8634;</li>
-    <li class="rotateR">&#8635;</li>
-    <li class="reset">Reset</li>
+    <li class="zoomIn">&#xF067;</li>
+    <li class="zoomOut">&#xF068;</li>
+    <li class="rotateL">&#xF0E2;</li>
+    <li class="rotateR">&#xF01E;</li>
+    <li class="reset">{{$ 'Reset' }}</li>
   </ul>
 </div>
+
+<div class="controls time">
+  <ul>
+    <li class="play">&#xF04B;</li>
+    <li class="pause">&#xF04C;</li>
+    <li class="rewind">&#xF049;</li>
+    <li class="stepBackward">&#xF048;</li>
+    <li class="stepForward">&#xF051;</li>
+    <li class="timeSlider">
+      <div class="indicatorContainer"><span class="indicator"></span>
+    </li>
+    <li class="timeDisplay"><span class="time"></span></li>
+  </ul>
+</div>
+
+<div class="legendContainer"></div>
 
 <span class="loadingIndicator"></span>

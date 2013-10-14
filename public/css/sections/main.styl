@@ -1008,7 +1008,7 @@ ul.handsontableDropdown {
   .loadingIndicator {
     display: none;
     position: absolute;
-    top: 0;
+    top: 24px;
     right: 0;
     margin: 12px;
     border-color: #555;
@@ -1019,6 +1019,7 @@ ul.handsontableDropdown {
     }
   }
   .deviceInfoContainer {
+    display: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -1049,46 +1050,114 @@ ul.handsontableDropdown {
         clear: both;
         border: none;
       }
-      .content {
-
-      }
     }
   }
   .controls {
     position: absolute;
+    height: 24px;
+    line-height: 24px;
     margin: 6px;
     color: #111;
+    opacity: 0.75;
+    transition: 0.2s ease-in-out;
+    &:hover {
+      opacity: 1;
+    }
     &.position {
       bottom: 0;
       left: 0;
+      font-family: FontAwesome;
+    }
+    &.time {
+      bottom: 0;
+      right: 0;
+      font-family: FontAwesome;
+      display: none;
     }
     &.deviceType {
       top: 0;
       left: 0;
     }
+    &.overlayType {
+      top: 0;
+      right: 0;
+    }
     ul {
+      height: 100%;
       padding: 0;
-      margin: 0 6px 0 0;
+      margin: 0;
       list-style-type: none;
       li {
+        height: 100%;
         float: left;
-        padding: 3px 9px;
+        padding: 0 9px;
         margin: 0 6px 0 0;
-        border: borderBasicMedium;
-        border-radius: 3px;
-        background: colorBGDarkGrey;
+        border: 1px solid #777;
+        border-radius: borderRadiusDefault;
+        background: #eee;
         background-image: linear-gradient(#eee, #ccc);
         cursor: pointer;
         font-size: 12px;
         font-weight: bold;
         text-shadow: 0 1px 0 #fff;
-        &.rotateL, &.zoomIn {
+        &:last-child {
           margin-right: 0;
-          border-radius: 3px 0 0 3px;
+        }
+        &.rotateL, &.zoomIn, &.play, &.pause {
+          margin-right: 0;
+          border-radius: borderRadiusDefault 0 0 borderRadiusDefault;
           border-right: none
         }
-        &.rotateR, &.zoomOut {
-          border-radius: 0 3px 3px 0;
+        &.rotateR, &.zoomOut, &.timeDisplay {
+          border-radius: 0 borderRadiusDefault borderRadiusDefault 0;
+        }
+        &.pause {
+          display: none;
+        }
+        &.rewind, &.stepBackward, &.stepForward {
+          margin-right: 0;
+          border-radius: 0;
+          border-right: none
+        }
+        &.timeSlider {
+          width: 100px;
+          margin-right: 0;
+          border-radius: 0;
+          border-right: none;
+          .indicatorContainer {
+            background: #111;
+            height: 12px;
+            line-height: 12px;
+            margin: 6px 0 0;
+            border-radius: 5px;
+            border-bottom: 1px solid #fff;
+            .indicator {
+              background: #eee;
+              background-image: linear-gradient(#eee, #ccc);
+              display: inline-block;
+              height: 10px;
+              width: 10px;
+              margin: 1px;
+              border-top: 1px solid #fff;
+              border-bottom: 1px solid #444;
+              border-radius: 50%;
+            }
+          }
+        }
+        &.timeDisplay {
+          .time {
+            display: inline-block;
+            background: #111;
+            height: 14px;
+            line-height: 14px;
+            margin: 0;
+            padding: 0 6px;
+            color: #7fbfff;
+            text-shadow: none;
+            font-size: 10px;
+            font-family: Helvetica, sans-serif;
+            border-radius: 2px;
+          }
         }
       }
     }

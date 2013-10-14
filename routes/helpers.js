@@ -105,7 +105,7 @@ module.exports = function(app){
 
       equipment = _.reduce(equipment, function(memo, equip){
         return memo.concat(_.pluck(equip, 'doc'));
-      }, [])
+      }, []);
 
       return equipment;
     },
@@ -198,11 +198,11 @@ module.exports = function(app){
           method: req.method,
           uri: host + path,
 
-          headers: {
+          headers: _.extend({}, options.headers, {
             currentUser: req.user.email,
             access_token: req.user.access_token,
             clientSecret: app.get('clientSecret')
-          },
+          }),
 
           qs: _.clone(req.query)
         };

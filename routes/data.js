@@ -33,6 +33,21 @@ module.exports = function(app){
     }
   );
 
+  app.post('/api/overlay/:type?/:deviceType?',
+    function(req, res){
+      request({
+        method: 'POST',
+        uri: app.get('dataUrl') + '/cubes/heatmap/' + req.params.type + '/' + req.params.deviceType,
+        body: JSON.stringify(req.body),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept-encoding' : 'gzip,deflate'
+        }
+      })
+      .pipe(res);
+    }
+  );
+
   app.post('/api/snapshot',
     function(req, res){
       request({

@@ -112,5 +112,13 @@
   "Acknowledged": "Acknowledged",
   "There are currently no active alarms": "There are currently no active alarms",
 
-  "No documents": "No documents"
+  "No documents": "No documents",
+
+  "Device Type": "Device Type",
+  "Select Overlay": "Select Overlay",
+  "Power Relative to Array Average": "Power Relative to Array Average",
+
+  "Inverter": "Inverter",
+  "String": "String",
+  "Panel": "Panel"
 }
