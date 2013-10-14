@@ -422,25 +422,7 @@ function(
       var maxBounds = this.paper.view.bounds;
 
       this.children.each(function(child){
-        var bounds = child.shape.bounds,
-          isVisible = true;
-
-        // This is ugly but it's actually quite a bit faster because it
-        // allows exiting without running through all the logic every time
-
-        if ((bounds.y - bounds.height) > maxBounds.height) { // Shape Top > View Bottom
-          isVisible = false;
-        } else if ((bounds.y + bounds.height) < 0) { // Shape Bottom < View Top
-          isVisible = false;
-        } else if ((bounds.x - bounds.width) > maxBounds.width) { // Shape Left > View Right
-          isVisible = false;
-        } else if ((bounds.x + bounds.width) < 0) { // Shape Right < View Left
-          isVisible = false;
-        } else {
-          isVisible = true;
-        }
-
-        child.shape.visible = isVisible;
+        child.shape.visible =  child.shape.bounds.intersects(maxBounds);
       }, this);
 
       this.draw();
