@@ -42,31 +42,56 @@ function(
   var views = {};
 
   var defaultFillColor = '#111',
+    fillColors = {
+      N: [
+        {
+          value: 95,
+          label: '95%',
+          color: '#034E7B'
+        },
+        {
+          value: 90,
+          label: '90%',
+          color: '#0570B0'
+        },
+        {
+          value: 85,
+          label: '85%',
+          color: '#3690C0'
+        },
+        {
+          value: 80,
+          label: '80%',
+          color: '#74A9CF'
+        },
+        {
+          value: 75,
+          label: '75%',
+          color: '#A6BDDB'
+        },
+        {
+          value: 50,
+          label: '50%',
+          color: '#eeec2d'
+        },
+        {
+          value: 0,
+          label: '0%',
+          color: '#f12727'
+        }
+      ]
+    },
     colorSelector = function(type, value) {
-      if (type === 'N') {
-        if (value >= 95) {
-          return '#034E7B';
+      var result;
+
+      _.find(fillColors[type], function(color){
+        if (value >= color.value) {
+          result = color.color;
+          return true;
         }
-        if (value >= 90) {
-          return '#0570B0';
-        }
-        if (value >= 85) {
-          return '#3690C0';
-        }
-        if (value >= 80) {
-          return '#74A9CF';
-        }
-        if (value >= 75) {
-          return '#A6BDDB';
-        }
-        if (value >= 50) {
-          return '#eeec2d';
-        }
-        if (value >= 0) {
-          return '#f12727';
-        }
-        return '#111';
-      }
+      });
+
+      return result || defaultFillColor;
     };
 
   views.PhysicalDevice = Marionette.ItemView.extend({
