@@ -618,18 +618,15 @@ function(
       }
 
       if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
-        this.setDeviceType('Inverter');
-        return;
+        return this.setDeviceType('Inverter');
       }
 
       if (this.currentZoom === 0.5 && this.currentDeviceType !== 'String') {
-        this.setDeviceType('String');
-        return;
+        return this.setDeviceType('String');
       }
 
       if (this.currentZoom === 1 && this.currentDeviceType !== 'Panel') {
-        this.setDeviceType('Panel');
-        return;
+        return this.setDeviceType('Panel');
       }
 
       this.deviceGroup.scale(scale);
