@@ -74,7 +74,7 @@ define([
       });
 
       this.listenTo(this.dropdown, 'itemview:select', function(view){
-        this.setCategory(view.model);
+        this.triggerMethod('change:category', category);
       });
     },
 
@@ -89,7 +89,9 @@ define([
         });
       }
 
-      this.setCategory(category || this.categories.first());
+      category = category || this.categories.first();
+
+      this.triggerMethod('change:category', category);
     },
 
     onRender: function(){
@@ -101,19 +103,21 @@ define([
       this.dropdown.$el.toggle();
     },
 
-    setCategory: function(model){
+    onChangeCategory: function(model){
       var labels = model.get('base_labels');
 
       this.dropdown.$el.hide();
       this.ui.title.html(model.get('name'));
 
+      this.triggerMethod('filter', {labels: model.get('base_labels')});
+    },
+
+    onFilter: function(args){
       this.collection.updateFilter(function(equip){
         var base = equip.getBase();
 
-        return equip !== base && _.contains(labels, base.get('label'));
+        return equip !== base && _.contains(args.labels, base.get('label'));
       });
-
-      this.trigger('set:category', labels);
     }
   });
 
@@ -155,7 +159,8 @@ define([
       },
       inherits: {
         source: function(){
-          var labels = this.options.baseLabels;
+          var filters = this.options.equipFilters || {},
+            labels = filters.labels;
 
           return new Backbone.VirtualCollection(this.collection, {
             filter: function(equip){
