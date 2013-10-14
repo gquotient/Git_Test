@@ -83,8 +83,40 @@ define([
     constructor: function(){
       Marionette.CompositeView.prototype.constructor.apply(this, arguments);
 
+      if (this.categories) {
+
+        // Make categories into a backbone collection if array.
+        if (_.isArray(this.categories)) {
+          this.categories = new Backbone.Collection(this.categories);
+        }
+
+        this.createDropdown(this.categories);
+      }
+
       this.listenTo(this, 'itemview:detail', function(view){
         this.trigger('select', view.model);
+      });
+    },
+
+    createDropdown: function(categories){
+      var dropdown = new views.Dropdown({collection: categories});
+
+      this.on('render', function(){
+        this.$el.append(dropdown.render().el);
+        this.ui.title.addClass('drop');
+      });
+
+      this.on('click:title', function(){
+        dropdown.$el.toggle();
+      });
+
+      this.listenTo(dropdown, 'itemview:select', function(view){
+        dropdown.$el.hide();
+        this.triggerMethod('change:category', view.model);
+      });
+
+      this.on('change:category', function(model){
+        this.ui.title.html(model.get('name'));
       });
     },
 

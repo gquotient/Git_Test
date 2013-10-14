@@ -23,9 +23,19 @@ define([
   adminListItemTemplate,
   adminDetailTemplate
 ){
-  var views = {},
+  var views = {};
 
-    categories = [
+  views.AdminListItem = Navigation.views.AdminListItem.extend({
+    template: {
+      type: 'handlebars',
+      template: adminListItemTemplate
+    }
+  });
+
+  views.AdminList = Navigation.views.AdminList.extend({
+    itemView: views.AdminListItem,
+
+    categories: [
       {
         name: 'Inverters',
         base_labels: ['INV']
@@ -50,31 +60,11 @@ define([
         name: 'AC Equipment',
         base_labels: ['ACB', 'XFR', 'IC', 'LD']
       }
-    ];
-
-  views.AdminListItem = Navigation.views.AdminListItem.extend({
-    template: {
-      type: 'handlebars',
-      template: adminListItemTemplate
-    }
-  });
-
-  views.AdminList = Navigation.views.AdminList.extend({
-    itemView: views.AdminListItem,
+    ],
 
     initialize: function(options){
       this.collection = new Form.util.Collection(options.collection, {
         close_with: this
-      });
-
-      this.categories = new Backbone.Collection(categories);
-
-      this.dropdown = new Navigation.views.Dropdown({
-        collection: this.categories
-      });
-
-      this.listenTo(this.dropdown, 'itemview:select', function(view){
-        this.triggerMethod('change:category', category);
       });
     },
 
@@ -94,21 +84,7 @@ define([
       this.triggerMethod('change:category', category);
     },
 
-    onRender: function(){
-      this.$el.append(this.dropdown.render().el);
-      this.ui.title.addClass('drop');
-    },
-
-    onClickTitle: function(){
-      this.dropdown.$el.toggle();
-    },
-
     onChangeCategory: function(model){
-      var labels = model.get('base_labels');
-
-      this.dropdown.$el.hide();
-      this.ui.title.html(model.get('name'));
-
       this.triggerMethod('filter', {labels: model.get('base_labels')});
     },
 
