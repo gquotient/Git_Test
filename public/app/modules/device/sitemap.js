@@ -323,7 +323,8 @@ function(
       playButton: '.play',
       pauseButton: '.pause',
       timeDisplay: '.timeDisplay .time',
-      timeSlider: '.timeSlider .indicator'
+      timeSlider: '.timeSlider .indicator',
+      message: '.messageContainer'
     },
     events: {
       'click': function(event){
@@ -454,6 +455,21 @@ function(
 
       this.listenTo(Backbone, 'window:resize', this.resize);
     },
+    showMessage: function(message, level){
+      var $message = $('<div class="message">' + message + '</div>');
+
+      // If level supplied, add it as class
+      if (level) {
+        $message.addClass(level);
+      }
+
+      // Fade in, wait 3 seconds, fade out, then remove the element
+      this.ui.message.append($message).hide().fadeIn().delay(3000).fadeOut({
+        done: function(){
+          $message.remove();
+        }
+      });
+    },
     deviceInfoView: views.DeviceInfo,
     buildDeviceInfo: function(device){
       var deviceInfo = new this.deviceInfoView({
@@ -516,6 +532,8 @@ function(
       this.currentDeviceType = deviceType;
       // Update collection
       this.collection.updateFilter({devtype: deviceType});
+      // Message user about what device level they are viewing
+      this.showMessage(deviceType);
 
       // If there is a currently active overlay, update with new device type
       if (this.currentOverlay.type) {
@@ -712,6 +730,7 @@ function(
             // Reset time to first available
             that.setIndex(0);
           } else {
+            that.showMessage('Heatmap data failed to load', 'error');
             // handle error
             console.warn('Heatmap data failed:', data.response[0].errmsg, data);
           }
