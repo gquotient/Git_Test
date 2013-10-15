@@ -610,8 +610,6 @@ function(
 
       this.resetPosition({
         rotate: currentRotation,
-        x: null,
-        y: null,
         zoom: currentZoom
       });
     },
