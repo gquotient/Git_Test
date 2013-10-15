@@ -332,7 +332,7 @@ function(
         var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
         if (hitTest) {
-          //console.log(this.findChild(hitTest.item));
+          //this.buildDeviceInfo(this.findChild(hitTest.item).model);
         }
       },
       'mousedown canvas': function(event){
@@ -411,16 +411,26 @@ function(
         this.position();
       },
       'click .rotateL': function(){
-        this.rotate(-15);
+        this.rotate({
+          degrees: -15
+        });
       },
       'click .rotateR': function(){
-        this.rotate(15);
+        this.rotate({
+          degrees: 15
+        });
       },
       'click .zoomIn': function(){
-        this.zoom('+');
+        this.zoom({
+          direction: '+',
+          draw: true
+        });
       },
       'click .zoomOut': function(){
-        this.zoom('-');
+        this.zoom({
+          direction: '-',
+          draw: true
+        });
       },
       'click .reset': function(){
         this.resetPosition();
@@ -502,7 +512,6 @@ function(
     },
     // This fires after children render
     onCompositeCollectionRendered: function(){
-      console.log('collection rendered', new Date().getTime());
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
       if (this.children.length && !this.isClosed) {
@@ -511,7 +520,6 @@ function(
         // Hide loading indicator
         this.$el.removeClass('loading');
       }
-      console.log('positioned', new Date().getTime());
     },
     onAfterItemAdded: function(itemView){
       // Add items to group for manipulation
@@ -532,8 +540,6 @@ function(
     },
     visible: [],
     filterOnBounds: function(){
-      console.log('filterOnBounds');
-      var startTest = new Date().getTime();
       var maxBounds = this.paper.view.bounds;
 
       this.visible = [];
@@ -547,13 +553,10 @@ function(
         }
       }, this);
 
-      console.log('Visible filtered', new Date().getTime() - startTest, this.visible.length);
-
       this.draw();
     },
     currentDeviceType: 'Inverter',
     setDeviceType: function(deviceType){
-      console.log('set device time', new Date().getTime());
       // Update select ui
       this.ui.deviceTypeSelect.val(deviceType);
       // Update current
@@ -632,8 +635,16 @@ function(
         draw: false,
         filter: false
       });
-      this.rotate(options.rotate, false, false);
-      this.zoom(options.zoom, false, false);
+      this.rotate({
+        degrees: options.rotate,
+        draw: false,
+        filter: false
+      });
+      this.zoom({
+        direction: options.zoom,
+        draw: false,
+        filter: false
+      });
 
       this.filterOnBounds();
       this.draw();
@@ -671,18 +682,18 @@ function(
       if (options.draw !== false) { this.draw(); }
     },
     currentRotation: 0,
-    rotate: function(degrees, draw, filter){
-      degrees = degrees || (+this.model.get('pref_rotation') - this.currentRotation);
+    rotate: function(options){// degrees, draw, filter
+      var degrees = options.degrees || (+this.model.get('pref_rotation') - this.currentRotation);
 
       this.deviceGroup.rotate(degrees, this.deviceGroup.center);
       this.currentRotation += degrees;
 
-      if (filter !== false) { this.filterOnBounds(); }
+      if (options.filter !== false) { this.filterOnBounds(); }
 
-      if (draw !== false) { this.draw(); }
+      if (options.draw !== false) { this.draw(); }
     },
     currentZoom: null,
-    zoom: function(direction, draw, filter) {
+    zoom: function(options) {// direction, draw, filter
       var smartZoom = function(){
         var deviceGroupBounds = this.deviceGroup.bounds,
           viewBounds = this.paper.view.bounds,
@@ -703,23 +714,25 @@ function(
       };
       var scale;
 
-      if (direction === '+') {
+      if (options.direction === '+') {
         // Zoom in
         scale = 2;
         this.currentZoom *= 2;
-      } else if (direction === '-') {
+      } else if (options.direction === '-') {
         // Zoom out
         scale = 0.5;
         this.currentZoom *= 0.5;
-      } else if (typeof direction === 'number') {
+      } else if (typeof options.direction === 'number') {
         // Zoom to supplied level
-        scale = direction;
-        this.currentZoom = direction;
+        scale = options.direction;
+        this.currentZoom = options.direction;
       } else {
         // Initial zoom
         scale = smartZoom.call(this);
         this.currentZoom = this.currentZoom * scale || scale;
       }
+
+      this.deviceGroup.scale(scale);
 
       if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
         return this.setDeviceType('Inverter');
@@ -733,11 +746,9 @@ function(
         return this.setDeviceType('Panel');
       }
 
-      this.deviceGroup.scale(scale);
+      if (options.filter !== false) { this.filterOnBounds(); }
 
-      if (filter !== false) { this.filterOnBounds(); }
-
-      if (draw !== false) { this.draw(); }
+      if (options.draw !== false) { this.draw(); }
     },
     currentOverlay: {
       type: null,
@@ -763,10 +774,11 @@ function(
             that.setIndex(0);
             // Create legend
             that.buildLegend();
-          } else {
+          } else if (data.response[0].errmsg) {
             that.showMessage('Heatmap data failed to load', 'error');
-            // handle error
             console.warn('Heatmap data failed:', data.response[0].errmsg, data);
+          } else if (!data.response[0].length) {
+            that.showMessage('No heatmap data for selected timeframe', 'warning');
           }
         });
       } else {
@@ -914,9 +926,7 @@ function(
       this.ui.timeSlider.css('margin-left', availableWidth * percentComplete);
     },
     draw: _.throttle(function(){
-      var testStart = new Date().getTime();
       this.paper.view.draw();
-      console.log('Time to draw:', new Date().getTime() - testStart);
     }, 60, true),
     onShow: function(){
       // Update size of container when it's in the dom
