@@ -353,7 +353,21 @@ function(
         }
       },
       'mouseup canvas': function(event){
+        var that = this;
+
         if (this.dragging) {
+          // Clear dragging and update resting position and update filtered set
+          var offsetX = event.offsetX || (event.clientX - $(event.target).offset().left);
+          var offsetY = event.offsetY || (event.clientY - $(event.target).offset().top);
+
+          // Move group to new position
+          this.position({
+            x: offsetX - this.dragging.x,
+            y: offsetY - this.dragging.y,
+            draw: false,
+            filter: true
+          });
+
           // Clear dragging object
           this.dragging = false;
         }
