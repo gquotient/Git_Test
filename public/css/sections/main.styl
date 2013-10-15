@@ -1064,6 +1064,33 @@ ul.handsontableDropdown {
       margin: 0 0 6px;
     }
   }
+  .legendContainer {
+    position: absolute;
+    bottom: 36px;
+    right: 0;
+    margin: 6px;
+    opacity: 0.5;
+    transition: 0.2s ease-in-out;
+    &:hover {
+      opacity: 1;
+    }
+    ul {
+      background: #111;
+      padding: 3px;
+      margin: 0;
+      list-style-type: none;
+      li {
+        padding: 0 0 0 3px;
+        margin: 0 0 3px;
+        border-left: 12px solid #555;
+        font-size: 12px;
+        line-height: 12px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
   .controls {
     position: absolute;
     height: 24px;
@@ -1121,13 +1148,13 @@ ul.handsontableDropdown {
           border-radius: borderRadiusDefault 0 0 borderRadiusDefault;
           border-right: none
         }
-        &.rotateR, &.zoomOut, &.timeDisplay {
+        &.rotateR, &.zoomOut, &.toggleLegend {
           border-radius: 0 borderRadiusDefault borderRadiusDefault 0;
         }
         &.pause {
           display: none;
         }
-        &.rewind, &.stepBackward, &.stepForward {
+        &.rewind, &.stepBackward, &.stepForward, &.timeDisplay {
           margin-right: 0;
           border-radius: 0;
           border-right: none

@@ -3,12 +3,12 @@
   TODO
 
   [x] See what zoom level will fill the screen and set it to that
-  [ ] Other overlay types
+  [x] Other overlay types
   [ ] Overlay play indicator dragging/clicking
-  [ ] Overlay date display formatting
+  [x] Overlay date display formatting
   [ ] Overlay interval fetching
   [ ] Real panel sizes / orientation
-  [ ] Error handling
+  [x] Error handling
   [x] Perf - Filter device shapes that are out of view from painting
   [x] Perf - Skip unattached panels
   [ ] Compass
@@ -22,7 +22,9 @@ define([
   'backbone.marionette',
   'backbone.marionette.handlebars',
   'backbone.virtualCollection',
+
   'paper',
+  'walltime',
 
   'hbs!device/templates/sitemap',
   'hbs!device/templates/deviceInfo'
@@ -34,7 +36,9 @@ function(
   Marionette,
   MarionetteHandlebars,
   VirtualCollection,
+
   paper,
+  WallTime,
 
   sitemapTemplate,
   deviceInfoTemplate
@@ -47,22 +51,22 @@ function(
         {
           value: 80,
           label: '> 80%',
-          color: '#f12727'
+          color: '#034E7B'
         },
         {
           value: 60,
           label: '60% - 79%',
-          color:  '#034E7B'
+          color: '#0570B0'
         },
         {
           value: 40,
           label: '40% - 59%',
-          color: '#0570B0'
+          color: '#3690C0'
         },
         {
           value: 20,
           label: '20% - 39%',
-          color: '#3690C0'
+          color: '#74A9CF'
         },
         {
           value: 0,
@@ -70,7 +74,7 @@ function(
           color: '#A6BDDB'
         }
       ],
-      M: [
+      R: [
         {
           value: 40,
           label: '> 40',
@@ -201,9 +205,6 @@ function(
     render: function(){
       this.isClosed = false;
 
-      this.triggerMethod('before:render', this);
-      this.triggerMethod('item:before:render', this);
-
       // Draw the shape instead of rendering html
       if (this.model.get('devtype') === 'Panel') {
         this.drawPanel();
@@ -211,24 +212,23 @@ function(
         this.drawShape();
       }
 
-      // Apply shape style
-      this.shape.set({
-        fillColor: defaultFillColor,
-        strokeColor: '#ccc',
-        strokeWidth: 0
-      });
-
-      this.shapeId = this.shape._id;
-
+      // Handle
       if (this.model.get('devtype') === 'Panel' && this.model.get('attached') === 'null') {
         this.shape.set({
-          fillColor: '#555',
+          fillColor: '#999',
           strokeColor: '#ccc',
+          strokeWidth: 0
+        });
+      } else {
+        // Apply shape style
+        this.shape.set({
+          fillColor: defaultFillColor,
+          strokeColor: '#ccc',
+          strokeWidth: 0
         });
       }
 
-      this.triggerMethod('render', this);
-      this.triggerMethod('item:rendered', this);
+      this.shapeId = this.shape._id;
 
       return this;
     },
@@ -331,7 +331,7 @@ function(
         var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
         if (hitTest) {
-          console.log(this.findChild(hitTest.item));
+          //console.log(this.findChild(hitTest.item));
         }
       },
       'mousedown canvas': function(event){
@@ -341,6 +341,12 @@ function(
             x: event.offsetX,
             y: event.offsetY
           };
+        }
+      },
+      'mouseout canvas': function(){
+        // Force unhilight if mouse leaves canvas
+        if (this.currentHilight) {
+          this.hilight();
         }
       },
       'mouseup canvas': function(){
@@ -433,6 +439,9 @@ function(
       },
       'click .stepBackward': function(){
         this.setIndex('-', true);
+      },
+      'click .toggleLegend': function(){
+        this.ui.legendContainer.toggle();
       }
     },
     collectionEvents: {
@@ -486,17 +495,16 @@ function(
     },
     // This fires after children render
     onCompositeCollectionRendered: function(){
+      console.log('collection rendered', new Date().getTime());
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
       if (this.children.length && !this.isClosed) {
         this.initialPosition();
 
-        // Fire initial bound filtering
-        this.filterOnBounds();
-
         // Hide loading indicator
         this.$el.removeClass('loading');
       }
+      console.log('positioned', new Date().getTime());
     },
     onAfterItemAdded: function(itemView){
       // Add items to group for manipulation
@@ -538,6 +546,7 @@ function(
     },
     currentDeviceType: 'Inverter',
     setDeviceType: function(deviceType){
+      console.log('set device time', new Date().getTime());
       // Update select ui
       this.ui.deviceTypeSelect.val(deviceType);
       // Update current
@@ -740,6 +749,8 @@ function(
             that.ui.timeControls.show();
             // Reset time to first available
             that.setIndex(0);
+            // Create legend
+            that.buildLegend();
           } else {
             that.showMessage('Heatmap data failed to load', 'error');
             // handle error
@@ -766,6 +777,9 @@ function(
 
         // Hide controls
         this.ui.timeControls.hide();
+
+        // Clear out legend
+        this.ui.legendContainer.empty();
       }
     },
     fetchOverlayData: function(){
@@ -780,6 +794,7 @@ function(
         data: {
           traces: [{
             project_label: this.model.get('project_label'),
+            project_timezone: this.model.get('timezone'),
             dtstart: 'today',
             dtstop: 'now',
             parent_identifier: this.model.get('graph_key')
@@ -788,6 +803,17 @@ function(
       }).always(function(){
         that.$el.removeClass('loading');
       });
+    },
+    buildLegend: function(){
+      this.ui.legendContainer.empty();
+
+      var $legend = $('<ul class="legend" />');
+
+      _.each(fillColors[this.currentOverlay.type], function(color){
+        $legend.append('<li style="border-color:' + color.color + '">' + color.label + '</li>');
+      });
+
+      this.ui.legendContainer.append($legend);
     },
     playing: false,
     currentIndex: 0,
@@ -838,11 +864,12 @@ function(
       }
     },
     paintDevices: function(){
-      var dataSlice = this.currentOverlay.data[this.currentIndex];
+      var dataSlice = this.currentOverlay.data[this.currentIndex],
+        localTime = new Date(this.currentOverlay.data[this.currentIndex][0] * 1000);
 
-      this.children.each(function(child){
+      _.each(this.visible, function(child){
         // Don't bother painting shapes out of bounds and isn't an unattached panel
-        if (child.shape.visible && child.model.get('attached') !== 'null') {
+        if (child.model.get('attached') !== 'null') {
           var deviceDataValue = dataSlice[1][child.model.get('graph_key')];
           var color;
 
@@ -863,7 +890,10 @@ function(
       this.draw();
 
       // Set time display
-      this.ui.timeDisplay.text(new Date(this.currentOverlay.data[this.currentIndex][0] * 1000));
+      this.ui.timeDisplay.text(
+        localTime.getFullYear() + '-' + ('0' + (localTime.getMonth() + 1)).slice(-2) + '-' + ('0' + localTime.getDate()).slice(-2) + ' ' +
+        ('0' + localTime.getHours()).slice(-2) + ':' + ('0' + localTime.getMinutes()).slice(-2)
+      );
 
       // Set time slider position
       var availableWidth = this.ui.timeSlider.parent().width() - this.ui.timeSlider.width();
@@ -872,7 +902,9 @@ function(
       this.ui.timeSlider.css('margin-left', availableWidth * percentComplete);
     },
     draw: _.throttle(function(){
+      var testStart = new Date().getTime();
       this.paper.view.draw();
+      console.log('Time to draw:', new Date().getTime() - testStart);
     }, 60, true),
     onShow: function(){
       // Update size of container when it's in the dom
