@@ -350,18 +350,24 @@ function(
           this.hilight();
         }
       },
-      'mouseup canvas': function(){
-        // Clear dragging object
-        this.dragging = false;
-
-        // Update visible devices
+      'mouseup canvas': function(event){
         var that = this;
-        var filterOnBounds = function(){
-          that.filterOnBounds();
-        };
 
-        // Force it to the end of the call stack
-        setTimeout(filterOnBounds, 0);
+        if (this.dragging) {
+          var offsetX = event.offsetX || (event.clientX - $(event.target).offset().left);
+          var offsetY = event.offsetY || (event.clientY - $(event.target).offset().top);
+
+          // Move group to new position
+          this.position({
+            x: offsetX - this.dragging.x,
+            y: offsetY - this.dragging.y,
+            draw: false,
+            filter: true
+          });
+
+          // Clear dragging object
+          this.dragging = false;
+        }
       },
       'mousemove': _.throttle(function(event){
         // Polyfill because firefox doesn't get offsetX/offsetY
@@ -372,12 +378,12 @@ function(
         // If currently dragging with the mouse, move the canvas around
         if (this.dragging) {
           // Move group to new position
-          this.position(
-            offsetX - this.dragging.x,
-            offsetY - this.dragging.y,
-            true,
-            false
-          );
+          this.position({
+            x: offsetX - this.dragging.x,
+            y: offsetY - this.dragging.y,
+            draw: true,
+            filter: false
+          });
 
           // Update drag origin
           this.dragging.x = offsetX;
@@ -612,15 +618,20 @@ function(
 
       this.resetPosition({
         rotate: currentRotation,
-        x: currentPosition.x,
-        y: currentPosition.y,
+        x: null,
+        y: null,
         zoom: currentZoom
       });
     },
     resetPosition: function(options){
       options = options || {};
 
-      this.position(options.x, options.y, false, false);
+      this.position({
+        x: options.x,
+        y: options.y,
+        draw: false,
+        filter: false
+      });
       this.rotate(options.rotate, false, false);
       this.zoom(options.zoom, false, false);
 
@@ -636,12 +647,12 @@ function(
       x: 0,
       y: 0
     },
-    position: function(x, y, draw, filter){
+    position: function(options){
       // If options are passed, position based on those
-      if (x || y) {
+      if (typeof options.x === 'number' || typeof options.y === 'number') {
         var currentPosition = this.deviceGroup.position,
-          newX = currentPosition._x + (x || 0),
-          newY = currentPosition._y + (y || 0);
+          newX = currentPosition._x + (options.x || 0),
+          newY = currentPosition._y + (options.y || 0);
 
         this.deviceGroup.position = new this.paper.Point(newX, newY);
         this.currentPosition.x = newX;
@@ -655,9 +666,9 @@ function(
         this.currentPosition.y = center._y;
       }
 
-      if (filter !== false) { this.filterOnBounds(); }
+      if (options.filter !== false) { this.filterOnBounds(); }
 
-      if (draw !== false) { this.draw(); }
+      if (options.draw !== false) { this.draw(); }
     },
     currentRotation: 0,
     rotate: function(degrees, draw, filter){
