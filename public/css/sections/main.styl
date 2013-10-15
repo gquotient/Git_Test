@@ -1005,6 +1005,9 @@ ul.handsontableDropdown {
 
 .sitemap {
   position: relative;
+  canvas {
+    background: #ccc;
+  }
   .loadingIndicator {
     display: none;
     position: absolute;
@@ -1019,15 +1022,13 @@ ul.handsontableDropdown {
     }
   }
   .deviceInfoContainer {
-    display: none;
     position: absolute;
     top: 0;
     left: 0;
-    width: 200px;
     height: 100%;
     .deviceInfo {
       height: 100%;
-      width: 100%;
+      width: 200px;
       background: rgba(1, 1, 1, .5);
       transition: .25s ease-in-out;
       margin-left: -100%;
@@ -1049,6 +1050,42 @@ ul.handsontableDropdown {
         background: #777;
         clear: both;
         border: none;
+      }
+    }
+  }
+  .messageContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 6px;
+    .message {
+      margin: 0 0 6px;
+    }
+  }
+  .legendContainer {
+    position: absolute;
+    bottom: 36px;
+    right: 0;
+    margin: 6px;
+    opacity: 0.5;
+    transition: 0.2s ease-in-out;
+    &:hover {
+      opacity: 1;
+    }
+    ul {
+      background: #111;
+      padding: 3px;
+      margin: 0;
+      list-style-type: none;
+      li {
+        padding: 0 0 0 3px;
+        margin: 0 0 3px;
+        border-left: 12px solid #555;
+        font-size: 12px;
+        line-height: 12px;
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
     }
   }
@@ -1075,6 +1112,7 @@ ul.handsontableDropdown {
       display: none;
     }
     &.deviceType {
+      display: none;
       top: 0;
       left: 0;
     }
@@ -1108,13 +1146,13 @@ ul.handsontableDropdown {
           border-radius: borderRadiusDefault 0 0 borderRadiusDefault;
           border-right: none
         }
-        &.rotateR, &.zoomOut, &.timeDisplay {
+        &.rotateR, &.zoomOut, &.toggleLegend {
           border-radius: 0 borderRadiusDefault borderRadiusDefault 0;
         }
         &.pause {
           display: none;
         }
-        &.rewind, &.stepBackward, &.stepForward {
+        &.rewind, &.stepBackward, &.stepForward, &.timeDisplay {
           margin-right: 0;
           border-radius: 0;
           border-right: none

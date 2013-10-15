@@ -117,6 +117,8 @@
   "Device Type": "Device Type",
   "Select Overlay": "Select Overlay",
   "Power Relative to Array Average": "Power Relative to Array Average",
+  "Power Relative to Panel Rating": "Power Relative to Panel Rating",
+  "Mesh Health (# of Reports)": "Mesh Health (# of Reports)",
 
   "Inverter": "Inverter",
   "String": "String",
