@@ -300,6 +300,30 @@ function(
   });
 
   views.Sitemap = Marionette.CompositeView.extend({
+    constructor: function(){
+      // Array for caching views on bound filtering
+      this.visible = [];
+      // Current hilighted view
+      this.currentHilight = null;
+      // Positioning stuffs
+      this.currentPosition = {
+        x: 0,
+        y: 0
+      };
+      this.currentRotation = 0;
+      this.currentZoom = null;
+      // Overlay stuffs
+      this.currentOverlay = {
+        type: null,
+        data: null,
+        dataLength: 0
+      };
+      this.playing = false;
+      this.currentIndex = 0;
+
+      // Call the original constructor
+      Marionette.CollectionView.prototype.constructor.apply(this, arguments);
+    },
     className: 'sitemap loading',
     template: {
       type: 'handlebars',
@@ -544,7 +568,6 @@ function(
 
       return false;
     },
-    visible: [],
     filterOnBounds: function(){
       var maxBounds = this.paper.view.bounds;
 
@@ -577,7 +600,6 @@ function(
         this.setOverlayType(this.currentOverlay.type);
       }
     },
-    currentHilight: null,
     hilight: function(view){
       this.currentHilight = view || null;
 
@@ -658,10 +680,6 @@ function(
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
       this.filterOnBounds();
     },
-    currentPosition: {
-      x: 0,
-      y: 0
-    },
     position: function(options){
       // If options are passed, position based on those
       if (typeof options.x === 'number' || typeof options.y === 'number') {
@@ -685,7 +703,6 @@ function(
 
       if (options.draw !== false) { this.draw(); }
     },
-    currentRotation: 0,
     rotate: function(options){// degrees, draw, filter
       var degrees = options.degrees || (+this.model.get('pref_rotation') - this.currentRotation);
 
@@ -696,7 +713,6 @@ function(
 
       if (options.draw !== false) { this.draw(); }
     },
-    currentZoom: null,
     zoom: function(options) {// direction, draw, filter
       var smartZoom = function(){
         var deviceGroupBounds = this.deviceGroup.bounds,
@@ -753,11 +769,6 @@ function(
       if (options.filter !== false) { this.filterOnBounds(); }
 
       if (options.draw !== false) { this.draw(); }
-    },
-    currentOverlay: {
-      type: null,
-      data: null,
-      dataLength: 0
     },
     setOverlayType: function(type){
       var that = this;
@@ -843,8 +854,6 @@ function(
 
       this.ui.legendContainer.append($legend);
     },
-    playing: false,
-    currentIndex: 0,
     play: function(){
       this.playing = true;
       this.ui.playButton.hide();
