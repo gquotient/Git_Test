@@ -41,42 +41,96 @@ function(
 ){
   var views = {};
 
-  var defaultFillColor = '#111',
+  var defaultFillColor = '#555',
     fillColors = {
+      A: [
+        {
+          value: 80,
+          label: '> 80%',
+          color: '#f12727'
+        },
+        {
+          value: 60,
+          label: '60% - 79%',
+          color:  '#034E7B'
+        },
+        {
+          value: 40,
+          label: '40% - 59%',
+          color: '#0570B0'
+        },
+        {
+          value: 20,
+          label: '20% - 39%',
+          color: '#3690C0'
+        },
+        {
+          value: 0,
+          label: '0% - 19%',
+          color: '#A6BDDB'
+        }
+      ],
+      M: [
+        {
+          value: 40,
+          label: '> 40',
+          color:  '#034E7B'
+        },
+        {
+          value: 30,
+          label: '30 - 39',
+          color: '#0570B0'
+        },
+        {
+          value: 20,
+          label: '20 - 29',
+          color: '#3690C0'
+        },
+        {
+          value: 10,
+          label: '10 - 19',
+          color: '#74A9CF'
+        },
+        {
+          value: 0,
+          label: '0 - 9',
+          color: '#A6BDDB'
+        }
+      ],
       N: [
         {
           value: 95,
-          label: '95%',
+          label: '> 95%',
           color: '#034E7B'
         },
         {
           value: 90,
-          label: '90%',
+          label: '90% - 94%',
           color: '#0570B0'
         },
         {
           value: 85,
-          label: '85%',
+          label: '85% - 89%',
           color: '#3690C0'
         },
         {
           value: 80,
-          label: '80%',
+          label: '80% - 84%',
           color: '#74A9CF'
         },
         {
           value: 75,
-          label: '75%',
+          label: '75% - 79%',
           color: '#A6BDDB'
         },
         {
           value: 50,
-          label: '50%',
+          label: '50% - 74%',
           color: '#eeec2d'
         },
         {
           value: 0,
-          label: '0%',
+          label: '0% - 49%',
           color: '#f12727'
         }
       ]
@@ -84,7 +138,7 @@ function(
     colorSelector = function(type, value) {
       var result;
 
-      _.find(fillColors[type], function(color){
+      _.find(fillColors[type] || fillColors._default, function(color){
         if (value >= color.value) {
           result = color.color;
           return true;
@@ -163,6 +217,8 @@ function(
         strokeColor: '#ccc',
         strokeWidth: 0
       });
+
+      this.shapeId = this.shape._id;
 
       if (this.model.get('devtype') === 'Panel' && this.model.get('attached') === 'null') {
         this.shape.set({
@@ -274,7 +330,7 @@ function(
         var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
         if (hitTest) {
-          //console.log(this.findChild(hitTest.item).model);
+          console.log(this.findChild(hitTest.item));
         }
       },
       'mousedown canvas': function(event){
@@ -447,7 +503,7 @@ function(
       var maxBounds = this.paper.view.bounds;
 
       this.children.each(function(child){
-        child.shape.visible =  child.shape.bounds.intersects(maxBounds);
+        child.shape.visible = child.shape.bounds.intersects(maxBounds);
       }, this);
 
       this.draw();
@@ -481,7 +537,7 @@ function(
         view.model.incoming.first().outgoing.each(function(model){
           var child = this.children.findByModel(model);
           // Don't bother with shapes that aren't visible
-          if (child && child.shape.visible && child !== view) {
+          if (child && child.shape.visible) {
             child.shape.set({
               strokeColor: '#F26322',
               strokeWidth: 1
