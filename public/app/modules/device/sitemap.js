@@ -515,12 +515,24 @@ function(
 
       return false;
     },
+    visible: [],
     filterOnBounds: function(){
+      console.log('filterOnBounds');
+      var startTest = new Date().getTime();
       var maxBounds = this.paper.view.bounds;
 
+      this.visible = [];
+
       this.children.each(function(child){
-        child.shape.visible = child.shape.bounds.intersects(maxBounds);
+        var isVisible = child.shape.bounds.intersects(maxBounds);
+        child.shape.visible = isVisible;
+
+        if (isVisible) {
+          this.visible.push(child);
+        }
       }, this);
+
+      console.log('Visible filtered', new Date().getTime() - startTest, this.visible.length);
 
       this.draw();
     },
@@ -542,28 +554,27 @@ function(
     },
     currentHilight: null,
     hilight: function(view){
-      this.currentHilight = view;
+      this.currentHilight = view || null;
 
-      // Set all shapes to default styling
-      this.deviceGroup.set({
-        strokeColor: '#ccc',
-        strokeWidth: 0
+      var parent = view ? view.model.incoming.first() : null;
+
+      // Loop through visible shapes and set appropriate hilighting
+      _.each(this.visible, function(child){
+        if (parent && child.model.incoming.first() === parent) {
+          child.shape.set({
+            strokeColor: '#F26322',
+            strokeWidth: 1
+          });
+        } else {
+          child.shape.set({
+            strokeColor: '#ccc',
+            strokeWidth: 0
+          });
+        }
       });
 
+      // Hilight hovered
       if (view) {
-        // Hilight siblings
-        view.model.incoming.first().outgoing.each(function(model){
-          var child = this.children.findByModel(model);
-          // Don't bother with shapes that aren't visible
-          if (child && child.shape.visible) {
-            child.shape.set({
-              strokeColor: '#F26322',
-              strokeWidth: 1
-            });
-          }
-        }, this);
-
-        // Hilight hovered
         view.shape.set({
           strokeColor: '#F26322',
           strokeWidth: 2
