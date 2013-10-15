@@ -145,7 +145,7 @@ function(
     colorSelector = function(type, value) {
       var result;
 
-      _.find(fillColors[type] || fillColors._default, function(color){
+      _.find(fillColors[type], function(color){
         if (value >= color.value) {
           result = color.color;
           return true;
