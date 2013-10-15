@@ -7,6 +7,7 @@
   [ ] Overlay play indicator dragging/clicking
   [x] Overlay date display formatting
   [ ] Overlay interval fetching
+  [ ] Device Detail
   [ ] Real panel sizes / orientation
   [x] Error handling
   [x] Perf - Filter device shapes that are out of view from painting
