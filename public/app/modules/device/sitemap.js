@@ -482,6 +482,8 @@ function(
       this.listenTo(Backbone, 'window:resize', this.resize);
     },
     showMessage: function(message, level){
+      this.ui.message.empty();
+
       var $message = $('<div class="message">' + message + '</div>');
 
       // If level supplied, add it as class
@@ -490,7 +492,11 @@ function(
       }
 
       // Fade in, wait 3 seconds, fade out, then remove the element
-      this.ui.message.append($message).hide().fadeIn().delay(3000).fadeOut({
+      $message.hide();
+
+      this.ui.message.append($message);
+
+      $message.fadeIn().delay(3000).fadeOut({
         done: function(){
           $message.remove();
         }
