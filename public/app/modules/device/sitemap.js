@@ -13,6 +13,8 @@
   [x] Perf - Filter device shapes that are out of view from painting
   [x] Perf - Skip unattached panels
   [ ] Compass
+  [ ] Only drag visible shapes and update all shapes on drag stop
+      - This may mean not using the group for positioning
 
 */
 
