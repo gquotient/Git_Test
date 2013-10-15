@@ -370,7 +370,6 @@ function(
           this.position({
             x: offsetX - this.dragging.x,
             y: offsetY - this.dragging.y,
-            draw: true,
             filter: false
           });
 
@@ -411,14 +410,12 @@ function(
       },
       'click .zoomIn': function(){
         this.zoom({
-          direction: '+',
-          draw: true
+          direction: '+'
         });
       },
       'click .zoomOut': function(){
         this.zoom({
-          direction: '-',
-          draw: true
+          direction: '-'
         });
       },
       'click .reset': function(){
