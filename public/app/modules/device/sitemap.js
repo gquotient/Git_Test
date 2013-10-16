@@ -545,8 +545,7 @@ function(
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
       if (this.children.length && !this.isClosed) {
-        this.initialPosition();
-
+        this.resetPosition({reset: true, zoom: this.currentZoom});
         // Hide loading indicator
         this.$el.removeClass('loading');
       }
@@ -632,37 +631,19 @@ function(
 
       this.draw();
     },
-    initialPosition: function(reset){
-      // Store current position info
-      var currentRotation = reset ? 0 : this.currentRotation,
-        currentPosition = reset ? 0 : this.currentPosition,
-        currentZoom = reset ? null : this.currentZoom;
-
-      // Reset rotation and position
-      this.currentRotation = 0;
-      this.currentPosition = {
-        x: 0,
-        y: 0
-      };
-      this.deviceGroup.position.x = 0;
-      this.deviceGroup.position.y = 0;
-
-      this.resetPosition({
-        rotate: currentRotation,
-        zoom: currentZoom
-      });
-    },
     resetPosition: function(options){
       options = options || {};
 
+      if (options.reset) {
+        this.currentRotation = 0;
+        this.currentZoom = null;
+      }
+
       this.position({
-        x: options.x,
-        y: options.y,
         draw: false,
         filter: false
       });
       this.rotate({
-        degrees: options.rotate,
         draw: false,
         filter: false
       });
@@ -752,8 +733,6 @@ function(
         this.currentZoom = this.currentZoom * scale || scale;
       }
 
-      this.deviceGroup.scale(scale);
-
       if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
         return this.setDeviceType('Inverter');
       }
@@ -762,9 +741,11 @@ function(
         return this.setDeviceType('String');
       }
 
-      if (this.currentZoom === 1 && this.currentDeviceType !== 'Panel') {
+      if (this.currentZoom >= 1 && this.currentDeviceType !== 'Panel') {
         return this.setDeviceType('Panel');
       }
+
+      this.deviceGroup.scale(scale);
 
       if (options.filter !== false) { this.filterOnBounds(); }
 
@@ -950,7 +931,7 @@ function(
 
       // If children already populated, do initial positioning with hard reset
       if (this.children.length) {
-        this.initialPosition(true);
+        this.resetPosition();
       }
 
       // Cache dynamic regions
