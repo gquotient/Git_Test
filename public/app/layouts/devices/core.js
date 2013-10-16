@@ -133,50 +133,69 @@ define([
         ]
       ;
 
-      // Loop through child nodes
-      that.model.outgoing.each(function(child, index){
-        // Make sure it's not a filtered device
-        if (_.indexOf(filter, child.get('devtype')) < 0) {
-          // Special case the inverter logic
-          if (child.get('devtype') === 'Inverter') {
-            traces.push({
-              'project_label': project.id,
-              'ddl': 'inv',
-              'dtstart': date ? date.start/1000 : 'today',
-              'dtstop': date ? date.stop/1000 : 'now',
-              'columns': ['freezetime', 'ac_power_mean'],
-              'filters': [
-                {
-                  'column': 'identifier',
-                  'in_set': [child.get('graph_key')]
-                }
-              ],
-              project_timezone: project.get('timezone')
+      project.findDataSources().done(function(dataSources){
+        // Loop through child nodes
+        that.model.outgoing.each(function(child, index){
+          // Make sure it's not a filtered device
+          if (_.indexOf(filter, child.get('devtype')) < 0) {
+            // Special case the inverter logic
+            if (child.get('devtype') === 'Inverter') {
+              if (dataSources.inverter.ac_power) {
+                traces.push({
+                  'project_label': project.id,
+                  'ddl': 'inv',
+                  'dtstart': date ? date.start/1000 : 'today',
+                  'dtstop': date ? date.stop/1000 : 'now',
+                  'columns': ['freezetime', 'ac_power_mean'],
+                  'filters': [
+                    {
+                      'column': 'identifier',
+                      'in_set': [child.get('graph_key')]
+                    }
+                  ],
+                  project_timezone: project.get('timezone')
+                });
+              } else if (dataSources.inverter.bus) {
+                traces.push({
+                  'project_label': project.id,
+                  'ddl': 'inv-bus-calc',
+                  'dtstart': date ? date.start/1000 : 'today',
+                  'dtstop': date ? date.stop/1000 : 'now',
+                  'columns': ['freezetime', 'dc_power'],
+                  'filters': [
+                    {
+                      'column': 'identifier',
+                      'in_set': [child.get('graph_key')]
+                    }
+                  ],
+                  project_timezone: project.get('timezone')
+                });
+              }
+            } else {
+              // If not inverter, use the magic trace builder
+              traces.push(Chart.dataDefaults(that.options.project, child, 'power'));
+            }
+
+            // Custom series to show device ids in the legend
+            series.push({
+              name: 'Power (' + child.get('did') + ')',
+              unit: 'W'
             });
-          } else {
-            // If not inverter, use the magic trace builder
-            traces.push(Chart.dataDefaults(that.options.project, child, 'power'));
           }
+        });
 
-          // Custom series to show device ids in the legend
-          series.push({
-            name: 'Power (' + child.get('did') + ')',
-            unit: 'W'
-          });
-        }
+        // Instantiate child chart
+        var children = new Chart.views.Basic({
+          traces: traces,
+          series: series
+        });
+
+        // Unhide the div
+        that.$('.children').show();
+
+        // Show the chart
+        that.children.show(children);
       });
-
-      // Instantiate child chart
-      var children = new Chart.views.Basic({
-        traces: traces,
-        series: series
-      });
-
-      // Unhide the div
-      that.$('.children').show();
-
-      // Show the chart
-      that.children.show(children);
     }
   });
 });

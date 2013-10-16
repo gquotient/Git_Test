@@ -57,6 +57,23 @@ define([
           });
 
           series.push(Chart.seriesDefaults.power);
+        } else if (dataSources.inverter.bus) {
+          traces.push({
+            'project_label': project.id,
+            'ddl': 'inv-bus-calc',
+            'dtstart': date ? date.start/1000 : 'today',
+            'dtstop': date ? date.stop/1000 : 'now',
+            'columns': ['freezetime', 'dc_power'],
+            'filters': [
+              {
+                'column': 'identifier',
+                'in_set': [that.model.get('graph_key')]
+              }
+            ],
+            project_timezone: project.get('timezone')
+          });
+
+          series.push(Chart.seriesDefaults.power);
         }
 
         var chart_powerAndIrradiance = new Chart.views.Basic({
