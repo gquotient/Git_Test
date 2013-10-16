@@ -359,6 +359,7 @@ function(
 
         if (hitTest) {
           //this.buildDeviceInfo(this.findChild(hitTest.item).model);
+          Backbone.trigger('click:device', this.findChild(hitTest.item).model);
         }
       },
       'mousedown canvas': function(event){

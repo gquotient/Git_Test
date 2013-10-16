@@ -45,7 +45,8 @@ define([
 
     regions: {
       contentNavigation: '.nav_content',
-      deviceDetail: '.deviceDetail'
+      deviceDetail: '.deviceDetail',
+      sitemap: '.sitemapContainer'
     },
 
     deviceLayouts: {
@@ -63,8 +64,14 @@ define([
 
       // Instantiate devices collection view
       this.devices = new Device.Collection();
+
       this.devicesTree = new Device.views.NavigationList({
         collection: this.devices
+      });
+
+      this.devicesMap = new Device.views.Sitemap({
+        model: this.model,
+        collection: this.model.devices
       });
 
       // Listen for a device to be clicked and change view
@@ -105,6 +112,8 @@ define([
 
     onShow: function(){
       var that = this;
+
+      this.sitemap.show(this.devicesMap);
 
       var initialView = function(){
         that.contentNavigation.show(that.devicesTree);
