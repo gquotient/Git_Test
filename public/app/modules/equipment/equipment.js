@@ -69,6 +69,7 @@ define([
       'equipment_label',
       'inherits',
       'label',
+      'name',
       'schema'
     ],
 
@@ -127,6 +128,13 @@ define([
 
       // Otherwise check the inheritence chain.
       return this._invokeOnInherits('get', attr, options);
+    },
+
+    getAttributes: function(){
+      return _.chain(this._invokeOnInherits('getAttributes') || {})
+        .omit(this.localAttributes)
+        .extend(this.attributes)
+        .value();
     },
 
     getSchema: function(){

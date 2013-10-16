@@ -414,13 +414,13 @@ define([
 
     // Overwritten to apply schema rendering to the values.
     serializeData: function(){
-      var data = _.extend({}, this.model.attributes, this.changed);
-
-      _.each(data, function(value, attr){
-        data[attr] = this.renderValue(attr, value);
-      }, this);
-
-      return data;
+      return _.chain(this.model.getAttributes())
+        .extend(this.changed)
+        .reduce(function(memo, value, attr){
+          memo[attr] = this.renderValue(attr, value);
+          return memo;
+        }, {}, this)
+        .value();
     },
 
     // Overwritten to pass values to the template helper.

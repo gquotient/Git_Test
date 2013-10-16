@@ -114,6 +114,14 @@ define([
       this.updateLockTimeout();
     },
 
+    getAttributes: function(){
+      return _.extend({}, this.attributes);
+    },
+
+    getSchema: function(){
+      return this.constructor.schema;
+    },
+
     isLocked: function(){
       return this.has('editor') && this.get('editor') !== 'unlocked';
     },
@@ -404,10 +412,6 @@ define([
       }
 
       return when + msg + '\n';
-    },
-
-    getSchema: function(){
-      return this.constructor.schema;
     }
   }, {
     schema: {
