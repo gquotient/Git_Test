@@ -685,13 +685,10 @@ function(
       if (options.draw !== false) { this.draw(); }
     },
     rotate: function(options){// degrees, draw, filter
-      if(options.degrees) {
-        this.deviceGroup.rotate(options.degrees, this.deviceGroup.center);
-        this.currentRotation += options.degrees;
-      } else {
-        this.deviceGroup.rotate(+this.model.get('pref_rotation') - this.currentRotation, this.deviceGroup.center);
-        this.currentRotation = +this.model.get('pref_rotation');
-      }
+      var degrees = options.degrees || (+this.model.get('pref_rotation') - this.currentRotation);
+
+      this.deviceGroup.rotate(degrees, this.deviceGroup.center);
+      this.currentRotation += degrees;
 
       if (options.filter !== false) { this.filterOnBounds(); }
 
