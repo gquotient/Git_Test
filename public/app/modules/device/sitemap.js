@@ -545,7 +545,7 @@ function(
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
       if (this.children.length && !this.isClosed) {
-        this.resetPosition();
+        this.resetPosition({reset: true, zoom: this.currentZoom});
         // Hide loading indicator
         this.$el.removeClass('loading');
       }
@@ -631,18 +631,13 @@ function(
 
       this.draw();
     },
-    resetPosition: function(){
-       // Store current position info
-      var currentRotation = this.currentRotation,
-        currentPosition = this.currentPosition,
-        currentZoom = this.currentZoom;
+    resetPosition: function(options){
+      options = options || {};
 
-      // Reset rotation and position
-      this.currentRotation = 0;
-      this.currentPosition = {
-        x: 0,
-        y: 0
-      };
+      if (options.reset) {
+        this.currentRotation = 0;
+        this.currentZoom = null;
+      }
 
       this.position({
         draw: false,
@@ -653,6 +648,7 @@ function(
         filter: false
       });
       this.zoom({
+        direction: options.zoom,
         draw: false,
         filter: false
       });
@@ -689,12 +685,13 @@ function(
       if (options.draw !== false) { this.draw(); }
     },
     rotate: function(options){// degrees, draw, filter
-      var degrees = options.degrees || +this.model.get('pref_rotation');
-
-      console.log(degrees);
-
-      this.deviceGroup.rotate(degrees, this.deviceGroup.center);
-      this.currentRotation += degrees;
+      if(options.degrees) {
+        this.deviceGroup.rotate(options.degrees, this.deviceGroup.center);
+        this.currentRotation += options.degrees;
+      } else {
+        this.deviceGroup.rotate(+this.model.get('pref_rotation') - this.currentRotation, this.deviceGroup.center);
+        this.currentRotation = +this.model.get('pref_rotation');
+      }
 
       if (options.filter !== false) { this.filterOnBounds(); }
 
@@ -747,7 +744,7 @@ function(
         return this.setDeviceType('String');
       }
 
-      if (this.currentZoom === 1 && this.currentDeviceType !== 'Panel') {
+      if (this.currentZoom >= 1 && this.currentDeviceType !== 'Panel') {
         return this.setDeviceType('Panel');
       }
 
