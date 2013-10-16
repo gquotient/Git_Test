@@ -305,7 +305,7 @@ function(
       this.visible = [];
       // Current hilighted view
       this.currentHilight = null;
-      this.currentSelected = null;
+      this.currentSelection = null;
       // Positioning stuffs
       this.currentPosition = {
         x: 0,
@@ -364,8 +364,6 @@ function(
 
         if (hitTest) {
           var child = this.findChildByShape(hitTest.item);
-          //this.buildDeviceInfo(this.findChild(hitTest.item).model);
-          this.currentSelected = child;
           Backbone.trigger('click:device', child.model);
         }
       },
@@ -615,6 +613,10 @@ function(
         this.setOverlayType(this.currentOverlay.type);
       }
     },
+    selectDevice: function(device){
+      this.currentSelection = this.children.findByModel(device);
+      this.hilight();
+    },
     hilight: function(view){
       this.currentHilight = view || null;
 
@@ -645,13 +647,13 @@ function(
         });
 
         view.shape.bringToFront();
-      } else if (this.currentSelected && this.currentSelected.model.get('devtype') === this.currentDeviceType) {
-        this.currentSelected.shape.set({
+      } else if (this.currentSelection && this.currentSelection.model.get('devtype') === this.currentDeviceType) {
+        this.currentSelection.shape.set({
           strokeColor: '#F26322',
           strokeWidth: 2
         });
 
-        this.currentSelected.shape.bringToFront();
+        this.currentSelection.shape.bringToFront();
       }
 
       this.draw();

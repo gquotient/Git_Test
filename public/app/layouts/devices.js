@@ -100,8 +100,7 @@ define([
       }));
 
       if (this.devicesMap) {
-        this.devicesMap.currentSelected = this.devicesMap.children.findByModel(device);
-        this.devicesMap.hilight();
+        this.devicesMap.selectDevice(device);
       }
 
       // Set active nav el
