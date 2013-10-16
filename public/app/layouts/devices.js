@@ -69,10 +69,12 @@ define([
         collection: this.devices
       });
 
-      this.devicesMap = new Device.views.Sitemap({
-        model: this.model,
-        collection: this.model.devices
-      });
+      if (this.model.get('hasDC')){
+        this.devicesMap = new Device.views.Sitemap({
+          model: this.model,
+          collection: this.model.devices
+        });
+      }
 
       // Listen for a device to be clicked and change view
       this.listenTo(Backbone, 'click:device', function(device){
@@ -97,6 +99,11 @@ define([
         date: this.date
       }));
 
+      if (this.devicesMap) {
+        this.devicesMap.currentSelected = this.devicesMap.children.findByModel(device);
+        this.devicesMap.hilight();
+      }
+
       // Set active nav el
       //NOTE - this is a special recursive method on the device tree
       this.devicesTree.propagateActive({graph_key: device.get('graph_key')});
@@ -113,7 +120,9 @@ define([
     onShow: function(){
       var that = this;
 
-      this.sitemap.show(this.devicesMap);
+      if (this.devicesMap) {
+        this.sitemap.show(this.devicesMap);
+      }
 
       var initialView = function(){
         that.contentNavigation.show(that.devicesTree);
