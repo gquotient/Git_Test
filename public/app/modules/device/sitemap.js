@@ -561,7 +561,7 @@ function(
     onCompositeCollectionRendered: function(){
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
-      if (this.children.length && !this.isClosed) {
+      if (this.children.length && this._isShown) {
         this.resetPosition({reset: true, zoom: this.currentZoom});
         // Hide loading indicator
         this.$el.removeClass('loading');
