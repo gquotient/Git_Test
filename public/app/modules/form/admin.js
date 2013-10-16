@@ -376,14 +376,13 @@ define([
 
     bindSchemaElements: function(){
       var editable = this.isEditable(),
-        existing = !this.model.isNew(),
         tabIndex = 1;
 
-      // After each render, capture the element for each schema item. Also
-      // disable the input if not editable or set it's tab order.
+      // After each render, cache the ui elements and disable any inputs
+      // that are not editable.
       _.each(this._schema, function(params, attr){
         var $el = this.ui[attr] = this.$(params.el),
-          disabled = !editable || (existing && !this.isEditable(attr));
+          disabled = !editable || !this.isEditable(attr);
 
         if ($el) {
           $el.prop('disabled', disabled);
@@ -401,7 +400,7 @@ define([
       var editable;
 
       if (attr) {
-        editable = this._schema[attr].editable;
+        editable = this.model.has(attr) ? this._schema[attr].editable : true;
       } else {
         editable = Marionette.getOption(this, 'editable');
       }

@@ -93,24 +93,59 @@ define([
       }
     },
 
-    get: function(attr){
-      var inherits;
+    // Internal function for calling methods on the equipment inheritence chain.
+    _invokeOnInherits: function(name){
+      var inherits = this.collection.get(this.attributes.inherits),
+        func = inherits && inherits[name];
 
-      // If the attr exists locally return it.
-      if (_.has(this.attributes, attr)) {
-        return this.attributes[attr];
+      return _.isFunction(func) ? func.apply(inherits, _.tail(arguments)) : null;
+    },
 
-      // Otherwise if this isn't exclusivly local then try and find it.
-      } else if (!_.contains(this.localAttributes, attr)) {
-        inherits = this.collection.get(this.get('inherits'));
-        return inherits && inherits.get(attr);
+    has: function(attr, options){
+      options = options || {};
+
+      // Check local attributes first.
+      if (_.has(this.attributes, attr)) { return true; }
+
+      // Don't go any further if we are only checking local attributes.
+      if (options.local || _.contains(this.localAttributes, attr)) {
+        return false;
       }
+
+      // Otherwise check the inheritence chain.
+      return this._invokeOnInherits('has', attr, options);
+    },
+
+    get: function(attr, options){
+      options = options || {};
+
+      // Check local attributes first.
+      if (_.has(this.attributes, attr)) { return this.attributes[attr]; }
+
+      // Don't go any further if we are only checking local attributes.
+      if (options.local || _.contains(this.localAttributes, attr)) { return null; }
+
+      // Otherwise check the inheritence chain.
+      return this._invokeOnInherits('get', attr, options);
+    },
+
+    getSchema: function(){
+      var inherited = this._invokeOnInherits('getSchema') || {},
+        schema = this.get('schema') || {};
+
+      // Combine the required, inherited and instance schema parameters.
+      return _.reduce(this.constructor.schema, function(memo, params, attr){
+        if (params.required || _.has(inherited, attr) || _.has(schema, attr)) {
+          memo[attr] = _.extend({}, params, inherited[attr], schema[attr]);
+        }
+
+        return memo;
+      }, {});
     },
 
     getBase: function(){
-      var inherits = this.collection.get(this.get('inherits'));
-
-      return inherits ? inherits.getBase() : this;
+      // Go up the chain of inheritence.
+      return this._invokeOnInherits('getBase') || this;
     },
 
     getDerivatives: function(){
@@ -237,21 +272,6 @@ define([
         adjustPosition(label, position, project);
         device.setPosition(label, position);
       }
-    },
-
-    getSchema: function(){
-      var inherits = this.collection.get(this.get('inherits')),
-        inherited = (inherits && inherits.getSchema()) || {},
-        schema = this.get('schema') || {};
-
-      // Combine the required, inherited and instance schema parameters.
-      return _.reduce(this.constructor.schema, function(memo, params, attr){
-        if (params.required || _.has(inherited, attr) || _.has(schema, attr)) {
-          memo[attr] = _.extend({}, params, inherited[attr], schema[attr]);
-        }
-
-        return memo;
-      }, {});
     }
   }, {
     schema: {
