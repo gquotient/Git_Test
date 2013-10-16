@@ -305,6 +305,7 @@ function(
       this.visible = [];
       // Current hilighted view
       this.currentHilight = null;
+      this.currentSelection = null;
       // Positioning stuffs
       this.currentPosition = {
         x: 0,
@@ -317,6 +318,10 @@ function(
         type: null,
         data: null,
         dataLength: 0
+      };
+      this.date = {
+        start: 'today',
+        stop: 'now'
       };
       this.playing = false;
       this.currentIndex = 0;
@@ -358,7 +363,8 @@ function(
         var hitTest = this.paper.project.hitTest(event.offsetX, event.offsetY);
 
         if (hitTest) {
-          //this.buildDeviceInfo(this.findChild(hitTest.item).model);
+          var child = this.findChildByShape(hitTest.item);
+          Backbone.trigger('click:device', child.model);
         }
       },
       'mousedown canvas': function(event){
@@ -419,7 +425,7 @@ function(
           var hitTest = this.paper.project.hitTest(offsetX, offsetY);
 
           if (hitTest) {
-            var child = this.findChild(hitTest.item);
+            var child = this.findChildByShape(hitTest.item);
 
             if (this.currentHilight !== child) {
               this.hilight(child);
@@ -504,6 +510,15 @@ function(
       });
 
       this.listenTo(Backbone, 'window:resize', this.resize);
+
+      this.listenTo(Backbone, 'set:date', function(date){
+        this.date = date;
+
+        // If there is a currently active overlay, update with new device type
+        if (this.currentOverlay.type) {
+          this.setOverlayType(this.currentOverlay.type);
+        }
+      });
     },
     showMessage: function(message, level){
       this.ui.message.empty();
@@ -544,7 +559,7 @@ function(
     onCompositeCollectionRendered: function(){
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
-      if (this.children.length && !this.isClosed) {
+      if (this.children.length && this._isShown) {
         this.resetPosition({reset: true, zoom: this.currentZoom});
         // Hide loading indicator
         this.$el.removeClass('loading');
@@ -554,8 +569,7 @@ function(
       // Add items to group for manipulation
       this.deviceGroup.addChild(itemView.shape);
     },
-    // Find child view based on a given paper shape
-    findChild: function(shape){
+    findChildByShape: function(shape){
       if (shape) {
         return this.children.find(function(child){
           if (child.shape === shape || child.shape._children && _.indexOf(child.shape._children, shape) >= 0) {
@@ -599,6 +613,10 @@ function(
         this.setOverlayType(this.currentOverlay.type);
       }
     },
+    selectDevice: function(device){
+      this.currentSelection = this.children.findByModel(device);
+      this.hilight();
+    },
     hilight: function(view){
       this.currentHilight = view || null;
 
@@ -606,17 +624,19 @@ function(
 
       // Loop through visible shapes and set appropriate hilighting
       _.each(this.visible, function(child){
-        if (parent && child.model.incoming.first() === parent) {
+        if (view && parent && child.model.incoming.first() === parent) {
           child.shape.set({
             strokeColor: '#F26322',
             strokeWidth: 1
           });
-        } else {
-          child.shape.set({
-            strokeColor: '#ccc',
-            strokeWidth: 0
-          });
+
+          return;
         }
+
+        child.shape.set({
+          strokeColor: '#ccc',
+          strokeWidth: 0
+        });
       });
 
       // Hilight hovered
@@ -627,6 +647,13 @@ function(
         });
 
         view.shape.bringToFront();
+      } else if (this.currentSelection && this.currentSelection.model.get('devtype') === this.currentDeviceType) {
+        this.currentSelection.shape.set({
+          strokeColor: '#F26322',
+          strokeWidth: 2
+        });
+
+        this.currentSelection.shape.bringToFront();
       }
 
       this.draw();
@@ -803,7 +830,10 @@ function(
       }
     },
     fetchOverlayData: function(){
-      var that = this;
+      var that = this,
+        // If the times are in unix time, convert them to seconds for the data service
+        start = typeof this.date.start === 'number' ? this.date.start/1000 : this.date.start,
+        stop = typeof this.date.stop === 'number' ? this.date.stop/1000 : this.date.stop;
 
       this.$el.addClass('loading');
 
@@ -815,8 +845,8 @@ function(
           traces: [{
             project_label: this.model.get('project_label'),
             project_timezone: this.model.get('timezone'),
-            dtstart: 'today',
-            dtstop: 'now',
+            dtstart: start,
+            dtstop: stop,
             parent_identifier: this.model.get('graph_key')
           }]
         }

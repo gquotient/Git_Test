@@ -45,7 +45,8 @@ define([
 
     regions: {
       contentNavigation: '.nav_content',
-      deviceDetail: '.deviceDetail'
+      deviceDetail: '.deviceDetail',
+      sitemap: '.sitemapContainer'
     },
 
     deviceLayouts: {
@@ -63,9 +64,17 @@ define([
 
       // Instantiate devices collection view
       this.devices = new Device.Collection();
+
       this.devicesTree = new Device.views.NavigationList({
         collection: this.devices
       });
+
+      if (this.model.get('hasDC')){
+        this.devicesMap = new Device.views.Sitemap({
+          model: this.model,
+          collection: this.model.devices
+        });
+      }
 
       // Listen for a device to be clicked and change view
       this.listenTo(Backbone, 'click:device', function(device){
@@ -90,6 +99,10 @@ define([
         date: this.date
       }));
 
+      if (this.devicesMap) {
+        this.devicesMap.selectDevice(device);
+      }
+
       // Set active nav el
       //NOTE - this is a special recursive method on the device tree
       this.devicesTree.propagateActive({graph_key: device.get('graph_key')});
@@ -105,6 +118,10 @@ define([
 
     onShow: function(){
       var that = this;
+
+      if (this.devicesMap) {
+        this.sitemap.show(this.devicesMap);
+      }
 
       var initialView = function(){
         that.contentNavigation.show(that.devicesTree);
