@@ -140,6 +140,69 @@ function(
           label: '0% - 49%',
           color: '#f12727'
         }
+      ],
+      E: [
+        {
+          value: 120,
+          label: '> 120',
+          color: '#0080FF'
+        },
+        {
+
+          value: 114,
+          label: '115 - 119',
+          color: '#2E9AFE'
+        },
+        {
+          value: 109,
+          label: '110 - 114',
+          color: '#58ACFA'
+        },
+        {
+          value: 104,
+          label: '105 - 109',
+          color: '#8ABEF7'
+        },
+        {
+          value: 102,
+          label: '103 - 104',
+          color: '#A9D0F5'
+        },
+        {
+          value: 97,
+          label: '98 - 102',
+          color: '#CEE3F6'
+        },
+        {
+          value: 94,
+          label: '95 - 97',
+          color:'#F6CECE'
+        },
+        {
+          value: 89,
+          label: '90 - 94',
+          color:'#F5A9A9'
+        },
+        {
+          value: 84,
+          label: '85 - 89',
+          color:'#F78181'
+        },
+        {
+          value: 79,
+          label: '80 - 84',
+          color:'#FA5858'
+        },
+        {
+          value: 74,
+          label: '75 - 79',
+          color:'#FE2E2E'
+        },
+        {
+          value: 0,
+          label: '< 75',
+          color:'#f12727'
+        }
       ]
     },
     colorSelector = function(type, value) {
@@ -350,6 +413,7 @@ function(
       canvas: 'canvas',
       deviceInfoContainer: '.deviceInfoContainer',
       deviceTypeSelect: '.deviceType select',
+      overlatTypeSelect: '.overlayType select',
       legendContainer: '.legendContainer',
       timeControls: '.controls.time',
       playButton: '.play',
@@ -784,6 +848,34 @@ function(
     setOverlayType: function(type){
       var that = this;
 
+      var clearOverlay = function(){
+        // Reset overlay
+        that.currentOverlay = {
+          type: null,
+          data: null,
+          dataLength: 0
+        };
+
+        // Reset index
+        that.currentIndex = 0;
+
+        // Update device color
+        that.deviceGroup.style = {
+          fillColor: defaultFillColor
+        };
+
+        that.draw();
+
+        // Hide controls
+        that.ui.timeControls.hide();
+
+        // Clear out legend
+        that.ui.legendContainer.empty();
+
+        // Force selected value
+        that.ui.overlatTypeSelect.val('none');
+      };
+
       if (type && type !== 'none') {
         that.currentOverlay.type = type;
 
@@ -803,33 +895,14 @@ function(
           } else if (data.response[0].errmsg) {
             that.showMessage('Heatmap data failed to load', 'error');
             console.warn('Heatmap data failed:', data.response[0].errmsg, data);
+            clearOverlay();
           } else if (!data.response[0].length) {
             that.showMessage('No heatmap data for selected timeframe', 'warning');
+            clearOverlay();
           }
         });
       } else {
-        // Reset overlay
-        this.currentOverlay = {
-          type: null,
-          data: null,
-          dataLength: 0
-        };
-
-        // Reset index
-        this.currentIndex = 0;
-
-        // Update device color
-        this.deviceGroup.style = {
-          fillColor: defaultFillColor
-        };
-
-        this.draw();
-
-        // Hide controls
-        this.ui.timeControls.hide();
-
-        // Clear out legend
-        this.ui.legendContainer.empty();
+        clearOverlay();
       }
     },
     fetchOverlayData: function(){
