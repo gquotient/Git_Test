@@ -97,18 +97,21 @@ define([
           }
         };
 
-      // If not a smart filter, return all projecs
-      if (!_.isArray(filters)) {
-        return this.collection.projects.models;
-      }
+      // Don't build children if not part of the collection (in other words, this is a new portfolio)
+      if (this.collection) {
+        // If not a smart filter, return all projecs
+        if (!_.isArray(filters)) {
+          return this.collection.projects.models;
+        }
 
-      // Return filtered projects
-      return this.collection.projects.filter(function(project){
-        // For each filter, validate that the project satisfies the filter
-        return _.all(filters, function(filter){
-          return operation[filter.operator](project.get(filter.property), filter.value);
+        // Return filtered projects
+        return this.collection.projects.filter(function(project){
+          // For each filter, validate that the project satisfies the filter
+          return _.all(filters, function(filter){
+            return operation[filter.operator](project.get(filter.property), filter.value);
+          });
         });
-      });
+      }
     },
 
     destroy: function(options) {

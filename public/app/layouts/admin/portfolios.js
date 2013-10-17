@@ -44,7 +44,7 @@ define([
     },
     edit: function(portfolio){
       // Create a new portfolio if none was passed
-      var model = portfolio || new Portfolio.Model({collection: ia.projects});
+      var model = portfolio || new Portfolio.Model();
       var editView;
 
       if (!model.isNew()) {
