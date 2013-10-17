@@ -487,6 +487,9 @@ function(
       'click .stepBackward': function(){
         this.setIndex('-', true);
       },
+      'click .fastForward': function(){
+        this.setIndex(this.currentOverlay.dataLength - 1, true);
+      },
       'click .toggleLegend': function(){
         this.ui.legendContainer.toggle();
       }
