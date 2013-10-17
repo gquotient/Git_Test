@@ -76,6 +76,8 @@
   "Manufacturer": "Manufacturer",
   "Model": "Model",
   "Inherits From": "Inherits From",
+  "Device Definition Label": "Device Definition Label",
+  "Interface Module": "Interface Module",
 
   "View": "View",
   "Add Device": "Add Device",

@@ -29,12 +29,18 @@
     ],
     "renderings": [
       {"label": "DAQ", "offset": {"x": 100, "y": 0}}
-    ]
+    ],
+    "schema": {
+      "ddl": {
+        "source": ["daq", "csi"]
+      }
+    }
   },
   {
     "label": "ESI",
     "equipment_label": "ESI_v1",
     "name": "Env Suite",
+    "ddl": "env",
     "order": 3,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "DSS"},
@@ -52,12 +58,18 @@
     ],
     "renderings": [
       {"label": "DAQ", "offset": {"x": 200, "y": 100}}
-    ]
+    ],
+    "schema": {
+      "interface_module": {
+        "source": ["x320", "modbus"]
+      }
+    }
   },
   {
     "label": "IRRA",
     "equipment_label": "IRRA_v1",
     "name": "POA Pyranometer",
+    "ddl": "env",
     "order": 4,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"},
@@ -73,6 +85,7 @@
     "label": "IRRZ",
     "equipment_label": "IRRZ_v1",
     "name": "Horiz Pyranometer",
+    "ddl": "env",
     "order": 5,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"},
@@ -88,6 +101,7 @@
     "label": "TMPC",
     "equipment_label": "TMPC_v1",
     "name": "Cell Temp",
+    "ddl": "env",
     "order": 6,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -100,6 +114,7 @@
     "label": "TMPA",
     "equipment_label": "TMPA_v1",
     "name": "Ambient Temp",
+    "ddl": "env",
     "order": 7,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -112,6 +127,7 @@
     "label": "WSPD",
     "equipment_label": "WSPD_v1",
     "name": "Anemometor",
+    "ddl": "env",
     "order": 8,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -124,6 +140,7 @@
     "label": "WDIR",
     "equipment_label": "WDIR_v1",
     "name": "Wind Vane",
+    "ddl": "env",
     "order": 9,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -136,6 +153,7 @@
     "label": "BARO",
     "equipment_label": "BARO_v1",
     "name": "Barometer",
+    "ddl": "env",
     "order": 10,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -148,6 +166,7 @@
     "label": "RAIN",
     "equipment_label": "RAIN_v1",
     "name": "Rain Sensor",
+    "ddl": "env",
     "order": 11,
     "relationships": [
       {"label": "HAS", "direction": "INCOMING", "target": "ESI"}
@@ -185,6 +204,7 @@
     "label": "RM",
     "equipment_label": "RM_v1",
     "name": "Meter",
+    "ddl": "acm",
     "order": 13,
     "relationships": [
       {"label": "MANAGES", "direction": "INCOMING", "target": "DSC"},
@@ -195,12 +215,18 @@
     "renderings": [
       {"label": "DAQ", "offset": {"x": 700, "y": 100}},
       {"label": "POWER", "offset": {"x": 100, "y": -100}}
-    ]
+    ],
+    "schema": {
+      "interface_module": {
+        "source": ["modbus"]
+      }
+    }
   },
   {
     "label": "INV",
     "equipment_label": "INV_v1",
     "name": "Inverter",
+    "ddl": "inv",
     "order": 14,
     "relationships": [
       {"label": "COMPRISES", "direction": "INCOMING", "target": "PVA"},
@@ -222,7 +248,12 @@
       {"label": "DAQ", "offset": {"x": 500, "y": 100}},
       {"label": "ZONE", "offset": {"x": 300, "y": 100}},
       {"label": "POWER", "position": {"x": 700, "y": 200}, "root": true}
-    ]
+    ],
+    "schema": {
+      "interface_module": {
+        "source": ["modbus"]
+      }
+    }
   },
   {
     "label": "ACB",
@@ -373,6 +404,7 @@
     "label": "S",
     "equipment_label": "S_v1",
     "name": "String",
+    "ddl": "str",
     "order": 23,
     "relationships": [
       {"label": "ENCOMPASS", "direction": "INCOMING", "target": "ZNP"},
@@ -392,6 +424,7 @@
     "label": "P",
     "equipment_label": "P_v1",
     "name": "Panel",
+    "ddl": "pnl",
     "order": 24,
     "relationships": [
       {"label": "ENCOMPASS", "direction": "INCOMING", "target": "ZNP"},

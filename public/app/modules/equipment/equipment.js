@@ -280,6 +280,7 @@ define([
     }
   }, {
     schema: {
+      // Generic
       label: {
         required: true,
         editable: false,
@@ -300,6 +301,15 @@ define([
       name: {
         required: true
       },
+      ddl: {
+        editable: false,
+        source: []
+      },
+      interface_module: {
+        source: []
+      },
+
+      // Panel
       nominal_power: {
         type: 'power',
         units: 'watts'

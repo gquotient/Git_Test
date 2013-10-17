@@ -166,6 +166,8 @@ define([
           this.render();
         }
       },
+      ddl: {},
+      interface_module: {},
       description: {}
     }
   });
