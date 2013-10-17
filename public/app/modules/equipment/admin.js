@@ -104,16 +104,18 @@ define([
     },
 
     templateHelpers: function(data){
-      var attrs = _.difference(_.keys(this._schema), _.keys(this.schema));
-
       return {
-        items: _.map(attrs, function(attr){
-          return {
-            name: this._schema[attr].name,
-            value: data[attr],
-            attr: attr
-          };
-        }, this)
+        // Any required fields that aren't in the view schema.
+        items: _.reduce(this._schema, function(memo, params, attr){
+          if (params.required && !_.has(this.schema, attr)) {
+            memo.push({
+              name: params.name,
+              value: data[attr],
+              attr: attr
+            });
+          }
+          return memo;
+        }, [], this)
       };
     },
 

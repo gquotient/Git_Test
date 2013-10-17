@@ -138,15 +138,12 @@ define([
     },
 
     getSchema: function(){
-      var inherited = this._invokeOnInherits('getSchema') || {},
+      var inherited = this._invokeOnInherits('getSchema') || this.constructor.schema,
         schema = this.get('schema') || {};
 
-      // Combine the required, inherited and instance schema parameters.
-      return _.reduce(this.constructor.schema, function(memo, params, attr){
-        if (params.required || _.has(inherited, attr) || _.has(schema, attr)) {
-          memo[attr] = _.extend({}, params, inherited[attr], schema[attr]);
-        }
-
+      // Combine inherited and instance schema.
+      return _.reduce(inherited, function(memo, params, attr){
+        memo[attr] = _.extend({}, params, schema[attr]);
         return memo;
       }, {});
     },
