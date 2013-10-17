@@ -339,10 +339,14 @@ define([
         // dropdown with those values when the input gets focus.
         if (params.source) {
           memo['focus ' + params.el] = function(e){
-            var $el = $(e.target);
+            var collection = this.convertSource(params.source),
+              $el = $(e.target);
 
-            if ($el) {
-              this.createDropdown($el, params.source);
+            if (collection.length && $el) {
+              this.addDropdownView({
+                collection: collection,
+                $input: $el
+              });
             }
           };
         }
@@ -351,18 +355,25 @@ define([
       }, {}, this);
     },
 
-    createDropdown: function($input, collection){
-      var DropdownView = Marionette.getOption(this, 'dropdownView'), view;
-
-      // Allow creating the list of dropdown items dynamically.
-      if (_.isFunction(collection)) {
-        collection = collection.call(this);
+    convertSource: function(source){
+      // Generate the source list if defined as a function.
+      if (_.isFunction(source)) {
+        source = source.call(this);
       }
 
-      view = new DropdownView({
-        collection: collection,
-        $input: $input
-      });
+      // Generate a backbone collection if source is an array.
+      if (_.isArray(source)) {
+        source = new Backbone.Collection(_.map(source, function(item){
+          return _.isString(item) ? {name: item} : item;
+        }));
+      }
+
+      return source;
+    },
+
+    addDropdownView: function(options){
+      var DropdownView = Marionette.getOption(this, 'dropdownView'),
+        view = new DropdownView(options);
 
       this.$el.append(view.render().el);
     },
