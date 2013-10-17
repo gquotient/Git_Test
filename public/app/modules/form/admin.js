@@ -408,10 +408,23 @@ define([
     },
 
     isEditable: function(attr){
-      var editable;
+      var editable, params;
 
-      if (attr) {
-        editable = this.model.has(attr) ? this._schema[attr].editable : true;
+      // Use the attr params when given.
+      if (arguments.length) {
+        params = this._schema[attr] || {};
+        editable = params.editable;
+
+        // Disable dropdowns when schema has no options.
+        if (_.isArray(params.source) && !params.source.length) {
+          return false;
+
+        // Enable any attr that hasn't been set yet.
+        } else if (!this.model.has(attr)) {
+          return true;
+        }
+
+      // Otherwise use the view.
       } else {
         editable = Marionette.getOption(this, 'editable');
       }
