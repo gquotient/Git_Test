@@ -224,7 +224,7 @@ function(
           stacking: null
         },
         column: {
-          stacking: 'normal',
+          stacking: null,
           borderWidth: 0
         }
       },
