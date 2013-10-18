@@ -137,7 +137,7 @@ define([
       },
       inherits: {
         source: function(){
-          var filters = this.options.equipFilters || {},
+          var filters = this.options.filters || {},
             labels = filters.labels;
 
           return new Backbone.VirtualCollection(this.collection, {

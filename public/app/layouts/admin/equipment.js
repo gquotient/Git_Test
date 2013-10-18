@@ -45,9 +45,9 @@ define([
       this.listenTo(this.listView, 'save', this.saveDetail);
       this.listenTo(this.listView, 'cancel', this.hideDetail);
 
-      this.listenTo(this.listView, 'filter', function(args){
-        if (!_.isEqual(this.equipFilters, args)) {
-          this.equipFilters = args;
+      this.listenTo(this.listView, 'filter', function(filters){
+        if (!_.isEqual(this.equipFilters, filters)) {
+          this.equipFilters = filters;
           this.hideDetail();
         }
       });
@@ -94,7 +94,7 @@ define([
 
       view = new Equipment.views.AdminDetail({
         collection: this.collection,
-        equipFilters: this.equipFilters,
+        filters: this.equipFilters,
         model: model
       });
 
