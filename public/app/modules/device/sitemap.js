@@ -989,7 +989,10 @@ function(
     },
     paintDevices: function(){
       var dataSlice = this.currentOverlay.data[this.currentIndex],
-        localTime = new Date(this.currentOverlay.data[this.currentIndex][0] * 1000);
+        localTime = WallTime.UTCToWallTime(
+          new Date(this.currentOverlay.data[this.currentIndex][0] * 1000),
+          this.model.get('timezone')
+        );
 
       _.each(this.visible, function(child){
         // Don't bother painting shapes out of bounds and isn't an unattached panel
