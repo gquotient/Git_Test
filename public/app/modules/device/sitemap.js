@@ -576,13 +576,6 @@ function(
         closeWith: this
       });
 
-      var walltime = WallTime.UTCToWallTime(new Date(), this.model.get('timezone'));
-      this.localTimeOffset = (walltime.offset.negative) ? -walltime.offset.hours : walltime.offset.hours;
-
-      if (this.model.get('timezone').indexOf('America') >= 0) {
-        this.localTimeOffset = this.localTimeOffset + 1;
-      }
-
       this.listenTo(Backbone, 'window:resize', this.resize);
 
       this.listenTo(Backbone, 'set:date', function(date){
@@ -996,7 +989,10 @@ function(
     },
     paintDevices: function(){
       var dataSlice = this.currentOverlay.data[this.currentIndex],
-        localTime = new Date(this.currentOverlay.data[this.currentIndex][0] * 1000);
+        localTime = WallTime.UTCToWallTime(
+          new Date(this.currentOverlay.data[this.currentIndex][0] * 1000),
+          this.model.get('timezone')
+        );
 
       _.each(this.visible, function(child){
         // Don't bother painting shapes out of bounds and isn't an unattached panel
