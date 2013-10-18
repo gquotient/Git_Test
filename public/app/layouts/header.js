@@ -33,11 +33,13 @@ define([
     },
     events: {
       'click a': function(event){
-        event.preventDefault();
+        if (!$(event.currentTarget).hasClass('reporting')) {
+          event.preventDefault();
 
-        var route = event.target.pathname;
+          var route = event.target.pathname;
 
-        Backbone.history.navigate(route, true);
+          Backbone.history.navigate(route, true);
+        }
       }
     },
     triggers: {
