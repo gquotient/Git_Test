@@ -148,11 +148,20 @@ define([
                 ddl: 'monet_900',
                 dtstart: '2013-09-05',
                 dtstop: '2013-09-05',
-                columns: ['freezetime', 'net_amount', 'total_amount']
+                columns: ['freezetime', 'net_amount']
+              },
+              {
+                project_label: project.id,
+                project_timezone: that.model.get('timezone'),
+                ddl: 'monet_900',
+                dtstart: '2013-09-05',
+                dtstop: '2013-09-05',
+                columns: ['freezetime', 'total_amount']
               }
             ],
             series: [
-              Chart.seriesDefaults.monitezation
+              Chart.seriesDefaults.monitezation_net,
+              Chart.seriesDefaults.monitezation_total
             ]
           });
         } else {
