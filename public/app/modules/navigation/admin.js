@@ -40,11 +40,6 @@ define([
   });
 
   views.Dropdown = Marionette.CompositeView.extend({
-
-    constructor: function(){
-      Marionette.CompositeView.prototype.constructor.apply(this, arguments);
-    },
-
     template: {
       type: 'handlebars',
       template: dropdownTemplate
