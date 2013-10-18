@@ -80,6 +80,14 @@ function(
       name: 'Current',
       color: '#acd473',
       unit: 'I'
+    }),
+    monitezation_net: $.extend(_.clone(basicSeries), {
+      name: 'Monetized With PV',
+      unit: '$'
+    }),
+    monitezation_total: $.extend(_.clone(basicSeries), {
+      name: 'Monetized Without PV',
+      unit: '$'
     })
   };
 
@@ -187,7 +195,6 @@ function(
         enabled: false
       },
       colors: [
-        '#8DD3C7',
         '#4DAF4A',
         '#FF7F00',
         '#F781BF',
@@ -206,7 +213,8 @@ function(
         '#FDB462',
         '#CCEBC5',
         '#FFED6F',
-        '#0066cc'
+        '#0066cc',
+        '#8DD3C7'
       ],
       plotOptions: {
         series: {
