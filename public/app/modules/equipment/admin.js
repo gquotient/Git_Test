@@ -88,11 +88,11 @@ define([
       this.triggerMethod('filter', {labels: model.get('base_labels')});
     },
 
-    onFilter: function(args){
+    onFilter: function(filters){
       this.collection.updateFilter(function(equip){
         var base = equip.getBase();
 
-        return equip !== base && _.contains(args.labels, base.get('label'));
+        return equip !== base && _.contains(filters.labels, base.get('label'));
       });
     }
   });
