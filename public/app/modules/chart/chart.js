@@ -499,16 +499,20 @@ function(
       clearInterval(this.fetchInterval);
     },
     drawTimeIndictor: function(time) {
+      // Clear existing indicator
       this.chart.xAxis[0].removePlotLine('timeIndicator');
 
       if (time) {
+        // Find the offset of the supplied timezone
         var walltime = WallTime.UTCToWallTime(new Date(time.utc * 1000), time.timezone),
-              offset = (walltime.offset.negative) ? -walltime.offset.hours : walltime.offset.hours;
+            offset = (walltime.offset.negative) ? -walltime.offset.hours : walltime.offset.hours;
 
+        // Adjust for DST
         if (time.timezone.indexOf('America') >= 0) {
           offset = offset + 1;
         }
 
+        // Draw new indicator
         this.chart.xAxis[0].addPlotLine({
           color: '#777',
           width: 1,
