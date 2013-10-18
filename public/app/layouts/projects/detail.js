@@ -41,7 +41,6 @@ define([
       chart_healthAndSoiling: '.chart#healthAndSoiling'
     },
     initialize: function(){
-      console.log(this.model);
       // Check if devices need to be fetched
       if (!this.model.devices.length) {
         this.model.fetch({
