@@ -336,11 +336,17 @@ function(
             walltime = WallTime.UTCToWallTime(new Date(), timezone),
             offset = (walltime.offset.negative) ? -walltime.offset.hours : walltime.offset.hours;
 
+        // Adjust an hour for American timezones until we figure out this DST stuffs
+        if (timezone.indexOf('America') >= 0) {
+          offset = offset + 1;
+        }
+
         if (trace && trace.data) {
           // Loop through each point on the trace
           _.each(trace.data, function(point, index){
             // Change point to local js epoch time
             point[0] = (point[0] * 1000) + (offset * 60 * 60 * 1000);
+
             // Round watts to integers
             // NOTE - Extremely large numbers don't work in chrome
             // since they are bad data, just filter them out
