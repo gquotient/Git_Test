@@ -576,6 +576,13 @@ function(
         closeWith: this
       });
 
+      var walltime = WallTime.UTCToWallTime(new Date(), this.model.get('timezone'));
+      this.localTimeOffset = (walltime.offset.negative) ? -walltime.offset.hours : walltime.offset.hours;
+
+      if (this.model.get('timezone').indexOf('America') >= 0) {
+        this.localTimeOffset = this.localTimeOffset + 1;
+      }
+
       this.listenTo(Backbone, 'window:resize', this.resize);
 
       this.listenTo(Backbone, 'set:date', function(date){
