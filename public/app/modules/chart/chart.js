@@ -80,6 +80,10 @@ function(
       name: 'Current',
       color: '#acd473',
       unit: 'I'
+    }),
+    monitezation: $.extend(_.clone(basicSeries), {
+      name: 'Ca$h Monies',
+      unit: '$'
     })
   };
 

@@ -41,6 +41,7 @@ define([
       chart_healthAndSoiling: '.chart#healthAndSoiling'
     },
     initialize: function(){
+      console.log(this.model);
       // Check if devices need to be fetched
       if (!this.model.devices.length) {
         this.model.fetch({
@@ -131,37 +132,62 @@ define([
 
         that.chart_powerHistory.show(chart_powerHistory);
 
-        var chart_healthAndSoiling = new Chart.views.Basic({
-          autoUpdate: false,
-          type: 'column',
-          chartOptions: {
-            title: {
-              text: 'Energy History'
-            }
-          },
-          traces: [
-            {
-              'project_label': project.id,
-              'ddl':'daily-summary',
-              'dtstart': '-30d',
-              'dtstop': 'now',
-              'columns': ['freezetime', 'insolation'],
-              'project_timezone': that.model.get('timezone')
+        var chart_healthAndSoiling;
+
+        if (project.id === 'FOSASTI_01') {
+          chart_healthAndSoiling = new Chart.views.Basic({
+            chartOptions: {
+              title: {
+                text: 'Monetization'
+              }
             },
-            {
-              'project_label': project.id,
-              'ddl':'daily-summary',
-              'dtstart': '-30d',
-              'dtstop': 'now',
-              'columns': ['freezetime', 'ac_energy'],
-              'project_timezone': that.model.get('timezone')
-            }
-          ],
-          series: [
-            Chart.seriesDefaults.insolation,
-            Chart.seriesDefaults.energy
-          ]
-        });
+            traces: [
+              {
+                project_label: project.id,
+                project_timezone: that.model.get('timezone'),
+                ddl: 'monet_900',
+                dtstart: '2013-09-05',
+                dtstop: '2013-09-05',
+                columns: ['freezetime', 'net_amount', 'total_amount']
+              }
+            ],
+            series: [
+              Chart.seriesDefaults.monitezation
+            ]
+          });
+        } else {
+          chart_healthAndSoiling = new Chart.views.Basic({
+            autoUpdate: false,
+            type: 'column',
+            chartOptions: {
+              title: {
+                text: 'Energy History'
+              }
+            },
+            traces: [
+              {
+                'project_label': project.id,
+                'ddl':'daily-summary',
+                'dtstart': '-30d',
+                'dtstop': 'now',
+                'columns': ['freezetime', 'insolation'],
+                'project_timezone': that.model.get('timezone')
+              },
+              {
+                'project_label': project.id,
+                'ddl':'daily-summary',
+                'dtstart': '-30d',
+                'dtstop': 'now',
+                'columns': ['freezetime', 'ac_energy'],
+                'project_timezone': that.model.get('timezone')
+              }
+            ],
+            series: [
+              Chart.seriesDefaults.insolation,
+              Chart.seriesDefaults.energy
+            ]
+          });
+        }
 
         that.chart_healthAndSoiling.show(chart_healthAndSoiling);
       });
