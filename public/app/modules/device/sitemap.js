@@ -874,6 +874,9 @@ function(
 
         // Force selected value
         that.ui.overlatTypeSelect.val('none');
+
+        // Clear time based indicators
+        Backbone.trigger('show:time', null);
       };
 
       if (type && type !== 'none') {
@@ -980,6 +983,11 @@ function(
       if (typeof value === 'number' && value >= 0 && value < this.currentOverlay.dataLength) {
         this.currentIndex = value;
       }
+
+      Backbone.trigger('show:time', {
+        utc: this.currentOverlay.data[this.currentIndex][0],
+        timezone: this.model.get('timezone')
+      });
 
       this.paintDevices();
 
