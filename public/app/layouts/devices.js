@@ -74,8 +74,6 @@ define([
           model: this.model,
           collection: this.model.devices
         });
-      } else {
-        this.$el.find('.sitemapContainer').hide();
       }
 
       // Listen for a device to be clicked and change view
@@ -123,6 +121,8 @@ define([
 
       if (this.devicesMap) {
         this.sitemap.show(this.devicesMap);
+      } else {
+        this.$el.addClass('noDC');
       }
 
       var initialView = function(){
