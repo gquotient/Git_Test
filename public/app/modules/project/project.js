@@ -419,7 +419,7 @@ define([
         required: true,
         editable: false,
         validate: function(value){
-          return (/^[A-Z]{3,}$/).test(value);
+          return (/^[A-Z]{3,10}$/).test(value);
         }
       },
       display_name: {

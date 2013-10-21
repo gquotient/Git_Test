@@ -106,10 +106,10 @@ define([
           if (this.model.isNew() && this.ui.site_label.val() === '') {
             this.updateValues({
               site_label: _.reduce(value.split(' '), function(memo, word){
-                if (memo.length < 8) {
+                if (memo.length < 10) {
                   memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
                 }
-                return memo;
+                return memo.substr(0, 10);
               }, '')
             });
           }
