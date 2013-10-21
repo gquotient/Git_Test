@@ -74,6 +74,8 @@ define([
           model: this.model,
           collection: this.model.devices
         });
+      } else {
+        this.$el.find('.sitemapContainer').hide();
       }
 
       // Listen for a device to be clicked and change view
