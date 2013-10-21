@@ -140,6 +140,22 @@ define([
       },
       elevation: {},
       description: {}
+    },
+
+    onShow: function(){
+      if (this.model.isNew()) {
+        Backbone.history.navigate('/admin/projects');
+      } else {
+        Backbone.history.navigate('/admin/projects/' + this.model.id);
+      }
+    },
+
+    onSave: function(){
+      if (this.model.isNew()) {
+        this.model.addNote('created project');
+      }
+
+      this.saveChanges();
     }
   });
 

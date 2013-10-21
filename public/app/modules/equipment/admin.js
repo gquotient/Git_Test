@@ -169,6 +169,14 @@ define([
       ddl: {},
       interface_module: {},
       description: {}
+    },
+
+    onShow: function(){
+      if (this.model.isNew()) {
+        Backbone.history.navigate('/admin/equipment');
+      } else {
+        Backbone.history.navigate('/admin/equipment/' + this.model.id);
+      }
     }
   });
 

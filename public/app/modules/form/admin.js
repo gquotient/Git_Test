@@ -378,10 +378,33 @@ define([
       this.$el.append(view.render().el);
     },
 
+    configureTriggers: function(){
+      this.triggers = this.triggers || {};
+
+      // Store a copy of the original triggers object or function.
+      if (!this._triggers) { this._triggers = this.triggers; }
+
+      // Combine the result of the original triggers with admin triggers.
+      this.triggers = _.extend({}, _.result(this, '_triggers'), {
+        'click button.save': 'save'
+      });
+
+      return Marionette.ItemView.prototype.configureTriggers.apply(this, arguments);
+    },
+
     bindUIElements: function(){
       this.ui = this.ui || {};
 
+      // Store a copy of the original ui object or function.
+      if (!this._ui) { this._ui = this.ui; }
+
+      // Combine the result of the original ui with admin elements.
+      this._uiBindings = _.extend({}, _.result(this, '_ui'), {
+        save: 'button.save'
+      });
+
       Marionette.ItemView.prototype.bindUIElements.apply(this, arguments);
+
       this.bindSchemaElements();
     },
 
@@ -460,6 +483,35 @@ define([
       return _.extend(target, templateHelpers);
     },
 
+    onSave: function(){
+      this.saveChanges();
+    },
+
+    saveChanges: function(){
+      // Parse each field and return if any are invalid.
+      this.parseAll();
+      if (this.hasInvalid()) { return false; }
+
+      // Add an indicator to the save button.
+      this.toggleSaving(true);
+
+      return this.model.save(_.clone(this.changed), {
+        success: _.bind(function(){
+          this.triggerMethod('save:success', this.model);
+        }, this),
+        complete: _.bind(function(){
+          this.triggerMethod('save:complete', this.model);
+
+          // If the indicator is still visible remove it.
+          if (!this.isClosed) { this.toggleSaving(false); }
+        }, this)
+      });
+    },
+
+    toggleSaving: function(state){
+      this.ui.save.toggleClass('loading-right', state === true);
+    },
+
     updateValues: function(values){
       _.each(values, function(value, attr){
         var $el = this.ui[attr];
@@ -488,32 +540,6 @@ define([
 
     hasInvalid: function(){
       return this.$el.find('.invalid').length > 0;
-    },
-
-    saveChanges: function(options, context){
-      options = options || {};
-      context = context || this;
-
-      // Parse each field and return if any are invalid.
-      this.parseAll();
-      if (this.hasInvalid()) { return false; }
-
-      if (options.before) {
-        options.before.call(context);
-      }
-
-      return this.model.save(_.clone(this.changed), {
-        success: function(){
-          if (options.success) {
-            options.success.call(context);
-          }
-        },
-        complete: function(){
-          if (options.after) {
-            options.after.call(context);
-          }
-        }
-      });
     }
   });
 

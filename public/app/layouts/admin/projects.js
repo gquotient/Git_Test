@@ -42,8 +42,6 @@ define([
 
       this.listenTo(this.listView, 'refresh', this.refresh);
       this.listenTo(this.listView, 'select', this.showDetail);
-      this.listenTo(this.listView, 'save', this.saveDetail);
-      this.listenTo(this.listView, 'cancel', this.hideDetail);
 
       // Create the map view.
       this.mapView = new Project.views.AdminMap({
@@ -54,9 +52,14 @@ define([
       this.listenTo(this.mapView, 'locate', this.updateLocation);
     },
 
+    triggers: {
+      'click button.create': 'create'
+    },
+
     onShow: function(){
       this.list.show(this.listView);
       this.map.show(this.mapView);
+      this.showDetail();
 
       // Update the collection by triggering a refresh.
       this.refresh({
@@ -70,6 +73,10 @@ define([
           }
         }, this)
       });
+    },
+
+    onCreate: function(){
+      this.showDetail();
     },
 
     refresh: function(options){
@@ -107,65 +114,27 @@ define([
         model: model
       });
 
-      this.listenToOnce(view, 'close', function(){
-        if (!this.collection.contains(model)) {
-          this.mapView.removeMarker(model);
-        }
+      this.listenTo(view, 'save:success', function(){
+        this.collection.add(model);
+        this.showDetail(model);
+      });
 
+      this.listenToOnce(view, 'close', function(){
         if (!this.listView.isClosed) {
           this.listView.setActive();
+        }
+
+        if (!this.collection.contains(model)) {
+          this.mapView.removeMarker(model);
         }
 
         this.model = null;
       });
 
       this.detail.show(view);
-
-      this.listView.setActive(model, {
-        showSave: model.isEditable() || !model.isLocked()
-      });
-
+      this.listView.setActive(model);
       this.mapView.focusMap(model);
-      this.updateHistory(model);
-
       this.model = model;
-    },
-
-    saveDetail: function(){
-      var detailView = this.detail.currentView,
-        model = this.model;
-
-      if (detailView) {
-        detailView.saveChanges({
-          before: function(){
-            this.listView.toggleSaving(true);
-
-            if (model.isNew()) {
-              model.addNote('created project');
-            }
-          },
-          success: function(){
-            this.collection.add(model);
-            this.showDetail(model);
-          },
-          after: function(){
-            this.listView.toggleSaving(false);
-          }
-        }, this);
-      }
-    },
-
-    hideDetail: function(){
-      this.detail.close();
-      this.updateHistory();
-    },
-
-    updateHistory: function(model){
-      if (model && model.id) {
-        Backbone.history.navigate('/admin/projects/' + model.id);
-      } else {
-        Backbone.history.navigate('/admin/projects');
-      }
     },
 
     updateLocation: function(attr, model){

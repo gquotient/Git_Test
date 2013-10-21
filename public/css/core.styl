@@ -626,7 +626,7 @@ leftColumnWidthSml = 200px;
 .navigation-admin-list {
   position: relative;
   height: 100%;
-  padding: projectTableHeaderHeight 0 38px 0;
+  padding-top: projectTableHeaderHeight;
   border-right: borderBasicDark;
   overflow: hidden;
 
@@ -661,7 +661,7 @@ leftColumnWidthSml = 200px;
     width: 100%;
     height: projectTableHeaderHeight;
     padding: 3px 6px;
-    z-index: 100;
+    z-index: 201;
     background: colorBGDarkGrey;
     background-image: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
     border-top: borderBasicMedium;
@@ -686,27 +686,6 @@ leftColumnWidthSml = 200px;
     .refresh-icon {
       float: right;
       padding: 0 6px;
-    }
-  }
-
-  .footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 6px;
-    padding-right: 0;
-    border-top: borderBasicMedium;
-    border-bottom: borderBasicDark;
-    background: linear-gradient(colorSoftGradientGreyStart, colorSoftGradientGreyStop);
-
-    text-align: right;
-
-    .create {
-      float: left;
-    }
-
-    .save, .cancel {
-      display: none;
     }
   }
 

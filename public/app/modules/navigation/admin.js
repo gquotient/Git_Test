@@ -134,10 +134,7 @@ define([
       // Combine the result of the original ui with admin list elements.
       this._uiBindings = _.extend({}, _.result(this, '_ui'), {
         title: '.title',
-        refresh: '.refresh-icon',
-        create: 'button.create',
-        save: 'button.save',
-        cancel: 'button.cancel'
+        refresh: '.refresh-icon'
       });
 
       Marionette.CompositeView.prototype.bindUIElements.apply(this, arguments);
@@ -152,40 +149,24 @@ define([
       // Combine the result of the original triggers with admin list triggers.
       this.triggers = _.extend({}, _.result(this, '_triggers'), {
         'click .title': 'click:title',
-        'click .refresh-icon': 'refresh',
-        'click button.create': 'create',
-        'click button.save': 'save',
-        'click button.cancel': 'cancel'
+        'click .refresh-icon': 'refresh'
       });
 
       return Marionette.CompositeView.prototype.configureTriggers.apply(this, arguments);
     },
 
-    onCreate: function(){
-      this.trigger('select');
-    },
-
-    setActive: function(model, options){
+    setActive: function(model){
       var view = model && this.children.findByModel(model);
-
-      options = options || {};
 
       this.$('tr.active').removeClass('active');
 
       if (view) {
         view.$el.addClass('active');
       }
-
-      this.ui.save.toggle(!!model && options.showSave !== false);
-      this.ui.cancel.toggle(!!model);
     },
 
     toggleRefresh: function(state){
       this.ui.refresh.toggleClass('active', state === true);
-    },
-
-    toggleSaving: function(state){
-      this.ui.save.toggleClass('loading-left', state === true);
     }
   });
 
