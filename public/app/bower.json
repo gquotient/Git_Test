@@ -20,7 +20,7 @@
     "require-handlebars-plugin": "latest",
     "messageformat.js": "git://github.com/SlexAxton/messageformat.js.git#~0.1.5",
     "leaflet": "0.6.2",
-    "paper": "latest",
+    "paper": "0.9.8",
     "jquery-mousewheel": "latest",
     "highcharts": "#3.0.1",
     "handsontable": "git://github.com/ianmetcalf/jquery-handsontable.git#amd-support",

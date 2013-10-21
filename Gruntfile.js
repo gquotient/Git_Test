@@ -47,8 +47,8 @@ module.exports = function(grunt){
           ],
 
           skipDirOptimize: true, // Only minifies modules in the build
-          optimizeCss: 'none', //Stylus does this for us
-          optimize: 'none' //Use for debugging
+          optimizeCss: 'none'//, //Stylus does this for us
+          //optimize: 'none' //Use for debugging
         }
       }
     },
