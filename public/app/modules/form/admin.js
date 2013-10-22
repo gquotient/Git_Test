@@ -19,88 +19,6 @@ define([
 ){
   var views = {};
 
-  function parseFactory(params){
-    var parsers = {
-      number: function(value){
-        return parseFloat(value);
-      },
-      integer: function(value){
-        return parsers.number(value);
-      },
-      length: function(value){
-        var result = parsers.number(value);
-
-        // If the value has no units or is in the proper units just return it.
-        if (/(\d|m|meters?)$/i.test(value)) { return result; }
-
-        // Otherwise try to convert the value based on given units.
-        if (/(cm|centimeters?)$/i.test(value)) { return result / 100; }
-        if (/(mm|millimeters?)$/i.test(value)) { return result / 1000; }
-        if (/(yd|yards?)$/i.test(value)) { return result * 9144 / 10000; }
-        if (/(ft|foot|feet)$/i.test(value)) { return result * 3048 / 10000; }
-        if (/(in|inch|inches)$/i.test(value)) { return result * 254 / 10000; }
-
-        // Anything else is invalid.
-        return NaN;
-      },
-      power: function(value){
-        var result = parsers.number(value);
-
-        // If the value has no units or is in the proper units just return it.
-        if (/(\d|w|watts?)$/i.test(value)) { return result; }
-
-        // Otherwise try to convert the value based on given units.
-        if (/(kw|kilowatts?)$/i.test(value)) { return result * 1000; }
-
-        // Anything else is invalid.
-        return NaN;
-      }
-    };
-
-    return function(value){
-      var parser = parsers[params.type];
-
-      return parser ? parser(value) : value;
-    };
-  }
-
-  function renderFactory(params){
-    return function(value){
-      // Append the units if given.
-      if (params.units) {
-        value += ' ' + params.units;
-      }
-
-      return value;
-    };
-  }
-
-  function validateFactory(params){
-    var validators = {
-      number: function(value){
-        return _.isNumber(value) && !isNaN(value);
-      },
-      integer: function(value){
-        return validators.number(value) && Math.floor(value) === value;
-      },
-      length: function(value){
-        return validators.number(value);
-      },
-      power: function(value){
-        return validators.number(value);
-      }
-    };
-
-    return function(value){
-      var validator = validators[params.type];
-
-      if (validator && !validator(value)) { return false; }
-      if (params.required && !value && value !== 0) { return false; }
-
-      return true;
-    };
-  }
-
   views.InputDropdown = Navigation.views.Dropdown.extend({
 
     constructor: function(options){
@@ -237,6 +155,88 @@ define([
       this.$input.val(this.current.get('name')).blur();
     }
   });
+
+  function parseFactory(params){
+    var parsers = {
+      number: function(value){
+        return parseFloat(value);
+      },
+      integer: function(value){
+        return parsers.number(value);
+      },
+      length: function(value){
+        var result = parsers.number(value);
+
+        // If the value has no units or is in the proper units just return it.
+        if (/(\d|m|meters?)$/i.test(value)) { return result; }
+
+        // Otherwise try to convert the value based on given units.
+        if (/(cm|centimeters?)$/i.test(value)) { return result / 100; }
+        if (/(mm|millimeters?)$/i.test(value)) { return result / 1000; }
+        if (/(yd|yards?)$/i.test(value)) { return result * 9144 / 10000; }
+        if (/(ft|foot|feet)$/i.test(value)) { return result * 3048 / 10000; }
+        if (/(in|inch|inches)$/i.test(value)) { return result * 254 / 10000; }
+
+        // Anything else is invalid.
+        return NaN;
+      },
+      power: function(value){
+        var result = parsers.number(value);
+
+        // If the value has no units or is in the proper units just return it.
+        if (/(\d|w|watts?)$/i.test(value)) { return result; }
+
+        // Otherwise try to convert the value based on given units.
+        if (/(kw|kilowatts?)$/i.test(value)) { return result * 1000; }
+
+        // Anything else is invalid.
+        return NaN;
+      }
+    };
+
+    return function(value){
+      var parser = parsers[params.type];
+
+      return parser ? parser(value) : value;
+    };
+  }
+
+  function renderFactory(params){
+    return function(value){
+      // Append the units if given.
+      if (params.units) {
+        value += ' ' + params.units;
+      }
+
+      return value;
+    };
+  }
+
+  function validateFactory(params){
+    var validators = {
+      number: function(value){
+        return _.isNumber(value) && !isNaN(value);
+      },
+      integer: function(value){
+        return validators.number(value) && Math.floor(value) === value;
+      },
+      length: function(value){
+        return validators.number(value);
+      },
+      power: function(value){
+        return validators.number(value);
+      }
+    };
+
+    return function(value){
+      var validator = validators[params.type];
+
+      if (validator && !validator(value)) { return false; }
+      if (params.required && !value && value !== 0) { return false; }
+
+      return true;
+    };
+  }
 
   views.Admin = Marionette.ItemView.extend({
     constructor: function(){
@@ -476,6 +476,16 @@ define([
         .value();
     },
 
+    renderValue: function(attr, value){
+      var params = this._schema[attr] || {};
+
+      if (params.render) {
+        value = params.render.call(this, value);
+      }
+
+      return value;
+    },
+
     // Overwritten to pass values to the template helper.
     mixinTemplateHelpers: function(target){
       var templateHelpers = Marionette.getOption(this, 'templateHelpers');
@@ -511,26 +521,6 @@ define([
       });
     },
 
-    updateValues: function(values){
-      _.each(values, function(value, attr){
-        var $el = this.ui[attr];
-
-        if ($el && !$el.prop('disabled')) {
-          $el.val(this.renderValue(attr, value)).removeClass('invalid');
-        }
-      }, this);
-    },
-
-    renderValue: function(attr, value){
-      var params = this._schema[attr] || {};
-
-      if (params.render) {
-        value = params.render.call(this, value);
-      }
-
-      return value;
-    },
-
     isInvalid: function() {
       var invalid = false,
         attrs = [];
@@ -554,6 +544,16 @@ define([
       }, this);
 
       return invalid;
+    },
+
+    updateValues: function(values){
+      _.each(values, function(value, attr){
+        var $el = this.ui[attr];
+
+        if ($el && !$el.prop('disabled')) {
+          $el.val(this.renderValue(attr, value)).removeClass('invalid');
+        }
+      }, this);
     },
 
     toggleLoadingIndicator: function(name, state, options){
