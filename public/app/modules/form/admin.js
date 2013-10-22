@@ -492,8 +492,7 @@ define([
       this.parseAll();
       if (this.hasInvalid()) { return false; }
 
-      // Add an indicator to the save button.
-      this.toggleSaving(true);
+      this.toggleLoadingIndicator('save', true);
 
       return this.model.save(_.clone(this.changed), {
         success: _.bind(function(){
@@ -503,13 +502,9 @@ define([
           this.triggerMethod('save:complete', this.model);
 
           // If the indicator is still visible remove it.
-          if (!this.isClosed) { this.toggleSaving(false); }
+          if (!this.isClosed) { this.toggleLoadingIndicator('save'); }
         }, this)
       });
-    },
-
-    toggleSaving: function(state){
-      this.ui.save.toggleClass('loading-right', state === true);
     },
 
     updateValues: function(values){
@@ -540,6 +535,16 @@ define([
 
     hasInvalid: function(){
       return this.$el.find('.invalid').length > 0;
+    },
+
+    toggleLoadingIndicator: function(name, state, options){
+      var $el = this.ui[name];
+
+      options = _.extend({side: 'right'}, options);
+
+      if ($el) {
+        return $el.toggleClass('loading-' + options.side, state === true);
+      }
     }
   });
 
