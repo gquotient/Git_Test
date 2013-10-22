@@ -97,6 +97,8 @@ function(
         'Panel': 'pnl',
         'String': 'str-pnl-calc',
         'DC Bus': 'bus-str-calc',
+        'Combiner': 'bus-str-calc',
+        'Recombiner': 'bus-str-calc',
         'Generation Meter': 'acm'
       },
       column = {
@@ -116,6 +118,18 @@ function(
           current: 'dc_current',
           voltage: 'dc_voltage',
           panel_power_mean: 'dc_power_output_mean'
+        },
+        Combiner: {
+          energy: 'dc_energy',
+          power: 'dc_power',
+          current: 'dc_current',
+          voltage: 'dc_voltage'
+        },
+        Recombiner: {
+          energy: 'dc_energy',
+          power: 'dc_power',
+          current: 'dc_current',
+          voltage: 'dc_voltage'
         },
         'DC Bus': {
           power: 'dc_power',
