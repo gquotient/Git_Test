@@ -488,9 +488,7 @@ define([
     },
 
     saveChanges: function(){
-      // Parse each field and return if any are invalid.
-      this.parseAll();
-      if (this.hasInvalid()) { return false; }
+      if (this.isInvalid()) { return false; }
 
       this.toggleLoadingIndicator('save', true);
 
@@ -527,14 +525,29 @@ define([
       return value;
     },
 
-    // This causes the parser and validator to be run on every input and
-    // textarea field.
-    parseAll: function(){
-      this.$el.find('input, textarea').blur();
-    },
+    isInvalid: function() {
+      var invalid = false,
+        attrs = [];
 
-    hasInvalid: function(){
-      return this.$el.find('.invalid').length > 0;
+      // If no attrs are passed then check them all.
+      if (!arguments.length) {
+        attrs = _.keys(this._schema);
+
+      // Otherwise turn the arguments into a single array.
+      } else {
+        attrs = attrs.concat.apply(attrs, arguments);
+      }
+
+      // Run the parser and validator for each attr and check for invalid.
+      _.each(attrs, function(attr){
+        var $el = this.ui[attr];
+
+        if ($el && $el.blur().hasClass('invalid')) {
+          invalid = true;
+        }
+      }, this);
+
+      return invalid;
     },
 
     toggleLoadingIndicator: function(name, state, options){
