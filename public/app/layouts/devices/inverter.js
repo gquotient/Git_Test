@@ -36,7 +36,7 @@ define([
 
       project.findDataSources().done(function(dataSources){
         // Add irradiance trace
-        traces.push(Chart.dataDefaults(project, that.model, 'irradiance'));
+        traces.push(Chart.dataDefaults(project, that.model, 'irradiance', date));
         series.push(Chart.seriesDefaults.irradiance);
 
         // Populate chart w/ AC power if available

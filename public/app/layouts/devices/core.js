@@ -88,12 +88,13 @@ define([
     },
 
     buildCharts: function(){
-      var project = this.options.project;
+      var project = this.options.project,
+        date = this.options.date;
 
       var powerAndIrradiance = new Chart.views.Basic({
         traces: [
-          Chart.dataDefaults(project, this.model, 'irradiance', this.options.date),
-          Chart.dataDefaults(project, this.model, 'power', this.options.date)
+          Chart.dataDefaults(project, this.model, 'irradiance', date),
+          Chart.dataDefaults(project, this.model, 'power', date)
         ],
         series: [
           Chart.seriesDefaults.irradiance,
@@ -103,8 +104,8 @@ define([
 
       var currentAndVoltage = new Chart.views.Basic({
         traces: [
-          Chart.dataDefaults(project, this.model, 'current', this.options.date),
-          Chart.dataDefaults(project, this.model, 'voltage', this.options.date)
+          Chart.dataDefaults(project, this.model, 'current', date),
+          Chart.dataDefaults(project, this.model, 'voltage', date)
         ],
         series: [
           Chart.seriesDefaults.current,
@@ -173,7 +174,7 @@ define([
               }
             } else {
               // If not inverter, use the magic trace builder
-              traces.push(Chart.dataDefaults(that.options.project, child, 'power'));
+              traces.push(Chart.dataDefaults(that.options.project, child, 'power', date));
             }
 
             // Custom series to show device ids in the legend

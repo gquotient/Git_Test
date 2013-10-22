@@ -41,16 +41,16 @@ define([
             {
               'project_label': project.id,
               'ddl': 'pgen-env',
-              'dtstart': 'today',
-              'dtstop': 'now',
+              'dtstart': date ? date.start/1000 : 'today',
+              'dtstop': date ? date.stop/1000 : 'now',
               'columns': ['freezetime', 'irradiance'],
               'project_timezone': that.model.get('timezone')
             },
             {
               'project_label': project.id,
               'ddl': dataSources.energy,
-              'dtstart': 'today',
-              'dtstop': 'now',
+              'dtstart': date ? date.start/1000 : 'today',
+              'dtstop': date ? date.stop/1000 : 'now',
               'columns': ['freezetime', 'ac_power'],
               'project_timezone': that.model.get('timezone')
             }
