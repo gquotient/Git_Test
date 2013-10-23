@@ -138,6 +138,28 @@ module.exports = function(app){
       path: '/res/projects'
     }));
 
+  //////
+  // PROJECT IMPORT
+  //////
+
+  app.post('/api/projects/import', ensureAuthorized(['vendor_admin']),
+    helpers.request({
+      path: '/res/sentalisproject'
+    }));
+
+  app.put('/api/projects/:label/import', ensureAuthorized(['vendor_admin']),
+    function(req, res, next){
+      req.body.project_label = req.params.label;
+      next();
+    },
+    helpers.request({
+      path: '/res/sentalisproject'
+    }));
+
+  //////
+  // PROJECT COMMISSIONING
+  //////
+
   app.post('/api/projects/commission', ensureAuthorized(['vendor_admin']),
     helpers.request({
       path: '/res/commission'

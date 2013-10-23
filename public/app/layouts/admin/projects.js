@@ -114,7 +114,7 @@ define([
         model: model
       });
 
-      this.listenTo(view, 'save:success', function(){
+      this.listenTo(view, 'save:success import:success', function(){
         this.collection.add(model);
         this.showDetail(model);
       });

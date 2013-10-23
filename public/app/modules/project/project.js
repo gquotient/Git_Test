@@ -425,6 +425,9 @@ define([
       display_name: {
         required: true
       },
+      sentalis_id: {
+        editable: false
+      },
       latitude: {
         type: 'number',
         required: true
