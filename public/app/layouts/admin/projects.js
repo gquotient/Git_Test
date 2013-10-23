@@ -138,19 +138,16 @@ define([
     },
 
     updateLocation: function(attr, model){
-      if (!this.model) {
-        this.showDetail(attr);
+      if (this.model) {
 
-      } else if (this.model.isNew() && (!model || model === this.model)) {
-        this.model.set(attr);
+        // Update the location for new models.
+        if (this.model.isNew()) { this.model.set(attr); }
 
-        if (!model) {
-          this.mapView.addMarker(this.model);
-        }
-
-      } else {
-        this.mapView.focusMap(attr);
+        // Make sure this model has a map marker.
+        if (!model) { this.mapView.addMarker(this.model); }
       }
+
+      this.mapView.focusMap(attr);
     }
   });
 });
