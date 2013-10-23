@@ -124,6 +124,8 @@ module.exports = function(grunt){
   grunt.registerTask('postequip', function(){
     if (grunt.option('staging')) {
       grunt.option('host', 'http://equip.stage.intelligentarray.com');
+    } else if (grunt.option('production')) {
+      grunt.option('host', 'http://equip.intelligentarray.com');
     }
 
     grunt.task.run('apipost:equip');
