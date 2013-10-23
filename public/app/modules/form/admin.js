@@ -311,14 +311,14 @@ define([
         memo['blur ' + params.el] = function(e){
           var $el = $(e.target), value;
 
-          if ($el && $el.val) {
+          if ($el && $el.val && !$el.prop('disabled')) {
             value = $el.val().trim();
 
             if (params.parse) {
               value = params.parse.call(this, value);
             }
 
-            // If the value is invalid, mark the input and call an error
+            // If the value is invalid, mark the input and call the error
             // handler if present.
             if (params.validate && !params.validate.call(this, value)) {
               $el.addClass('invalid');
@@ -327,15 +327,17 @@ define([
                 params.error.call(this, value);
               }
 
-            // Otherwise capture the changed value, clear the input marker
-            // and call a success handler if present.
             } else {
               $el.removeClass('invalid');
 
-              this.changed[attr] = value;
+              // If an actual value is entered, capture it and call the success
+              // handler if present.
+              if (value || value === 0 || this.model.has(attr)) {
+                this.changed[attr] = value;
 
-              if (params.success) {
-                params.success.call(this, value);
+                if (params.success) {
+                  params.success.call(this, value);
+                }
               }
             }
           }
