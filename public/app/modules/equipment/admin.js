@@ -120,6 +120,11 @@ define([
     },
 
     modelEvents: {
+      // If the inheritence changes re-render the dropdown options.
+      'change:inherits': function(){
+        this.delegateEvents();
+        this.render();
+      },
       'destroy': 'close'
     },
 
@@ -162,8 +167,6 @@ define([
         },
         success: function(value){
           this.model.set({inherits: value});
-          this.delegateEvents();
-          this.render();
         }
       },
       ddl: {},
