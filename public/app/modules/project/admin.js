@@ -103,15 +103,19 @@ define([
       display_name: {
         el: '#name',
         success: function(value){
-          if (this.model.isNew() && this.ui.site_label.val() === '') {
-            this.updateValues({
-              site_label: _.reduce(value.split(' '), function(memo, word){
-                if (memo.length < 10) {
-                  memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
-                }
-                return memo.substr(0, 10);
-              }, '')
-            });
+          var site_label;
+
+          // Generate a site label from the project name if not set.
+          if (this.model.isNew() && !this.changed.site_label) {
+            site_label = _.reduce(value.split(' '), function(memo, word){
+              if (memo.length < 10) {
+                memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
+              }
+              return memo.substr(0, 10);
+            }, '');
+
+            this.updateValues({site_label: site_label});
+            this.changed.site_label = site_label;
           }
         }
       },
