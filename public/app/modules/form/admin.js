@@ -31,14 +31,14 @@ define([
         var result = parsers.number(value);
 
         // If the value has no units or is in the proper units just return it.
-        if (/(\d|m|meters?)$/.test(value)) { return result; }
+        if (/(\d|m|meters?)$/i.test(value)) { return result; }
 
         // Otherwise try to convert the value based on given units.
-        if (/(cm|centimeters?)$/.test(value)) { return result / 100; }
-        if (/(mm|millimeters?)$/.test(value)) { return result / 1000; }
-        if (/(yd|yards?)$/.test(value)) { return result * 9144 / 10000; }
-        if (/(ft|foot|feet)$/.test(value)) { return result * 3048 / 10000; }
-        if (/(in|inch|inches)$/.test(value)) { return result * 254 / 10000; }
+        if (/(cm|centimeters?)$/i.test(value)) { return result / 100; }
+        if (/(mm|millimeters?)$/i.test(value)) { return result / 1000; }
+        if (/(yd|yards?)$/i.test(value)) { return result * 9144 / 10000; }
+        if (/(ft|foot|feet)$/i.test(value)) { return result * 3048 / 10000; }
+        if (/(in|inch|inches)$/i.test(value)) { return result * 254 / 10000; }
 
         // Anything else is invalid.
         return NaN;
@@ -47,10 +47,10 @@ define([
         var result = parsers.number(value);
 
         // If the value has no units or is in the proper units just return it.
-        if (/(\d|w|watts?)$/.test(value)) { return result; }
+        if (/(\d|w|watts?)$/i.test(value)) { return result; }
 
         // Otherwise try to convert the value based on given units.
-        if (/(kw|kilowatts?)$/.test(value)) { return result * 1000; }
+        if (/(kw|kilowatts?)$/i.test(value)) { return result * 1000; }
 
         // Anything else is invalid.
         return NaN;
