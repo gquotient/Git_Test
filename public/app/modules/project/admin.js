@@ -108,7 +108,7 @@ define([
           // Generate a site label from the project name if not set.
           if (this.model.isNew() && !this.changed.site_label) {
             site_label = _.reduce(value.split(' '), function(memo, word){
-              if (memo.length < 10) {
+              if (memo.length < 5) {
                 memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
               }
               return memo.substr(0, 10);
