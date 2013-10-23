@@ -320,7 +320,7 @@ define([
       }
 
       // Clear the lock after saving for existing projects.
-      if (!this.isNew() && !options.persistLock) {
+      if (!this.isNew() && options.clearLock !== false) {
         options.success = _.wrap(options.success, function(success, resp){
           that.setLock(false).done(success);
         });
@@ -398,7 +398,7 @@ define([
     addNote: function(note, user, options){
       this.save({
         notes: this.formatNote(note, user) + this.get('notes')
-      }, _.extend({lazy: true, persistLock: true}, options));
+      }, _.extend({lazy: true, clearLock: false}, options));
     },
 
     formatNote: function(msg, user){
