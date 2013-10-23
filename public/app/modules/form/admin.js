@@ -57,27 +57,26 @@ define([
       }
     };
 
-    return parsers[params.type];
+    return function(value){
+      var parser = parsers[params.type];
+
+      return parser ? parser(value) : value;
+    };
   }
 
   function renderFactory(params){
-    var renderers = {
-      length: function(value){
-        return _.compact([value, params.units]).join(' ');
-      },
-      power: function(value){
-        return _.compact([value, params.units]).join(' ');
+    return function(value){
+      // Append the units if given.
+      if (params.units) {
+        value += ' ' + params.units;
       }
-    };
 
-    return renderers[params.type];
+      return value;
+    };
   }
 
   function validateFactory(params){
     var validators = {
-      text: function(value){
-        return _.isString(value) && value !== '';
-      },
       number: function(value){
         return _.isNumber(value) && !isNaN(value);
       },
@@ -92,7 +91,14 @@ define([
       }
     };
 
-    return params.required && (validators[params.type] || validators.text);
+    return function(value){
+      var validator = validators[params.type];
+
+      if (validator && !validator(value)) { return false; }
+      if (params.required && !value && value !== 0) { return false; }
+
+      return true;
+    };
   }
 
   views.InputDropdown = Navigation.views.Dropdown.extend({
