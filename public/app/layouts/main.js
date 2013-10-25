@@ -172,7 +172,7 @@ define([
           });
 
           ia.portfolios.fetch().done(function(portfolios){
-            Backbone.trigger('select:portfolio', ia.portfolios.findWhere({label: 'ALL'}));
+            Backbone.trigger('select:portfolio', ia.portfolios.getDefault());
           });
         }
       });
@@ -189,7 +189,7 @@ define([
     },
 
     initialize: function(options){
-      this.activePortfolio = ia.portfolios.findWhere({label: 'ALL'});
+      this.activePortfolio = ia.portfolios.getDefault();
 
       this.app = options.app;
 
