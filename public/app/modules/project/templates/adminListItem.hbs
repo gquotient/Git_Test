@@ -1,7 +1,11 @@
 <td>{{ display_name }}</td>
 <td class="actions">
+  {{#if hasImporting }}
+  <span class="importing-icon" title="{{ importing }}">&#xf0ec;</span>
+  {{/if}}
+
   <span class="lock-icon" title="{{ editor }}">
-  {{#if locked}}&#xf023;{{else}}&#xf09c;{{/if}}
+  {{#if isLocked }}&#xf023;{{else}}&#xf09c;{{/if}}
   </span>
   <button type="button" class="button commission primary">{{$ 'Commission' }}</button>
   <button type="button" class="button model">{{$ 'Model' }}</button>

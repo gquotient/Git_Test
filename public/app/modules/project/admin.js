@@ -39,11 +39,13 @@ define([
 
     templateHelpers: function(){
       return {
-        locked: this.model.isLocked()
+        hasImporting: this.model.has('importing'),
+        isLocked: this.model.isLocked()
       };
     },
 
     ui: {
+      importing: '.importing-icon',
       lock: '.lock-icon',
       commission: 'button.commission',
       del: 'button.delete'
@@ -61,6 +63,7 @@ define([
       var editable = this.model.isEditable(),
         disabled = !editable && this.model.isLocked();
 
+      this.ui.importing.toggleClass('active', this.model.isImporting());
       this.ui.lock.toggleClass('active', editable);
       this.ui.commission.attr('disabled', disabled);
       this.ui.del.attr('disabled', disabled);
