@@ -30,7 +30,7 @@ define([
     },
 
     findPortfolio: function(id){
-      return ia.portfolios.get(id) || ia.portfolios.findWhere({label: 'ALL'});
+      return ia.portfolios.get(id) || ia.portfolios.getDefault();
     },
 
     operatorView: function(id){
