@@ -172,7 +172,8 @@ define([
           });
 
           ia.portfolios.fetch().done(function(portfolios){
-            Backbone.trigger('select:portfolio', ia.portfolios.findWhere({label: 'ALL'}));
+            var portfolio = ia.portfolios.findWhere({display_name: 'All Projects'}) || ia.portfolios.first();
+            Backbone.trigger('select:portfolio', portfolio);
           });
         }
       });
@@ -189,7 +190,8 @@ define([
     },
 
     initialize: function(options){
-      this.activePortfolio = ia.portfolios.findWhere({label: 'ALL'});
+      // NOTE - this should not be based on the display name as that should be able to be translated but, here we are
+      this.activePortfolio = ia.portfolios.findWhere({display_name: 'All Projects'}) || ia.portfolios.first();
 
       this.app = options.app;
 
