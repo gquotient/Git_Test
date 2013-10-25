@@ -8,7 +8,7 @@
     "requirejs": "latest",
     "jquery": "~1.9.x",
     "modernizr": "latest",
-    "backbone": "latest",
+    "backbone": "~1.0.0",
     "backbone.marionette": "1.1.0",
     "backbone.marionette.handlebars": "latest",
     "backbone.babysitter": "latest",
