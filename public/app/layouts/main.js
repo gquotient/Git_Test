@@ -189,7 +189,6 @@ define([
     },
 
     initialize: function(options){
-      // NOTE - this should not be based on the display name as that should be able to be translated but, here we are
       this.activePortfolio = ia.portfolios.getDefault();
 
       this.app = options.app;
