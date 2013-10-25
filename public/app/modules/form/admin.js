@@ -19,82 +19,6 @@ define([
 ){
   var views = {};
 
-  function parseFactory(params){
-    var parsers = {
-      number: function(value){
-        return parseFloat(value);
-      },
-      integer: function(value){
-        return parsers.number(value);
-      },
-      length: function(value){
-        var result = parsers.number(value);
-
-        // If the value has no units or is in the proper units just return it.
-        if (/(\d|m|meters?)$/.test(value)) { return result; }
-
-        // Otherwise try to convert the value based on given units.
-        if (/(cm|centimeters?)$/.test(value)) { return result / 100; }
-        if (/(mm|millimeters?)$/.test(value)) { return result / 1000; }
-        if (/(yd|yards?)$/.test(value)) { return result * 9144 / 10000; }
-        if (/(ft|foot|feet)$/.test(value)) { return result * 3048 / 10000; }
-        if (/(in|inch|inches)$/.test(value)) { return result * 254 / 10000; }
-
-        // Anything else is invalid.
-        return NaN;
-      },
-      power: function(value){
-        var result = parsers.number(value);
-
-        // If the value has no units or is in the proper units just return it.
-        if (/(\d|w|watts?)$/.test(value)) { return result; }
-
-        // Otherwise try to convert the value based on given units.
-        if (/(kw|kilowatts?)$/.test(value)) { return result * 1000; }
-
-        // Anything else is invalid.
-        return NaN;
-      }
-    };
-
-    return parsers[params.type];
-  }
-
-  function renderFactory(params){
-    var renderers = {
-      length: function(value){
-        return _.compact([value, params.units]).join(' ');
-      },
-      power: function(value){
-        return _.compact([value, params.units]).join(' ');
-      }
-    };
-
-    return renderers[params.type];
-  }
-
-  function validateFactory(params){
-    var validators = {
-      text: function(value){
-        return _.isString(value) && value !== '';
-      },
-      number: function(value){
-        return _.isNumber(value) && !isNaN(value);
-      },
-      integer: function(value){
-        return validators.number(value) && Math.floor(value) === value;
-      },
-      length: function(value){
-        return validators.number(value);
-      },
-      power: function(value){
-        return validators.number(value);
-      }
-    };
-
-    return params.required && (validators[params.type] || validators.text);
-  }
-
   views.InputDropdown = Navigation.views.Dropdown.extend({
 
     constructor: function(options){
@@ -232,6 +156,88 @@ define([
     }
   });
 
+  function parseFactory(params){
+    var parsers = {
+      number: function(value){
+        return parseFloat(value);
+      },
+      integer: function(value){
+        return parsers.number(value);
+      },
+      length: function(value){
+        var result = parsers.number(value);
+
+        // If the value has no units or is in the proper units just return it.
+        if (/(\d|m|meters?)$/i.test(value)) { return result; }
+
+        // Otherwise try to convert the value based on given units.
+        if (/(cm|centimeters?)$/i.test(value)) { return result / 100; }
+        if (/(mm|millimeters?)$/i.test(value)) { return result / 1000; }
+        if (/(yd|yards?)$/i.test(value)) { return result * 9144 / 10000; }
+        if (/(ft|foot|feet)$/i.test(value)) { return result * 3048 / 10000; }
+        if (/(in|inch|inches)$/i.test(value)) { return result * 254 / 10000; }
+
+        // Anything else is invalid.
+        return NaN;
+      },
+      power: function(value){
+        var result = parsers.number(value);
+
+        // If the value has no units or is in the proper units just return it.
+        if (/(\d|w|watts?)$/i.test(value)) { return result; }
+
+        // Otherwise try to convert the value based on given units.
+        if (/(kw|kilowatts?)$/i.test(value)) { return result * 1000; }
+
+        // Anything else is invalid.
+        return NaN;
+      }
+    };
+
+    return function(value){
+      var parser = parsers[params.type];
+
+      return parser ? parser(value) : value;
+    };
+  }
+
+  function renderFactory(params){
+    return function(value){
+      // Append the units if given.
+      if (params.units) {
+        value += ' ' + params.units;
+      }
+
+      return value;
+    };
+  }
+
+  function validateFactory(params){
+    var validators = {
+      number: function(value){
+        return _.isNumber(value) && !isNaN(value);
+      },
+      integer: function(value){
+        return validators.number(value) && Math.floor(value) === value;
+      },
+      length: function(value){
+        return validators.number(value);
+      },
+      power: function(value){
+        return validators.number(value);
+      }
+    };
+
+    return function(value){
+      var validator = validators[params.type];
+
+      if (validator && !validator(value)) { return false; }
+      if (params.required && !value && value !== 0) { return false; }
+
+      return true;
+    };
+  }
+
   views.Admin = Marionette.ItemView.extend({
     constructor: function(){
       this.changed = {};
@@ -305,14 +311,14 @@ define([
         memo['blur ' + params.el] = function(e){
           var $el = $(e.target), value;
 
-          if ($el && $el.val) {
+          if ($el && $el.val && !$el.prop('disabled')) {
             value = $el.val().trim();
 
             if (params.parse) {
               value = params.parse.call(this, value);
             }
 
-            // If the value is invalid, mark the input and call an error
+            // If the value is invalid, mark the input and call the error
             // handler if present.
             if (params.validate && !params.validate.call(this, value)) {
               $el.addClass('invalid');
@@ -321,15 +327,17 @@ define([
                 params.error.call(this, value);
               }
 
-            // Otherwise capture the changed value, clear the input marker
-            // and call a success handler if present.
             } else {
               $el.removeClass('invalid');
 
-              this.changed[attr] = value;
+              // If an actual value is entered, capture it and call the success
+              // handler if present.
+              if (value || value === 0 || this.model.has(attr)) {
+                this.changed[attr] = value;
 
-              if (params.success) {
-                params.success.call(this, value);
+                if (params.success) {
+                  params.success.call(this, value);
+                }
               }
             }
           }
@@ -378,10 +386,33 @@ define([
       this.$el.append(view.render().el);
     },
 
+    configureTriggers: function(){
+      this.triggers = this.triggers || {};
+
+      // Store a copy of the original triggers object or function.
+      if (!this._triggers) { this._triggers = this.triggers; }
+
+      // Combine the result of the original triggers with admin triggers.
+      this.triggers = _.extend({}, _.result(this, '_triggers'), {
+        'click button.save': 'save'
+      });
+
+      return Marionette.ItemView.prototype.configureTriggers.apply(this, arguments);
+    },
+
     bindUIElements: function(){
       this.ui = this.ui || {};
 
+      // Store a copy of the original ui object or function.
+      if (!this._ui) { this._ui = this.ui; }
+
+      // Combine the result of the original ui with admin elements.
+      this._uiBindings = _.extend({}, _.result(this, '_ui'), {
+        save: 'button.save'
+      });
+
       Marionette.ItemView.prototype.bindUIElements.apply(this, arguments);
+
       this.bindSchemaElements();
     },
 
@@ -447,6 +478,16 @@ define([
         .value();
     },
 
+    renderValue: function(attr, value){
+      var params = this._schema[attr] || {};
+
+      if (params.render) {
+        value = params.render.call(this, value);
+      }
+
+      return value;
+    },
+
     // Overwritten to pass values to the template helper.
     mixinTemplateHelpers: function(target){
       var templateHelpers = Marionette.getOption(this, 'templateHelpers');
@@ -460,6 +501,53 @@ define([
       return _.extend(target, templateHelpers);
     },
 
+    onSave: function(){
+      this.saveChanges();
+    },
+
+    saveChanges: function(){
+      if (this.isInvalid()) { return false; }
+
+      this.toggleLoadingIndicator('save', true);
+
+      return this.model.save(_.clone(this.changed), {
+        success: _.bind(function(){
+          this.triggerMethod('save:success', this.model);
+        }, this),
+        complete: _.bind(function(){
+          this.triggerMethod('save:complete', this.model);
+
+          // If the indicator is still visible remove it.
+          if (!this.isClosed) { this.toggleLoadingIndicator('save'); }
+        }, this)
+      });
+    },
+
+    isInvalid: function() {
+      var invalid = false,
+        attrs = [];
+
+      // If no attrs are passed then check them all.
+      if (!arguments.length) {
+        attrs = _.keys(this._schema);
+
+      // Otherwise turn the arguments into a single array.
+      } else {
+        attrs = attrs.concat.apply(attrs, arguments);
+      }
+
+      // Run the parser and validator for each attr and check for invalid.
+      _.each(attrs, function(attr){
+        var $el = this.ui[attr];
+
+        if ($el && $el.blur().hasClass('invalid')) {
+          invalid = true;
+        }
+      }, this);
+
+      return invalid;
+    },
+
     updateValues: function(values){
       _.each(values, function(value, attr){
         var $el = this.ui[attr];
@@ -470,50 +558,14 @@ define([
       }, this);
     },
 
-    renderValue: function(attr, value){
-      var params = this._schema[attr] || {};
+    toggleLoadingIndicator: function(name, state, options){
+      var $el = this.ui[name];
 
-      if (params.render) {
-        value = params.render.call(this, value);
+      options = _.extend({side: 'right'}, options);
+
+      if ($el) {
+        return $el.toggleClass('loading-' + options.side, state === true);
       }
-
-      return value;
-    },
-
-    // This causes the parser and validator to be run on every input and
-    // textarea field.
-    parseAll: function(){
-      this.$el.find('input, textarea').blur();
-    },
-
-    hasInvalid: function(){
-      return this.$el.find('.invalid').length > 0;
-    },
-
-    saveChanges: function(options, context){
-      options = options || {};
-      context = context || this;
-
-      // Parse each field and return if any are invalid.
-      this.parseAll();
-      if (this.hasInvalid()) { return false; }
-
-      if (options.before) {
-        options.before.call(context);
-      }
-
-      return this.model.save(_.clone(this.changed), {
-        success: function(){
-          if (options.success) {
-            options.success.call(context);
-          }
-        },
-        complete: function(){
-          if (options.after) {
-            options.after.call(context);
-          }
-        }
-      });
     }
   });
 

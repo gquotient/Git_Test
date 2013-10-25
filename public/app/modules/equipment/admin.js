@@ -120,6 +120,11 @@ define([
     },
 
     modelEvents: {
+      // If the inheritence changes re-render the dropdown options.
+      'change:inherits': function(){
+        this.delegateEvents();
+        this.render();
+      },
       'destroy': 'close'
     },
 
@@ -162,13 +167,19 @@ define([
         },
         success: function(value){
           this.model.set({inherits: value});
-          this.delegateEvents();
-          this.render();
         }
       },
       ddl: {},
       interface_module: {},
       description: {}
+    },
+
+    onShow: function(){
+      if (this.model.isNew()) {
+        Backbone.history.navigate('/admin/equipment');
+      } else {
+        Backbone.history.navigate('/admin/equipment/' + this.model.id);
+      }
     }
   });
 

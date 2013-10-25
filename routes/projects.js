@@ -58,7 +58,8 @@ module.exports = function(app){
     'dataSources',
     'status',
     'statusValue',
-    'editor'
+    'editor',
+    'operation'
   ];
 
   app.post('/api/projects', ensureAuthorized(['vendor_admin']),
@@ -137,6 +138,40 @@ module.exports = function(app){
     helpers.request({
       path: '/res/projects'
     }));
+
+  //////
+  // PROJECT IMPORT
+  //////
+
+  app.post('/api/projects/import', ensureAuthorized(['vendor_admin']),
+    helpers.request({
+      path: '/res/sentalisproject',
+      middleware: true
+    }),
+    function(req, res){
+      var body = _.isObject(res.body) ? res.body : {};
+
+      res.send(res.statusCode, _.omit(body, 'operation'));
+    });
+
+  app.put('/api/projects/:label/import', ensureAuthorized(['vendor_admin']),
+    function(req, res, next){
+      req.body.project_label = req.params.label;
+      next();
+    },
+    helpers.request({
+      path: '/res/sentalisproject',
+      middleware: true
+    }),
+    function(req, res){
+      var body = _.isObject(res.body) ? res.body : {};
+
+      res.send(res.statusCode, _.omit(body, 'operation'));
+    });
+
+  //////
+  // PROJECT COMMISSIONING
+  //////
 
   app.post('/api/projects/commission', ensureAuthorized(['vendor_admin']),
     helpers.request({

@@ -42,15 +42,16 @@ define([
 
       this.listenTo(this.listView, 'refresh', this.refresh);
       this.listenTo(this.listView, 'select', this.showDetail);
-      this.listenTo(this.listView, 'save', this.saveDetail);
-      this.listenTo(this.listView, 'cancel', this.hideDetail);
-
       this.listenTo(this.listView, 'filter', function(filters){
         if (!_.isEqual(this.equipFilters, filters)) {
           this.equipFilters = filters;
-          this.hideDetail();
+          this.showDetail();
         }
       });
+    },
+
+    triggers: {
+      'click button.create': 'create'
     },
 
     onShow: function(){
@@ -66,6 +67,10 @@ define([
           }
         }, this)
       });
+    },
+
+    onCreate: function(){
+      this.showDetail();
     },
 
     refresh: function(options){
@@ -98,47 +103,22 @@ define([
         model: model
       });
 
+      this.listenTo(view, 'save:success', function(){
+        this.collection.add(model);
+        this.showDetail(model);
+      });
+
       this.listenToOnce(view, 'close', function(){
         if (!this.listView.isClosed) {
           this.listView.setActive();
         }
 
         this.model = null;
-        Backbone.history.navigate('/admin/equipment');
       });
 
       this.detail.show(view);
-
       this.listView.setActive(model);
       this.model = model;
-
-      if (model.id) {
-        Backbone.history.navigate('/admin/equipment/' + model.id);
-      }
-    },
-
-    saveDetail: function(){
-      var detailView = this.detail.currentView,
-        model = this.model;
-
-      if (detailView) {
-        detailView.saveChanges({
-          before: function(){
-            this.listView.toggleSaving(true);
-          },
-          success: function(){
-            this.collection.add(model);
-            this.showDetail(model);
-          },
-          after: function(){
-            this.listView.toggleSaving(false);
-          }
-        }, this);
-      }
-    },
-
-    hideDetail: function(){
-      this.detail.close();
     }
   });
 });

@@ -103,15 +103,19 @@ define([
       display_name: {
         el: '#name',
         success: function(value){
-          if (this.model.isNew() && this.ui.site_label.val() === '') {
-            this.updateValues({
-              site_label: _.reduce(value.split(' '), function(memo, word){
-                if (memo.length < 8) {
-                  memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
-                }
-                return memo;
-              }, '')
-            });
+          var site_label;
+
+          // Generate a site label from the project name if not set.
+          if (this.model.isNew() && !this.changed.site_label) {
+            site_label = _.reduce(value.split(' '), function(memo, word){
+              if (memo.length < 8) {
+                memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
+              }
+              return memo.substr(0, 10);
+            }, '');
+
+            this.updateValues({site_label: site_label});
+            this.changed.site_label = site_label;
           }
         }
       },
@@ -124,6 +128,7 @@ define([
           this.updateValues({site_label: value});
         }
       },
+      sentalis_id: {},
       address: {},
       city: {},
       state: {},
@@ -140,6 +145,56 @@ define([
       },
       elevation: {},
       description: {}
+    },
+
+    ui: {
+      'import': 'button.import'
+    },
+
+    triggers: {
+      'click button.import': 'import'
+    },
+
+    onShow: function(){
+      if (this.model.isNew()) {
+        Backbone.history.navigate('/admin/projects');
+      } else {
+        Backbone.history.navigate('/admin/projects/' + this.model.id);
+      }
+    },
+
+    onSave: function(){
+      if (this.model.isNew()) {
+        this.model.addNote('created project');
+      }
+
+      this.saveChanges();
+    },
+
+    onImport: function(){
+      this.importSentalis();
+    },
+
+    importSentalis: function(){
+      // The Sentalis ID is required for this operation.
+      this._schema.sentalis_id.required = true;
+      if (this.isInvalid('site_label', 'sentalis_id')) { return false; }
+
+      this.toggleLoadingIndicator('import', true);
+
+      return this.model.save(_.clone(this.changed), {
+        url: _.result(this.model, 'url') + '/import',
+        clearLock: false,
+        success: _.bind(function(){
+          this.triggerMethod('import:success', this.model);
+        }, this),
+        complete: _.bind(function(){
+          this.triggerMethod('import:complete', this.model);
+
+          // If the indicator is still visible remove it.
+          if (!this.isClosed) { this.toggleLoadingIndicator('import'); }
+        }, this)
+      });
     }
   });
 
