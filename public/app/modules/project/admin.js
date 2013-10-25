@@ -186,6 +186,7 @@ define([
         url: _.result(this.model, 'url') + '/import',
         clearLock: false,
         success: _.bind(function(){
+          this.model.set('importing', '');
           this.triggerMethod('import:success', this.model);
         }, this),
         complete: _.bind(function(){

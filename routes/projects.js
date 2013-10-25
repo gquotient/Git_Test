@@ -27,6 +27,11 @@ module.exports = function(app){
       path: '/res/projects'
     }));
 
+  app.get('/api/projects/importing', ensureAuthorized(['vendor_admin']),
+    helpers.request({
+      path: '/res/sentalisproject'
+    }));
+
   app.get('/api/projects/:label',
     helpers.request({
       headers: {
@@ -59,6 +64,7 @@ module.exports = function(app){
     'status',
     'statusValue',
     'editor',
+    'importing',
     'operation'
   ];
 

@@ -71,6 +71,8 @@ define([
           } else {
             this.mapView.centerMap();
           }
+
+          this.checkImporting();
         }, this)
       });
     },
@@ -96,6 +98,28 @@ define([
       });
     },
 
+    checkImporting: function(){
+      var that = this;
+
+      clearTimeout(this.importTimeout);
+
+      // If the layout is still visible fetch importing projects.
+      if (!this.isClosed) {
+        this.collection.fetchImporting().done(function(){
+          var interval = 60 * 1000;
+
+          // If any projects are currently importing increase the poll rate.
+          if (that.collection.any(function(m){ return m.isImporting(); })) {
+            interval /= 10;
+          }
+
+          that.importTimeout = setTimeout(function(){
+            that.checkImporting();
+          }, interval);
+        });
+      }
+    },
+
     showDetail: function(model){
       var view;
 
@@ -117,6 +141,17 @@ define([
       this.listenTo(view, 'save:success import:success', function(){
         this.collection.add(model);
         this.showDetail(model);
+      });
+
+      this.listenTo(view, 'import:success', function(){
+        var that = this;
+
+        clearTimeout(this.importTimeout);
+
+        // Wait a second then check the status of the import.
+        this.importTimeout = setTimeout(function(){
+          that.checkImporting();
+        }, 1000);
       });
 
       this.listenToOnce(view, 'close', function(){

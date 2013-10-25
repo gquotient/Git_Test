@@ -122,11 +122,18 @@ define([
       return this.constructor.schema;
     },
 
+    isImporting: function(){
+      var msg = 'was successfully translated';
+      return this.has('importing') && this.get('importing').indexOf(msg) < 0;
+    },
+
     isLocked: function(){
+      if (this.isImporting()) { return true; }
       return this.has('editor') && this.get('editor') !== 'unlocked';
     },
 
     isEditable: function(){
+      if (this.isImporting()) { return false; }
       return this.user && this.get('editor') === this.user.get('email');
     },
 
@@ -449,6 +456,34 @@ define([
 
     getOrCreate: function(label){
       return this.get(label) || this.push({project_label: label});
+    },
+
+    fetchImporting: function(){
+      // Don't fetch data if there are no projects.
+      if (!this.length) { return $.Deferred().resolve(); }
+
+      return $.ajax({
+        url: this.url + '/importing',
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done(_.bind(function(data){
+        var stat = data.status || {};
+
+        this.each(function(project){
+          var msg = stat[project.id];
+
+          // Convert the msgs into a single string and remove dividers.
+          if (_.isArray(msg)) {
+            msg = _.reject(msg, function(line){
+              return /^-+$/.test(line);
+            }).join('\n');
+          }
+
+          // If the project is importing set the flag, otherwise clear it.
+          project.set('importing', msg, {unset: !_.has(stat, project.id)});
+        });
+      }, this));
     },
 
     fetchIssues: function(){
