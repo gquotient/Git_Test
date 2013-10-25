@@ -179,6 +179,10 @@ define([
       this.on('add', function(portfolio, collection){
         portfolio.updateProjects();
       }, this);
+    },
+    getDefault: function(){
+      // Return some rule-based default portfolio for use in views
+      return this.findWhere({display_name: 'All Projects'}) || this.first();
     }
   });
 
