@@ -77,9 +77,12 @@ function(
       if (comment && comment.length) {
         return this.save({
           user_info: userId,
-          comment: comment,
-          success: function(model){
-            that.set(model);
+          comment: comment
+        },
+        {
+          success: function(model, response){
+            // Update model properties with new stuff from the server
+            that.set(response.alarm);
           }
         });
       }
