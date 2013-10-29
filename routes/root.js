@@ -70,9 +70,21 @@ module.exports = function(app){
         return false;
       }
 
-      // Until we have a default team option for the user, assume first team or last selected. Or, you know. No team at all.
-      var team = user.default_team ? user.default_team : user.teams[0] ? user.teams[0][0] : 'No Team'; // Hack.
-      req.session.team_label = req.session.team_label || team;
+      // Guard code to make sure the team gets set to one that the user is actually part of
+      // NOTE - This could maybe be extended to reset the default team if it finds an incongruence
+      var defaultTeam = function(){
+        var myTeam = user.teams[0] ? user.teams[0][0] : 'No Team';
+
+        _.each(user.teams, function(team){
+          if (user.default_team === team[0]) {
+            myTeam = user.default_team ;
+          }
+        });
+
+        return myTeam;
+      };
+
+      req.session.team_label = req.session.team_label || defaultTeam();
       req.session.org_label = user.org_label;
 
       // Handle errors
