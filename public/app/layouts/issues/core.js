@@ -90,12 +90,13 @@ define([
           display_name: this.options.model.get('display_name')
         }
       );
-
-      // This stuff needs to be in the onShow because it needs the dom elements to work
+    },
+    onRender: function(){
+      // Moved this to on render so the chart doesn't disappear when the model changes
+      // There might be a smarter way to handle updating individual parts of the page
+      // So this chart doesn't render on every change event
       var that = this,
         project = this.options.project;
-
-        console.log(project, that.model);
 
       var initialView = function(){
         that.device = project.devices.findWhere({graph_key: that.model.get('identifier')});
@@ -108,7 +109,6 @@ define([
         project.fetch({data: {project_label: project.id}}).done(initialView);
       }
     },
-
     buildChart: function(){
       var
         project = this.options.project,
