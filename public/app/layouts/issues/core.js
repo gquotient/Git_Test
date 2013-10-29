@@ -34,7 +34,15 @@ define([
       type: 'handlebars',
       template: CoreTemplate
     },
-
+    templateHelpers: function(){
+      // Since we need the project info, we need to return a special context
+      // to our template
+      return {
+        project: this.options.project.toJSON(),
+        alarm: this.model.toJSON(),
+        contactInfo: this.options.contactInfo.toJSON()
+      };
+    },
     regions: {
       chart: '.chart',
       deviceName: '.deviceName'
@@ -86,6 +94,8 @@ define([
       // This stuff needs to be in the onShow because it needs the dom elements to work
       var that = this,
         project = this.options.project;
+
+        console.log(project, that.model);
 
       var initialView = function(){
         that.device = project.devices.findWhere({graph_key: that.model.get('identifier')});
@@ -155,15 +165,6 @@ define([
       });
 
       this.chart.show(chart_powerAndIrradiance);
-    },
-    serializeData: function(){
-      // Since we need the project info, we need to return a special context
-      // to our template
-      return {
-        project: this.options.project.toJSON(),
-        alarm: this.model.toJSON(),
-        contactInfo: this.options.contactInfo.toJSON()
-      };
     }
   });
 });
