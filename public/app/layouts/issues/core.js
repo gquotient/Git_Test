@@ -39,7 +39,6 @@ define([
       // to our template
       return {
         project: this.options.project.toJSON(),
-        alarm: this.model.toJSON(),
         contactInfo: this.options.contactInfo.toJSON()
       };
     },
