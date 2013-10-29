@@ -51,12 +51,12 @@ function(
   var Issue = { views: {} };
 
   Issue.Model = Backbone.Model.extend({
+    idAttribute: 'uid',
     url: function(){
       var project_label = this.get('project_label') || this.collection.project.id;
 
       return '/api/alarms/active/' + project_label + '/' + this.id;
     },
-    idAttribute: 'uid',
     getLocalDate: function(){
       var timezone = this.collection.project.get('timezone'),
         walltime = WallTime.UTCToWallTime(new Date(), timezone),
@@ -68,6 +68,12 @@ function(
         stop: (this.get('fault_stop') * 1000) + offset
       };
     },
+    parse: function(data){
+      if (data.alarm) {
+        data = data.alarm;
+      }
+      return data;
+    },
     acknowledge: function(userId){
       // Ask user for an acknowledge comment
       var that = this;
@@ -77,10 +83,7 @@ function(
       if (comment && comment.length) {
         return this.save({
           user_info: userId,
-          comment: comment,
-          success: function(model){
-            that.set(model);
-          }
+          comment: comment
         });
       }
     },
