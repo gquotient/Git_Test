@@ -55,6 +55,9 @@ app.configure(function(){
   app.use(flash());
   app.use(app.router);
   app.use('/public', express.static(path.join(__dirname, 'public')));
+
+  app.set('sentalisUrl', 'http://staging4.sentalis-dev.com');
+  app.set('sentalisToken', 'IWPmH2TwleDvQlGymKu');
 });
 
 app.configure('development', function(){

@@ -27,6 +27,19 @@ module.exports = function(app){
       path: '/res/projects'
     }));
 
+  app.get('/api/projects/sentalis', ensureAuthorized(['vendor_admin']),
+    helpers.request({
+      host: app.get('sentalisUrl'),
+      path: '/api/v1/projects',
+      headers: {
+        'accept-encoding': 'gzip,deflate'
+      },
+      qs: {
+        user_credentials: app.get('sentalisToken')
+      },
+      pipe: true
+    }));
+
   app.get('/api/projects/importing', ensureAuthorized(['vendor_admin']),
     helpers.request({
       path: '/res/sentalisproject'
