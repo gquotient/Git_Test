@@ -32,12 +32,14 @@ define([
       Navigation.views.Dropdown.prototype.constructor.call(this, options);
 
       this.$input = options.$input;
-      this.current = this.getModel() || this.collection.first();
+      this.current = this.getModel();
 
       this.delegateInputEvents({
         'input': 'updateFilter',
         'blur': 'close'
       });
+
+      this.updateFilter();
 
       // When a dropdown item is clicked, capture it and close the view.
       this.on('itemview:select', function(view){
@@ -100,10 +102,10 @@ define([
     },
 
     updateFilter: function(){
-      var regex = new RegExp('^' + this.parseInput(), 'i');
+      var input = this.parseInput().toLowerCase();
 
       this.collection.updateFilter(function(model){
-        return regex.test(model.get('name'));
+        return model.get('name').toLowerCase().indexOf(input) === 0;
       });
     },
 
@@ -152,7 +154,7 @@ define([
       $(document).off('keydown keypress', this.handleKeyEvent);
 
       // Replace the input text with the last known good model text.
-      this.$input.val(this.current.get('name')).blur();
+      this.$input.val(this.current ? this.current.get('name') : '').blur();
     }
   });
 
@@ -347,20 +349,30 @@ define([
         // dropdown with those values when the input gets focus.
         if (params.source) {
           memo['focus ' + params.el] = function(e){
-            var collection = this.convertSource(params.source),
-              $el = $(e.target);
+            var $el = $(e.target);
 
-            if (collection.length && $el) {
-              this.addDropdownView({
-                collection: collection,
-                $input: $el
-              });
+            if ($el) {
+              this.addDropdownView($el, params);
             }
           };
         }
 
         return memo;
       }, {}, this);
+    },
+
+    addDropdownView: function($el, params){
+      var DropdownView = params.DropdownView || this.getDropdownView(),
+        view = new DropdownView({
+          collection: this.convertSource(params.source),
+          $input: $el
+        });
+
+      this.$el.append(view.render().el);
+    },
+
+    getDropdownView: function(){
+      return Marionette.getOption(this, 'dropdownView');
     },
 
     convertSource: function(source){
@@ -377,13 +389,6 @@ define([
       }
 
       return source;
-    },
-
-    addDropdownView: function(options){
-      var DropdownView = Marionette.getOption(this, 'dropdownView'),
-        view = new DropdownView(options);
-
-      this.$el.append(view.render().el);
     },
 
     configureTriggers: function(){
