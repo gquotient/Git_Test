@@ -131,7 +131,28 @@ define([
           this.updateValues({site_label: value});
         }
       },
-      sentalis_id: {},
+      sentalis_id: {
+        DropdownView: Form.views.InputDropdown.extend({
+          updateFilter: function(){
+            var input = this.parseInput().toLowerCase();
+
+            this.collection.updateFilter(function(model){
+              return input &&
+                (model.get('name').indexOf(input) === 0 ||
+                 model.get('id').indexOf(input) === 0 ||
+                 model.get('slug').indexOf(input) === 0);
+            });
+          }
+        }),
+        source: function(){
+          // Create the collection if a cached version doesn't exist.
+          if (!this.sentalisProjects) {
+            this.sentalisProjects = this.fetchSentalisProjects();
+          }
+
+          return this.sentalisProjects;
+        }
+      },
       address: {},
       city: {},
       state: {},
@@ -176,6 +197,31 @@ define([
 
     onImport: function(){
       this.importSentalis();
+    },
+
+    fetchSentalisProjects: function(){
+      var collection = new Backbone.Collection();
+
+      // Fetch the project list from sentalis.
+      $.ajax({
+        url: this.collection.url + '/sentalis',
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done(function(resp){
+        // Convert the list of projects into model attrs.
+        collection.reset(_.map(resp, function(project){
+          var parts = project.split('-');
+
+          return {
+            name: project,
+            id: parts[0],
+            slug: parts.slice(1).join('-')
+          }
+        }));
+      });
+
+      return collection;
     },
 
     importSentalis: function(){
