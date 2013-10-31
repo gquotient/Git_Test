@@ -201,6 +201,9 @@ module.exports = function(app){
           method: method,
           uri: host + path,
 
+          //FIXME temporary for sentalis stage to get around self-signed cert.
+          rejectUnauthorized: false,
+
           headers: _.extend({}, options.headers, {
             currentUser: req.user.email,
             access_token: req.user.access_token,
