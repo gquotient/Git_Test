@@ -1,5 +1,5 @@
-var _ = require('lodash')
-  , request = require('request');
+var _ = require('lodash'),
+  request = require('request');
 
 module.exports = function(app){
   return {
@@ -186,16 +186,19 @@ module.exports = function(app){
     // Adds a wrapper around request
     request: function(options){
       return function(req, res, next){
-        var host = options.host || app.get('modelUrl'),
+        var method = options.method || req.method,
+          host = options.host || app.get('modelUrl'),
           path = options.path || '',
-          requestOptions, _req;
+          requestOptions,
+          _req;
 
-        if (_.isFunction(path)) {
-          path = path(req);
-        }
+        // Allow the method and path to be generated dynamically.
+        if (_.isFunction(method)) { method = method(req); }
+        if (_.isFunction(path)) { path = path(req); }
 
+        // Construct the options for the request.
         requestOptions = {
-          method: req.method,
+          method: method,
           uri: host + path,
 
           headers: _.extend({}, options.headers, {
@@ -204,24 +207,25 @@ module.exports = function(app){
             clientSecret: app.get('clientSecret')
           }),
 
-          qs: _.clone(req.query)
+          qs: _.extend({}, options.qs, req.query),
+          form: req.body
         };
 
-        if (req.method === 'DELETE') {
-          _.extend(requestOptions.qs, req.body);
-        } else {
-          requestOptions.form = req.body;
+        // Pass the body of the request in the query string if delete.
+        if (method === 'DELETE') {
+          _.extend(requestOptions.qs, requestOptions.form);
+          delete requestOptions.form;
         }
 
+        // Make the request.
         _req = request(requestOptions, function(error, response, body){
 
           if (error) {
             req.flash('error', error.message);
             console.log('error!:', error);
             res.redirect('/ia');
-          }
 
-          if (options.middleware) {
+          } else if (options.middleware) {
             res.statusCode = response.statusCode;
 
             try {
