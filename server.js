@@ -70,6 +70,10 @@ app.configure('development', function(){
   app.set('authUrl', '127.0.0.1');
   app.set('modelUrl', 'http://127.0.0.1:8433');
   app.set('equipUrl', 'http://127.0.0.1:8600');
+
+  app.set('requestDefaults', {
+    rejectUnauthorized: false
+  });
 });
 
 app.configure('development-local-auth', function(){
@@ -83,6 +87,10 @@ app.configure('development-local-auth', function(){
   app.set('modelUrl', 'http://model.stage.intelligentarray.com');
   app.set('dataUrl', 'http://data.stage.intelligentarray.com');
   app.set('equipUrl', 'http://equip.stage.intelligentarray.com');
+
+  app.set('requestDefaults', {
+    rejectUnauthorized: false
+  });
 });
 
 app.configure('development-remote', function(){
@@ -98,6 +106,10 @@ app.configure('development-remote', function(){
   app.set('modelUrl', 'http://model.stage.intelligentarray.com');
   app.set('dataUrl', 'http://data.stage.intelligentarray.com');
   app.set('equipUrl', 'http://equip.stage.intelligentarray.com');
+
+  app.set('requestDefaults', {
+    rejectUnauthorized: false
+  });
 });
 
 app.configure('development-vagrant', function(){
@@ -112,6 +124,10 @@ app.configure('development-vagrant', function(){
   app.set('authUrl', 'auth.stage.intelligentarray.com');
   app.set('modelUrl', 'http://model.stage.intelligentarray.com');
   app.set('equipUrl', 'http://equip.stage.intelligentarray.com');
+
+  app.set('requestDefaults', {
+    rejectUnauthorized: false
+  });
 });
 
 app.configure('stage', function(){
@@ -128,6 +144,10 @@ app.configure('stage', function(){
   app.set('dataUrl', 'http://data.stage.intelligentarray.com');
   app.set('equipUrl', 'http://equip.stage.intelligentarray.com');
   app.set('staticPath', 'build/' + app.get('app_version') + '/');
+
+  app.set('requestDefaults', {
+    rejectUnauthorized: false
+  });
 });
 
 app.configure('production', function(){

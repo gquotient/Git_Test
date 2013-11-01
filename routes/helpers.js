@@ -1,7 +1,8 @@
-var _ = require('lodash'),
-  request = require('request');
+var _ = require('lodash');
 
 module.exports = function(app){
+  var request = require('request').defaults(app.get('requestDefaults'));
+
   return {
     ensureAuthenticated: function (req, res, next) {
       if (req.isAuthenticated()) { return next(); }
@@ -200,9 +201,6 @@ module.exports = function(app){
         requestOptions = {
           method: method,
           uri: host + path,
-
-          //FIXME temporary for sentalis stage to get around self-signed cert.
-          rejectUnauthorized: false,
 
           headers: _.extend({}, options.headers, {
             currentUser: req.user.email,
