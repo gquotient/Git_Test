@@ -476,7 +476,7 @@ define([
           // Convert the msgs into a single string and remove dividers.
           if (_.isArray(msg)) {
             msg = _.reject(msg, function(line){
-              return /^-+$/.test(line);
+              return (/^-+$/).test(line);
             }).join('\n');
           }
 

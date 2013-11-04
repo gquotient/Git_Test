@@ -217,7 +217,7 @@ define([
             name: project,
             id: parts[0],
             slug: parts.slice(1).join('-')
-          }
+          };
         }));
       });
 
