@@ -827,17 +827,17 @@ function(
         this.currentZoom = this.currentZoom * scale || scale;
       }
 
-      if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
-        return this.setDeviceType('Inverter');
-      }
+      // if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
+      //   return this.setDeviceType('Inverter');
+      // }
 
-      if (this.currentZoom === 0.5 && this.currentDeviceType !== 'String') {
-        return this.setDeviceType('String');
-      }
+      // if (this.currentZoom === 0.5 && this.currentDeviceType !== 'String') {
+      //   return this.setDeviceType('String');
+      // }
 
-      if (this.currentZoom >= 1 && this.currentDeviceType !== 'Panel') {
-        return this.setDeviceType('Panel');
-      }
+      // if (this.currentZoom >= 1 && this.currentDeviceType !== 'Panel') {
+      //   return this.setDeviceType('Panel');
+      // }
 
       this.deviceGroup.scale(scale);
 
