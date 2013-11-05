@@ -627,7 +627,7 @@ function(
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
       if (this.children.length && this._isShown) {
-        this.resetPosition({reset: true, zoom: this.currentZoom});
+        this.resetPosition();
         // Hide loading indicator
         this.$el.removeClass('loading');
       }
@@ -725,24 +725,18 @@ function(
 
       this.draw();
     },
-    resetPosition: function(options){
-      options = options || {};
-
-      if (options.reset) {
-        this.currentRotation = 0;
-        this.currentZoom = null;
-      }
-
+    resetPosition: function(){
       this.position({
         draw: false,
         filter: false
       });
+
       this.rotate({
         draw: false,
         filter: false
       });
+
       this.zoom({
-        direction: options.zoom,
         draw: false,
         filter: false
       });
@@ -795,6 +789,8 @@ function(
           widthRatio = deviceGroupBounds.width / viewBounds.width,
           heightRatio = deviceGroupBounds.height / viewBounds.height,
           zoom = 1;
+
+          console.log(deviceGroupBounds, viewBounds, widthRatio, heightRatio);
 
         // If devices extend beyond the view port scale them down
         if (widthRatio > 1 || heightRatio > 1) {
@@ -1039,16 +1035,22 @@ function(
     draw: _.throttle(function(){
       this.paper.view.draw();
     }, 60, true),
+    onRender: function(){
+      console.log('render');
+    },
     onShow: function(){
+      console.log('show');
       // Update size of container when it's in the dom
       this.resize();
 
-      // Fire initial bound filtering
-      this.filterOnBounds();
-
       // If children already populated, do initial positioning with hard reset
       if (this.children.length) {
+        // Fire initial bound filtering
+        this.filterOnBounds();
+
         this.resetPosition();
+
+        this.$el.removeClass('loading');
       }
 
       // Cache dynamic regions
