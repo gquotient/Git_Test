@@ -370,11 +370,8 @@ function(
       this.currentHilight = null;
       this.currentSelection = null;
       // Positioning stuffs
-      this.currentPosition = {
-        x: 0,
-        y: 0
-      };
-      this.currentRotation = 0;
+      this.currentPosition = {};
+      this.currentRotation = null;
       this.currentZoom = null;
       // Overlay stuffs
       this.currentOverlay = {
@@ -527,7 +524,7 @@ function(
         });
       },
       'click .reset': function(){
-        this.resetPosition();
+        this.resetPosition(true);
       },
       'change .deviceType select': function(event){
         this.setDeviceType(event.currentTarget.value);
@@ -730,8 +727,13 @@ function(
 
       this.draw();
     },
-    resetPosition: function(){
-      console.log('reset position');
+    resetPosition: function(reset){
+      if (reset) {
+        this.currentPosition = {};
+        // this.currentRotation = null;
+        this.currentZoom = null;
+      }
+
       this.position({
         draw: false,
         filter: false
@@ -754,6 +756,7 @@ function(
       console.log('resize canvas');
       // Fill canvas to size of parent container
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
+
       if (options.filter !== false) {
         this.filterOnBounds();
       }
@@ -768,6 +771,8 @@ function(
         this.deviceGroup.position = new this.paper.Point(newX, newY);
         this.currentPosition.x = newX;
         this.currentPosition.y = newY;
+      } else if (typeof this.currentPosition.x === 'number'){
+        this.deviceGroup.position = new this.paper.Point(this.currentPosition.x, this.currentPosition.y);
       } else {
         // else, center the group
         var center = this.paper.view.center;
@@ -1055,7 +1060,7 @@ function(
       // If children already populated, do initial positioning with hard reset
       if (this.children.length) {
         console.log('has children', 'shown:', this._isShown);
-        this.resetPosition();
+        this.resetPosition(true);
 
         this.$el.removeClass('loading');
       }
