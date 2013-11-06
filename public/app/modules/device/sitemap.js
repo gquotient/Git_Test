@@ -531,6 +531,10 @@ function(
 
         if (deviceType !== 'auto') {
           this.setDeviceType(event.currentTarget.value);
+        } else {
+          // This will change back to the normal device type for a given zoom if changed
+          // back to "auto". Not sure if this is desired behavior.
+          this.resetPosition();
         }
       },
       'change .overlayType select': function(event){
@@ -625,7 +629,6 @@ function(
     },
     // This fires after children render
     onCompositeCollectionRendered: function(){
-      console.log('composite rendered');
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
       if (this.children.length && this._isShown) {
@@ -654,7 +657,6 @@ function(
       return false;
     },
     filterOnBounds: function(){
-      console.log('filter on bounds');
       var maxBounds = this.paper.view.bounds;
 
       this.visible = [];
@@ -757,7 +759,6 @@ function(
       this.draw();
     },
     resize: function(options){
-      console.log('resize canvas');
       // Fill canvas to size of parent container
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
 
@@ -806,8 +807,6 @@ function(
           widthRatio = deviceGroupBounds.width / viewBounds.width,
           heightRatio = deviceGroupBounds.height / viewBounds.height,
           zoom = 1;
-
-          console.log(deviceGroupBounds, viewBounds, widthRatio, heightRatio);
 
         // If devices extend beyond the view port scale them down
         if (widthRatio > 1 || heightRatio > 1) {
@@ -1057,17 +1056,12 @@ function(
     draw: _.throttle(function(){
       this.paper.view.draw();
     }, 60, true),
-    onRender: function(){
-      console.log('render');
-    },
     onShow: function(){
-      console.log('show');
       // Update size of container when it's in the dom
       this.resize({filter: false});
 
       // If children already populated, do initial positioning with hard reset
       if (this.children.length) {
-        console.log('has children', 'shown:', this._isShown);
         this.resetPosition(true);
 
         this.$el.removeClass('loading');
