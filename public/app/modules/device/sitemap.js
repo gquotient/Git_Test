@@ -624,9 +624,13 @@ function(
     },
     // This fires after children render
     onCompositeCollectionRendered: function(){
+      console.log('composite rendered');
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
       if (this.children.length && this._isShown) {
+        // Reset rotation since the new stuff is drawn
+        this.currentRotation = null;
+
         this.resetPosition();
         // Hide loading indicator
         this.$el.removeClass('loading');
@@ -649,6 +653,7 @@ function(
       return false;
     },
     filterOnBounds: function(){
+      console.log('filter on bounds');
       var maxBounds = this.paper.view.bounds;
 
       this.visible = [];
@@ -726,6 +731,7 @@ function(
       this.draw();
     },
     resetPosition: function(){
+      console.log('reset position');
       this.position({
         draw: false,
         filter: false
@@ -744,10 +750,13 @@ function(
       this.filterOnBounds();
       this.draw();
     },
-    resize: function(){
+    resize: function(options){
+      console.log('resize canvas');
       // Fill canvas to size of parent container
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
-      this.filterOnBounds();
+      if (options.filter !== false) {
+        this.filterOnBounds();
+      }
     },
     position: function(options){
       // If options are passed, position based on those
@@ -1041,13 +1050,11 @@ function(
     onShow: function(){
       console.log('show');
       // Update size of container when it's in the dom
-      this.resize();
+      this.resize({filter: false});
 
       // If children already populated, do initial positioning with hard reset
       if (this.children.length) {
-        // Fire initial bound filtering
-        this.filterOnBounds();
-
+        console.log('has children', 'shown:', this._isShown);
         this.resetPosition();
 
         this.$el.removeClass('loading');
