@@ -674,8 +674,6 @@ function(
     },
     currentDeviceType: 'Inverter',
     setDeviceType: function(deviceType){
-      // Update select ui
-      //this.ui.deviceTypeSelect.val(deviceType);
       // Update current
       this.currentDeviceType = deviceType;
       // Update collection
@@ -1089,9 +1087,6 @@ function(
       this.legend = new Backbone.Marionette.Region({
         el: this.ui.legendContainer
       });
-
-      // Set value to default device type
-      //this.ui.deviceTypeSelect.val(this.currentDeviceType);
     },
     onClose: function(){
       // Clean up paper stuffs
