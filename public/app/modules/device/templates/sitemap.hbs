@@ -5,7 +5,7 @@
 {{#if deviceTypes}}
 <div class="controls deviceType">
   <select>
-    <option value="auto">Auto</option>
+    {{!<option value="auto">Auto</option>}}
     {{! Need to figure out how to translate the result of the 'this' keyword}}
     {{#each deviceTypes}}<option value="{{ this }}">{{ this }}</option>{{/each}}
   </select>
