@@ -500,6 +500,9 @@ function(
         }
       }, 60),
       // Handle controls
+      'click .controls': function(event){
+        event.stopPropagation();
+      },
       'click .center': function(){
         this.position();
       },
@@ -841,28 +844,26 @@ function(
       }
 
       if (this.ui.deviceTypeSelect.val() === 'auto') {
-        if (this.currentZoom === 0.25 && this.currentDeviceType !== 'Combiner') {
-          var hasCombiners = this.model.get('devtypes').indexOf('Combiner') >= 0;
-          if (hasCombiners) {
+        // Ok, so, if the zoom is at 25%, see if (re)combiners are available
+        // If they are, show them, otherwise show inverters
+        if (this.currentZoom === 0.25) {
+          if (this.model.get('devtypes').indexOf('Combiner') >= 0 && this.currentDeviceType !== 'Combiner') {
             return this.setDeviceType('Combiner');
-          }
-        }
-
-        if (this.currentZoom === 0.25 && this.currentDeviceType !== 'Recombiner') {
-          var hasRecombiners = this.model.get('devtypes').indexOf('Recombiner') >= 0;
-          if (hasRecombiners) {
+          } else if (this.model.get('devtypes').indexOf('Recombiner') >= 0 && this.currentDeviceType !== 'Recombiner') {
             return this.setDeviceType('Recombiner');
+          } else if (this.currentDeviceType !== 'Inverter' && this.currentDeviceType !== 'Combiner' && this.currentDeviceType !== 'Recombiner') {
+            return this.setDeviceType('Inverter');
           }
         }
-
-        if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
+        // Show inverters less than 25%
+        if (this.currentZoom < 0.25 && this.currentDeviceType !== 'Inverter') {
           return this.setDeviceType('Inverter');
         }
-
+        // Show strings at 50%
         if (this.currentZoom === 0.5 && this.currentDeviceType !== 'String') {
           return this.setDeviceType('String');
         }
-
+        // Show panels at 100%
         if (this.currentZoom >= 1 && this.currentDeviceType !== 'Panel') {
           return this.setDeviceType('Panel');
         }
