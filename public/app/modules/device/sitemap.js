@@ -843,6 +843,20 @@ function(
       }
 
       if (this.ui.deviceTypeSelect.val() === 'auto') {
+        if (this.currentZoom === 0.25 && this.currentDeviceType !== 'Combiner') {
+          var hasCombiners = this.model.get('devtypes').indexOf('Combiner') >= 0;
+          if (hasCombiners) {
+            return this.setDeviceType('Combiner');
+          }
+        }
+
+        if (this.currentZoom === 0.25 && this.currentDeviceType !== 'Recombiner') {
+          var hasRecombiners = this.model.get('devtypes').indexOf('Recombiner') >= 0;
+          if (hasRecombiners) {
+            return this.setDeviceType('Recombiner');
+          }
+        }
+
         if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
           return this.setDeviceType('Inverter');
         }
