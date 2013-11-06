@@ -370,11 +370,8 @@ function(
       this.currentHilight = null;
       this.currentSelection = null;
       // Positioning stuffs
-      this.currentPosition = {
-        x: 0,
-        y: 0
-      };
-      this.currentRotation = 0;
+      this.currentPosition = {};
+      this.currentRotation = null;
       this.currentZoom = null;
       // Overlay stuffs
       this.currentOverlay = {
@@ -503,6 +500,9 @@ function(
         }
       }, 60),
       // Handle controls
+      'click .controls': function(event){
+        event.stopPropagation();
+      },
       'click .center': function(){
         this.position();
       },
@@ -527,10 +527,18 @@ function(
         });
       },
       'click .reset': function(){
-        this.resetPosition();
+        this.resetPosition(true);
       },
       'change .deviceType select': function(event){
-        this.setDeviceType(event.currentTarget.value);
+        var deviceType = event.currentTarget.value;
+
+        if (deviceType !== 'auto') {
+          this.setDeviceType(event.currentTarget.value);
+        } else {
+          // This will change back to the normal device type for a given zoom if changed
+          // back to "auto". Not sure if this is desired behavior.
+          this.resetPosition();
+        }
       },
       'change .overlayType select': function(event){
         this.setOverlayType(event.currentTarget.value);
@@ -627,7 +635,10 @@ function(
       // NOTE - Ok, so, I'm not sure why this makes the positioning for all elements work
       // but it does. Have fun later when you come back to this.
       if (this.children.length && this._isShown) {
-        this.resetPosition({reset: true, zoom: this.currentZoom});
+        // Reset rotation since the new stuff is drawn
+        this.currentRotation = null;
+
+        this.resetPosition();
         // Hide loading indicator
         this.$el.removeClass('loading');
       }
@@ -666,8 +677,6 @@ function(
     },
     currentDeviceType: 'Inverter',
     setDeviceType: function(deviceType){
-      // Update select ui
-      this.ui.deviceTypeSelect.val(deviceType);
       // Update current
       this.currentDeviceType = deviceType;
       // Update collection
@@ -725,11 +734,10 @@ function(
 
       this.draw();
     },
-    resetPosition: function(options){
-      options = options || {};
-
-      if (options.reset) {
-        this.currentRotation = 0;
+    resetPosition: function(reset){
+      if (reset) {
+        this.currentPosition = {};
+        // this.currentRotation = null;
         this.currentZoom = null;
       }
 
@@ -737,12 +745,13 @@ function(
         draw: false,
         filter: false
       });
+
       this.rotate({
         draw: false,
         filter: false
       });
+
       this.zoom({
-        direction: options.zoom,
         draw: false,
         filter: false
       });
@@ -750,14 +759,15 @@ function(
       this.filterOnBounds();
       this.draw();
     },
-    resize: function(){
+    resize: function(options){
       // Fill canvas to size of parent container
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
-      this.filterOnBounds();
+
+      if (options.filter !== false) { this.filterOnBounds(); }
     },
-    position: function(options){
-      // If options are passed, position based on those
+    position: function(options){// x, y, filter, draw
       if (typeof options.x === 'number' || typeof options.y === 'number') {
+        // If options are passed, position based on those
         var currentPosition = this.deviceGroup.position,
           newX = currentPosition._x + (options.x || 0),
           newY = currentPosition._y + (options.y || 0);
@@ -765,6 +775,9 @@ function(
         this.deviceGroup.position = new this.paper.Point(newX, newY);
         this.currentPosition.x = newX;
         this.currentPosition.y = newY;
+      } else if (typeof this.currentPosition.x === 'number'){
+        // If the position data hasn't been nuked, assume you still want to use it
+        this.deviceGroup.position = new this.paper.Point(this.currentPosition.x, this.currentPosition.y);
       } else {
         // else, center the group
         var center = this.paper.view.center;
@@ -821,22 +834,39 @@ function(
         // Zoom to supplied level
         scale = options.direction;
         this.currentZoom = options.direction;
+      } else if (typeof this.currentZoom === 'number') {
+        // If currentZoom hasn't been reset, assume you want to use it
+        scale = this.currentZoom;
       } else {
         // Initial zoom
         scale = smartZoom.call(this);
         this.currentZoom = this.currentZoom * scale || scale;
       }
 
-      if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
-        return this.setDeviceType('Inverter');
-      }
-
-      if (this.currentZoom === 0.5 && this.currentDeviceType !== 'String') {
-        return this.setDeviceType('String');
-      }
-
-      if (this.currentZoom >= 1 && this.currentDeviceType !== 'Panel') {
-        return this.setDeviceType('Panel');
+      if (this.ui.deviceTypeSelect.val() === 'auto') {
+        // Ok, so, if the zoom is at 25%, see if (re)combiners are available
+        // If they are, show them, otherwise show inverters
+        if (this.currentZoom >= 0.25 && this.currentZoom < 0.5) {
+          if (this.model.get('devtypes').indexOf('Combiner') >= 0 && this.currentDeviceType !== 'Combiner') {
+            return this.setDeviceType('Combiner');
+          } else if (this.model.get('devtypes').indexOf('Recombiner') >= 0 && this.currentDeviceType !== 'Recombiner') {
+            return this.setDeviceType('Recombiner');
+          } else if (this.currentDeviceType !== 'Inverter' && this.currentDeviceType !== 'Combiner' && this.currentDeviceType !== 'Recombiner') {
+            return this.setDeviceType('Inverter');
+          }
+        }
+        // Show inverters less than 25%
+        if (this.currentZoom < 0.25 && this.currentDeviceType !== 'Inverter') {
+          return this.setDeviceType('Inverter');
+        }
+        // Show strings at 50%
+        if (this.currentZoom >= 0.5 && this.currentZoom < 1 && this.currentDeviceType !== 'String') {
+          return this.setDeviceType('String');
+        }
+        // Show panels at 100%
+        if (this.currentZoom >= 1 && this.currentDeviceType !== 'Panel') {
+          return this.setDeviceType('Panel');
+        }
       }
 
       this.deviceGroup.scale(scale);
@@ -1041,14 +1071,13 @@ function(
     }, 60, true),
     onShow: function(){
       // Update size of container when it's in the dom
-      this.resize();
-
-      // Fire initial bound filtering
-      this.filterOnBounds();
+      this.resize({filter: false});
 
       // If children already populated, do initial positioning with hard reset
       if (this.children.length) {
-        this.resetPosition();
+        this.resetPosition(true);
+
+        this.$el.removeClass('loading');
       }
 
       // Cache dynamic regions
@@ -1059,9 +1088,6 @@ function(
       this.legend = new Backbone.Marionette.Region({
         el: this.ui.legendContainer
       });
-
-      // Set value to default device type
-      this.ui.deviceTypeSelect.val(this.currentDeviceType);
     },
     onClose: function(){
       // Clean up paper stuffs
