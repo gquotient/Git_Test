@@ -527,7 +527,11 @@ function(
         this.resetPosition(true);
       },
       'change .deviceType select': function(event){
-        this.setDeviceType(event.currentTarget.value);
+        var deviceType = event.currentTarget.value;
+
+        if (deviceType !== 'auto') {
+          this.setDeviceType(event.currentTarget.value);
+        }
       },
       'change .overlayType select': function(event){
         this.setOverlayType(event.currentTarget.value);
@@ -757,13 +761,11 @@ function(
       // Fill canvas to size of parent container
       this.paper.view.setViewSize(this.$el.parent().width(), this.$el.parent().height());
 
-      if (options.filter !== false) {
-        this.filterOnBounds();
-      }
+      if (options.filter !== false) { this.filterOnBounds(); }
     },
-    position: function(options){
-      // If options are passed, position based on those
+    position: function(options){// x, y, filter, draw
       if (typeof options.x === 'number' || typeof options.y === 'number') {
+        // If options are passed, position based on those
         var currentPosition = this.deviceGroup.position,
           newX = currentPosition._x + (options.x || 0),
           newY = currentPosition._y + (options.y || 0);
@@ -772,6 +774,7 @@ function(
         this.currentPosition.x = newX;
         this.currentPosition.y = newY;
       } else if (typeof this.currentPosition.x === 'number'){
+        // If the position data hasn't been nuked, assume you still want to use it
         this.deviceGroup.position = new this.paper.Point(this.currentPosition.x, this.currentPosition.y);
       } else {
         // else, center the group
@@ -831,6 +834,8 @@ function(
         // Zoom to supplied level
         scale = options.direction;
         this.currentZoom = options.direction;
+      } else if (typeof this.currentZoom === 'number') {
+        scale = this.currentZoom;
       } else {
         // Initial zoom
         scale = smartZoom.call(this);
