@@ -673,7 +673,7 @@ function(
     currentDeviceType: 'Inverter',
     setDeviceType: function(deviceType){
       // Update select ui
-      this.ui.deviceTypeSelect.val(deviceType);
+      //this.ui.deviceTypeSelect.val(deviceType);
       // Update current
       this.currentDeviceType = deviceType;
       // Update collection
@@ -835,6 +835,7 @@ function(
         scale = options.direction;
         this.currentZoom = options.direction;
       } else if (typeof this.currentZoom === 'number') {
+        // If currentZoom hasn't been reset, assume you want to use it
         scale = this.currentZoom;
       } else {
         // Initial zoom
@@ -842,17 +843,19 @@ function(
         this.currentZoom = this.currentZoom * scale || scale;
       }
 
-      // if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
-      //   return this.setDeviceType('Inverter');
-      // }
+      if (this.ui.deviceTypeSelect.val() === 'auto') {
+        if (this.currentZoom <= 0.25 && this.currentDeviceType !== 'Inverter') {
+          return this.setDeviceType('Inverter');
+        }
 
-      // if (this.currentZoom === 0.5 && this.currentDeviceType !== 'String') {
-      //   return this.setDeviceType('String');
-      // }
+        if (this.currentZoom === 0.5 && this.currentDeviceType !== 'String') {
+          return this.setDeviceType('String');
+        }
 
-      // if (this.currentZoom >= 1 && this.currentDeviceType !== 'Panel') {
-      //   return this.setDeviceType('Panel');
-      // }
+        if (this.currentZoom >= 1 && this.currentDeviceType !== 'Panel') {
+          return this.setDeviceType('Panel');
+        }
+      }
 
       this.deviceGroup.scale(scale);
 
@@ -1080,7 +1083,7 @@ function(
       });
 
       // Set value to default device type
-      this.ui.deviceTypeSelect.val(this.currentDeviceType);
+      //this.ui.deviceTypeSelect.val(this.currentDeviceType);
     },
     onClose: function(){
       // Clean up paper stuffs
