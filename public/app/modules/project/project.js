@@ -426,7 +426,9 @@ define([
         required: true,
         editable: false,
         validate: function(value){
-          return (/^[A-Z]{3,10}$/).test(value);
+          // Labels must start with a letter followed by letters and numbers
+          // and be between 3 and 10 characters long.
+          return (/^[A-Z][A-Z0-9]{2,9}$/).test(value);
         }
       },
       display_name: {
