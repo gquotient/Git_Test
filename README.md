@@ -1,106 +1,106 @@
-Front End Application Structure
-=================================
+# IA6 Front End App
 
-Requirements
-------------
+![Take my money](http://images.memegenerator.net/instances/200x/39664343.jpg)
 
-* Node.js (> 0.8.0) && NPM (comes with later versions of Node)
-* Redis
+## Setting up a development environment
 
-### OSX
-Install Node.js: http://nodejs.org/
+* Install redis
 
-Install Homebrew (package manager): http://crosstown.coolestguyplanettech.com/os-x/40-setting-up-os-x-lion-to-plug-into-homebrew-package-manager
+```
+# Ubuntu using apt-get
+$ sudo apt-get install redis-server
+```
 
-Install Redis: `brew install redis`
+```
+# OSX using homebrew http://brew.sh
+$ brew install redis
+```
 
-### Ubuntu
+* Install nvm
 
-Install node:
+```
+$ curl https://raw.github.com/creationix/nvm/master/install.sh | sh
+```
 
-    sudo add-apt-repository ppa:chris-lea/node.js
-    sudo apt-get update
-    sudo apt-get install nodejs
+* Install node v0.10 and set as default
 
-Install Redis:
+```
+$ nvm install 0.10 && nvm alias default 0.10 && nvm use 0.10
+```
 
-    sudo add-apt-repository ppa:chris-lea/redis-server
-    sudo apt-get update
-    sudo apt-get install redis-server
+* Install global node packages
 
+```
+$ npm install -g bower grunt-cli
+```
 
-To install
-----------
+* Install local node packages
 
-For now, install Bower package manager globally: `npm install -g bower`. We may want to make this a local asset.
+```
+# From the root directory of this repo
+$ npm install
+```
 
-From your project root folder, install the server dependencies: `npm install`.
+* Install client packages using bower
 
-Then, install browser dependencies: `cd public/app && bower install`.
+```
+# From the root directory of this repo
+$ (cd public/app && bower install)
+```
 
+* Run the server
 
-To Build
---------
+```
+# Using remote services
+$ NODE_ENV=development-remote node server.js
+```
 
-The build runs with Grunt which installs locally but needs the Grunt CLI to run. Install Grunt CLI with `npm install -g grunt-cli`.
+```
+# Using local services
+$ NODE_ENV=development node server.js
+```
 
-To run the build, navigate to the root directory and run `bash build.sh`.
-
-
-To run
-------
-
-From your project root folder, run `$ node server.js` to start the server. Default port is set to 3005.
-
-To use the staging authentication server, run `$ export NODE_ENV=development-remote` before starting your node server. To switch back to using a local auth server, run `$ export NODE_ENV=development`.
-
-
-Getting started using local Auth & Model
-----------------------------------------
-
-Install [AuthService](https://github.com/drakerlabs/AuthService)
-
-Open a terminal and run:
-
-    cd AuthService/auth_service
-    python manage.py add_client_app IA6 0.1
-    python manage.py runserver
-
-Install [ModelService](https://github.com/drakerlabs/ModelService)
-
-Open a separate terminal and run:
-
-    cd ModelService/model_service
-    python manage.py create_org DRAKER Draker -o vendor
-    python manage.py create_portfolio -d DRAKER ALL "All Projects" "has(n.label)"
-    python manage.py create_portfolio -d DRAKER ADMIN "All Projects" "has(n.label)"
-    python manage.py add_person DRAKER "your.email@drakerenergy.com" "Your Name"
-    python manage.py make_person_an_admin DRAKER "your.email@drakerenergy.com"
-    python manage.py push_persons
-    python manage.py runserver
-
-Open a third terminal and run:
-
-    node server.js
-
-Point your browser to [here](http://localhost:3005) and login using your email and password "Draker321"
+* Login to the [app](http://127.0.0.1:3005) using your email and default password "Draker321"
 
 
-Testing (Optional)
-------------------
+## Setting up local services
 
-`cd test && bower install`
+* Install and run the [AuthService](https://github.com/drakerlabs/AuthService), [ModelService](https://github.com/drakerlabs/ModelService) and [EquipmentService](https://github.com/drakerlabs/EquipmentService)
 
-Testing can happen manually in the browser or in your terminal with phantomjs. PhantomJS can be installed in Ubuntu with `apt-get install phantomjs` or OSX with `brew install phantomjs` and the node/mocha to phantomjs bridge with `npm install -g mocha-phantomjs`.
+* Add the client app to the AuthService
 
-### Browser
-Point browser to /test/index.html
+```
+$ python AuthService/auth_service/manage.py add_client_app IA6 0.1
+```
 
-### Terminal/PhantomJS
-`mocha-phantomjs index.html`
+* Add your organization to the ModelService
+
+```
+$ python ModelService/model_service/manage.py create_org -o vendor DRAKER Draker
+```
+
+* Add yourself as a vendor admin for the organization
+
+```
+$ python ModelService/model_service/manage.py add_person DRAKER "your.email@drakerenergy.com" "Your Name"
+$ python ModelService/model_service/manage.py make_person_an_admin DRAKER "your.email@drakerenergy.com"
+$ python ModelService/model_service/manage.py push_persons
+```
+
+* Add portfolios to the organization teams
+
+```
+$ python ModelService/model_service/manage.py create_portfolio -d DRAKER ALL "All Projects" "has(n.label)"
+$ python ModelService/model_service/manage.py create_portfolio -d DRAKER ADMIN "All Projects" "has(n.label)"
+```
+
+* Add the base equipment to the EquipmentService
+
+```
+$ grunt postequip
+```
 
 
-TODO
-----
+## Developing code
 
-X Flash messages
+* Please keep the code clean by using `grunt jshint` before any commit
