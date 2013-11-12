@@ -45,7 +45,7 @@ define([
         base_labels: ['RM']
       },
       {
-        name: 'Data Aquisition',
+        name: 'Data Acquisition',
         base_labels: ['DSS', 'DSC', 'ESI']
       },
       {
