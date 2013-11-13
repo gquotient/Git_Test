@@ -1,5 +1,5 @@
 <fieldset>
-  <div>
+  <div class="half left">
     <label for="manufacturer">{{$ 'Manufacturer' }}</label>
     <input id="manufacturer" name="manufacturer" type="text" value="{{ manufacturer }}" />
 
@@ -22,7 +22,7 @@
     <input id="interface_module" name="interface_module" type="text" value="{{ interface_module }}" />
   </div>
 
-  <div>
+  <div class="half right">
   {{#each items }}
     <label for="{{ this.attr }}">{{ this.name }}</label>
     <input id="{{ this.attr }}" name="{{ this.attr }}" type="text" value="{{ this.value }}" />

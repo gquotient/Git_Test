@@ -96,11 +96,19 @@
 
       & > div {
         float: left;
-        width: 50%;
         padding-left: 12px;
 
-        &:first-child {
+        &.half {
+          width: 50%;
+        }
+
+        &.left {
+          clear: both;
           padding-left: 0;
+        }
+
+        &.right {
+          float: right;
         }
       }
 
