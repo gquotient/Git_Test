@@ -437,6 +437,12 @@ define([
       sentalis_id: {
         editable: false
       },
+      dm_push: {
+        type: 'boolean'
+      },
+      ia5_push: {
+        type: 'boolean'
+      },
       latitude: {
         type: 'number',
         required: true
