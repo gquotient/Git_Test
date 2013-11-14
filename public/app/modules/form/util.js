@@ -124,17 +124,6 @@ define([
       return this.where(attrs, true);
     },
 
-    updateFilter: function(filter, options){
-      options = options || {};
-
-      this.filter = filter || function(){ return true; };
-      this._rebuildIndex();
-
-      if (!options.silent) {
-        this.trigger('reset', this, options);
-      }
-    },
-
     sort: function(options){
       var iterator, sorter;
 

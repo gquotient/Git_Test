@@ -85,7 +85,16 @@ define([
   });
 
   views.AdminList = Navigation.views.AdminList.extend({
-    itemView: views.AdminListItem
+    itemView: views.AdminListItem,
+
+    initialize: function(options){
+      this.collection = new Form.util.Collection(options.collection, {
+        comparator: function(model){
+          return model.get('node_id') * -1;
+        },
+        close_with: this
+      });
+    }
   });
 
   views.AdminDetail = Form.views.Admin.extend({

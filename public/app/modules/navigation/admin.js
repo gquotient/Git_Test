@@ -48,7 +48,28 @@ define([
     className: 'dropdown',
 
     itemView: views.DropdownItem,
-    itemViewContainer: 'ul'
+    itemViewContainer: 'ul',
+
+    // Overwritten to render children on reset, filter and sort.
+    _initialEvents: function(){
+      if (this.collection) {
+        this.listenTo(this.collection, 'add', this.addChildView, this);
+        this.listenTo(this.collection, 'remove', this.removeItemView, this);
+        this.listenTo(this.collection, 'reset filter sort', this._renderChildren, this);
+      }
+    },
+
+    // Overwritten to repect the collection order when adding children.
+    appendHtml: function(collectionView, itemView, index){
+      var $container = this.getItemViewContainer(collectionView),
+        children = $container.children();
+
+      if (children.size() <= index) {
+        $container.append(itemView.el);
+      } else {
+        children.eq(index).before(itemView.el);
+      }
+    }
   });
 
   views.AdminListItem = Marionette.ItemView.extend({
@@ -153,6 +174,27 @@ define([
       });
 
       return Marionette.CompositeView.prototype.configureTriggers.apply(this, arguments);
+    },
+
+    // Overwritten to render children on reset, filter and sort.
+    _initialEvents: function(){
+      if (this.collection) {
+        this.listenTo(this.collection, 'add', this.addChildView, this);
+        this.listenTo(this.collection, 'remove', this.removeItemView, this);
+        this.listenTo(this.collection, 'reset filter sort', this._renderChildren, this);
+      }
+    },
+
+    // Overwritten to repect the collection order when adding children.
+    appendHtml: function(collectionView, itemView, index){
+      var $container = this.getItemViewContainer(collectionView),
+        children = $container.children();
+
+      if (children.size() <= index) {
+        $container.append(itemView.el);
+      } else {
+        children.eq(index).before(itemView.el);
+      }
     },
 
     setActive: function(model){

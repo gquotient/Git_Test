@@ -68,8 +68,26 @@ define([
         'mousedown a.all': 'select:all'
       },
 
-      // Use the collection view version so that reset causes everything to render.
-      _initialEvents: Marionette.CollectionView.prototype._initialEvents
+      // Overwritten to render everything on reset, filter and sort.
+      _initialEvents: function(){
+        if (this.collection) {
+          this.listenTo(this.collection, 'add', this.addChildView, this);
+          this.listenTo(this.collection, 'remove', this.removeItemView, this);
+          this.listenTo(this.collection, 'reset filter sort', this.render, this);
+        }
+      },
+
+      // Overwritten to repect the collection order when adding children.
+      appendHtml: function(collectionView, itemView, index){
+        var $container = this.getItemViewContainer(collectionView),
+          children = $container.children();
+
+        if (children.size() <= index) {
+          $container.append(itemView.el);
+        } else {
+          children.eq(index).before(itemView.el);
+        }
+      }
     });
 
 
