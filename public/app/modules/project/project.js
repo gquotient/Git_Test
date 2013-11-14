@@ -129,12 +129,14 @@ define([
 
     isLocked: function(){
       if (this.isImporting()) { return true; }
-      return this.has('editor') && this.get('editor') !== 'unlocked';
+      if (!this.has('editor')) { return false; }
+      return this.get('editor') !== 'unlocked';
     },
 
     isEditable: function(){
       if (this.isImporting()) { return false; }
-      return this.user && this.get('editor') === this.user.get('email');
+      if (!this.has('editor')) { return false; }
+      return this.get('editor') === this.user.get('email');
     },
 
     setLock: function(lock){

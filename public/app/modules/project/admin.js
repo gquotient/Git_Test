@@ -378,7 +378,7 @@ define([
         lng = model.longitude;
       }
 
-      if ((lat || lat === 0) && (lng || lng === 0)) {
+      if (!_.isUndefined(lat) && !_.isUndefined(lng)) {
         return [lat, lng];
       }
     },
@@ -397,7 +397,7 @@ define([
     },
 
     centerMap: function(){
-      if (this.map) {
+      if (this.map && this.collection.length) {
         this.map.fitBounds(this.collection.map(this.parseLocation));
       }
     },
