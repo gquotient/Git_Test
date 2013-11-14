@@ -38,7 +38,14 @@ define([
     },
 
     templateHelpers: function(){
+      var display_name = this.model.get('display_name');
+
+      if (!display_name) {
+        display_name = this.model.get('project_label').replace(/_\d+$/, '').toLowerCase();
+      }
+
       return {
+        display_name: display_name,
         hasImporting: this.model.has('importing'),
         isLocked: this.model.isLocked()
       };
@@ -250,10 +257,7 @@ define([
           this.triggerMethod('import:success', this.model);
         }, this),
         complete: _.bind(function(){
-          this.triggerMethod('import:complete', this.model);
-
-          // If the indicator is still visible remove it.
-          if (!this.isClosed) { this.toggleLoadingIndicator('import'); }
+          this.toggleLoadingIndicator('import');
         }, this)
       });
     }

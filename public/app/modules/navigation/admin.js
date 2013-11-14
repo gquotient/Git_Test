@@ -208,7 +208,9 @@ define([
     },
 
     toggleRefresh: function(state){
-      this.ui.refresh.toggleClass('active', state === true);
+      if (!this.isClosed) {
+        this.ui.refresh.toggleClass('active', state === true);
+      }
     }
   });
 

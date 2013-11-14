@@ -34,7 +34,6 @@ define([
     },
 
     initialize: function(options){
-
       // Create the list view.
       this.listView = new Project.views.AdminList({
         collection: this.collection
@@ -62,39 +61,30 @@ define([
       this.showDetail();
 
       // Update the collection by triggering a refresh.
-      this.refresh({
-        success: _.bind(function(){
-          var current = this.collection.get(this.options.current);
+      this.refresh().done(_.bind(function(){
+        var project = this.collection.get(this.options.current);
 
-          if (current) {
-            this.showDetail(current);
-          } else {
-            this.mapView.centerMap();
-          }
+        if (project) {
+          this.showDetail(project);
+        } else {
+          this.mapView.centerMap();
+        }
 
-          this.checkImporting();
-        }, this)
-      });
+        this.checkImporting();
+      }, this));
     },
 
     onCreate: function(){
       this.showDetail();
     },
 
-    refresh: function(options){
-      options = options || {};
+    refresh: function(){
+      var listView = this.listView;
 
-      this.listView.toggleRefresh(true);
-
-      this.collection.fetch({
-        user: this.options.user,
-        data: {
-          index_name: 'AlignedProjects'
-        },
-        success: options.success,
-        complete: _.bind(function(){
-          this.listView.toggleRefresh(false);
-        }, this)
+      listView.toggleRefresh(true);
+      return this.collection.fetchFromIndex('AlignedProjects')
+      .always(function(){
+        listView.toggleRefresh(false);
       });
     },
 
@@ -124,7 +114,7 @@ define([
       var view;
 
       if (!(model instanceof Backbone.Model)) {
-        model = new Project.Model(model, {
+        model = new Project.AdminModel(model, {
           collection: this.collection,
           user: this.options.user,
           silent: false

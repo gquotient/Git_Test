@@ -93,9 +93,9 @@ define([
 
     showProjectEditor: function(id, options){
       this.mainContent.show( new ProjectEditorLayout(_.extend({
-        model: this.app.alignedProjects.getOrCreate(id),
-        equipment: this.app.equipment,
-        user: this.app.currentUser
+        model: this.app.adminProjects.getOrCreate({node_id: id}),
+        collection: this.app.adminProjects,
+        equipment: this.app.equipment
       }, options)));
     },
 

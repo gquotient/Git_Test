@@ -46,10 +46,7 @@ define([
   ia.currentUser = ia.users.push( JSON.parse($('#currentUserData').html()) );
   ia.currentTeam = ia.currentUser.get('currentTeam');
 
-  // Store the current team's projects
   ia.projects = new Project.Collection( JSON.parse($('#bootstrapProjects').html()) );
-
-  ia.alignedProjects = new Project.Collection();
 
   ia.portfolios = new Portfolio.Collection( JSON.parse($('#bootstrapPortfolios').html()), {
     projects: ia.projects,
@@ -62,6 +59,11 @@ define([
   }
 
   ia.equipment = new Equipment.Collection( JSON.parse($('#bootstrapEquipment').html()) );
+
+  ia.adminProjects = new Project.AdminCollection([], {
+    equipment: ia.equipment,
+    user: ia.currentUser
+  });
 
   return ia;
 });

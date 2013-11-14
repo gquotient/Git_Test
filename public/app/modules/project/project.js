@@ -78,17 +78,7 @@ define([
 
       // Status as an array for sorting purposes
       status: 'Unknown',
-      statusValue: -1,
-
-      // Defaults for persisted model.
-      rollup_intervals: '',
-      ac_capacity: 0,
-      dc_capacity: 0,
-      capacity_units: 'watts',
-      surface_area: 0,
-      dm_push: false,
-      elevation: 0,
-      notes: ''
+      statusValue: -1
     },
 
     constructor: function(){
@@ -100,8 +90,6 @@ define([
     },
 
     initialize: function(attrs, options){
-      this.user = options.user;
-
       this.issues = new Issue.Collection([], {project: this});
 
       // This might be a bit convoluted and potentially fire too often but it works
@@ -109,83 +97,10 @@ define([
         var status = this.issues.getSeverity();
         this.set(status);
       });
-
-      this.on('change:editor', this.updateLockTimeout);
-      this.updateLockTimeout();
     },
 
     getAttributes: function(){
       return _.extend({}, this.attributes);
-    },
-
-    getSchema: function(){
-      return this.constructor.schema;
-    },
-
-    isImporting: function(){
-      var msg = 'was successfully translated';
-      return this.has('importing') && this.get('importing').indexOf(msg) < 0;
-    },
-
-    isLocked: function(){
-      if (this.isImporting()) { return true; }
-      if (!this.has('editor')) { return false; }
-      return this.get('editor') !== 'unlocked';
-    },
-
-    isEditable: function(){
-      if (this.isImporting()) { return false; }
-      if (!this.has('editor')) { return false; }
-      return this.get('editor') === this.user.get('email');
-    },
-
-    setLock: function(lock){
-      return $.ajax(_.result(this, 'url') + '/edit', {
-        type: 'PUT',
-        data: {
-          project_label: this.id,
-          lock: _.isBoolean(lock) ? lock : true
-        },
-        dataType: 'json'
-      }).done(_.bind(function(data){
-        var editor = data.editor;
-
-        if (!editor) {
-          editor = data.locked === true ? this.user.get('email') : 'unlocked';
-        }
-
-        this.set({editor: editor});
-      }, this));
-    },
-
-    updateLockTimeout: function(){
-      var that = this;
-
-      clearTimeout(this.lockTimeout);
-
-      if (this.isEditable()) {
-        this.lockTimeout = setTimeout(function(){
-          that.setLock(false);
-        }, 5 * 60 * 1000);
-      }
-    },
-
-    makeEditable: function(){
-      return $.ajax(_.result(this.collection, 'url') + '/edit', {
-        type: 'POST',
-        data: {
-          project_label: this.id
-        }
-      });
-    },
-
-    commission: function(){
-      return $.ajax(_.result(this.collection, 'url') + '/commission', {
-        type: 'POST',
-        data: {
-          project_label: this.id
-        }
-      });
     },
 
     fetchKpis: function(){
@@ -308,59 +223,12 @@ define([
       return defer;
     },
 
-    save: function(key, val, options){
-      var that = this,
-        attrs = {},
-        saveNow;
-
-      // Duplicated in order to get proper options obj.
-      if (key == null || typeof key === 'object') {
-        attrs = key;
-        options = val || {};
-      } else {
-        attrs[key] = val;
-        options = options || {};
-      }
-
-      // Might as well handle this here as well.
-      if (attrs && !options.wait) {
-        if (!this.set(attrs)) { return false; }
-        attrs = null;
-      }
-
-      // Clear the lock after saving for existing projects.
-      if (!this.isNew() && options.clearLock !== false) {
-        options.success = _.wrap(options.success, function(success, resp){
-          that.setLock(false).done(success);
-        });
-      }
-
-      saveNow = options.immediate && !this.saveTimeout;
-      clearTimeout(this.saveTimeout);
-
-      if (options.lazy) {
-        this.saveTimeout = setTimeout(function(){
-          that.saveTimeout = null;
-
-          if (!options.immediate) {
-            Backbone.Model.prototype.save.call(that, attrs, options);
-          }
-        }, 1000);
-      } else {
-        saveNow = true;
-      }
-
-      if (saveNow) {
-        return Backbone.Model.prototype.save.call(this, attrs, options);
-      }
-    },
-
     parse: function(resp, options){
 
       // Check if the response includes devices.
       if (resp.devices && !resp.project_label) {
         this.devices.reset(this.parseDevices(resp, options), {
-          equipment: options.equipment,
+          equipment: options.equipment || this.equipment,
           project: this,
           parse: true,
           silent: true
@@ -387,6 +255,9 @@ define([
         resp = resp.project;
       }
 
+      // Force node_id to always be a string.
+      resp.node_id = '' + resp.node_id;
+
       return resp;
     },
 
@@ -402,99 +273,12 @@ define([
 
         return device;
       });
-    },
-
-    addNote: function(note, user, options){
-      this.save({
-        notes: this.formatNote(note, user) + this.get('notes')
-      }, _.extend({lazy: true, clearLock: false}, options));
-    },
-
-    formatNote: function(msg, user){
-      var now = new Date(),
-        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ';
-
-      user = user || this.user;
-
-      if (user) {
-        msg = user.get('name') + ' ' + msg;
-      }
-
-      return when + msg + '\n';
-    }
-  }, {
-    schema: {
-      site_label: {
-        required: true,
-        editable: false,
-        validate: function(value){
-          // Labels must start with a letter followed by letters and numbers
-          // and be between 3 and 10 characters long.
-          return (/^[A-Z][A-Z0-9]{2,9}$/).test(value);
-        }
-      },
-      display_name: {
-        required: true
-      },
-      sentalis_id: {
-        editable: false
-      },
-      dm_push: {
-        type: 'boolean'
-      },
-      ia5_push: {
-        type: 'boolean'
-      },
-      latitude: {
-        type: 'number',
-        required: true
-      },
-      longitude: {
-        type: 'number',
-        required: true
-      },
-      elevation: {
-        type: 'number',
-        required: true
-      }
     }
   });
 
   Project.Collection = Backbone.Collection.extend({
     model: Project.Model,
     url: '/api/projects',
-
-    getOrCreate: function(label){
-      return this.get(label) || this.push({project_label: label});
-    },
-
-    fetchImporting: function(){
-      // Don't fetch data if there are no projects.
-      if (!this.length) { return $.Deferred().resolve(); }
-
-      return $.ajax({
-        url: this.url + '/importing',
-        type: 'GET',
-        dataType: 'json'
-      })
-      .done(_.bind(function(data){
-        var stat = data.status || {};
-
-        this.each(function(project){
-          var msg = stat[project.id];
-
-          // Convert the msgs into a single string and remove dividers.
-          if (_.isArray(msg)) {
-            msg = _.reject(msg, function(line){
-              return (/^-+$/).test(line);
-            }).join('\n');
-          }
-
-          // If the project is importing set the flag, otherwise clear it.
-          project.set('importing', msg, {unset: !_.has(stat, project.id)});
-        });
-      }, this));
-    },
 
     fetchIssues: function(){
       var that = this,
@@ -569,6 +353,314 @@ define([
           project.parseKpis(kpi);
         }
       }, this);
+    }
+  });
+
+  Project.AdminModel = Project.Model.extend({
+    idAttribute: 'node_id',
+
+    defaults: {
+      index_name: 'AlignedProjects',
+      rollup_intervals: '',
+      ac_capacity: 0,
+      dc_capacity: 0,
+      capacity_units: 'watts',
+      surface_area: 0,
+      dm_push: false,
+      elevation: 0,
+      notes: ''
+    },
+
+    initialize: function(attrs, options){
+      this.equipment = options.equipment || (this.collection || {}).equipment;
+      this.user = options.user || (this.collection || {}).user;
+
+      this.on('change:editor', this.updateLockTimeout);
+      this.updateLockTimeout();
+    },
+
+    url: function(){
+      var base = this.collection.url;
+      if (this.isNew()) { return base; }
+      return base + '/' + this.get('project_label');
+    },
+
+    sync: function(method, model, options){
+      // Add the index_name to get and delete requests.
+      if (!options.data && (method === 'read' || method === 'delete')) {
+        options.data = {index_name: model.get('index_name')};
+        options.dataType = 'json';
+
+        // jQuery doesn't properly handle body data for delete.
+        if (method === 'delete') {
+          options.data = JSON.stringify(options.data);
+          options.contentType = 'application/json';
+        }
+      }
+
+      Backbone.sync.call(this, method, model, options);
+    },
+
+    save: function(key, val, options){
+      var that = this,
+        attrs = {},
+        saveNow;
+
+      // Duplicated in order to get proper options obj.
+      if (key == null || typeof key === 'object') {
+        attrs = key;
+        options = val || {};
+      } else {
+        attrs[key] = val;
+        options = options || {};
+      }
+
+      // Might as well handle this here as well.
+      if (attrs && !options.wait) {
+        if (!this.set(attrs)) { return false; }
+        attrs = null;
+      }
+
+      // Clear the lock after saving for existing projects.
+      if (!this.isNew() && options.clearLock !== false) {
+        options.success = _.wrap(options.success, function(success, resp){
+          that.setLock(false).done(success);
+        });
+      }
+
+      saveNow = options.immediate && !this.saveTimeout;
+      clearTimeout(this.saveTimeout);
+
+      if (options.lazy) {
+        this.saveTimeout = setTimeout(function(){
+          that.saveTimeout = null;
+
+          if (!options.immediate) {
+            Backbone.Model.prototype.save.call(that, attrs, options);
+          }
+        }, 1000);
+      } else {
+        saveNow = true;
+      }
+
+      if (saveNow) {
+        return Backbone.Model.prototype.save.call(this, attrs, options);
+      }
+    },
+
+    makeEditable: function(){
+      return $.ajax(_.result(this.collection, 'url') + '/edit', {
+        type: 'POST',
+        data: {
+          project_label: this.get('project_label'),
+          index_name: this.get('index_name')
+        }
+      });
+    },
+
+    commission: function(){
+      return $.ajax(_.result(this.collection, 'url') + '/commission', {
+        type: 'POST',
+        data: {
+          project_label: this.get('project_label'),
+          index_name: this.get('index_name')
+        }
+      });
+    },
+
+    getSchema: function(){
+      return this.constructor.schema;
+    },
+
+    isImporting: function(){
+      var msg = 'was successfully translated';
+      return this.has('importing') && this.get('importing').indexOf(msg) < 0;
+    },
+
+    isLocked: function(){
+      if (this.isImporting()) { return true; }
+      if (!this.has('editor')) { return false; }
+      return this.get('editor') !== 'unlocked';
+    },
+
+    isEditable: function(){
+      if (this.isImporting()) { return false; }
+      if (!this.has('editor')) { return false; }
+      return this.get('editor') === this.user.get('email');
+    },
+
+    setLock: function(lock){
+      return $.ajax(_.result(this, 'url') + '/edit', {
+        type: 'PUT',
+        data: {
+          project_label: this.get('project_label'),
+          lock: _.isBoolean(lock) ? lock : true
+        },
+        dataType: 'json'
+      }).done(_.bind(function(data){
+        var editor = data.editor;
+
+        if (!editor) {
+          editor = data.locked === true ? this.user.get('email') : 'unlocked';
+        }
+
+        this.set({editor: editor});
+      }, this));
+    },
+
+    updateLockTimeout: function(){
+      var that = this;
+
+      clearTimeout(this.lockTimeout);
+
+      if (this.isEditable()) {
+        this.lockTimeout = setTimeout(function(){
+          that.setLock(false);
+        }, 5 * 60 * 1000);
+      }
+    },
+
+    addNote: function(note, user, options){
+      this.save({
+        notes: this.formatNote(note, user) + this.get('notes')
+      }, _.extend({lazy: true, clearLock: false}, options));
+    },
+
+    formatNote: function(msg, user){
+      var now = new Date(),
+        when = now.toISOString().replace('T', ' at ').replace(/\.\d+Z$/, '') + ' ';
+
+      user = user || this.user;
+
+      if (user) {
+        msg = user.get('name') + ' ' + msg;
+      }
+
+      return when + msg + '\n';
+    }
+  }, {
+    schema: {
+      site_label: {
+        required: true,
+        editable: false,
+        validate: function(value){
+          // Labels must start with a letter followed by letters and numbers
+          // and be between 3 and 10 characters long.
+          return (/^[A-Z][A-Z0-9]{2,9}$/).test(value);
+        }
+      },
+      display_name: {
+        required: true
+      },
+      sentalis_id: {
+        editable: false
+      },
+      dm_push: {
+        type: 'boolean'
+      },
+      ia5_push: {
+        type: 'boolean'
+      },
+      latitude: {
+        type: 'number',
+        required: true
+      },
+      longitude: {
+        type: 'number',
+        required: true
+      },
+      elevation: {
+        type: 'number',
+        required: true
+      }
+    }
+  });
+
+  Project.AdminCollection = Backbone.Collection.extend({
+    model: Project.AdminModel,
+    url: '/api/projects',
+
+    initialize: function(models, options){
+      this.equipment = options.equipment;
+      this.user = options.user;
+    },
+
+    getOrCreate: function(obj){
+      return this.get(obj) || this.push(obj);
+    },
+
+    // Overwritten to check node_id and project label as well.
+    get: function(obj){
+      if (!obj) { return void 0; }
+      return this._byId[obj.node_id] || this._byId[obj.id] ||
+        this._byId[obj.cid] || this._byId[obj] || this.getByLabel(obj);
+    },
+
+    getByLabel: function(obj, index_name){
+      // If Backbone model then use it's attributes.
+      if (obj instanceof Backbone.Model) {
+        obj = obj.attributes;
+
+      // Otherwise if non-object then assume it is a label.
+      } else if (!_.isObject(obj)) {
+        obj = {project_label: obj};
+      }
+
+      return this.findWhere({
+        project_label: obj.project_label,
+        index_name: index_name || obj.index_name
+      });
+    },
+
+    fetchFromIndex: function(index_name, options){
+      return $.ajax({
+        url: this.url,
+        type: 'GET',
+        data: {index_name: index_name},
+        dataType: 'json'
+      })
+      .done(_.bind(function(resp){
+        // Add the index name to each project.
+        resp = _.map(resp, function(attrs){
+          return _.extend(attrs, {index_name: index_name});
+        });
+
+        this.set(resp, _.extend({parse: true, remove: false}, options));
+      }, this));
+    },
+
+    fetchImporting: function(){
+      return $.ajax({
+        url: this.url + '/importing',
+        type: 'GET',
+        dataType: 'json'
+      })
+      .done(_.bind(function(resp){
+        _.each(resp.status, function(msg, label){
+          var project = this.getByLabel(label, 'SentalisProjects') ||
+                        this.getByLabel(label, 'AlignedProjects');
+
+          // Convert the msgs into a single string and remove dividers.
+          if (_.isArray(msg)) {
+            msg = _.reject(msg, function(line){
+              return (/^-+$/).test(line);
+            }).join('\n');
+          }
+
+          // If the project exists then update the message.
+          if (project) {
+            project.set({importing: msg});
+
+          // Otherwise create a new project.
+          } else {
+            this.push({
+              project_label: label,
+              index_name: 'AlignedProjects',
+              importing: msg
+            });
+          }
+        }, this);
+      }, this));
     }
   });
 

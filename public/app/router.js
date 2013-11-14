@@ -98,10 +98,7 @@ define([
     },
 
     projectsEditor: function(id, view){
-      this.mainLayout.showProjectEditor(id, {
-        equipment: ia.equipment,
-        view: view
-      });
+      this.mainLayout.showProjectEditor(id, {view: view});
     },
 
     equipmentAdmin: function(id){

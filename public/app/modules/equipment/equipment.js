@@ -221,7 +221,7 @@ define([
 
         device = new Device.Model({
           equipment_label: this.id,
-          project_label: project.id,
+          project_label: project.get('project_label'),
           did: label + '-' + index,
           name: this.generateName(index)
         });

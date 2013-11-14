@@ -33,7 +33,6 @@ define([
     },
 
     initialize: function(options){
-
       // Create the list view.
       this.listView = new Equipment.views.AdminList({
         collection: this.collection,

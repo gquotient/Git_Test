@@ -95,19 +95,6 @@ define([
     initialize: function(options){
       this.equipment = options.equipment;
 
-      // Make sure the model has a user.
-      if (!this.model.user && options.user) {
-        this.model.user = options.user;
-      }
-
-      // Fetch project from server.
-      this.model.fetch({
-        data: {
-          index_name: 'AlignedProjects/no'
-        },
-        equipment: this.equipment
-      });
-
       this.listenTo(Backbone, 'canvas:selection', function(selection){
         this.selection = selection.length > 0 ? selection : null;
       });
@@ -464,7 +451,7 @@ define([
         device.destroy({
           wait: true,
           data: {
-            project_label: project.id,
+            project_label: project.get('project_label'),
             node_id: device.id
           },
           processData: true,
@@ -509,7 +496,7 @@ define([
           type: 'POST',
           data: {
             relationship_label: rel,
-            project_label: project.id,
+            project_label: project.get('project_label'),
             from_id: target.id,
             to_id: device.id
           }
@@ -545,7 +532,7 @@ define([
 
           data: {
             relationship_label: rel,
-            project_label: project.id,
+            project_label: project.get('project_label'),
             from_id: target.id,
             to_id: device.id
           }

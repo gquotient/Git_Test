@@ -529,10 +529,7 @@ define([
           this.triggerMethod('save:success', this.model);
         }, this),
         complete: _.bind(function(){
-          this.triggerMethod('save:complete', this.model);
-
-          // If the indicator is still visible remove it.
-          if (!this.isClosed) { this.toggleLoadingIndicator('save'); }
+          this.toggleLoadingIndicator('save');
         }, this)
       });
     },
@@ -577,7 +574,7 @@ define([
 
       options = _.extend({side: 'right'}, options);
 
-      if ($el) {
+      if (!this.isClosed && $el) {
         return $el.toggleClass('loading-' + options.side, state === true);
       }
     }

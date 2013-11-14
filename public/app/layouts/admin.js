@@ -142,7 +142,7 @@ define([
 
     showProjects: function(id){
       var layout = new ProjectsLayout({
-        collection: ia.alignedProjects,
+        collection: ia.adminProjects,
         user: ia.currentUser,
         current: id
       });

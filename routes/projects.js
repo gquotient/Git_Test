@@ -92,11 +92,9 @@ module.exports = function(app){
         }
       });
 
-      req.body = {
-        site_label: body.site_label,
-        index_name: body.index_name || 'AlignedProjects',
+      req.body = _.extend(_.pick(body, 'site_label', 'index_name'), {
         properties: JSON.stringify(props)
-      };
+      });
 
       next();
     },
@@ -124,11 +122,10 @@ module.exports = function(app){
         }
       });
 
-      req.body = {
+      req.body = _.extend(_.pick(body, 'node_id', 'index_name'), {
         project_label: req.params.label,
-        node_id: body.node_id,
         properties: JSON.stringify(props)
-      };
+      });
 
       next();
     },
@@ -147,7 +144,7 @@ module.exports = function(app){
 
   app.del('/api/projects/:label', ensureAuthorized(['vendor_admin']),
     function(req, res, next){
-      _.extend(req.body, {
+      req.body = _.extend(_.pick(req.body, 'index_name'), {
         project_label: req.params.label,
         verify: 'delete'
       });
