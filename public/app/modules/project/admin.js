@@ -11,6 +11,8 @@ define([
   'form',
 
   'hbs!project/templates/adminListItem',
+  'hbs!project/templates/adminProdListItem',
+  'hbs!project/templates/adminEditListItem',
   'hbs!project/templates/adminDetail',
   'hbs!project/templates/adminGeosearch'
 ], function(
@@ -26,19 +28,24 @@ define([
   Form,
 
   adminListItemTemplate,
+  adminProdListItemTemplate,
+  adminEditListItemTemplate,
   adminDetailTemplate,
   adminGeosearchTemplate
 ){
   var views = {};
 
-  views.AdminListItem = Navigation.views.AdminListItem.extend({
+  views.AdminListItem = Marionette.ItemView.extend({
+    tagName: 'tr',
     template: {
       type: 'handlebars',
       template: adminListItemTemplate
     },
 
     templateHelpers: function(){
-      var display_name = this.model.get('display_name');
+      var display_name = this.model.get('display_name'),
+        isLocked = this.model.isLocked(),
+        isEditable = this.model.isEditable();
 
       if (!display_name) {
         display_name = this.model.get('project_label').replace(/_\d+$/, '').toLowerCase();
@@ -47,33 +54,47 @@ define([
       return {
         display_name: display_name,
         hasImporting: this.model.has('importing'),
-        isLocked: this.model.isLocked()
+        isImporting: this.model.isImporting(),
+        isLocked: isLocked,
+        isEditable: isEditable,
+        isDisabled: isLocked && !isEditable
       };
     },
 
-    ui: {
-      importing: '.importing-icon',
-      lock: '.lock-icon',
-      commission: 'button.commission',
-      del: 'button.delete'
+    triggers: {
+      'click': 'detail',
+      'click button.model': 'model',
+      'click button.delete': 'delete'
+    },
+
+    modelEvents: {
+      'change': 'render'
+    },
+
+    onModel: function(){
+      Backbone.history.navigate('/admin/projects/' + this.model.id + '/power', true);
+    },
+
+    onDelete: function(){
+      if (window.confirm('Are you sure you want to delete this item?')) {
+        this.model.destroy({wait: true});
+      }
+    }
+  });
+
+  views.AdminEditListItem = views.AdminListItem.extend({
+    template: {
+      type: 'handlebars',
+      template: adminEditListItemTemplate
     },
 
     triggers: {
       'click': 'detail',
       'click .lock-icon': 'unlock',
+      'dblclick .lock-icon': 'unlock:force',
       'click button.commission': 'commission',
-      'click button.model': 'editor',
+      'click button.model': 'model',
       'click button.delete': 'delete'
-    },
-
-    onRender: function(){
-      var editable = this.model.isEditable(),
-        disabled = !editable && this.model.isLocked();
-
-      this.ui.importing.toggleClass('active', this.model.isImporting());
-      this.ui.lock.toggleClass('active', editable);
-      this.ui.commission.attr('disabled', disabled);
-      this.ui.del.attr('disabled', disabled);
     },
 
     onUnlock: function(){
@@ -82,25 +103,105 @@ define([
       }
     },
 
-    onCommission: function(){
-      this.model.commission();
+    onUnlockForce: function(){
+      if (this.model.isLocked()) {
+        this.model.setLock(false, true);
+      }
     },
 
-    onEditor: function(){
-      Backbone.history.navigate('/admin/projects/' + this.model.id + '/power', true);
+    onCommission: function(){
+      var project = this.model;
+
+      // This clones the project to the StagedProjects index, so fetch the
+      // new project and remove this one.
+      project.commission().done(function(){
+        project.collection.fetchFromIndex('StagedProjects');
+        project.destroy({wait: true});
+      });
+    }
+  });
+
+  views.AdminProdListItem = views.AdminListItem.extend({
+    template: {
+      type: 'handlebars',
+      template: adminProdListItemTemplate
+    },
+
+    triggers: {
+      'click': 'detail',
+      'click button.edit': 'edit',
+      'click button.model': 'model',
+      'click button.delete': 'delete'
+    },
+
+    onEdit: function(){
+      var project = this.model;
+
+      // This clones the project to the AlignedProjects index, so fetch the
+      // new project.
+      project.makeEditable().done(function(){
+        project.collection.fetchFromIndex('AlignedProjects');
+      });
     }
   });
 
   views.AdminList = Navigation.views.AdminList.extend({
     itemView: views.AdminListItem,
 
-    initialize: function(options){
-      this.collection = new Form.util.Collection(options.collection, {
-        comparator: function(model){
-          return model.get('node_id') * -1;
-        },
-        close_with: this
-      });
+    categories: [
+      {
+        name: 'Editable',
+        filter: {
+          index_name: [
+            'AlignedProjects'
+          ]
+        }
+      },
+      {
+        name: 'Importing',
+        filter: {
+          index_name: [
+            'HybridProjects',
+            'SentalisProjects',
+            'ClarityProjects'
+          ]
+        }
+      },
+      {
+        name: 'Production',
+        filter: {
+          index_name: [
+            'StagedProjects'
+          ]
+        }
+      },
+      {
+        name: 'All'
+      }
+    ],
+
+    getItemView: function(item){
+      var index_name = item.get('index_name');
+
+      if (index_name === 'AlignedProjects') {
+        return views.AdminEditListItem;
+      }
+
+      if (index_name === 'StagedProjects') {
+        return views.AdminProdListItem;
+      }
+
+      return this.itemView;
+    },
+
+    onShow: function(){
+      var category = this.categories.first();
+
+      this.triggerMethod('change:category', category);
+    },
+
+    onChangeCategory: function(model){
+      this.triggerMethod('filter', model.get('filter'));
     }
   });
 
@@ -111,6 +212,7 @@ define([
     },
 
     modelEvents: {
+      'change:editor': 'render',
       'destroy': 'close'
     },
 
@@ -202,6 +304,13 @@ define([
         Backbone.history.navigate('/admin/projects');
       } else {
         Backbone.history.navigate('/admin/projects/' + this.model.id);
+      }
+    },
+
+    onRender: function(){
+      // If the project is not editable then disable all the buttons.
+      if (!this.editable()) {
+        this.$('button').attr('disabled', true);
       }
     },
 

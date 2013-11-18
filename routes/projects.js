@@ -199,11 +199,10 @@ module.exports = function(app){
       path: '/res/edit'
     }));
 
-  app.put('/api/projects/:label/edit', ensureAuthorized(['vendor_admin']),
+  app.put('/api/projects/:label/lock', ensureAuthorized(['vendor_admin']),
     function(req, res, next){
-      _.extend(req.body, {
+      req.body = _.extend(_.pick(req.body, 'lock', 'force'), {
         project_label: req.params.label,
-        lock: req.body.lock
       });
 
       next();

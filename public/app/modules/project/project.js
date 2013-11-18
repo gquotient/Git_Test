@@ -523,12 +523,13 @@ define([
       return this.get('editor') === this.user.get('email');
     },
 
-    setLock: function(lock){
-      return $.ajax(_.result(this, 'url') + '/edit', {
+    setLock: function(lock, force){
+      return $.ajax(_.result(this, 'url') + '/lock', {
         type: 'PUT',
         data: {
           project_label: this.get('project_label'),
-          lock: _.isBoolean(lock) ? lock : true
+          lock: lock !== false,
+          force: force === true
         },
         dataType: 'json'
       }).done(_.bind(function(data){
@@ -614,6 +615,14 @@ define([
     model: Project.AdminModel,
     url: '/api/projects',
 
+    indices: [
+      'AlignedProjects',
+      'StagedProjects',
+      'HybridProjects',
+      'SentalisProjects',
+      'ClarityProjects'
+    ],
+
     initialize: function(models, options){
       this.equipment = options.equipment;
       this.user = options.user;
@@ -644,6 +653,12 @@ define([
         project_label: obj.project_label,
         index_name: index_name || obj.index_name
       });
+    },
+
+    fetchFromAllIndices: function(){
+      return $.when.apply(null, _.map(this.indices, function(index){
+        return this.fetchFromIndex(index);
+      }, this));
     },
 
     fetchFromIndex: function(index_name, options){

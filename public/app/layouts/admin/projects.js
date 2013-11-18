@@ -5,6 +5,7 @@ define([
   'backbone.marionette',
 
   'project',
+  'form',
 
   'hbs!layouts/admin/templates/projects'
 ], function(
@@ -14,6 +15,7 @@ define([
   Marionette,
 
   Project,
+  Form,
 
   projectsAdminTemplate
 ){
@@ -34,17 +36,38 @@ define([
     },
 
     initialize: function(options){
-      // Create the list view.
-      this.listView = new Project.views.AdminList({
-        collection: this.collection
+      var collection = new Form.util.Collection(options.collection, {
+        comparator: function(model){
+          // Put newer projects toward the top.
+          return (model.get('node_id') || Infinity) * -1;
+        },
+        close_with: this
       });
 
+      // Create the list view.
+      this.listView = new Project.views.AdminList({
+        collection: collection
+      });
+
+      this.listenTo(this.listView, 'filter', function(filter){
+        collection.updateFilter(function(project){
+          return _.all(filter, function(criteria, key){
+            var value = project.get(key);
+
+            if (_.isArray(criteria)) {
+              return _.contains(criteria, value);
+            } else {
+              return value === criteria;
+            }
+          });
+        });
+      });
       this.listenTo(this.listView, 'refresh', this.refresh);
       this.listenTo(this.listView, 'select', this.showDetail);
 
       // Create the map view.
       this.mapView = new Project.views.AdminMap({
-        collection: this.collection
+        collection: collection
       });
 
       this.listenTo(this.mapView, 'select', this.showDetail);
@@ -82,7 +105,7 @@ define([
       var listView = this.listView;
 
       listView.toggleRefresh(true);
-      return this.collection.fetchFromIndex('AlignedProjects')
+      return this.collection.fetchFromAllIndices()
       .always(function(){
         listView.toggleRefresh(false);
       });

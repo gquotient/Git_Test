@@ -1,14 +1,11 @@
 <td>
   <span class="lock-icon">&#xf023;</span>
-
-  {{#if hasImporting }}
-  <span class="importing-icon{{#if isImporting }} active{{/if}}" title="{{ importing }}">&#xf0ec;</span>
-  {{/if}}
 </td>
 
 <td>{{ display_name }}</td>
 
 <td class="actions">
+  <button type="button" class="button edit primary">{{$ 'Edit' }}</button>
   <button type="button" class="button model">{{$ 'Model' }}</button>
   <button type="button" class="button delete">{{$ 'Delete' }}</button>
 </td>

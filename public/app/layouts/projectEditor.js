@@ -57,7 +57,7 @@ define([
 
       // If the project does not have a label then fetch all the projects.
       if (!project.has('project_label')) {
-        promise = project.collection.fetchFromIndex('AlignedProjects');
+        promise = project.collection.fetchFromAllIndices();
       } else {
         promise = $.Deferred().resolve().promise();
       }
