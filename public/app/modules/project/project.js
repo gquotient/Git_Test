@@ -478,13 +478,19 @@ define([
     },
 
     isLocked: function(){
-      if (this.isImporting()) { return true; }
+      // A project is locked if not in the AlignedProjects index.
+      if (this.get('index_name') !== 'AlignedProjects') { return true; }
+
+      // A project is locked if it is being edited.
       if (!this.has('editor')) { return false; }
       return this.get('editor') !== 'unlocked';
     },
 
     isEditable: function(){
-      if (this.isImporting()) { return false; }
+      // A project isn't editable if not in the AlignedProjects index.
+      if (this.get('index_name') !== 'AlignedProjects') { return false; }
+
+      // A project isn't editable if the current user isn't the editor.
       if (!this.has('editor')) { return false; }
       return this.get('editor') === this.user.get('email');
     },
