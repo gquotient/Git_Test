@@ -214,7 +214,23 @@ define([
     },
 
     onImport: function(){
-      this.importSentalis();
+      // The Sentalis ID is required for this operation.
+      this._schema.sentalis_id.required = true;
+
+      // Make sure the values are valid and store them on the model.
+      if (this.isInvalid('site_label', 'sentalis_id')) { return false; }
+      this.model.set(this.changed);
+
+      this.toggleLoadingIndicator('import', true);
+
+      // Initiate the project import.
+      this.model.importFromSentalis()
+      .done(_.bind(function(){
+        this.triggerMethod('import:started', this.model);
+      }, this))
+      .always(_.bind(function(){
+        this.toggleLoadingIndicator('import');
+      }, this));
     },
 
     fetchSentalisProjects: function(){
@@ -240,26 +256,6 @@ define([
       });
 
       return collection;
-    },
-
-    importSentalis: function(){
-      // The Sentalis ID is required for this operation.
-      this._schema.sentalis_id.required = true;
-      if (this.isInvalid('site_label', 'sentalis_id')) { return false; }
-
-      this.toggleLoadingIndicator('import', true);
-
-      return this.model.save(_.clone(this.changed), {
-        url: _.result(this.model, 'url') + '/import',
-        clearLock: false,
-        success: _.bind(function(){
-          this.model.set('importing', '');
-          this.triggerMethod('import:success', this.model);
-        }, this),
-        complete: _.bind(function(){
-          this.toggleLoadingIndicator('import');
-        }, this)
-      });
     }
   });
 

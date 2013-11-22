@@ -377,6 +377,17 @@ define([
 
       this.on('change:editor', this.updateLockTimeout);
       this.updateLockTimeout();
+
+      // When a new project is no longer being imported move it to AlignedProjects.
+      this.on('change:importing', function(){
+        if (this.isNew() && !this.isImporting()) {
+          this.set({index_name: 'AlignedProjects'});
+
+          if (this.collection) {
+            this.collection.fetchFromIndex('AlignedProjects');
+          }
+        }
+      });
     },
 
     url: function(){
@@ -446,6 +457,23 @@ define([
       if (saveNow) {
         return Backbone.Model.prototype.save.call(this, attrs, options);
       }
+    },
+
+    importFromSentalis: function(){
+      return $.ajax(_.result(this, 'url') + '/import', {
+        type: this.isNew() ? 'POST' : 'PUT',
+        data: _.pick(this.attributes, 'site_label', 'sentalis_id')
+      })
+      .done(_.bind(function(resp){
+        // Set the initial attrs on the model.
+        this.set(_.extend({
+          index_name: 'SentalisProjects',
+          importing: ''
+        }, resp));
+
+        // And add it to the collection.
+        this.collection.set(this, {remove: false});
+      }, this));
     },
 
     makeEditable: function(){

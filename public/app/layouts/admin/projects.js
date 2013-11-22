@@ -128,12 +128,7 @@ define([
         model: model
       });
 
-      this.listenTo(view, 'save:success import:success', function(){
-        this.collection.add(model);
-        this.showDetail(model);
-      });
-
-      this.listenTo(view, 'import:success', function(){
+      this.listenTo(view, 'import:started', function(){
         var that = this;
 
         clearTimeout(this.importTimeout);
@@ -142,6 +137,11 @@ define([
         this.importTimeout = setTimeout(function(){
           that.checkImporting();
         }, 1000);
+      });
+
+      this.listenTo(view, 'save:success', function(){
+        this.collection.add(model);
+        this.showDetail(model);
       });
 
       this.listenToOnce(view, 'close', function(){
