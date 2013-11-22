@@ -670,12 +670,22 @@ define([
         dataType: 'json'
       })
       .done(_.bind(function(resp){
-        // Add the index name to each project.
         resp = _.map(resp, function(attrs){
-          return _.extend(attrs, {index_name: index_name});
+          // Add the index to the project.
+          attrs.index_name = index_name;
+
+          // Convert the node id to a string.
+          attrs.node_id = '' + attrs.node_id;
+
+          return attrs;
         });
 
-        this.set(resp, _.extend({parse: true, remove: false}, options));
+        // Remove any projects that are no longer in this index.
+        this.remove(_.reduce(resp, function(memo, attrs){
+          return _.without(memo, attrs.node_id);
+        }, _.invoke(this.where({index_name: index_name}), 'get', 'node_id')));
+
+        this.set(resp, _.extend({remove: false}, options));
       }, this));
     },
 
