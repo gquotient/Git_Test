@@ -447,7 +447,10 @@ define([
     collectionEvents: {
       'add': 'addMarker',
       'remove': 'removeMarker',
-      'reset': 'resetMarkers'
+      'reset': 'resetMarkers',
+      'filter': 'resetMarkers',
+      'change:latitude': 'moveMarker',
+      'change:longitude': 'moveMarker'
     },
 
     onShow: function(){
@@ -463,7 +466,7 @@ define([
         zoom: 3
       });
 
-      this.$el.append( this.geosearch.render().el );
+      this.$el.append(this.geosearch.render().el);
       this.resetMarkers();
     },
 
@@ -493,11 +496,11 @@ define([
     },
 
     focusMap: function(model){
-      var loc = this.parseLocation(model),
-        zoom = this.map.getZoom();
+      var loc = this.parseLocation(model);
 
       if (loc && this.map) {
-        if (zoom < 10) {
+        // Only change the zoom level if the user is zoomed out.
+        if (this.map.getZoom() < 10) {
           this.map.setZoom(15);
         }
 
@@ -506,15 +509,17 @@ define([
     },
 
     centerMap: function(){
+      // Only try to center the map if there are projects.
       if (this.map && this.collection.length) {
         this.map.fitBounds(this.collection.map(this.parseLocation));
       }
     },
 
     addMarker: function(model){
-      var loc = this.parseLocation(model), marker;
+      var loc = this.parseLocation(model),
+        marker = this.markers[model.cid];
 
-      if (loc && this.map && !this.markers[model.cid]) {
+      if (this.map && loc && !marker) {
         marker = this.markers[model.cid] = L.marker(loc, {
           title: model.get('display_name'),
           draggable: model.isNew(),
@@ -522,15 +527,6 @@ define([
             className: 'ok',
             iconSize: [15,32]
           })
-        });
-
-        this.listenTo(model, 'change:latitude change:longitude', function(){
-          var loc = this.parseLocation(model);
-
-          if (loc) {
-            marker.setLatLng(loc);
-            this.focusMap(loc);
-          }
         });
 
         marker.on('click', function(){
@@ -550,20 +546,38 @@ define([
       }
     },
 
+    moveMarker: function(model){
+      var loc = this.parseLocation(model),
+        marker = this.markers[model.cid];
+
+      if (this.map && loc && marker) {
+        marker.setLatLng(loc);
+        this.focusMap(loc);
+      }
+    },
+
     removeMarker: function(model){
       var marker = this.markers[model.cid];
 
       if (marker) {
-        this.stopListening(model);
         this.map.removeLayer(marker);
         delete this.markers[model.cid];
       }
     },
 
-    resetMarkers: function(collection, options){
-      options = options || {};
-      _.each(options.previousModels, this.removeMarker, this);
-      this.collection.each(this.addMarker, this);
+    resetMarkers: function(){
+      var existing = _.keys(this.markers);
+
+      // Add any new markers.
+      this.collection.each(function(model){
+        this.addMarker(model);
+        existing = _.without(existing, model.cid);
+      }, this);
+
+      // Remove any markers that are no longer in the collection.
+      _.each(existing, function(cid){
+        this.removeMarker({cid: cid});
+      }, this);
     }
   });
 
