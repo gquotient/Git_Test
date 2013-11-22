@@ -118,8 +118,8 @@ define([
       var dropdown = new views.Dropdown({collection: categories});
 
       this.on('render', function(){
+        this.ui.title.addClass('drop-filter');
         this.$el.append(dropdown.render().el);
-        this.ui.title.addClass('drop');
       });
 
       this.on('click:title', function(){
