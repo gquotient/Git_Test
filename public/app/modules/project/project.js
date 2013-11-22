@@ -378,11 +378,12 @@ define([
       this.on('change:editor', this.updateLockTimeout);
       this.updateLockTimeout();
 
-      // When a new project is no longer being imported move it to AlignedProjects.
-      this.on('change:importing', function(){
-        if (this.isNew() && !this.isImporting()) {
+      // Listen for when to change an importing project's index.
+      this.on('change:importing', function(model, value){
+        if (value.indexOf('moved to AlignedProjects') >= 0) {
           this.set({index_name: 'AlignedProjects'});
 
+          // Fetch the project changes.
           if (this.collection) {
             this.collection.fetchFromIndex('AlignedProjects');
           }
