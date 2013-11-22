@@ -150,7 +150,7 @@ define([
 
     categories: [
       {
-        name: 'Editable',
+        name: 'Editing',
         filter: {
           index_name: [
             'AlignedProjects'
@@ -176,7 +176,7 @@ define([
         }
       },
       {
-        name: 'All'
+        name: 'All Projects'
       }
     ],
 
