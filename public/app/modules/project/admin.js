@@ -35,6 +35,23 @@ define([
 ){
   var views = {};
 
+  function format(obj){
+    // If the obj is an array then concat the values with commas.
+    if (_.isArray(obj)) {
+      return obj.join(', ');
+    }
+
+    // If an actual object then show each pair on a separate line with a colon.
+    if (_.isObject(obj)) {
+      return _.map(obj, function(value, key){
+        return key.replace('_', ' ') + ': ' + format(value);
+      }, this).join('\n');
+    }
+
+    // Otherwise return a string.
+    return '' + obj;
+  }
+
   views.AdminListItem = Marionette.ItemView.extend({
     tagName: 'tr',
     template: {
@@ -79,6 +96,20 @@ define([
       if (window.confirm('Are you sure you want to delete this item?')) {
         this.model.destroy({wait: true});
       }
+    },
+
+    toggleLoadingIndicator: function(el, state, options){
+      var $el = this.ui[el] || this.$(el);
+
+      options = options || {};
+
+      if (!this.isClosed && $el) {
+        if (state) {
+          return $el.addClass('loading-' + (options.side || 'right'));
+        } else {
+          return $el.removeClass('loading-left loading-right');
+        }
+      }
     }
   });
 
@@ -86,6 +117,10 @@ define([
     template: {
       type: 'handlebars',
       template: adminEditListItemTemplate
+    },
+
+    ui: {
+      commission: 'button.commission'
     },
 
     triggers: {
@@ -110,13 +145,23 @@ define([
     },
 
     onCommission: function(){
-      var project = this.model;
+      this.toggleLoadingIndicator('commission', true, {side: 'left'});
 
-      // This clones the project to the StagedProjects index, so fetch the
-      // new project and remove this one.
-      project.commission().done(function(){
-        project.collection.fetchFromIndex('StagedProjects');
-        project.destroy({wait: true});
+      // Clone the project to the StagedProjects index, once complete fetch
+      // the model and remove this one.
+      this.model.commission()
+
+      .always(_.bind(function(){
+        this.toggleLoadingIndicator('commission', false);
+      }, this))
+
+      .done(_.bind(function(){
+        this.model.collection.fetchFromIndex('StagedProjects');
+        this.model.destroy({wait: true});
+      }, this))
+
+      .fail(function(xhr){
+        alert(format(JSON.parse(xhr.responseText)));
       });
     }
   });
@@ -127,6 +172,10 @@ define([
       template: adminProdListItemTemplate
     },
 
+    ui:{
+      edit: 'button.edit'
+    },
+
     triggers: {
       'click': 'detail',
       'click button.edit': 'edit',
@@ -135,12 +184,22 @@ define([
     },
 
     onEdit: function(){
-      var project = this.model;
+      this.toggleLoadingIndicator('edit', true, {side: 'left'});
 
-      // This clones the project to the AlignedProjects index, so fetch the
-      // new project.
-      project.makeEditable().done(function(){
-        project.collection.fetchFromIndex('AlignedProjects');
+      // Clone the project to the AlignedProjects index, once complete fetch
+      // the model.
+      this.model.makeEditable()
+
+      .always(_.bind(function(){
+        this.toggleLoadingIndicator('edit', false);
+      }, this))
+
+      .done(_.bind(function(){
+        this.model.collection.fetchFromIndex('AlignedProjects');
+      }, this))
+
+      .fail(function(xhr){
+        alert(format(JSON.parse(xhr.responseText)));
       });
     }
   });
@@ -334,12 +393,18 @@ define([
 
       // Initiate the project import.
       this.model.importFromSentalis()
+
+      .always(_.bind(function(){
+        this.toggleLoadingIndicator('import', false);
+      }, this))
+
       .done(_.bind(function(){
         this.triggerMethod('import:started', this.model);
       }, this))
-      .always(_.bind(function(){
-        this.toggleLoadingIndicator('import');
-      }, this));
+
+      .fail(function(xhr){
+        alert(format(JSON.parse(xhr.responseText)));
+      });
     },
 
     fetchSentalisProjects: function(){
