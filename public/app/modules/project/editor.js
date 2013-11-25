@@ -566,8 +566,9 @@ define([
 
     templateHelpers: function(){
       return {
-        editable: this.model.isEditable(),
-        locked: this.model.isLocked()
+        isLocked: this.model.isLocked(),
+        isEditable: this.model.isEditable(),
+        hasEditor: this.model.has('editor')
       };
     },
 
@@ -585,6 +586,7 @@ define([
     },
 
     modelEvents: {
+      'change:index_name': 'render',
       'change:editor': 'render'
     },
 
