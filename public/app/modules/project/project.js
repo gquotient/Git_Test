@@ -360,7 +360,6 @@ define([
     idAttribute: 'node_id',
 
     defaults: {
-      index_name: 'AlignedProjects',
       elevation: 0,
       hasAC: false,
       hasDC: false,

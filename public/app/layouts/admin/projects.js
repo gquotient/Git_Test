@@ -137,7 +137,9 @@ define([
       var view;
 
       if (!(model instanceof Backbone.Model)) {
-        model = new Project.AdminModel(model, {
+        model = new Project.AdminModel(_.extend({
+          index_name: 'AlignedProjects'
+        }, model), {
           collection: this.collection,
           user: this.options.user,
           silent: false
