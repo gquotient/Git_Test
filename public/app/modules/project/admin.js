@@ -330,6 +330,8 @@ define([
           return this.sentalisProjects;
         }
       },
+      hasAC: {},
+      hasDC: {},
       dm_push: {},
       ia5_push: {},
       address: {},

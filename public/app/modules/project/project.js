@@ -361,13 +361,16 @@ define([
 
     defaults: {
       index_name: 'AlignedProjects',
-      rollup_intervals: '',
+      elevation: 0,
+      hasAC: false,
+      hasDC: false,
       ac_capacity: 0,
       dc_capacity: 0,
-      capacity_units: 'watts',
       surface_area: 0,
+      capacity_units: 'watts',
       dm_push: false,
-      elevation: 0,
+      ia5_push: false,
+      rollup_intervals: '',
       notes: ''
     },
 
@@ -590,6 +593,12 @@ define([
       },
       sentalis_id: {
         editable: false
+      },
+      hasAC: {
+        type: 'boolean'
+      },
+      hasDC: {
+        type: 'boolean'
       },
       dm_push: {
         type: 'boolean'
