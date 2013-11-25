@@ -565,11 +565,20 @@ define([
     },
 
     templateHelpers: function(){
-      return {
-        isLocked: this.model.isLocked(),
-        isEditable: this.model.isEditable(),
-        hasEditor: this.model.has('editor')
-      };
+      var helpers = {};
+
+      // The lock controls only apply to editable projects.
+      if (this.model.get('index_name') === 'AlignedProjects') {
+        if (!this.model.isLocked()) {
+          helpers.showEdit = true;
+        } else if (this.model.isEditable()) {
+          helpers.showRelease = true;
+        } else if (this.model.has('editor')) {
+          helpers.showMessage = true;
+        }
+      }
+
+      return helpers;
     },
 
     initialize: function(){

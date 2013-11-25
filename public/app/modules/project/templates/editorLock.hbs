@@ -1,13 +1,13 @@
-{{#if isLocked }}
-{{#if isEditable }}
+{{#if showEdit }}
+<button type="button" class="button primary edit">{{$ 'Edit Model' }}</button>
+{{/if}}
+
+{{#if showRelease }}
 <button type="button" class="button primary release">{{$ 'Release Lock' }}</button>
-{{else}}
-{{#if hasEditor }}
+{{/if}}
+
+{{#if showMessage }}
 <div class="lock-message">
 {{ editor }} {{$ 'has this project locked' }}
 </div>
-{{/if}}
-{{/if}}
-{{else}}
-<button type="button" class="button primary edit">{{$ 'Edit Model' }}</button>
 {{/if}}
