@@ -283,16 +283,35 @@ define([
       display_name: {
         el: '#name',
         success: function(value){
-          var site_label;
+          var site_label = '', digits;
 
           // Generate a site label from the project name if not set.
           if (this.model.isNew() && !this.changed.site_label) {
-            site_label = _.reduce(value.split(' '), function(memo, word){
-              if (memo.length < 8) {
-                memo += word.toUpperCase().replace(/[^A-Z]+/g, '');
+
+            // Grab up to the last 9 trailing digits.
+            digits = value.match(/\d{0,9}$/)[0];
+
+            // Append words until the proper length is reached.
+            _.all(value.toUpperCase().split(' '), function(word){
+              var len = site_label.length;
+
+              // Remove non-alpha characters.
+              word = word.replace(/[^A-Z]+/g, '');
+
+              // If the word is too long then remove the vowels.
+              if (word.length > 4 && len + word.length + digits.length > 10) {
+                word = word.replace(/[AEIOU]+/g, '');
               }
-              return memo.substr(0, 10);
-            }, '');
+
+              // Add the word if it fits or if the label is too short.
+              if (len + word.length + digits.length <= 10 || len < 3) {
+                site_label += word;
+                return true;
+              }
+            });
+
+            // Shrink the label if necessary and append the digits.
+            site_label = site_label.slice(0, 10 - digits.length) + digits;
 
             this.updateValues({site_label: site_label});
             this.changed.site_label = site_label;
