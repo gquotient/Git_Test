@@ -209,15 +209,7 @@ define([
 
     categories: [
       {
-        name: 'Editing',
-        filter: {
-          index_name: [
-            'AlignedProjects'
-          ]
-        }
-      },
-      {
-        name: 'Importing',
+        name: 'Translating',
         filter: {
           index_name: [
             'HybridProjects',
@@ -227,7 +219,16 @@ define([
         }
       },
       {
-        name: 'Production',
+        name: 'In Progress',
+        default: true,
+        filter: {
+          index_name: [
+            'AlignedProjects'
+          ]
+        }
+      },
+      {
+        name: 'Commissioned',
         filter: {
           index_name: [
             'StagedProjects'
@@ -254,7 +255,7 @@ define([
     },
 
     onShow: function(){
-      var category = this.categories.first();
+      var category = this.categories.findWhere({default: true});
 
       this.triggerMethod('change:category', category);
     },
