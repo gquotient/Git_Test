@@ -706,7 +706,8 @@ define([
       .done(_.bind(function(resp){
         _.each(resp.status, function(msg, label){
           var project = this.getByLabel(label, 'SentalisProjects') ||
-                        this.getByLabel(label, 'AlignedProjects');
+                        this.getByLabel(label, 'AlignedProjects') ||
+                        this.getByLabel(label, 'StagedProjects');
 
           // Convert the msgs into a single string and remove dividers.
           if (_.isArray(msg)) {
