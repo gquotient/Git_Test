@@ -305,7 +305,7 @@ define([
               }
 
               // Add the word if it fits or if the label is too short.
-              if (len + word.length + digits.length <= 10 || len < 3) {
+              if (len + word.length + digits.length <= 10 || len < 6) {
                 site_label += word;
                 return true;
               }
