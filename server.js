@@ -49,7 +49,12 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
-  app.use(express.session({ store: new RedisStore(), secret: 'adamantium',cookie: { secure: false, maxAge:86400000 } }));
+  app.use(express.session({ 
+    store: new RedisStore(), 
+    secret: 'adamantium',
+    cookie: { secure: false, maxAge: 60 * 30 * 1000 }, // Expire after 30 min 
+    rolling: true // Rolling sessions (update expiry after request)
+  }));
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(flash());

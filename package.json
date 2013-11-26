@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "requirejs": "latest",
-    "express": "~3.1.0",
+    "express": "~3.4.4",
     "passport": "~0.1.15",
     "stylus": "~0.37.0",
     "nib": "~1.0",

@@ -27,6 +27,10 @@ module.exports = function(app){
 
   /* Reset Password */
   app.get('/reset', ensureAuthenticated, function(req, res){
+    if (req.user.role === 'vendor_admin') {
+      console.log("vendor_admin role; setting cookie maxAge to null; user: " + req.user.name);
+      req.session.cookie.maxAge = null;
+    }    
     if( req.user.firsttime ){
       res.render('resetpassword', { flash: req.flash('error') });
     } else {
