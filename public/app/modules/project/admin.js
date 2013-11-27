@@ -240,6 +240,14 @@ define([
       }
     ],
 
+    collectionEvents: {
+      // Virtual collection does not forward individual attribute changes so
+      // filter for index_name changes manually.
+      'change': function(model){
+        if (model.changed.index_name) { this.updateItemView(model); }
+      }
+    },
+
     getItemView: function(item){
       var index_name = item.get('index_name');
 
@@ -252,6 +260,13 @@ define([
       }
 
       return this.itemView;
+    },
+
+    updateItemView: function(item){
+      var view = this.children.findByModel(item);
+
+      this.removeChildView(view);
+      this.addChildView(item);
     },
 
     onShow: function(){
