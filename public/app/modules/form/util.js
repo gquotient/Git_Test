@@ -118,12 +118,6 @@ define([
       return _.invoke(this._models(), 'get', attr);
     },
 
-    where: Backbone.Collection.prototype.where,
-
-    findWhere: function(attrs){
-      return this.where(attrs, true);
-    },
-
     sort: function(options){
       var iterator, sorter;
 
