@@ -382,6 +382,8 @@ define([
 
       // Listen for when to change an importing project's index.
       this.on('change:importing', function(model, value){
+        if (this.get('index_name') !== 'SentalisProjects') { return; }
+
         if (value.indexOf('moved to AlignedProjects') >= 0) {
           this.set({index_name: 'AlignedProjects'});
 
