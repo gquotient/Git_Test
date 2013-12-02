@@ -220,7 +220,7 @@ define([
       },
       {
         name: 'In Progress',
-        default: true,
+        show_first: true,
         filter: {
           index_name: [
             'AlignedProjects'
@@ -270,7 +270,7 @@ define([
     },
 
     onShow: function(){
-      var category = this.categories.findWhere({default: true});
+      var category = this.categories.findWhere({show_first: true});
 
       this.triggerMethod('change:category', category);
     },

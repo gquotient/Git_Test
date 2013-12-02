@@ -109,7 +109,7 @@ define([
         this.createDropdown(this.categories);
       }
 
-      this.listenTo(this, 'itemview:detail', function(view){
+      this.on('itemview:detail', function(view){
         this.trigger('select', view.model);
       });
     },
