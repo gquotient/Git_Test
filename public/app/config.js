@@ -137,7 +137,7 @@ require.config({
     'backbone.wreqr': 'bower_components/backbone.wreqr/lib/amd/backbone.wreqr',
     'backbone.marionette': 'bower_components/backbone.marionette/lib/core/amd/backbone.marionette',
     'backbone.marionette.handlebars': 'bower_components/backbone.marionette.handlebars/backbone.marionette.handlebars',
-    'backbone.virtualCollection': 'bower_components/backbone.virtualCollection/backbone.virtual-collection',
+    'backbone.virtualCollection': 'bower_components/backbone-virtual-collection/backbone.virtual-collection',
 
     handlebars: 'bower_components/handlebars/handlebars',
     modernizr: 'bower_components/modernizr/modernizr',
