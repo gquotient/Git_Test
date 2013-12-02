@@ -1,7 +1,7 @@
 {
   "name": "draker-core-ui",
   "description": "Awesome App of Awesomeness",
-  "version": "0.1.64",
+  "version": "0.1.65",
   "dependencies": {
     "es5-shim": "latest",
     "underscore": "latest",
@@ -13,7 +13,7 @@
     "backbone.marionette.handlebars": "latest",
     "backbone.babysitter": "latest",
     "backbone.wreqr": "latest",
-    "backbone.virtualCollection": "git@github.com:p3drosola/Backbone.VirtualCollection.git#master",
+    "backbone-virtual-collection": "latest",
     "requirejs-text": "latest",
     "css": "git://github.com/justinwinslow/css.git",
     "handlebars": "latest",
