@@ -550,9 +550,7 @@ define([
       'add': 'addMarker',
       'remove': 'removeMarker',
       'reset': 'resetMarkers',
-      'filter': 'resetMarkers',
-      'change:latitude': 'moveMarker',
-      'change:longitude': 'moveMarker'
+      'filter': 'resetMarkers'
     },
 
     onShow: function(){
@@ -576,24 +574,10 @@ define([
       this.map.remove();
     },
 
-    parseLocation: function(model){
-      var lat, lng;
-
-      if (model instanceof Backbone.Model) {
-        lat = model.get('latitude');
-        lng = model.get('longitude');
-
-      } else if (_.isArray(model)) {
-        lat = model[0];
-        lng = model[1];
-
-      } else if (_.isObject(model)) {
-        lat = model.latitude;
-        lng = model.longitude;
-      }
-
-      if (!_.isUndefined(lat) && !_.isUndefined(lng)) {
-        return [lat, lng];
+    centerMap: function(){
+      // Only try to center the map if there are projects.
+      if (this.map && this.collection.length) {
+        this.map.fitBounds(this.collection.map(this.parseLocation));
       }
     },
 
@@ -610,51 +594,41 @@ define([
       }
     },
 
-    centerMap: function(){
-      // Only try to center the map if there are projects.
-      if (this.map && this.collection.length) {
-        this.map.fitBounds(this.collection.map(this.parseLocation));
-      }
-    },
-
     addMarker: function(model){
       var loc = this.parseLocation(model),
         marker = this.markers[model.cid];
 
-      if (this.map && loc && !marker) {
-        marker = this.markers[model.cid] = L.marker(loc, {
-          title: model.get('display_name'),
-          draggable: model.isNew(),
-          icon: L.divIcon({
-            className: 'ok',
-            iconSize: [15,32]
-          })
-        });
+      if (this.map && loc) {
+        // If the model already has a marker then update it.
+        if (marker) {
+          marker.setLatLng(loc);
 
-        marker.on('click', function(){
-          this.trigger('select', model);
-        }, this);
+        // Otherwise create a new marker.
+        } else {
+          marker = this.markers[model.cid] = L.marker(loc, {
+            title: model.get('display_name'),
+            draggable: model.isNew(),
+            icon: L.divIcon({
+              className: 'ok',
+              iconSize: [15,32]
+            })
+          });
 
-        marker.on('dragend', function(){
-          var loc = marker.getLatLng();
+          marker.on('click', function(){
+            this.trigger('select', model);
+          }, this);
 
-          this.trigger('locate', {
-            latitude: loc.lat,
-            longitude: loc.lng
-          }, model);
-        }, this);
+          marker.on('dragend', function(){
+            var loc = marker.getLatLng();
 
-        marker.addTo(this.map);
-      }
-    },
+            model.set({
+              latitude: loc.lat,
+              longitude: loc.lng
+            });
+          }, this);
 
-    moveMarker: function(model){
-      var loc = this.parseLocation(model),
-        marker = this.markers[model.cid];
-
-      if (this.map && loc && marker) {
-        marker.setLatLng(loc);
-        this.focusMap(loc);
+          marker.addTo(this.map);
+        }
       }
     },
 
@@ -680,6 +654,27 @@ define([
       _.each(existing, function(cid){
         this.removeMarker({cid: cid});
       }, this);
+    },
+
+    parseLocation: function(model){
+      var lat, lng;
+
+      if (model instanceof Backbone.Model) {
+        lat = model.get('latitude');
+        lng = model.get('longitude');
+
+      } else if (_.isArray(model)) {
+        lat = model[0];
+        lng = model[1];
+
+      } else if (_.isObject(model)) {
+        lat = model.latitude;
+        lng = model.longitude;
+      }
+
+      if (!_.isUndefined(lat) && !_.isUndefined(lng)) {
+        return [lat, lng];
+      }
     }
   });
 

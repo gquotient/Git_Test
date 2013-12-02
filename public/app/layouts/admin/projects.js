@@ -44,6 +44,8 @@ define([
         close_with: this
       });
 
+      this.listenTo(collection, 'change', this.updateMarker);
+
       // Create the list view.
       this.listView = new Project.views.AdminList({
         collection: collection
@@ -84,7 +86,9 @@ define([
       this.showDetail();
 
       // Update the collection by triggering a refresh.
-      this.refresh().done(_.bind(function(){
+      this.refresh()
+
+      .done(_.bind(function(){
         var project = this.collection.get(this.options.current);
 
         if (project) {
@@ -102,13 +106,12 @@ define([
     },
 
     refresh: function(){
-      var listView = this.listView;
-
-      listView.toggleRefresh(true);
+      this.listView.toggleRefresh(true);
       return this.collection.fetchFromAllIndices()
-      .always(function(){
-        listView.toggleRefresh(false);
-      });
+
+      .always(_.bind(function(){
+        this.listView.toggleRefresh(false);
+      }, this));
     },
 
     checkImporting: function(){
@@ -118,7 +121,9 @@ define([
 
       // If the layout is still visible fetch importing projects.
       if (!this.isClosed) {
-        this.collection.fetchImporting().done(function(){
+        this.collection.fetchImporting()
+
+        .done(function(){
           var interval = 60 * 1000;
 
           // If any projects are currently importing increase the poll rate.
@@ -145,6 +150,8 @@ define([
           silent: false
         });
 
+        this.listenTo(model, 'change', this.updateMarker);
+
         this.mapView.addMarker(model);
       }
 
@@ -169,7 +176,7 @@ define([
         this.showDetail(model);
       });
 
-      this.listenToOnce(view, 'close', function(){
+      this.listenTo(view, 'close', function(){
         if (!this.listView.isClosed) {
           this.listView.setActive();
         }
@@ -177,6 +184,9 @@ define([
         if (!this.collection.contains(model)) {
           this.mapView.removeMarker(model);
         }
+
+        this.stopListening(model);
+        this.stopListening(view);
 
         this.model = null;
       });
@@ -187,17 +197,22 @@ define([
       this.model = model;
     },
 
-    updateLocation: function(attr, model){
-      if (this.model) {
-
-        // Update the location for new models.
-        if (this.model.isNew()) { this.model.set(attr); }
-
-        // Make sure this model has a map marker.
-        if (!model) { this.mapView.addMarker(this.model); }
+    updateLocation: function(attrs){
+      if (this.model && this.model.isNew()) {
+        this.model.set(attrs);
+      } else {
+        this.mapView.focusMap(attrs);
       }
+    },
 
-      this.mapView.focusMap(attr);
+    updateMarker: function(model){
+      if (model.changed.latitude || model.changed.longitude) {
+        this.mapView.addMarker(model);
+
+        if (model === this.model) {
+          this.mapView.focusMap(model);
+        }
+      }
     }
   });
 });
