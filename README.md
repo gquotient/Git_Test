@@ -101,6 +101,39 @@ $ grunt postequip
 ```
 
 
+## Setting up deployment
+
+* Add your ssh credentials to the server you'll be deploying to
+
+> Note: This assumes you've [generated an ssh key](https://help.github.com/articles/generating-ssh-keys) and that you have obtained a copy of __ddsptidevkey.pem__ from one of the other Draker developers and placed it in your ~/.ssh folder.
+
+```
+$ cat ~/.ssh/id_rsa.pub | ssh -i ~/.ssh/ddsptidevkey.pem ubuntu@app.stage.intelligentarray.com "cat>> .ssh/authorized_keys"
+```
+
+* Add the server to your local FrontEnd git repo as an additional remote
+
+```
+$ git remote add stage ssh://ubuntu@app.stage.intelligentarray.com/home/ubuntu/FrontEnd
+```
+
+* When your ready to deploy code changes
+
+> Note: In order to prevent caching in our user's browser, increment the client version in [bower.json](https://github.com/drakerlabs/FrontEnd/blob/master/public/app/bower.json#L4) before each deploy.
+
+```
+# The first time you deploy use
+$ git push stage +master:refs/heads/master
+```
+
+```
+# For subsequent deploys use
+$ git push stage master
+```
+
+* You should see the dependencies load, the build script run, and finally the service re-start.
+
+
 ## Developing code
 
 * Please keep the code clean by using `grunt jshint` before any commit
