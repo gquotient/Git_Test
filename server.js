@@ -1,26 +1,16 @@
-/**
- * Module dependencies.
- */
-
-var clientInfo = require('./public/app/bower'),
+var fs = require('fs'),
+  path = require('path'),
+  http = require('http'),
   express = require('express'),
+  hbs = require('hbs'),
   stylus = require('stylus'),
   nib = require('nib'),
-  _ = require('lodash'),
-  http = require('http'),
-  path = require('path'),
-  passport = require('passport'),
   RedisStore = require('connect-redis')(express),
   flash = require('connect-flash'),
+  passport = require('passport'),
   DrakerIA6Strategy = require('./lib/strategies/passport-draker-ia6').Strategy,
-  fs = require('fs'),
-  hbs = require('hbs'),
-  net = require('net'),
+  clientInfo = require('./public/app/bower'),
   routes = require('./routes');
-
-/*
- * Configure Express App
- */
 
 var app = express();
 
@@ -46,13 +36,15 @@ app.configure(function(){
     })
   );
   app.use(express.logger('dev'));
-  app.use(express.bodyParser());
+  app.use(express.json());
+  app.use(express.urlencoded());
   app.use(express.methodOverride());
+
   app.use(express.cookieParser());
-  app.use(express.session({ 
-    store: new RedisStore(), 
+  app.use(express.session({
+    store: new RedisStore(),
     secret: 'adamantium',
-    cookie: { secure: false, maxAge: 60 * 30 * 1000 }, // Expire after 30 min 
+    cookie: { secure: false, maxAge: 60 * 30 * 1000 }, // Expire after 30 min
     rolling: true // Rolling sessions (update expiry after request)
   }));
   app.use(passport.initialize());
