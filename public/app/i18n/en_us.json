@@ -121,6 +121,7 @@
   "Acknowledged": "Acknowledged",
   "There are currently no active alarms": "There are currently no active alarms",
 
+  "Documents": "Documents",
   "No documents": "No documents",
 
   "Device Type": "Device Type",
@@ -132,5 +133,38 @@
 
   "Inverter": "Inverter",
   "String": "String",
-  "Panel": "Panel"
+  "Panel": "Panel",
+
+  "Reset Your Password": "Reset Your Password",
+  "Original Password:": "Original Password:",
+  "New Password:": "New Password:",
+  "New Password Again:": "New Password Again:",
+  "Submit": "Submit",
+  "Log In to Intelligent Array": "Log In to Intelligent Array",
+
+  "Select Project": "Select Project",
+  "Organization Members": "Organization Members",
+  "Organization Projects": "Organization Projects",
+
+  "False": "False",
+  "Detail View": "Detail View",
+  "Operator View": "Operator View",
+  "Edit Portfolio": "Edit Portfolio",
+  "Map": "Map",
+  "Set Date": "Set Date",
+  "Edit Alarm": "Edit Alarm",
+  "Remove": "Remove",
+  "AC Power": "AC Power",
+  "Share with team": "Share with team",
+  "Search for address...": "Search for address...",
+  "Week": "Week",
+  "Month": "Month",
+  "Year": "Year",
+  "Performance Snapshot": "Performance Snapshot",
+  "Power": "Power",
+  "View Project": "View Project",
+  "View Devices": "View Devices",
+  "Username": "Username",
+  "ID": "ID",
+
 }

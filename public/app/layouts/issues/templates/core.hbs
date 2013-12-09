@@ -3,7 +3,7 @@
   <strong>{{$ 'Device' }}</strong>: <span class="deviceName"></span><br>
   <strong>{{$ 'Created On'}}</strong>: {{ date activated_at }}<br>
   <strong>{{$ 'Trigger Condition' }}</strong>: {{ prettyColumnName device_column }} {{ active_conditions.0.comparator }} {{ roundNumber active_conditions.0.threshold 0 }} <br>
-  <strong>{{$ 'Acknowledged' }}</strong>: {{ acked }} {{#unless acked}}False{{/unless}} <br>
+  <strong>{{$ 'Acknowledged' }}</strong>: {{ acked }} {{#unless acked}}{{$ 'False'}}{{/unless}} <br>
   <br>
   {{#unless acked}}
   <button class="button acknowledge sml">{{$ 'Acknowledge' }}</button>

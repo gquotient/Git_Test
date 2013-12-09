@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Log In to Intelligent Array</title>
+  <title>{{$ 'Log In to Intelligent Array'}}</title>
 
   {{> sharedHeader }}
 </head>
@@ -15,9 +15,9 @@
       </div>
       {{/if}}
       <ul>
-        <li><label for="username">Email:</label> <input id="username" name="username" type='email'></input></li>
-        <li><label for="password">Password:</label> <input id="password" name="password" type="password"></input></li>
-        <li><button class="button primary" type="submit">Log In</button></li>
+        <li><label for="username">{{$ 'Email'}}:</label> <input id="username" name="username" type='email'></input></li>
+        <li><label for="password">{{$ 'Password'}}:</label> <input id="password" name="password" type="password"></input></li>
+        <li><button class="button primary" type="submit">{{$ 'Login'}}</button></li>
       </ul>
     </form>
   </section>

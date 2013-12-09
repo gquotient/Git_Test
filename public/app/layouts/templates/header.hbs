@@ -1,7 +1,7 @@
 <h1><a href="/" class="home">Intelligent Array</a></h1>
 <nav id="nav_global" class="global">
   <ul>
-    <li class="team_select">Team: {{{ team_select teams currentTeam }}}</li>
+    <li class="team_select">{{$ 'Team'}}: {{{ team_select teams currentTeam }}}</li>
     <li class="notifications"></li>
     <li><a href="http://invis.io/ADIYAW6S" class="reporting">{{$ 'Reporting' }}</a></li>
     {{#if role.header.showAdmin }}<li><a href="/admin" class="admin">{{$ 'Admin' }}</a></li>{{/if}}
