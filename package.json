@@ -3,30 +3,27 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node app"
+    "start": "node server.js"
   },
   "dependencies": {
-    "requirejs": "latest",
-    "express": "~3.4.4",
-    "passport": "~0.1.15",
-    "stylus": "~0.37.0",
-    "nib": "~1.0",
-    "passport-oauth": "~0.1.14",
-    "lodash": "~1.0.1",
-    "connect-redis": "~1.4.5",
-    "handlebars": "~1.0.9",
-    "hbs": "~2.0.2",
-    "connect-flash": "~0.1.0",
-    "request": "~2.20.0",
-    "q": "~0.9.5"
+    "lodash": "~2.4.1",
+    "request": "~2.29.0",
+    "q": "~0.9.7",
+    "express": "~3.4.6",
+    "hbs": "~2.4.0",
+    "stylus": "~0.41.1",
+    "nib": "~1.0.1",
+    "connect-redis": "~1.4.6",
+    "connect-flash": "~0.1.1",
+    "passport": "~0.1.17",
+    "passport-oauth": "~1.0.0"
   },
   "devDependencies": {
-    "passport-local": "~0.1.6",
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.4.3",
-    "grunt-contrib-watch": "~0.3.1",
-    "grunt-contrib-stylus": "",
-    "grunt-contrib-copy": "",
-    "grunt-requirejs": "~0.4.0"
+    "grunt": "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-contrib-stylus": "latest",
+    "grunt-contrib-copy": "latest",
+    "grunt-requirejs": "latest"
   }
 }
