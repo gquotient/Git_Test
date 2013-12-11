@@ -5,6 +5,7 @@ var fs = require('fs'),
   request = require('request');
 
 module.exports = function(app){
+  var helpers = require('./helpers')(app);
 
   function parseMultipart(req, res, next){
     var form = new multiparty.Form();
@@ -27,7 +28,7 @@ module.exports = function(app){
     var portfolio_id = body.portfolio_id,
       project_label = body.project_label,
       graph_key = body.graph_key,
-      docinfo = portfolio_id || project_label || graph_key;
+      docinfo = body.docinfo || portfolio_id || project_label || graph_key;
 
     // Generate a body that matches the model service and remove empty fields.
     return _.pick({
@@ -63,12 +64,12 @@ module.exports = function(app){
       // Set the content length of the form since it isn't done automatically.
       .setHeader('Content-Length', len)
 
-      // Overwrite the form object with the one already created.
+      // And add the form object to the request.
       ._form = form;
     });
   }
 
-  app.post('/api/documents/:id?', parseMultipart, function(req, res, next){
+  app.post('/api/documents/:id?', parseMultipart, function(req, res){
     var form = translateBody(req.body),
       file = _.first(req.files);
 
@@ -77,8 +78,8 @@ module.exports = function(app){
       form.filename = form.filename || file.originalFilename;
     }
 
-    if (req.params.doc_id) {
-      form.doc_id = req.params.doc_id;
+    if (req.params.id) {
+      form.doc_id = req.params.id;
     }
 
     requestMultipart({
@@ -101,5 +102,23 @@ module.exports = function(app){
       res.send(resp.statusCode, body);
     });
   });
+
+  app.get('/api/documents/:id',
+    function(req, res, next){
+      req.query.doc_id = req.params.id;
+      next();
+    },
+    helpers.makeRequest({
+      path: '/res/document'
+    }));
+
+  app.del('/api/documents/:id',
+    function(req, res, next){
+      req.query.doc_id = req.params.id;
+      next();
+    },
+    helpers.makeRequest({
+      path: '/res/document'
+    }));
 
 };
