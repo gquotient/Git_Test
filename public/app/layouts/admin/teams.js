@@ -3,12 +3,8 @@ define([
   'jquery',
   'backbone',
   'backbone.marionette',
-  'handlebars',
-
-  'ia',
 
   'team',
-  // 'organization',
 
   './base',
   'layouts/admin/teamManagement'
@@ -17,9 +13,6 @@ define([
   $,
   Backbone,
   Marionette,
-  Handlebars,
-
-  ia,
 
   Team,
 

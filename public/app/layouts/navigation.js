@@ -1,7 +1,6 @@
 define([
   'backbone',
   'backbone.marionette',
-  'handlebars',
 
   'breadcrumb',
 
@@ -9,7 +8,6 @@ define([
 ], function(
   Backbone,
   Marionette,
-  Handlebars,
 
   Breadcrumb,
 

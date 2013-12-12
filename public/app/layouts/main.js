@@ -3,7 +3,6 @@ define([
   'underscore',
   'backbone',
   'backbone.marionette',
-  'handlebars',
 
   'ia',
 
@@ -25,7 +24,6 @@ define([
   _,
   Backbone,
   Marionette,
-  Handlebars,
 
   ia,
 

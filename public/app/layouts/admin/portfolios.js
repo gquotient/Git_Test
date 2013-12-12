@@ -3,9 +3,6 @@ define([
   'jquery',
   'backbone',
   'backbone.marionette',
-  'handlebars',
-
-  'ia',
 
   'portfolio',
   'form',
@@ -16,9 +13,6 @@ define([
   $,
   Backbone,
   Marionette,
-  Handlebars,
-
-  ia,
 
   Portfolio,
   Forms,

@@ -1,7 +1,6 @@
 define([
   'backbone',
   'backbone.marionette',
-  'handlebars',
 
   'portfolio',
   'project',
@@ -10,7 +9,6 @@ define([
 ], function(
   Backbone,
   Marionette,
-  Handlebars,
 
   Portfolio,
   Project,

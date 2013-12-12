@@ -3,7 +3,6 @@ define([
   'jquery',
   'backbone',
   'backbone.marionette',
-  'handlebars',
 
   'hbs!layouts/admin/templates/base'
 ], function(
@@ -11,7 +10,6 @@ define([
   $,
   Backbone,
   Marionette,
-  Handlebars,
 
   baseTemplate
 ){

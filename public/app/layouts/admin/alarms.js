@@ -3,10 +3,8 @@ define([
   'jquery',
   'backbone',
   'backbone.marionette',
-  'handlebars',
 
   'ia',
-
   'issue',
 
   'layouts/admin/alarms/projectAlarms',
@@ -17,7 +15,6 @@ define([
   $,
   Backbone,
   Marionette,
-  Handlebars,
 
   ia,
 
