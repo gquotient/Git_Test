@@ -17,7 +17,7 @@
     "requirejs-text": "latest",
     "css": "git://github.com/justinwinslow/css.git",
     "handlebars": "latest",
-    "require-handlebars-plugin": "latest",
+    "require-handlebars-plugin": "~0.4.0",
     "messageformat.js": "git://github.com/SlexAxton/messageformat.js.git#~0.1.5",
     "leaflet": "0.6.2",
     "paper": "latest",
