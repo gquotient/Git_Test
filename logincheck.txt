@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang = "en">
+
+	<head>
+    	<title> GQMaps Login </title>
+    	<meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+	
+		<!-- Loading Bootstrap -->
+    	<link href = "bootstrap/css/bootstrap.css" rel = "stylesheet">
+
+  	 	<!-- Loading Flat UI -->
+   		<link href = "css/login.css" rel = "stylesheet">
+   		
+		<!--  Loading Scripts -->
+   		<script src = "js/jquery-1.8.3.min.js"> </script>
+	    <script src = "js/jquery-ui-1.10.3.custom.min.js"> </script>
+	    <script src = "js/jquery.ui.touch-punch.min.js"> </script>
+	    <script src = "js/bootstrap.min.js"> </script>
+	    <script src = "js/bootstrap-select.js"> </script>
+	    <script src = "js/jquery.placeholder.js"> </script>
+	    
+	    <!-- Custom Scripts -->
+	    <script src = "js/jstorage.js"> </script> 
+	    <script src = "js/rest_service.js"> </script>        
+	    <script src = "js/login.js"> </script>
+  	</head>
+  
+	<body>
+		<div class = "container">
+			<img class = "mergedimg" src = "images/bg.png">
+		
+			<div class = "username">   
+            
+				<div class = "form-group">
+					<input type = "text" class = "form-control login-field" value = " " placeholder = "Enter your name" 
+					id = "txtUserId" />
+                	<label class = "login-field-icon fui-user" for = "txtUserId"></label>
+				</div>
+            
+			</div>
+		
+			<div class = "forgetuserid"> Lost your userid ?<br> please contact<br> support@gquotient.com</div>
+		
+			<div class = "password">
+            	
+            	<div class = "form-group">
+					<input type = "password" class = "form-control login-field" value = "" placeholder = "Password" id = "pwdPassword" />
+					<label class = "login-field-icon fui-lock" for = "pwdPassword"></label>
+				</div>
+		
+			</div>
+	
+			<div class = "login-button">
+				<a class = "btn btn-primary btn-lg btn-block"  id = "submitLogin">Login</a>
+			</div>
+		
+			<div class = "forgotpass">
+				<a class = "login-link" onclick = "checkForValue();" href = "#">Lost your password?</a>
+			</div>
+          
+			<div class = "aboutgq">
+				<div class = "tile">
+                
+					<h3 class = "tile-title"> About GQMaps </h3>
+				
+					<p> GQMaps asset discovery, monitoring and analytics solution empowers 
+you with immediate access to asset data and reports on asset performance,
+efficiency and consumption, cost trends and anomalies with few clicks of mouse.
+
+And furthermore , you can define your own goals based on the underlying data
+with supporting tasks without waiting for another version of the product !
+
+Wanting to integrate with new data , no problem. All work is done in the backend
+so the goals and reports happen as if the data existed all along in the system.
+And it is completely transparent.</p>
+
+					<div class = "downloadjar">
+						<a class = "btn btn-primary btn-large btn-block" onclick = "downloadJar()"> Download Meter Program </a>
+					</div>
+                
+					<div class = "signup">
+						<a class = "btn btn-primary btn-block btn-large" onclick = "addRegistration()"> Signup </a>
+                	</div>
+                
+				</div>
+				<!-- tile ends -->    
+			</div>
+        	<!-- About gq ends -->
+		</div>
+		<!--Container ends -->
+	</body>
+	
+</html>
